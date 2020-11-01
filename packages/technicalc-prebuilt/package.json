@@ -1,0 +1,33 @@
+{
+  "name": "technicalc-prebuilt",
+  "version": "0.0.1",
+  "scripts": {
+    "clean-technicalc": "bsb -clean-world",
+    "build-technicalc": "bsb -make-world",
+    "watch-technicalc": "bsb -make-world -w",
+    "build-data": "node -r esm data",
+    "build-fonts": "node font-gen",
+    "build-bundles": "webpack",
+    "watch-bundles": "yarn webpack --watch",
+    "clean": "yarn clean-technicalc",
+    "build-static-content": "yarn build-fonts",
+    "build-modules": "yarn build-technicalc && yarn build-bundles && yarn build-data",
+    "build": "yarn build-static-content && yarn build-modules"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "^8.3.1",
+    "esm": "^3.2.25",
+    "mathjax-full": "3.0.1",
+    "node-fetch": "^2.6.1",
+    "technicalc-calculator": "0.0.1",
+    "technicalc-editor": "0.0.1",
+    "webpack": "^5.1.3",
+    "webpack-cli": "^4.0.0"
+  },
+  "dependencies": {
+    "opentype.js": "^1.3.3"
+  }
+}

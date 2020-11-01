@@ -1,0 +1,26 @@
+{
+  "name": "technicalc-editor",
+  "version": "0.0.1",
+  "scripts": {
+    "clean": "bsb -clean-world",
+    "build": "bsb -make-world",
+    "postbuild": "node -r esm run-mapping.js",
+    "watch": "bsb -make-world -w",
+    "test": "jest"
+  },
+  "keywords": [
+    "BuckleScript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "babel-jest": "^26.1.0",
+    "bs-platform": "^8.3.1",
+    "esm": "^3.2.22",
+    "jest": "^26.1.0",
+    "technicalc-calculator": "0.0.1"
+  },
+  "dependencies": {}
+}

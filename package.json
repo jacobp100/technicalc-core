@@ -1,0 +1,21 @@
+{
+  "name": "technicalc-core",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "yarn workspace technicalc-prebuilt build",
+    "lint": "eslint ."
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "eslint": "^7.12.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.17.2",
+    "prettier": "^2.1.2"
+  }
+}

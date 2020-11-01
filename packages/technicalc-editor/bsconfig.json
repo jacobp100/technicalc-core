@@ -1,0 +1,19 @@
+{
+  "name": "technicalc-editor",
+  "version": "0.1.0",
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "package-specs": {
+    "module": "es6-global",
+    "in-source": true
+  },
+  "suffix": ".bs.js",
+  "bs-dependencies": ["technicalc-calculator"],
+  "warnings": {
+    "error": "+101"
+  },
+  "namespace": "TechniCalcEditor",
+  "refmt": 3
+}
