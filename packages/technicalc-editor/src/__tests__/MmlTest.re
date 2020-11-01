@@ -6,7 +6,7 @@ let openRow = {j|$openTag<mrow>|j};
 let closeRow = {j|</mrow>$closeTag|j};
 let invalidAttrs = {j|class="invalid" stretchy="false"|j};
 
-test("Formats numbers", (.) => {
+test("gormats numbers", (.) => {
   Mml.create([|N1_S|])
   ->expect
   ->toEqual({j|$openTag<mn id="0:1">1</mn>$closeTag|j});
@@ -56,7 +56,7 @@ test("Formats numbers", (.) => {
     );
 });
 
-test("Invalid brackets", (.) => {
+test("invalid brackets", (.) => {
   Mml.create([|N1_S, OpenBracket, N2_S, N3_S|])
   ->expect
   ->toEqual(
@@ -69,7 +69,7 @@ test("Invalid brackets", (.) => {
     );
 });
 
-test("Bracket states", (.) => {
+test("bracket states", (.) => {
   Mml.create([|N1_S, OpenBracket, N2_S, CloseBracketS, N3_S|])
   ->expect
   ->toEqual(

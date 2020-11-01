@@ -10,7 +10,7 @@ let parseEval = v =>
 let ofString = x =>
   TechniCalcCalculator.Value.ofString(x)->Belt.Option.getExn;
 
-test("Parses with bodmas", (.) => {
+test("parses with bodmas", (.) => {
   parseEval([|N1_S, Sub, N2_S, Add, N3_S|])
   ->expect
   ->toEqual(Some(ofString("2")));
@@ -20,7 +20,7 @@ test("Parses with bodmas", (.) => {
   ->toEqual(Some(ofString("6")));
 });
 
-test("Parses unary operators", (.) => {
+test("parses unary operators", (.) => {
   parseEval([|Sub, N2_S|])->expect->toEqual(Some(ofString("-2")));
 
   parseEval([|Sub, Sub, Sub, N2_S|])
@@ -32,7 +32,7 @@ test("Parses unary operators", (.) => {
   ->toEqual(Some(ofString("-1")));
 });
 
-test("Parses brackets", (.) => {
+test("parses brackets", (.) => {
   parseEval([|
     N2_S,
     Mul,
@@ -48,7 +48,7 @@ test("Parses brackets", (.) => {
   ->toEqual(Some(ofString("28")))
 });
 
-test("Parses functions", (.) => {
+test("parses functions", (.) => {
   parseEval([|CosS, N0_S|])->expect->toEqual(Some(ofString("1")));
 
   parseEval([|CosS, OpenBracket, N0_S, CloseBracketS|])
@@ -56,7 +56,7 @@ test("Parses functions", (.) => {
   ->toEqual(Some(ofString("1")));
 });
 
-test("Parses iteration operators", (.) => {
+test("parses iteration operators", (.) => {
   parseEval([|Sum2, N0_S, Arg, N3_S, Arg, VariableS("x"), Add, N1_S|])
   ->expect
   ->toEqual(Some(ofString("7")));
