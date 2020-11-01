@@ -1,16 +1,19 @@
+const commonConfig = {
+  transformIgnorePatterns: ["node_modules/(?!(bs-platform)/)"],
+};
+
 module.exports = {
   projects: [
-    "<rootDir>/packages/technicalc-calculator",
-    "<rootDir>/packages/technicalc-editor",
+    {
+      displayName: "technicalc-calculator",
+      rootDir: "<rootDir>/packages/technicalc-calculator",
+      ...commonConfig,
+      testPathIgnorePatterns: ["/decimal"],
+    },
+    {
+      displayName: "technicalc-editor",
+      rootDir: "<rootDir>/packages/technicalc-editor",
+      ...commonConfig,
+    },
   ],
-  transformIgnorePatterns: ["**/node_modules/(?!(bs-platform)/)"],
-  testPathIgnorePatterns: [
-    "/node_modules/",
-    "**/node_modules/",
-    "<rootDir>/packages/technicalc-calculator/decimal",
-  ],
-  // transform: {
-  //   "^.+\\.bs\\.js$": "babel-jest",
-  //   "^.+\\.js$": "babel-jest",
-  // },
 };
