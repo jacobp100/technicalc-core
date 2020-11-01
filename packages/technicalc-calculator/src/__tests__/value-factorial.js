@@ -18,10 +18,13 @@ const correctAnswers = new Map([
   ],
 ]);
 
-test.each(values)("(%s)!", ({ title, techniCalcValue, jsValue }) => {
-  const actual = TechniCalc.factorial(techniCalcValue);
-  const expected =
-    correctAnswers.get(title) ||
-    mathjs.gamma(mathjs.complex(jsValue.re + 1, jsValue.im));
-  expect(actual).toMatchJsValue(expected);
+test("factorial", () => {
+  values.forEach((v) => {
+    const { title, techniCalcValue, jsValue } = v;
+    const actual = TechniCalc.factorial(techniCalcValue);
+    const expected =
+      correctAnswers.get(title) ||
+      mathjs.gamma(mathjs.complex(jsValue.re + 1, jsValue.im));
+    expect(actual).toMatchJsValue(expected, `(${v})!`);
+  });
 });

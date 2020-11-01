@@ -4,7 +4,7 @@ const { percentOfFloat } = require("../ValueTestUtil.bs");
 
 expect.extend({ toMatchJsValue });
 
-test("Numerical results", () => {
+test("numerical results", () => {
   expect(
     TechniCalc.add(TechniCalc.ofFloat(100), percentOfFloat(20))
   ).toMatchJsValue(120);

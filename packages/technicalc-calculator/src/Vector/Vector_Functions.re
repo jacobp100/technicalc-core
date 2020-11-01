@@ -11,7 +11,6 @@ let dot = (a: t, b: t): Scalar.t =>
     let out = ref(Scalar.zero);
 
     for (i in 0 to Belt.Array.length(a) - 1) {
-      Js.log("Hello");
       out :=
         Scalar.(
           out^ + Belt.Array.getUnsafe(a, i) * Belt.Array.getUnsafe(b, i)

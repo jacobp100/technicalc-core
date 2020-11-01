@@ -22,14 +22,14 @@ const [three, minusThree, threeHalves, minusThreeHalves, half, minusHalf] = [
   "-0.5",
 ].map(ofString);
 
-it("parses decimal strings", () => {
+test("parses decimal strings", () => {
   expect(ofString("0.5")).toEqual(half);
   expect(ofString("-0.5")).toEqual(minusHalf);
   expect(ofString(".5")).toEqual(half);
   expect(ofString("-.5")).toEqual(minusHalf);
 });
 
-it("formats exactly when not passing in a format", () => {
+test("formats exactly when not passing in a format", () => {
   expect(toStringBase(undefined, false, div(one, pi))).toEqual(
     "0.3183098861837906715377675267450287"
   );
@@ -75,7 +75,7 @@ it.each(["123", "456", "-123", "-456", "5sqrt(7)", "8exp(8)", "8e14"])(
 const format = (value, mode) =>
   toString(value, mode != null ? { mode } : undefined);
 
-it("Formats Tex", () => {
+test("formats Tex", () => {
   expect(format(one, "tex")).toBe("1");
   expect(format(minusOne, "tex")).toBe("-1");
   expect(format(half, "tex")).toBe("\\frac{1}{2}");
@@ -94,7 +94,7 @@ it("Formats Tex", () => {
   expect(format(mul(minusThreeHalves, pi), "tex")).toBe("-\\frac{3\\pi}{2}");
 });
 
-it("Formats mathml", () => {
+test("formats mathml", () => {
   const math = (x) =>
     `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">${x}</math>`;
   expect(format(one, "mathml")).toBe(math("<mn>1</mn>"));

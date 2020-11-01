@@ -62,6 +62,7 @@ module.exports.range12 = range12;
 module.exports.fractionsTo12 = fractionsTo12;
 
 const isCloseTo = (a, b) => {
+  if (Number.isNaN(a)) return Number.isNaN(b);
   if (!Number.isFinite(a)) return !Number.isFinite(b);
 
   const aMagnitude = Math.floor(Math.log10(Math.abs(a)));
@@ -83,7 +84,7 @@ const asComplex = (a) => {
     : comp;
 };
 
-module.exports.toMatchJsValue = (received, expected) => {
+module.exports.toMatchJsValue = (received, expected, message) => {
   const [actualRe, actualIm] = TechniCalcTest.toComplexFloats(received);
   const [expectedRe, expectedIm] = asComplex(expected);
 
@@ -94,7 +95,9 @@ module.exports.toMatchJsValue = (received, expected) => {
     message: () =>
       `expected ${TechniCalcTest.toString(received)} ${
         pass ? "not " : ""
-      }to be close to ${expectedRe}+${expectedIm}i`,
+      }to be close to ${expectedRe}+${expectedIm}i (${
+        message ?? "no equation given"
+      })`,
     pass,
   };
 };

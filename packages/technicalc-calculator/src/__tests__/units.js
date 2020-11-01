@@ -5,7 +5,7 @@ const { convert } = require("../Units/Units.bs");
 const c = (value, fromUnits, toUnits) =>
   TechniCalc.toFloat(convert(value, fromUnits, toUnits));
 
-it("converts simple units", () => {
+test("converts simple units", () => {
   expect(
     c(TechniCalc.one, [[testUnits.meter, 1]], [[testUnits.inch, 1]])
   ).toBeCloseTo(39.37);
@@ -17,7 +17,7 @@ it("converts simple units", () => {
   ).toBeCloseTo(78.74);
 });
 
-it("converts exponentiated units", () => {
+test("converts exponentiated units", () => {
   expect(
     c(TechniCalc.one, [[testUnits.meter, 2]], [[testUnits.inch, 2]])
   ).toBeCloseTo(1550);
@@ -26,7 +26,7 @@ it("converts exponentiated units", () => {
   ).toBeCloseTo(6.452e-4);
 });
 
-it("converts between different dimensions", () => {
+test("converts between different dimensions", () => {
   expect(
     c(TechniCalc.one, [[testUnits.acre, 1]], [[testUnits.meter, 2]])
   ).toBeCloseTo(4047);
