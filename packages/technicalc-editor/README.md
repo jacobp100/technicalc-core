@@ -169,6 +169,18 @@ Now we can apply superscript index as the end index of the base `<mn>` element. 
 </msup>
 ```
 
+### Labels
+
+In the standard editing mode, labels act as placeholders, although they have content in (rather than being a blank square). The blank square is created by converting an empty array of elements to MML. However, labels are explicit elements.
+
+Because it's possible for the user to input label elements, and they'd need to be able to manipulate them, there are two editing modes: standard and label editing mode. They are defined by `allowLabelEditing`.
+
+In the standard editing mode, labels (`LabelS`) stop some indices being selectable, so they behave more like placeholders. In particular, it's not possible to select the index immediately after a label at the end of a row.
+
+In the label editing mode, they as standard elements (and have no extra logic).
+
+The deletion logic also changes slightly in label editing mode to prefer deleting a label at the index rather than deleting the element before.
+
 ---
 
 ### Build

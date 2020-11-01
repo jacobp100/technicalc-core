@@ -2,7 +2,9 @@
 
 Monorepo for various open source aspects of the [TechniCalc app](https://apps.apple.com/gb/app/technicalc-calculator/id1504965415).
 
-Each package has its own readme. See,
+This whole project almost exclusively uses ReScript. It uses ReasonML syntax until the new ReScript syntax supports redefining infix operators (it's used extensively in the technicalc-calculator package).
+
+Each package has its own (hopefully) comprehensive readme. See,
 
 - [technicalc-calculator](https://github.com/jacobp100/technicalc-core/tree/master/packages/technicalc-calculator)
 - [technicalc-editor](https://github.com/jacobp100/technicalc-core/tree/master/packages/technicalc-editor)
