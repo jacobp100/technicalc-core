@@ -5,8 +5,7 @@
     "clean": "bsb -clean-world",
     "build": "bsb -make-world",
     "postbuild": "node -r esm run-mapping.js",
-    "watch": "bsb -make-world -w",
-    "test": "jest"
+    "watch": "bsb -make-world -w"
   },
   "keywords": [
     "BuckleScript"
