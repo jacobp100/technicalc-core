@@ -17,7 +17,7 @@ test("mul", () => {
   values.forEach(([a, b]) => {
     const actualValue = TechniCalc.mul(a.techniCalcValue, b.techniCalcValue);
     const expectedValue = mathjs.multiply(a.jsValue, b.jsValue);
-    expect(actualValue).toMatchJsMatrix(expectedValue, `${a} * ${b}`);
+    expect(actualValue).toMatchJsMatrix(expectedValue, () => `${a} * ${b}`);
   });
 });
 
@@ -27,7 +27,7 @@ test("div", () => {
 
     if (b.jsValue !== 0) {
       const expectedValue = mathjs.divide(a.jsValue, b.jsValue);
-      expect(actualValue).toMatchJsMatrix(expectedValue, `${a} / ${b}`);
+      expect(actualValue).toMatchJsMatrix(expectedValue, () => `${a} / ${b}`);
     } else {
       expect(actualValue).toMatchJsValue(NaN);
     }

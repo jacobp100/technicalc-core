@@ -96,13 +96,13 @@ module.exports.toMatchJsValue = (received, expected, message) => {
       `expected ${TechniCalcTest.toString(received)} ${
         pass ? "not " : ""
       }to be close to ${expectedRe}+${expectedIm}i (${
-        message ?? "no equation given"
+        message?.() ?? "no equation given"
       })`,
     pass,
   };
 };
 
-module.exports.toMatchJsMatrix = (received, expected) => {
+module.exports.toMatchJsMatrix = (received, expected, message) => {
   const techniCalcElements = TechniCalcTest.toComplexFloatsMatrix(received);
 
   let allPass = true;
@@ -118,7 +118,7 @@ module.exports.toMatchJsMatrix = (received, expected) => {
     message: () =>
       `expected ${TechniCalcTest.toString(received)} ${
         allPass ? "not " : ""
-      }to be close to ${expected}`,
+      }to be close to ${expected} (${message?.() ?? "no equation given"})`,
     pass: allPass,
   };
 };

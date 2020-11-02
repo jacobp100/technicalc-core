@@ -25,6 +25,6 @@ test("factorial", () => {
     const expected =
       correctAnswers.get(title) ||
       mathjs.gamma(mathjs.complex(jsValue.re + 1, jsValue.im));
-    expect(actual).toMatchJsValue(expected, `(${v})!`);
+    expect(actual).toMatchJsValue(expected, () => `(${v})!`);
   });
 });

@@ -10,7 +10,7 @@ test("exp", () => {
   complexValues.forEach((v) => {
     const actual = TechniCalc.exp(v.techniCalcValue);
     const expected = mathjs.exp(v.jsValue);
-    expect(actual).toMatchJsValue(expected, `exp(${v})`);
+    expect(actual).toMatchJsValue(expected, () => `exp(${v})`);
   });
 });
 
@@ -19,7 +19,7 @@ test("log", () => {
     const actual = TechniCalc.log(v.techniCalcValue);
     const expected = mathjs.log(v.jsValue);
 
-    expect(actual).toMatchJsValue(expected, `log(${v})`);
+    expect(actual).toMatchJsValue(expected, () => `log(${v})`);
   });
 });
 

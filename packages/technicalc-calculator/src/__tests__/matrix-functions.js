@@ -21,7 +21,7 @@ test("pow", () => {
     const mathJsValue = mathjs.pow(a.jsValue, b.jsValue);
     expect(
       TechniCalc.pow(a.techniCalcValue, b.techniCalcValue)
-    ).toMatchJsMatrix(mathJsValue, `${a} ** ${b}`);
+    ).toMatchJsMatrix(mathJsValue, () => `${a} ** ${b}`);
   });
 });
 
@@ -29,7 +29,7 @@ test("det", () => {
   values.forEach((v) => {
     const actual = TechniCalc.abs(v.techniCalcValue);
     const expected = mathjs.det(v.jsValue);
-    expect(actual).toMatchJsValue(expected, `det${v}`);
+    expect(actual).toMatchJsValue(expected, () => `det${v}`);
   });
 });
 

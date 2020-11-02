@@ -12,7 +12,7 @@ test("cross", () => {
     const mathJsValue = mathjs.matrix([[i], [j], [k]]);
     expect(
       TechniCalc.mul(a.techniCalcValue, b.techniCalcValue)
-    ).toMatchJsMatrix(mathJsValue, `${a} * ${b}`);
+    ).toMatchJsMatrix(mathJsValue, () => `${a} * ${b}`);
   });
 });
 

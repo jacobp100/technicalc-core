@@ -15,7 +15,7 @@ test("add", () => {
   values.forEach(([a, b]) => {
     const actualValue = TechniCalc.add(a.techniCalcValue, b.techniCalcValue);
     const expectedValue = mathjs.add(a.jsValue, b.jsValue);
-    expect(actualValue).toMatchJsMatrix(expectedValue, `${a} + ${b}`);
+    expect(actualValue).toMatchJsMatrix(expectedValue, () => `${a} + ${b}`);
   });
 
   const nanValue = TechniCalc.add(
@@ -29,7 +29,7 @@ test("sub", () => {
   values.forEach(([a, b]) => {
     const actualValue = TechniCalc.sub(a.techniCalcValue, b.techniCalcValue);
     const expectedValue = mathjs.subtract(a.jsValue, b.jsValue);
-    expect(actualValue).toMatchJsMatrix(expectedValue, `${a} + ${b}`);
+    expect(actualValue).toMatchJsMatrix(expectedValue, () => `${a} + ${b}`);
   });
 
   const nanValue = TechniCalc.sub(
@@ -43,7 +43,7 @@ test("mul", () => {
   values.forEach(([a, b]) => {
     const actualValue = TechniCalc.mul(a.techniCalcValue, b.techniCalcValue);
     const expectedValue = mathjs.multiply(a.jsValue, b.jsValue);
-    expect(actualValue).toMatchJsMatrix(expectedValue, `${a} + ${b}`);
+    expect(actualValue).toMatchJsMatrix(expectedValue, () => `${a} + ${b}`);
   });
 
   const nanValue = TechniCalc.mul(
