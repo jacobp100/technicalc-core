@@ -9,6 +9,7 @@ const createConfig = ({ name, entry, outputDirectory, target = "web" }) => ({
     path: path.resolve(__dirname, outputDirectory),
     library: name,
     libraryTarget: "umd",
+    globalObject: "typeof self !== 'undefined' ? self : undefined",
     publicPath: "/assets/",
   },
   target,

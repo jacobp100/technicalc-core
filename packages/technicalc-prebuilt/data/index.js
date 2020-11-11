@@ -14,7 +14,6 @@ const { AllPackages } = require("mathjax-full/js/input/tex/AllPackages.js");
 const MmlVisitor = require("mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js")
   .SerializedMmlVisitor;
 
-global.self = undefined;
 const { Value } = require("../dist/client");
 const titles = require("./titles");
 
@@ -122,10 +121,7 @@ const nist = fs
       throw new Error(`Invalid MML for ${title}`);
     }
 
-    let valueUtf = Value.toUnicode(Value.ofString(value)).replace(
-      /e\+?(.+)/,
-      "×10^$1"
-    );
+    let valueUtf = Value.toUnicode(Value.ofString(value));
 
     if (units) {
       const unitsUtf = units
