@@ -34,17 +34,17 @@ let%private encodeElement =
   (. element: AST.t) =>
     switch (element) {
     | UnitConversion({fromUnits, toUnits}) =>
-      encodeInt(256) ++ encodeUnitConversion(~fromUnits, ~toUnits)
+      encodeUint(256) ++ encodeUnitConversion(~fromUnits, ~toUnits)
     | CustomAtomS({mml, value}) =>
-      encodeInt(257) ++ encodeCustomAtom(~mml, ~value)
-    | LabelS({mml}) => encodeInt(258) ++ encodeString(mml)
-    | VariableS(string) => encodeInt(259) ++ encodeString(string)
-    | element => Encoding_Element.toInt(element)->encodeInt
+      encodeUint(257) ++ encodeCustomAtom(~mml, ~value)
+    | LabelS({mml}) => encodeUint(258) ++ encodeString(mml)
+    | VariableS(string) => encodeUint(259) ++ encodeString(string)
+    | element => Encoding_Element.toUint(element)->encodeUint
     };
 
 let%private readElement =
   (. reader) =>
-    switch (readInt(reader)) {
+    switch (readUint(reader)) {
     | Some(256) => readUnitConversion(reader)
     | Some(257) => readCustomAtom(reader)
     | Some(258) =>
@@ -57,7 +57,7 @@ let%private readElement =
       | Some(string) => Some(VariableS(string))
       | None => None
       }
-    | Some(value) => Encoding_Element.ofInt(value)
+    | Some(value) => Encoding_Element.ofUint(value)
     | None => None
     };
 
