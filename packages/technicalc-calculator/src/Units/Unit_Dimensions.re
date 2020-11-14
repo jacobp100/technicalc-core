@@ -88,12 +88,23 @@ let ofUnit = (v: unitType) =>
   | Knot => speed
   /* Force */
   | Newton
-  | PoundForce => force
+  | PoundForce
+  | FemtoNewton
+  | PicoNewton
+  | NanoNewton
+  | MicroNewton
+  | MilliNewton
+  | KiloNewton
+  | MegaNewton
+  | GigaNewton
+  | TeraNewton
+  | PetaNewton => force
   /* Pressure */
   | Pascal
   | Atmosphere
   | Bar
   | HectoPascal
+  | KiloPascal
   | Millibar => pressure
   /* Energy */
   | Joule

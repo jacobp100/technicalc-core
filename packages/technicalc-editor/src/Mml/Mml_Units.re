@@ -64,11 +64,22 @@ let unitMmlSymbol = (unit: TechniCalcCalculator.Unit_Types.unitType) =>
   /* Force */
   | Newton => "N"
   | PoundForce => "lbf"
+  | FemtoNewton => "fN"
+  | PicoNewton => "pN"
+  | NanoNewton => "nN"
+  | MicroNewton => "&#x3BC;N"
+  | MilliNewton => "mN"
+  | KiloNewton => "kN"
+  | MegaNewton => "MN"
+  | GigaNewton => "GN"
+  | TeraNewton => "TN"
+  | PetaNewton => "PN"
   /* Pressure */
   | Pascal => "Pa"
   | Atmosphere => "atm"
   | Bar => "bar"
   | HectoPascal => "hPa"
+  | KiloPascal => "kPa"
   | Millibar => "mbar"
   /* Energy */
   | Joule => "J"

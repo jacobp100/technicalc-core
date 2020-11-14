@@ -111,7 +111,19 @@ let units = [|
   {
     title: "Force",
     data: [|
-      [|{title: "Newton", unit: Newton, primary: true}|],
+      [|
+        {title: "Newton", unit: Newton, primary: true},
+        {title: "FemtoNewton", unit: FemtoNewton, primary: false},
+        {title: "PicoNewton", unit: PicoNewton, primary: false},
+        {title: "NanoNewton", unit: NanoNewton, primary: false},
+        {title: "MicroNewton", unit: MicroNewton, primary: false},
+        {title: "MilliNewton", unit: MilliNewton, primary: false},
+        {title: "KiloNewton", unit: KiloNewton, primary: false},
+        {title: "MegaNewton", unit: MegaNewton, primary: false},
+        {title: "GigaNewton", unit: GigaNewton, primary: false},
+        {title: "TeraNewton", unit: TeraNewton, primary: false},
+        {title: "PetaNewton", unit: PetaNewton, primary: false},
+      |],
       [|{title: "Pound Force", unit: PoundForce, primary: true}|],
     |],
   },
@@ -122,6 +134,7 @@ let units = [|
       [|
         {title: "Pascal", unit: Pascal, primary: true},
         {title: "HectoPascal", unit: HectoPascal, primary: false},
+        {title: "KiloPascal", unit: KiloPascal, primary: false},
       |],
       [|
         {title: "Bar", unit: Bar, primary: true},

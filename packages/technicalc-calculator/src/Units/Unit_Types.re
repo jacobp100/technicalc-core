@@ -68,11 +68,22 @@ type unitType =
   /* Force */
   | Newton
   | PoundForce
+  | FemtoNewton
+  | PicoNewton
+  | NanoNewton
+  | MicroNewton
+  | MilliNewton
+  | KiloNewton
+  | MegaNewton
+  | GigaNewton
+  | TeraNewton
+  | PetaNewton
   /* Pressure */
   | Pascal
   | Atmosphere
   | Bar
   | HectoPascal
+  | KiloPascal
   | Millibar
   /* Energy */
   | Joule

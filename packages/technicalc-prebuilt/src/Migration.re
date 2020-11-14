@@ -1,5 +1,5 @@
 module AST = TechniCalcEditor.AST;
-module Encoding_Element = TechniCalcEditor.Encoding_Element;
+module LegacyEncoding_Element = TechniCalcEditor.LegacyEncoding_Element;
 module MutableArrayBuilder = TechniCalcEditor.MutableArrayBuilder;
 
 module StringUtil = {
@@ -244,7 +244,7 @@ module Encoding = {
       : option(array(AST.t)) => {
     Encoding_VarInt.decodeU(elements, (. value) =>
       if (value < specialCharBias) {
-        Encoding_Element.ofInt(value);
+        LegacyEncoding_Element.ofUint(value);
       } else {
         let specialCharType = (value - specialCharBias) / specialCharBase;
         let argumentIndex = (value - specialCharBias) mod specialCharBase;

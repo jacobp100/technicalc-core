@@ -66,12 +66,23 @@ let linearValue = (unit: unitType) =>
   /* Force */
   | Newton => 1.
   | PoundForce => 4.448222
+  | FemtoNewton => 1e-15
+  | PicoNewton => 1e-12
+  | NanoNewton => 1e-9
+  | MicroNewton => 1e-6
+  | MilliNewton => 1e-3
+  | KiloNewton => 1e3
+  | MegaNewton => 1e6
+  | GigaNewton => 1e9
+  | TeraNewton => 1e12
+  | PetaNewton => 1e15
   /* Pressure */
   | Pascal => 1.
   | Atmosphere => 101325.
-  | Bar => 10000.
+  | Bar => 100000.
   | HectoPascal => 100.
-  | Millibar => 10.
+  | KiloPascal => 1000.
+  | Millibar => 100.
   /* Energy */
   | Joule => 1.
   | Calorie => 4.184
