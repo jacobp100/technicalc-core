@@ -4,8 +4,8 @@ let%private encodeConstant = (constant: Real_Constant.t) =>
   switch (constant) {
   | Unit => encodeUint(0)
   | Pi => encodeUint(1)
-  | Sqrt(sqrt) => encodeUint(2) ++ encodeUint(sqrt)
-  | Exp(exp) => encodeUint(3) ++ encodeUint(exp)
+  | Sqrt(sqrt) => encodeUint(2) ++ encodeInt(sqrt)
+  | Exp(exp) => encodeUint(3) ++ encodeInt(exp)
   };
 
 let%private readConstant = reader => {
@@ -13,12 +13,12 @@ let%private readConstant = reader => {
   | Some(0) => Some(Real_Constant.Unit)
   | Some(1) => Some(Pi)
   | Some(2) =>
-    switch (readUint(reader)) {
+    switch (readInt(reader)) {
     | Some(sqrt) => Some(Sqrt(sqrt))
     | None => None
     }
   | Some(3) =>
-    switch (readUint(reader)) {
+    switch (readInt(reader)) {
     | Some(exp) => Some(Exp(exp))
     | None => None
     }
@@ -29,14 +29,14 @@ let%private readConstant = reader => {
 let%private encodeReal = (real: Real_Types.t) =>
   switch (real) {
   | Rational(n, d, c) =>
-    encodeUint(0) ++ encodeUint(n) ++ encodeUint(d) ++ encodeConstant(c)
+    encodeUint(0) ++ encodeInt(n) ++ encodeInt(d) ++ encodeConstant(c)
   | Decimal(f) => encodeUint(1) ++ Decimal.toString(f)->encodeString
   };
 
 let%private readReal = reader =>
   switch (readUint(reader)) {
   | Some(0) =>
-    switch (readUint(reader), readUint(reader), readConstant(reader)) {
+    switch (readInt(reader), readInt(reader), readConstant(reader)) {
     | (Some(n), Some(d), Some(c)) => Some(Real_Base.ofRational(n, d, c))
     | _ => None
     }

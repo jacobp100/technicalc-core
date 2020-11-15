@@ -7,6 +7,12 @@ test("real rational", (.) => {
   expect(result)->toEqual(Some(value));
 });
 
+test("negative rational", (.) => {
+  let value = ofInt(-1);
+  let result = encode(value)->decode;
+  expect(result)->toEqual(Some(value));
+});
+
 test("real decimal", (.) => {
   // Any value that cannot be encoded as a rational
   let value = Decimal.(one / pi)->ofDecimal;

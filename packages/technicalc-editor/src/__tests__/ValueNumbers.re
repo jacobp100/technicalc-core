@@ -28,6 +28,10 @@ test("parses numbers", (.) => {
   parseEval([|N5_S, DecimalSeparator|])
   ->expect
   ->toEqual(Some(ofString("5")));
+
+  parseEval([|Sub, N3_S, DecimalSeparator, N5_S|])
+  ->expect
+  ->toEqual(Some(ofString("-3.5")));
 });
 
 test("does not parse invalid numbers", (.) => {
