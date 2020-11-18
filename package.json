@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "clean": "yarn workspaces run clean",
     "build-encoding-mapping": "yarn workspace technicalc-editor build",
     "build-technicalc": "yarn build-encoding-mapping; yarn workspace technicalc-prebuilt build-technicalc",
     "build": "yarn build-encoding-mapping; yarn workspace technicalc-prebuilt build",

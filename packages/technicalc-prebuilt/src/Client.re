@@ -74,7 +74,7 @@ module Keys = {
   let customAtom = (~value, ~mml) =>
     AST.CustomAtomS({
       mml,
-      value: TechniCalcCalculator.Value_Formatting.toString(value),
+      value: TechniCalcCalculator.Value_Encoding.encode(value),
     })
     ->Keys.One;
 
