@@ -66,12 +66,10 @@ let formatDecimal =
   let absNum = Decimal.abs(num);
   let integerPart = Decimal.floor(absNum);
   let decimalPart = Decimal.sub(absNum, integerPart);
-  let integer =
-    formatInteger(
-      ~base,
-      ~digitGrouping,
-      Decimal.(num >= zero ? integerPart : - integerPart),
-    );
+
+  let integer = formatInteger(~base, ~digitGrouping, integerPart);
+  let integer = Decimal.(num >= zero) ? integer : "-" ++ integer;
+
   let decimal =
     if (maxDecimalPlaces == 0) {
       "";

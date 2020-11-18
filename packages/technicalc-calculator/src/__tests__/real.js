@@ -42,5 +42,5 @@ test("does not simplify pi", () => {
 });
 
 test("takes sin of pi + 1", () => {
-  expect(toString(sin(add(pi, ofFloat(1))))).toBe("0.841470984807");
+  expect(toString(sin(add(pi, ofFloat(1))))).toBe("-0.841470984807");
 });

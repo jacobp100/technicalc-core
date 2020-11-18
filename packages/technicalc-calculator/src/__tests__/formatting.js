@@ -83,3 +83,12 @@ test("formats various numbers correctly", () => {
   expect(convert("-66.90487607393479")).toBe("-66.904876073934");
   expect(convert("-28.212396089967342")).toBe("-28.212396089967");
 });
+
+test("formatting decimal number between -1 and 0", () => {
+  const aDecimalNumber = TechniCalc.div(
+    TechniCalc.log(TechniCalc.div(TechniCalc.one, TechniCalc.ofInt(3))),
+    TechniCalc.ofInt(4)
+  );
+
+  expect(TechniCalcTest.toString(aDecimalNumber)).toBe("-0.274653072167");
+});
