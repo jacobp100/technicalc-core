@@ -102,10 +102,16 @@ let%private formatTuple = (re, format): string => {
       )
       ->formatExponential(format);
     };
-  | (_, Some({style: Scientific, precision})) =>
-    /* Round to multiple of 3 */
+  | (_, Some({style: Engineering, precision})) =>
     let f = Real.toDecimal(re);
-    let exponent = DecimalUtil.magnitude(f) / 3 * 3;
+    let magnitude = DecimalUtil.magnitude(f);
+    /* Round to multiple of 3 */
+    let exponent =
+      if (magnitude >= 0) {
+        magnitude / 3 * 3;
+      } else {
+        - ((- magnitude + 2) / 3 * 3);
+      };
     Formatting_Number.formatExponential(
       ~base?,
       ~exponent,

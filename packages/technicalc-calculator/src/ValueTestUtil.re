@@ -49,7 +49,7 @@ let toString = (x, maybeFormat) => {
     style:
       switch (styleGet(f)) {
       | Some("decimal") => Decimal
-      | Some("scientific") => Scientific
+      | Some("engineering") => Engineering
       | _ => Natural
       },
     base:
