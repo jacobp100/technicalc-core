@@ -120,7 +120,7 @@ module Value = {
       style:
         switch (styleGet(f)) {
         | Some("decimal") => Decimal
-        | Some("scientific") => Scientific
+        | Some("engineering") => Engineering
         | _ => Natural
         },
       base: baseGet(f)->Belt.Option.getWithDefault(default.base),

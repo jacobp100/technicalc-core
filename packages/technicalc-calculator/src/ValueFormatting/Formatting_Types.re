@@ -7,7 +7,7 @@ type mode =
 type style =
   | Natural
   | Decimal
-  | Scientific;
+  | Engineering;
 
 type format = {
   mode,
