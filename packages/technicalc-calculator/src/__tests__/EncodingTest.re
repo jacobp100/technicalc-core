@@ -17,9 +17,25 @@ test("integers", (.) => {
 
 test("strings", (.) => {
   let string = "Hello world !@#$%^&*()";
-  let encoded = encodeString(string);
-  let decoded = read(encoded, readString);
+  let encoded = encodeString(~optimizeFor=Text, string);
+  let decoded = read(encoded, readString(~optimizeFor=Text));
   expect(decoded)->toEqual(Some(string));
+});
+
+test("string optimisation for text", (.) => {
+  let string = "helloworld";
+  let encoded = encodeString(~optimizeFor=Text, string);
+  let decoded = read(encoded, readString(~optimizeFor=Text));
+  expect(decoded)->toEqual(Some(string));
+  expect(String.length(encoded))->toEqual(String.length(string) + 1);
+});
+
+test("string optimisation for numbers", (.) => {
+  let string = "+-1234567890";
+  let encoded = encodeString(~optimizeFor=Numbers, string);
+  let decoded = read(encoded, readString(~optimizeFor=Numbers));
+  expect(decoded)->toEqual(Some(string));
+  expect(String.length(encoded))->toEqual(String.length(string) + 1);
 });
 
 test("arrays", (.) => {

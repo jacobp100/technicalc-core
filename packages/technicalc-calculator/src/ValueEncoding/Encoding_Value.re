@@ -30,7 +30,9 @@ let%private encodeReal = (real: Real_Types.t) =>
   switch (real) {
   | Rational(n, d, c) =>
     encodeUint(0) ++ encodeInt(n) ++ encodeInt(d) ++ encodeConstant(c)
-  | Decimal(f) => encodeUint(1) ++ Decimal.toString(f)->encodeString
+  | Decimal(f) =>
+    encodeUint(1)
+    ++ Decimal.toString(f)->encodeString(~optimizeFor=Numbers, _)
   };
 
 let%private readReal = reader =>
@@ -41,7 +43,7 @@ let%private readReal = reader =>
     | _ => None
     }
   | Some(1) =>
-    switch (readString(reader)) {
+    switch (readString(~optimizeFor=Numbers, reader)) {
     | Some(string) =>
       let decimal = Decimal.ofString(string)->Real_Base.ofDecimal;
       Some(decimal);

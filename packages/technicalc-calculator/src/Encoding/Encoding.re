@@ -43,6 +43,8 @@ let%private charToIndex = (character: int) => {
 };
 
 let encodeUint = value => {
+  assert(value >= 0);
+
   let rec iter = (~current="", ~flag=false, value) => {
     let power = value / 32;
     let char =
@@ -117,21 +119,41 @@ let readArray = (reader, decoder) =>
   | _ => readInvalid(reader)
   };
 
-let encodeString = string =>
+type stringOptimisation =
+  | Text
+  | Numbers;
+
+let%private charXor = x =>
+  switch (x) {
+  | Text =>
+    // Values 0-31: "defg`abclmnohijktuvwpqrs|}~xyz"
+    // The 0b100 at the bottom slightly scrambles the text
+    // This avoids having readable text showing up in the output
+    0b1100100
+  | Numbers =>
+    // Values 0-31: " !\"#$%&'()*+,-./0123456789:;<=>"
+    0b0100000
+  };
+
+let encodeString = (~optimizeFor=Text, string) => {
+  let charXor = charXor(optimizeFor);
   Belt.Array.makeByU(String.length(string), (. i) => {
-    StringUtil.charAtUnsafe(string, i)
+    StringUtil.charAtUnsafe(string, i) lxor charXor
   })
   ->encodeArray((. value) => encodeUint(value));
+};
 
-let%private readChar =
-  (. reader) =>
-    switch (readUint(reader)) {
-    | Some(char) => Some(StringUtil.ofChar(char))
-    | None => readInvalid(reader)
-    };
+let readString = (~optimizeFor=Text, reader) => {
+  let charXor = charXor(optimizeFor);
+  let readChar =
+    (. reader) =>
+      switch (readUint(reader)) {
+      | Some(char) => Some(StringUtil.ofChar(char lxor charXor))
+      | None => readInvalid(reader)
+      };
 
-let readString = reader =>
   switch (readArray(reader, readChar)) {
   | Some(charArray) => Some(StringUtil.join(charArray))
   | None => readInvalid(reader)
   };
+};
