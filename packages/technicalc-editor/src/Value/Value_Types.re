@@ -7,12 +7,12 @@ type funcitionLike =
     })
   | NLog({base: node})
   | Sum({
-      start: node,
-      end_: node,
+      from: node,
+      to_: node,
     })
   | Product({
-      start: node,
-      end_: node,
+      from: node,
+      to_: node,
     });
 
 type partialNode =

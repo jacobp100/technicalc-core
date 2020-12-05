@@ -6,67 +6,60 @@ let map = (element: foldState('a), i, i') =>
   | AST.(Superscript(_) | Label(_)) =>
     // Handled in Value.re
     assert(false)
+  | (Angle(_) | Base(_) | Conj | DecimalSeparator | Factorial | OpenBracket) as e
+  | (Operator(_) | Percent | UnitConversion(_)) as e
+  | (CloseBracket(_) | Digit(_) | Magnitude(_)) as e =>
+    Value_Types.Unresolved(e, i, i')
   | Function({func, squareResultSuperscript}) =>
     let squareResultSuperscript =
       Belt.Option.map(squareResultSuperscript, superscriptBody);
-    Value_Types.UnresolvedFunction(
+    UnresolvedFunction(
       GenericFunction({func, squareResultSuperscript}),
       i,
       i',
     );
-  | (Angle(_) | Base(_) | Conj | DecimalSeparator | Factorial | OpenBracket) as e
-  | (Operator(_) | Percent | UnitConversion(_)) as e
-  | (CloseBracket(_) | Digit(_) | Magnitude(_)) as e => Unresolved(e, i, i')
-  | ImaginaryUnit(superscript) =>
-    let superscript =
-      Belt.Option.map(superscript, superscriptBody)
-      ->Belt.Option.getWithDefault(Node.one);
-    Resolved(Node.pow(Node.i, superscript));
   | NLog({base}) => UnresolvedFunction(NLog({base: base}), i, i')
-  | Sum({start, end_}) => UnresolvedFunction(Sum({start, end_}), i, i')
-  | Product({start, end_}) =>
-    UnresolvedFunction(Product({start, end_}), i, i')
-  | Rand(superscript) => Resolved(Node.rand->withSuperscript(superscript))
+  | Sum({from, to_}) => UnresolvedFunction(Sum({from, to_}), i, i')
+  | Product({from, to_}) => UnresolvedFunction(Product({from, to_}), i, i')
+  | ImaginaryUnit(superscript) => withSuperscript(I, superscript)->Resolved
+  | Rand(superscript) => withSuperscript(Rand, superscript)->Resolved
   | RandInt({a, b, superscript}) =>
-    Resolved(Node.randInt(a, b)->withSuperscript(superscript))
-  | NPR({n, r}) => Resolved(Node.nPr(n, r))
-  | NCR({n, r}) => Resolved(Node.nCr(n, r))
-  | Differential({x, body}) => Resolved(Node.differential(x, body))
-  | Integral({a, b, body}) => Resolved(Node.integral(a, b, body))
+    withSuperscript(RandInt(a, b), superscript)->Resolved
+  | NPR({n, r}) => NPR(n, r)->Resolved
+  | NCR({n, r}) => NCR(n, r)->Resolved
+  | Differential({at, body}) => Differential({at, body})->Resolved
+  | Integral({from, to_, body}) => Integral({from, to_, body})->Resolved
   | Variable({nucleus, superscript}) =>
-    Resolved(Node.variable(nucleus)->withSuperscript(superscript))
+    withSuperscript(Variable(nucleus), superscript)->Resolved
   | CustomAtom({value, superscript}) =>
-    Resolved(Node.ofEncoded(value)->withSuperscript(superscript))
-  | ConstPi(superscript) => Node.pi->withSuperscript(superscript)->Resolved
-  | ConstE(superscript) => Node.e->withSuperscript(superscript)->Resolved
+    withSuperscript(OfEncoded(value), superscript)->Resolved
+  | ConstPi(superscript) => withSuperscript(Pi, superscript)->Resolved
+  | ConstE(superscript) => withSuperscript(E, superscript)->Resolved
   | Frac({num, den, superscript}) =>
-    Resolved(Node.div(num, den)->withSuperscript(superscript))
+    withSuperscript(Div(num, den), superscript)->Resolved
   | Min({a, b, superscript}) =>
-    Resolved(Node.min(a, b)->withSuperscript(superscript))
+    withSuperscript(Min(a, b), superscript)->Resolved
   | Max({a, b, superscript}) =>
-    Resolved(Node.max(a, b)->withSuperscript(superscript))
+    withSuperscript(Max(a, b), superscript)->Resolved
   | Gcd({a, b, superscript}) =>
-    Resolved(Node.gcd(a, b)->withSuperscript(superscript))
+    withSuperscript(Gcd(a, b), superscript)->Resolved
   | Lcm({a, b, superscript}) =>
-    Resolved(Node.lcm(a, b)->withSuperscript(superscript))
+    withSuperscript(Lcm(a, b), superscript)->Resolved
   | Abs({arg, superscript}) =>
-    Resolved(Node.abs(arg)->withSuperscript(superscript))
+    withSuperscript(Abs(arg), superscript)->Resolved
   | Floor({arg, superscript}) =>
-    Resolved(Node.floor(arg)->withSuperscript(superscript))
+    withSuperscript(Floor(arg), superscript)->Resolved
   | Ceil({arg, superscript}) =>
-    Resolved(Node.ceil(arg)->withSuperscript(superscript))
+    withSuperscript(Ceil(arg), superscript)->Resolved
   | Round({arg, superscript}) =>
-    Resolved(Node.round(arg)->withSuperscript(superscript))
+    withSuperscript(Round(arg), superscript)->Resolved
   | Sqrt({radicand, superscript}) =>
-    Resolved(Node.sqrt(radicand)->withSuperscript(superscript))
+    withSuperscript(Sqrt(radicand), superscript)->Resolved
   | NRoot({degree, radicand, superscript}) =>
-    Node.pow(radicand, Node.div(Node.one, degree))
-    ->withSuperscript(superscript)
-    ->Resolved
+    withSuperscript(Pow(radicand, Div(One, degree)), superscript)->Resolved
   | Vector({elements, superscript}) =>
-    Node.vector(elements)->withSuperscript(superscript)->Resolved
+    withSuperscript(Vector(elements), superscript)->Resolved
   | Table({elements, numRows, numColumns, superscript}) =>
-    Node.matrix(numRows, numColumns, elements)
-    ->withSuperscript(superscript)
+    withSuperscript(Matrix({numRows, numColumns, elements}), superscript)
     ->Resolved
   };

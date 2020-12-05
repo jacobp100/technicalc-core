@@ -1,4 +1,4 @@
-let%private makeSureThisIsTheLastIndex = 79;
+let%private makeSureThisIsTheLastIndex = 82;
 let%private toUint = (element: AST.t) =>
   switch (element) {
   /* Most common (make var-int encoding more efficient) */
@@ -82,7 +82,11 @@ let%private toUint = (element: AST.t) =>
   | Sum2 => 76
   | TanhS => 77
   | Vector2S => 78
-  | Vector3S => makeSureThisIsTheLastIndex
+  | Vector3S => 79
+  /* Second set additions */
+  | CosecS => 80
+  | SecS => 81
+  | CotS => makeSureThisIsTheLastIndex
   /* Custom handling */
   | UnitConversion(_)
   | CustomAtomS(_)

@@ -10,10 +10,6 @@ const files = [
     in: "src/Encoding/Encoding_BuildUnitMapping.bs",
     out: "src/Encoding/Encoding_UnitMapping.js",
   },
-  {
-    in: "src/Encoding/LegacyEncoding_BuildElementMapping.bs",
-    out: "src/Encoding/LegacyEncoding_ElementMapping.js",
-  },
 ];
 
 files.forEach((file) => {

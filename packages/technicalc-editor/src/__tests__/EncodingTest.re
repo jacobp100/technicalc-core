@@ -25,7 +25,6 @@ test("encodes and decodes", (.) => {
     }),
   |];
   let encoded = Encoding.encode(value);
-  Js.log(encoded);
   let decoded = Encoding.decode(encoded)->Belt.Option.getExn;
 
   expect(value)->toEqual(decoded);

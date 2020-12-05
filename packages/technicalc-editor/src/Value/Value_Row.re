@@ -9,10 +9,10 @@ type parseResult =
 let rec parseRest = (~current=None, elements) =>
   switch (current, elements) {
   | (Some(a), [Resolved(next), ...rest]) =>
-    parseRest(~current=Some(Node.mul(a, next)), rest)
+    parseRest(~current=Some(Node.Mul(a, next)), rest)
   | (None, [Resolved(next), ...rest]) =>
     parseRest(~current=Some(next), rest)
-  | (Some(a), [Unresolved(Percent, _, _)]) => Ok(Node.percent(a))
+  | (Some(a), [Unresolved(Percent, _, _)]) => Ok(Percent(a))
   | (_, [UnresolvedFunction(_, _, i') | Unresolved(_, _, i'), ..._]) =>
     Error(i')
   | (Some(v), []) => Ok(v)
@@ -28,13 +28,13 @@ let rec parsePostfixes = elements =>
       ...rest,
     ] =>
     parsePostfixes([
-      Resolved(Node.convert(next, fromUnits, toUnits)),
+      Resolved(Convert({body: next, fromUnits, toUnits})),
       ...rest,
     ])
   | [Resolved(next), Unresolved(Factorial, _, _), ...rest] =>
-    parsePostfixes([Resolved(Node.factorial(next)), ...rest])
+    parsePostfixes([Resolved(Factorial(next)), ...rest])
   | [Resolved(next), Unresolved(Conj, _, _), ...rest] =>
-    parsePostfixes([Resolved(Node.conj(next)), ...rest])
+    parsePostfixes([Resolved(Conj(next)), ...rest])
   | _ => next(elements)
   };
 let next = parsePostfixes;
@@ -56,13 +56,13 @@ let parseNumbers = elements => {
       let number =
         switch (Value_NumberParser.toNode(numberState), angle) {
         | (Some(number), Degree) =>
-          Some(Node.(mul(number, div(pi, ofInt(180)))))
+          Some(Node.(Mul(number, Div(Pi, OfInt(180)))))
         | (Some(number), ArcMinute) =>
-          Some(Node.(mul(number, div(pi, ofInt(10800)))))
+          Some(Mul(number, Div(Pi, OfInt(10800))))
         | (Some(number), ArcSecond) =>
-          Some(Node.(mul(number, div(pi, ofInt(648000)))))
+          Some(Mul(number, Div(Pi, OfInt(648000))))
         | (Some(number), Gradian) =>
-          Some(Node.(mul(number, div(pi, ofInt(200)))))
+          Some(Mul(number, Div(Pi, OfInt(200))))
         | (None, _) => None
         };
       switch (number, angleState, angle) {
@@ -72,7 +72,7 @@ let parseNumbers = elements => {
       | (Some(number), Some((angleAccum, ArcMinute)), ArcSecond) =>
         iter(
           Value_NumberParser.empty,
-          Some((Node.add(angleAccum, number), angle)),
+          Some((Add(angleAccum, number), angle)),
           rest,
         )
       | _ => Error(i)
@@ -94,7 +94,7 @@ let rec parseUnary = elements =>
   | [Unresolved(Operator((Add | Sub) as op), _, i'), ...rest] =>
     switch (parseUnary(rest)) {
     | Ok(root) =>
-      let root = op == Sub ? Node.neg(root) : root;
+      let root = op == Sub ? Node.Neg(root) : root;
       Ok(root);
     | Error(_) as e => e
     | UnknownError => Error(i')

@@ -1,7 +1,7 @@
 open AST;
 open Value_Types;
 
-module AST = TechniCalcCalculator.AST_Base;
+module Node = TechniCalcCalculator.AST_Types;
 
 let numberIsValidForBase = (base, nucleus) =>
   switch (base, nucleus) {
@@ -52,12 +52,12 @@ let toNode = state =>
       | Some(Hex) => 16
       | None => 10
       };
-    let out = AST.ofStringBase(base, numString);
-    let out = numSup->Belt.Option.mapWithDefault(out, AST.pow(out));
+    let out = Node.OfStringBase(base, numString);
+    let out = numSup->Belt.Option.mapWithDefaultU(out, (. x) => Pow(out, x));
     let out =
       magSup
-      ->Belt.Option.map(AST.pow(AST.ofInt(10)))
-      ->Belt.Option.mapWithDefault(out, AST.mul(out));
+      ->Belt.Option.mapU((. x) => Node.Pow(OfInt(10), x))
+      ->Belt.Option.mapWithDefaultU(out, (. x) => Mul(out, x));
     Some(out);
   };
 

@@ -37,8 +37,10 @@ type t =
   | CloseBracketS
   | ConstES
   | ConstPiS
+  | CosecS
   | CoshS
   | CosS
+  | CotS
   | ImaginaryUnitS
   | LabelS({mml: string})
   | N0_S
@@ -58,6 +60,7 @@ type t =
   | NE_S
   | NF_S
   | RandS
+  | SecS
   | SinhS
   | SinS
   | TanhS
@@ -137,8 +140,10 @@ let argCountExn = (arg: t) =>
   | CloseBracketS
   | ConstES
   | ConstPiS
+  | CosecS
   | CoshS
   | CosS
+  | CotS
   | CustomAtomS(_)
   | ImaginaryUnitS
   | LabelS(_)
@@ -159,6 +164,7 @@ let argCountExn = (arg: t) =>
   | NE_S
   | NF_S
   | RandS
+  | SecS
   | SinhS
   | SinS
   | TanhS

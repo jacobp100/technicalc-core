@@ -36,73 +36,7 @@ let sin = (x: t): t =>
   | `N => `N
   };
 
-let sinh = (x: t): t =>
-  switch (x) {
-  | `Z => zero
-  | `R(re) => Real.toDecimal(re)->Decimal.sinh->ofDecimal
-  | `I(im) => i * ofReal(im)->sin
-  | `C(_) => (exp(x) - exp(- x)) / ofInt(2)
-  | _ => `N
-  };
-
-let cos = (x: t): t =>
-  switch (x) {
-  | `Z => one
-  | `R(re) => Real.cos(re)->ofReal
-  | `I(_)
-  | `C(_) =>
-    let iX = x * i;
-    (exp(iX) + exp(- iX)) / ofInt(2);
-  | `V(_)
-  | `M(_)
-  | `P(_)
-  | `N => `N
-  };
-
-let cosh = (x: t): t =>
-  switch (x) {
-  | `Z => one
-  | `R(re) => Real.toDecimal(re)->Decimal.cosh->ofDecimal
-  | `I(im) => ofReal(im)->cos
-  | `C(_) => (exp(x) + exp(- x)) / ofInt(2)
-  | _ => `N
-  };
-
-let tan = (x: t): t =>
-  switch (mapReal(x, Real.mod2Pi)) {
-  | `Z
-  | `R(Rational(1 | 2, 1, Pi)) => zero
-  | `R(Rational(1 | 5, 4, Pi)) => one
-  | `R(Rational(3 | 7, 4, Pi)) => minusOne
-  | `R(Rational(1 | 4, 3, Pi)) => `R(Real.ofRational(1, 1, Sqrt(3)))
-  | `R(Rational(2 | 5, 3, Pi)) => `R(Real.ofRational(-1, 1, Sqrt(3)))
-  | `R(Rational(1 | 7, 6, Pi)) => `R(Real.ofRational(1, 3, Sqrt(3)))
-  | `R(Rational(5 | 11, 6, Pi)) => `R(Real.ofRational(-1, 3, Sqrt(3)))
-  | `R(Rational(1 | 3, 2, Pi)) => `N
-  | `R(_) => mapRealDecimal(x, Decimal.tan)
-  | `I(_)
-  | `C(_) =>
-    let iX = x * i;
-    let a = exp(iX);
-    let b = exp(- iX);
-    (a - b) / ((a + b) * i);
-  | `M(_)
-  | `V(_)
-  | `P(_)
-  | `N => `N
-  };
-
-let tanh = (x: t): t =>
-  switch (x) {
-  | `Z => zero
-  | `R(re) => Real.toDecimal(re)->Decimal.tanh->ofDecimal
-  | `I(im) => i * ofReal(im)->tan
-  | `C(_) =>
-    let a = exp(x);
-    let b = exp(- x);
-    (a - b) / (a + b);
-  | _ => `N
-  };
+let cosec = a => Value_Core.(div(one, sin(a)));
 
 let asin = (a: t): t =>
   switch (mapReal(a, Real.mod2Pi)) {
@@ -134,6 +68,15 @@ let asin = (a: t): t =>
   | `N => `N
   };
 
+let sinh = (x: t): t =>
+  switch (x) {
+  | `Z => zero
+  | `R(re) => Real.toDecimal(re)->Decimal.sinh->ofDecimal
+  | `I(im) => i * ofReal(im)->sin
+  | `C(_) => (exp(x) - exp(- x)) / ofInt(2)
+  | _ => `N
+  };
+
 let asinh = (x: t): t =>
   switch (x) {
   | `Z => zero
@@ -142,6 +85,22 @@ let asinh = (x: t): t =>
   | `C(_) => log(x + sqrt(x * x + one))
   | _ => `N
   };
+
+let cos = (x: t): t =>
+  switch (x) {
+  | `Z => one
+  | `R(re) => Real.cos(re)->ofReal
+  | `I(_)
+  | `C(_) =>
+    let iX = x * i;
+    (exp(iX) + exp(- iX)) / ofInt(2);
+  | `V(_)
+  | `M(_)
+  | `P(_)
+  | `N => `N
+  };
+
+let sec = a => Value_Core.(div(one, cos(a)));
 
 let acos = (a: t): t =>
   switch (mapReal(a, Real.mod2Pi)) {
@@ -173,6 +132,15 @@ let acos = (a: t): t =>
   | `N => `N
   };
 
+let cosh = (x: t): t =>
+  switch (x) {
+  | `Z => one
+  | `R(re) => Real.toDecimal(re)->Decimal.cosh->ofDecimal
+  | `I(im) => ofReal(im)->cos
+  | `C(_) => (exp(x) + exp(- x)) / ofInt(2)
+  | _ => `N
+  };
+
 let acosh = (x: t): t =>
   switch (realBounds(~lower=Decimal.one, x)) {
   | `Inside(f) => Decimal.acosh(f)->ofDecimal
@@ -200,6 +168,32 @@ let acosh = (x: t): t =>
     };
   | `N => `N
   };
+
+let tan = (x: t): t =>
+  switch (mapReal(x, Real.mod2Pi)) {
+  | `Z
+  | `R(Rational(1 | 2, 1, Pi)) => zero
+  | `R(Rational(1 | 5, 4, Pi)) => one
+  | `R(Rational(3 | 7, 4, Pi)) => minusOne
+  | `R(Rational(1 | 4, 3, Pi)) => `R(Real.ofRational(1, 1, Sqrt(3)))
+  | `R(Rational(2 | 5, 3, Pi)) => `R(Real.ofRational(-1, 1, Sqrt(3)))
+  | `R(Rational(1 | 7, 6, Pi)) => `R(Real.ofRational(1, 3, Sqrt(3)))
+  | `R(Rational(5 | 11, 6, Pi)) => `R(Real.ofRational(-1, 3, Sqrt(3)))
+  | `R(Rational(1 | 3, 2, Pi)) => `N
+  | `R(_) => mapRealDecimal(x, Decimal.tan)
+  | `I(_)
+  | `C(_) =>
+    let iX = x * i;
+    let a = exp(iX);
+    let b = exp(- iX);
+    (a - b) / ((a + b) * i);
+  | `M(_)
+  | `V(_)
+  | `P(_)
+  | `N => `N
+  };
+
+let cot = a => Value_Core.(div(one, tan(a)));
 
 let atan = (a: t): t =>
   switch (mapReal(a, Real.mod2Pi)) {
@@ -238,6 +232,18 @@ let atan = (a: t): t =>
   | `V(_)
   | `P(_)
   | `N => `N
+  };
+
+let tanh = (x: t): t =>
+  switch (x) {
+  | `Z => zero
+  | `R(re) => Real.toDecimal(re)->Decimal.tanh->ofDecimal
+  | `I(im) => i * ofReal(im)->tan
+  | `C(_) =>
+    let a = exp(x);
+    let b = exp(- x);
+    (a - b) / (a + b);
+  | _ => `N
   };
 
 let atanh = (x: t): t =>

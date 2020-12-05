@@ -189,7 +189,7 @@ let reduce = (accum, element: foldState(string), range) =>
     func2("lcm", a, b, superscript, range)->Mml_Accum.append(accum, _)
   | NPR({n, r}) => nprNcr("P", n, r, range)->Mml_Accum.append(accum, _)
   | NCR({n, r}) => nprNcr("C", n, r, range)->Mml_Accum.append(accum, _)
-  | Differential({body, x}) =>
+  | Differential({at, body}) =>
     let pre =
       createElement(
         "mfrac",
@@ -200,20 +200,23 @@ let reduce = (accum, element: foldState(string), range) =>
       createElement(
         ~attributes=[("align", "left")],
         "munder",
-        createElement("mo", "|") ++ xSetRow(x),
+        createElement("mo", "|") ++ xSetRow(at),
       );
     elementWithRange("mrow", range, pre ++ body ++ post)
     ->Mml_Accum.append(accum, _);
-  | Integral({a, b, body}) =>
+  | Integral({from, to_, body}) =>
     let pre =
-      createElement("msubsup", createElement("mo", "&#x222B;") ++ a ++ b);
+      createElement(
+        "msubsup",
+        createElement("mo", "&#x222B;") ++ from ++ to_,
+      );
     let post = createElement("mi", "dx");
     elementWithRange("mrow", range, pre ++ body ++ post)
     ->Mml_Accum.append(accum, _);
-  | Sum({start, end_}) =>
-    sumProduct("&#x2211;", start, end_, range)->Mml_Accum.append(accum, _)
-  | Product({start, end_}) =>
-    sumProduct("&#x220F;", start, end_, range)->Mml_Accum.append(accum, _)
+  | Sum({from, to_}) =>
+    sumProduct("&#x2211;", from, to_, range)->Mml_Accum.append(accum, _)
+  | Product({from, to_}) =>
+    sumProduct("&#x220F;", from, to_, range)->Mml_Accum.append(accum, _)
   | Vector({elements, superscript}) =>
     let numRows = Belt.Array.length(elements);
     table(~numRows, ~numColumns=1, elements, superscript, range)

@@ -1,17 +1,28 @@
+module AST = {
+  let ofInt = x => AST_Types.OfInt(x);
+  let add = (x, y) => AST_Types.Add(x, y);
+  let sub = (x, y) => AST_Types.Sub(x, y);
+  let mul = (x, y) => AST_Types.Mul(x, y);
+  let div = (x, y) => AST_Types.Div(x, y);
+  let pow = (x, y) => AST_Types.Pow(x, y);
+  let sin = x => AST_Types.Sin(x);
+  let variable = x => AST_Types.Variable(x);
+};
+
 let matrixOfFloats = (numRows, numColumns, elements) =>
   Belt.Array.map(elements, Scalar.ofFloat)
   ->Matrix.make(numRows, numColumns, _)
   ->Value.ofMatrix;
 let percentOfFloat = float => Scalar.ofFloat(float)->Value.ofPercent;
 
-let resolve = a => AST.eval(a);
+let resolve = a => AST_Evaluation.eval(a);
 let resolveWithContext = (jsContext, a) => {
   let context =
     Js.Dict.entries(jsContext)
     ->Belt.Array.reduce(Belt.Map.String.empty, (accum, (key, value)) =>
         Belt.Map.String.set(accum, key, value)
       );
-  AST.eval(~context, a);
+  AST_Evaluation.eval(~context, a);
 };
 
 [@bs.deriving abstract]

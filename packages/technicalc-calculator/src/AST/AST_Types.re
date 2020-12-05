@@ -36,14 +36,17 @@ type t =
   | Log(t)
   | Sin(t)
   | Asin(t)
+  | Cosec(t)
   | Sinh(t)
   | Asinh(t)
   | Cos(t)
   | Acos(t)
+  | Sec(t)
   | Cosh(t)
   | Acosh(t)
   | Tan(t)
   | Atan(t)
+  | Cot(t)
   | Tanh(t)
   | Atanh(t)
   | Re(t)
@@ -60,26 +63,26 @@ type t =
   | Gcd(t, t)
   | Lcm(t, t)
   | Differential({
-      x: t,
+      at: t,
       body: t,
     })
   | Integral({
-      a: t,
-      b: t,
+      from: t,
+      to_: t,
       body: t,
     })
   | Sum({
-      a: t,
-      b: t,
+      from: t,
+      to_: t,
       body: t,
     })
   | Product({
-      a: t,
-      b: t,
+      from: t,
+      to_: t,
       body: t,
     })
   | Convert({
-      a: t,
+      body: t,
       toUnits: array(Unit_Types.unitPower),
       fromUnits: array(Unit_Types.unitPower),
     });

@@ -26,13 +26,13 @@ let parse = (elements: array(t)) => {
       | Ok(root) => root
       | Error(i) =>
         error := Some(i);
-        Node.nan;
+        Node.NaN;
       | UnknownError =>
         error := Some(i);
-        Node.nan;
+        NaN;
       };
     } else {
-      Node.nan;
+      NaN;
     };
 
   let root =

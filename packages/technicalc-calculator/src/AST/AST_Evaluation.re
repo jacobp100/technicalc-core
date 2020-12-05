@@ -43,14 +43,17 @@ let rec eval = (~context, node: t): Value.t =>
   | Log(a) => Value.log(eval(~context, a))
   | Sin(a) => Value.sin(eval(~context, a))
   | Asin(a) => Value.asin(eval(~context, a))
+  | Cosec(a) => Value.cosec(eval(~context, a))
   | Sinh(a) => Value.sinh(eval(~context, a))
   | Asinh(a) => Value.asinh(eval(~context, a))
   | Cos(a) => Value.cos(eval(~context, a))
   | Acos(a) => Value.acos(eval(~context, a))
+  | Sec(a) => Value.sec(eval(~context, a))
   | Cosh(a) => Value.cosh(eval(~context, a))
   | Acosh(a) => Value.acosh(eval(~context, a))
   | Tan(a) => Value.tan(eval(~context, a))
   | Atan(a) => Value.atan(eval(~context, a))
+  | Cot(a) => Value.cot(eval(~context, a))
   | Tanh(a) => Value.tanh(eval(~context, a))
   | Atanh(a) => Value.atanh(eval(~context, a))
   | Re(a) => Value.re(eval(~context, a))
@@ -66,28 +69,28 @@ let rec eval = (~context, node: t): Value.t =>
   | Max(a, b) => Value.max(eval(~context, a), eval(~context, b))
   | Gcd(a, b) => Value.gcd(eval(~context, a), eval(~context, b))
   | Lcm(a, b) => Value.lcm(eval(~context, a), eval(~context, b))
-  | Differential({x, body}) =>
-    Value.derivative(createEvalCb(~context, body), eval(~context, x))
-  | Integral({a, b, body}) =>
+  | Differential({at, body}) =>
+    Value.derivative(createEvalCb(~context, body), eval(~context, at))
+  | Integral({from, to_, body}) =>
     Value.integrate(
       createEvalCb(~context, body),
-      eval(~context, a),
-      eval(~context, b),
+      eval(~context, from),
+      eval(~context, to_),
     )
-  | Sum({a, b, body}) =>
+  | Sum({from, to_, body}) =>
     Value.sum(
       createEvalCb(~context, body),
-      eval(~context, a),
-      eval(~context, b),
+      eval(~context, from),
+      eval(~context, to_),
     )
-  | Product({a, b, body}) =>
+  | Product({from, to_, body}) =>
     Value.product(
       createEvalCb(~context, body),
-      eval(~context, a),
-      eval(~context, b),
+      eval(~context, from),
+      eval(~context, to_),
     )
-  | Convert({a, fromUnits, toUnits}) =>
-    Units.convert(eval(~context, a), ~fromUnits, ~toUnits)
+  | Convert({body, fromUnits, toUnits}) =>
+    Units.convert(eval(~context, body), ~fromUnits, ~toUnits)
   }
 and createEvalCb = (~context, body, x) =>
   eval(~context=Belt.Map.String.set(context, "x", x), body)

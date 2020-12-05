@@ -16,11 +16,6 @@ type format = {
   decimalMaxMagnitude: int,
 };
 
-module Migration = {
-  let decodeValue = Migration.Value_Encoding.decode;
-  let decodeElements = Migration.Encoding.decode;
-};
-
 module Elements = {
   open TechniCalcEditor;
 

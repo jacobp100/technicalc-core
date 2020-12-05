@@ -10,22 +10,26 @@ type base =
   | Oct
   | Hex;
 type func =
-  | Sin
-  | Asin
-  | Sinh
-  | Asinh
-  | Cos
   | Acos
-  | Cosh
   | Acosh
-  | Tan
+  | Asin
+  | Asinh
   | Atan
-  | Tanh
   | Atanh
+  | Gamma
+  | Im
   | Log
   | Re
-  | Im
-  | Gamma;
+  /* Superscripts supported */
+  | Cos
+  | Cosec
+  | Cosh
+  | Cot
+  | Sec
+  | Sin
+  | Sinh
+  | Tan
+  | Tanh;
 type angle =
   | Degree
   | ArcMinute
@@ -60,7 +64,7 @@ type foldState('a) =
     })
   | DecimalSeparator
   | Differential({
-      x: 'a,
+      at: 'a,
       body: 'a,
     })
   | Digit({
@@ -88,8 +92,8 @@ type foldState('a) =
     })
   | ImaginaryUnit(option(superscript('a)))
   | Integral({
-      a: 'a,
-      b: 'a,
+      from: 'a,
+      to_: 'a,
       body: 'a,
     })
   | Label({
@@ -130,8 +134,8 @@ type foldState('a) =
   | Operator(operator)
   | Percent
   | Product({
-      start: 'a,
-      end_: 'a,
+      from: 'a,
+      to_: 'a,
     })
   | Rand(option(superscript('a)))
   | RandInt({
@@ -148,8 +152,8 @@ type foldState('a) =
       superscript: option(superscript('a)),
     })
   | Sum({
-      start: 'a,
-      end_: 'a,
+      from: 'a,
+      to_: 'a,
     })
   | Superscript('a)
   | Vector({
@@ -222,22 +226,25 @@ let reduceMap =
     | Mul => (Operator(Mul), i + 1)
     | Div => (Operator(Div), i + 1)
     | Dot => (Operator(Dot), i + 1)
-    | Asin => func(i, Asin)
-    | Asinh => func(i, Asinh)
     | Acos => func(i, Acos)
     | Acosh => func(i, Acosh)
+    | Asin => func(i, Asin)
+    | Asinh => func(i, Asinh)
     | Atan => func(i, Atan)
     | Atanh => func(i, Atanh)
+    | Gamma => func(i, Gamma)
+    | Im => func(i, Im)
     | Log => func(i, Log)
     | Re => func(i, Re)
-    | Im => func(i, Im)
-    | SinS => funcS(i, Sin)
-    | SinhS => funcS(i, Sinh)
-    | CosS => funcS(i, Cos)
     | CoshS => funcS(i, Cosh)
-    | TanS => funcS(i, Tan)
+    | CosS => funcS(i, Cos)
+    | SinhS => funcS(i, Sinh)
+    | SinS => funcS(i, Sin)
     | TanhS => funcS(i, Tanh)
-    | Gamma => funcS(i, Gamma)
+    | TanS => funcS(i, Tan)
+    | CosecS => funcS(i, Cosec)
+    | SecS => funcS(i, Sec)
+    | CotS => funcS(i, Cot)
     | Degree => (Angle(Degree), i + 1)
     | ArcMinute => (Angle(ArcMinute), i + 1)
     | ArcSecond => (Angle(ArcSecond), i + 1)
@@ -315,8 +322,8 @@ let reduceMap =
       (Sqrt({radicand, superscript}), i');
     | Differential2 =>
       let (body, i') = readArg(i + 1);
-      let (x, i') = readArg(i');
-      (Differential({x, body}), i');
+      let (at, i') = readArg(i');
+      (Differential({at, body}), i');
     | NCR2 =>
       let (n, i') = readArg(i + 1);
       let (r, i') = readArg(i');
@@ -326,13 +333,13 @@ let reduceMap =
       let (r, i') = readArg(i');
       (NPR({n, r}), i');
     | Product2 =>
-      let (start, i') = readArg(i + 1);
-      let (end_, i') = readArg(i');
-      (Product({start, end_}), i');
+      let (from, i') = readArg(i + 1);
+      let (to_, i') = readArg(i');
+      (Product({from, to_}), i');
     | Sum2 =>
-      let (start, i') = readArg(i + 1);
-      let (end_, i') = readArg(i');
-      (Sum({start, end_}), i');
+      let (from, i') = readArg(i + 1);
+      let (to_, i') = readArg(i');
+      (Sum({from, to_}), i');
     | Frac2S =>
       let (num, i') = readArg(i + 1);
       let (den, i') = readArg(i');
@@ -369,10 +376,10 @@ let reduceMap =
       let (superscript, i') = readSuperscript(i');
       (RandInt({a, b, superscript}), i');
     | Integral3 =>
-      let (a, i') = readArg(i + 1);
-      let (b, i') = readArg(i');
+      let (from, i') = readArg(i + 1);
+      let (to_, i') = readArg(i');
       let (body, i') = readArg(i');
-      (Integral({a, b, body}), i');
+      (Integral({from, to_, body}), i');
     | Vector2S => vectorS(i, ~numElements=2)
     | Vector3S => vectorS(i, ~numElements=3)
     | Matrix4S => tableS(i, ~numRows=2, ~numColumns=2)
