@@ -5,8 +5,8 @@ type t =
   | Acos
   | Acosh
   | Add
-  | ArcMinute
-  | ArcSecond
+  | ArcMinuteUnit
+  | ArcSecondUnit
   | Asin
   | Asinh
   | Atan
@@ -14,12 +14,14 @@ type t =
   | Bin
   | Conj
   | DecimalSeparator
-  | Degree
+  | DegreeFunction
+  | DegreeUnit
   | Div
   | Dot
   | Factorial
   | Gamma
-  | Gradian
+  | GradianFunction
+  | GradianUnit
   | Hex
   | Im
   | Log
@@ -111,8 +113,8 @@ let argCountExn = (arg: t) =>
   | Acos
   | Acosh
   | Add
-  | ArcMinute
-  | ArcSecond
+  | ArcMinuteUnit
+  | ArcSecondUnit
   | Asin
   | Asinh
   | Atan
@@ -120,12 +122,14 @@ let argCountExn = (arg: t) =>
   | Bin
   | Conj
   | DecimalSeparator
-  | Degree
+  | DegreeFunction
+  | DegreeUnit
   | Div
   | Dot
   | Factorial
   | Gamma
-  | Gradian
+  | GradianFunction
+  | GradianUnit
   | Hex
   | Im
   | Log

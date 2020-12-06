@@ -16,7 +16,9 @@ type func =
   | Asinh
   | Atan
   | Atanh
+  | Deg
   | Gamma
+  | Grad
   | Im
   | Log
   | Re
@@ -232,7 +234,9 @@ let reduceMap =
     | Asinh => func(i, Asinh)
     | Atan => func(i, Atan)
     | Atanh => func(i, Atanh)
+    | DegreeFunction => func(i, Deg)
     | Gamma => func(i, Gamma)
+    | GradianFunction => func(i, Grad)
     | Im => func(i, Im)
     | Log => func(i, Log)
     | Re => func(i, Re)
@@ -245,10 +249,10 @@ let reduceMap =
     | CosecS => funcS(i, Cosec)
     | SecS => funcS(i, Sec)
     | CotS => funcS(i, Cot)
-    | Degree => (Angle(Degree), i + 1)
-    | ArcMinute => (Angle(ArcMinute), i + 1)
-    | ArcSecond => (Angle(ArcSecond), i + 1)
-    | Gradian => (Angle(Gradian), i + 1)
+    | DegreeUnit => (Angle(Degree), i + 1)
+    | ArcMinuteUnit => (Angle(ArcMinute), i + 1)
+    | ArcSecondUnit => (Angle(ArcSecond), i + 1)
+    | GradianUnit => (Angle(Gradian), i + 1)
     | UnitConversion({fromUnits, toUnits}) => (
         UnitConversion({fromUnits, toUnits}),
         i + 1,

@@ -49,6 +49,8 @@ type t =
   | Cot(t)
   | Tanh(t)
   | Atanh(t)
+  | Deg(t)
+  | Grad(t)
   | Re(t)
   | Im(t)
   | Conj(t)

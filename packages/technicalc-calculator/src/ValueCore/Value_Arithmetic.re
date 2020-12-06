@@ -3,6 +3,15 @@ open Value_Base;
 
 let%private hundredS: Scalar.t = `R(Real.ofInt(100));
 
+let neg = (a: t) =>
+  switch (a) {
+  | #Scalar.t as s => Scalar.neg(s)->ofScalar
+  | `P(p) => Scalar.neg(p)->ofPercent
+  | `V(v) => Vector.neg(v)->ofVector
+  | `M(m) => Matrix.neg(m)->ofMatrix
+  | `N => `N
+  };
+
 let add = (a: t, b: t) =>
   switch (a, b) {
   | (#Scalar.t as aS, #Scalar.t as bS) => Scalar.add(aS, bS)->ofScalar

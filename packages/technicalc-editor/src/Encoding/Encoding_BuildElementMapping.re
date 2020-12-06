@@ -1,4 +1,4 @@
-let%private makeSureThisIsTheLastIndex = 82;
+let%private makeSureThisIsTheLastIndex = 84;
 let%private toUint = (element: AST.t) =>
   switch (element) {
   /* Most common (make var-int encoding more efficient) */
@@ -33,12 +33,12 @@ let%private toUint = (element: AST.t) =>
   | Atan => 28
   | ConstES => 29
   | ConstPiS => 30
-  | Degree => 31
+  | DegreeUnit => 31
   /* Any order */
   | Abs1S => 32
   | Acosh => 33
-  | ArcMinute => 34
-  | ArcSecond => 35
+  | ArcMinuteUnit => 34
+  | ArcSecondUnit => 35
   | Asinh => 36
   | Atanh => 37
   | Bin => 38
@@ -51,7 +51,7 @@ let%private toUint = (element: AST.t) =>
   | Floor1S => 45
   | Gamma => 46
   | Gcd2S => 47
-  | Gradian => 48
+  | GradianUnit => 48
   | Hex => 49
   | Im => 50
   | ImaginaryUnitS => 51
@@ -86,7 +86,9 @@ let%private toUint = (element: AST.t) =>
   /* Second set additions */
   | CosecS => 80
   | SecS => 81
-  | CotS => makeSureThisIsTheLastIndex
+  | CotS => 82
+  | DegreeFunction => 83
+  | GradianFunction => makeSureThisIsTheLastIndex
   /* Custom handling */
   | UnitConversion(_)
   | CustomAtomS(_)

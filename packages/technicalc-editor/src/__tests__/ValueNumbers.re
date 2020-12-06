@@ -103,25 +103,31 @@ test("angles", (.) => {
   let mul = TechniCalcCalculator.Value.mul;
   let div = TechniCalcCalculator.Value.div;
 
-  parseEval([|N1_S, Degree|])->expect->toEqual(Some(div(pi, ofInt(180))));
+  parseEval([|N1_S, DegreeUnit|])
+  ->expect
+  ->toEqual(Some(div(pi, ofInt(180))));
 
-  parseEval([|N1_S, ArcMinute|])
+  parseEval([|N1_S, ArcMinuteUnit|])
   ->expect
   ->toEqual(Some(div(pi, ofInt(180 * 60))));
 
-  parseEval([|N1_S, ArcSecond|])
+  parseEval([|N1_S, ArcSecondUnit|])
   ->expect
   ->toEqual(Some(div(pi, ofInt(180 * 60 * 60))));
 
-  parseEval([|N1_S, Degree|])->expect->toEqual(Some(div(pi, ofInt(180))));
+  parseEval([|N1_S, DegreeUnit|])
+  ->expect
+  ->toEqual(Some(div(pi, ofInt(180))));
 
-  parseEval([|N1_S, Degree, N1_S, ArcMinute|])
+  parseEval([|N1_S, DegreeUnit, N1_S, ArcMinuteUnit|])
   ->expect
   ->toEqual(Some(div(mul(ofInt(61), pi), ofInt(180 * 60))));
 
-  parseEval([|N1_S, ArcMinute, N1_S, Degree|])->expect->toEqual(None);
+  parseEval([|N1_S, ArcMinuteUnit, N1_S, DegreeUnit|])
+  ->expect
+  ->toEqual(None);
 
-  parseEval([|N1_S, Degree, N1_S, Degree|])->expect->toEqual(None);
+  parseEval([|N1_S, DegreeUnit, N1_S, DegreeUnit|])->expect->toEqual(None);
 
-  parseEval([|N1_S, Degree, N1_S|])->expect->toEqual(None);
+  parseEval([|N1_S, DegreeUnit, N1_S|])->expect->toEqual(None);
 });

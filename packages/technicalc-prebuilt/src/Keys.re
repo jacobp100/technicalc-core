@@ -4,92 +4,94 @@ type key =
   | One(t)
   | Many(array(t));
 
-let keys: Js.Dict.t(key) = Js.Dict.empty();
-
-keys->Js.Dict.set("0", One(N0_S));
-keys->Js.Dict.set("1", One(N1_S));
-keys->Js.Dict.set("2", One(N2_S));
-keys->Js.Dict.set("3", One(N3_S));
-keys->Js.Dict.set("4", One(N4_S));
-keys->Js.Dict.set("5", One(N5_S));
-keys->Js.Dict.set("6", One(N6_S));
-keys->Js.Dict.set("7", One(N7_S));
-keys->Js.Dict.set("8", One(N8_S));
-keys->Js.Dict.set("9", One(N9_S));
-keys->Js.Dict.set("A", One(NA_S));
-keys->Js.Dict.set("B", One(NB_S));
-keys->Js.Dict.set("C", One(NC_S));
-keys->Js.Dict.set("D", One(ND_S));
-keys->Js.Dict.set("E", One(NE_S));
-keys->Js.Dict.set("F", One(NF_S));
-keys->Js.Dict.set(".", One(DecimalSeparator));
-keys->Js.Dict.set("+", One(Add));
-keys->Js.Dict.set("-", One(Sub));
-keys->Js.Dict.set("*", One(Mul));
-keys->Js.Dict.set("/", One(Div));
-keys->Js.Dict.set("%", One(Percent));
-keys->Js.Dict.set("_", One(Frac2S));
-keys->Js.Dict.set("^", One(Superscript1));
-keys->Js.Dict.set("!", One(Factorial));
-keys->Js.Dict.set("(", One(OpenBracket));
-keys->Js.Dict.set(")", One(CloseBracketS));
-keys->Js.Dict.set("base2", One(Bin));
-keys->Js.Dict.set("base8", One(Oct));
-keys->Js.Dict.set("base16", One(Hex));
-keys->Js.Dict.set("sqrt", One(Sqrt1S));
-keys->Js.Dict.set("cuberoot", Many([|NRoot2S, N3_S, Arg, Arg|]));
-keys->Js.Dict.set("nroot", One(NRoot2S));
-keys->Js.Dict.set("abs", One(Abs1S));
-keys->Js.Dict.set("floor", One(Floor1S));
-keys->Js.Dict.set("ceil", One(Ceil1S));
-keys->Js.Dict.set("round", One(Round1S));
-keys->Js.Dict.set("log", One(Log));
-keys->Js.Dict.set("log2", Many([|NLog1, N2_S, Arg|]));
-keys->Js.Dict.set("log10", Many([|NLog1, N1_S, N0_S, Arg|]));
-keys->Js.Dict.set("logn", One(NLog1));
-keys->Js.Dict.set("sin", One(SinS));
-keys->Js.Dict.set("asin", One(Asin));
-keys->Js.Dict.set("cosec", One(CosecS));
-keys->Js.Dict.set("sinh", One(SinhS));
-keys->Js.Dict.set("asinh", One(Asinh));
-keys->Js.Dict.set("cos", One(CosS));
-keys->Js.Dict.set("acos", One(Acos));
-keys->Js.Dict.set("sec", One(SecS));
-keys->Js.Dict.set("cosh", One(CoshS));
-keys->Js.Dict.set("acosh", One(Acosh));
-keys->Js.Dict.set("tan", One(TanS));
-keys->Js.Dict.set("atan", One(Atan));
-keys->Js.Dict.set("cot", One(CotS));
-keys->Js.Dict.set("tanh", One(TanhS));
-keys->Js.Dict.set("atanh", One(Atanh));
-keys->Js.Dict.set("i", One(ImaginaryUnitS));
-keys->Js.Dict.set("x", One(VariableS("x")));
-keys->Js.Dict.set("pi", One(ConstPiS));
-keys->Js.Dict.set("e", One(ConstES));
-keys->Js.Dict.set("ans", One(VariableS("Ans")));
-keys->Js.Dict.set("re", One(Re));
-keys->Js.Dict.set("im", One(Im));
-keys->Js.Dict.set("conj", One(Conj));
-keys->Js.Dict.set("gamma", One(Gamma));
-keys->Js.Dict.set("rand", One(RandS));
-keys->Js.Dict.set("randint", One(RandInt2S));
-keys->Js.Dict.set("npr", One(NPR2));
-keys->Js.Dict.set("ncr", One(NCR2));
-keys->Js.Dict.set("min", One(Min2S));
-keys->Js.Dict.set("max", One(Max2S));
-keys->Js.Dict.set("gcd", One(Gcd2S));
-keys->Js.Dict.set("lcm", One(Lcm2S));
-keys->Js.Dict.set("differential", One(Differential2));
-keys->Js.Dict.set("integral", One(Integral3));
-keys->Js.Dict.set("sum", One(Sum2));
-keys->Js.Dict.set("product", One(Product2));
-keys->Js.Dict.set("dot", One(Dot));
-keys->Js.Dict.set("magnitude", One(Magnitude1));
-keys->Js.Dict.set("degree", One(Degree));
-keys->Js.Dict.set("arcminute", One(ArcMinute));
-keys->Js.Dict.set("arcsecond", One(ArcSecond));
-keys->Js.Dict.set("gradian", One(Gradian));
-keys->Js.Dict.set("vec2", One(Vector2S));
-keys->Js.Dict.set("vec3", One(Vector3S));
-keys->Js.Dict.set("mat2", One(Matrix4S));
-keys->Js.Dict.set("mat3", One(Matrix9S));
+let keys = {
+  "0": One(N0_S),
+  "1": One(N1_S),
+  "2": One(N2_S),
+  "3": One(N3_S),
+  "4": One(N4_S),
+  "5": One(N5_S),
+  "6": One(N6_S),
+  "7": One(N7_S),
+  "8": One(N8_S),
+  "9": One(N9_S),
+  "A": One(NA_S),
+  "B": One(NB_S),
+  "C": One(NC_S),
+  "D": One(ND_S),
+  "E": One(NE_S),
+  "F": One(NF_S),
+  ".": One(DecimalSeparator),
+  "+": One(Add),
+  "-": One(Sub),
+  "*": One(Mul),
+  "/": One(Div),
+  "%": One(Percent),
+  "_": One(Frac2S),
+  "^": One(Superscript1),
+  "!": One(Factorial),
+  "(": One(OpenBracket),
+  ")": One(CloseBracketS),
+  "base2": One(Bin),
+  "base8": One(Oct),
+  "base16": One(Hex),
+  "sqrt": One(Sqrt1S),
+  "cuberoot": Many([|NRoot2S, N3_S, Arg, Arg|]),
+  "nroot": One(NRoot2S),
+  "abs": One(Abs1S),
+  "floor": One(Floor1S),
+  "ceil": One(Ceil1S),
+  "round": One(Round1S),
+  "log": One(Log),
+  "log2": Many([|NLog1, N2_S, Arg|]),
+  "log10": Many([|NLog1, N1_S, N0_S, Arg|]),
+  "logn": One(NLog1),
+  "sin": One(SinS),
+  "asin": One(Asin),
+  "cosec": One(CosecS),
+  "sinh": One(SinhS),
+  "asinh": One(Asinh),
+  "cos": One(CosS),
+  "acos": One(Acos),
+  "sec": One(SecS),
+  "cosh": One(CoshS),
+  "acosh": One(Acosh),
+  "tan": One(TanS),
+  "atan": One(Atan),
+  "cot": One(CotS),
+  "tanh": One(TanhS),
+  "atanh": One(Atanh),
+  "i": One(ImaginaryUnitS),
+  "x": One(VariableS("x")),
+  "pi": One(ConstPiS),
+  "e": One(ConstES),
+  "ans": One(VariableS("Ans")),
+  "re": One(Re),
+  "im": One(Im),
+  "conj": One(Conj),
+  "gamma": One(Gamma),
+  "rand": One(RandS),
+  "randint": One(RandInt2S),
+  "npr": One(NPR2),
+  "ncr": One(NCR2),
+  "min": One(Min2S),
+  "max": One(Max2S),
+  "gcd": One(Gcd2S),
+  "lcm": One(Lcm2S),
+  "differential": One(Differential2),
+  "integral": One(Integral3),
+  "sum": One(Sum2),
+  "product": One(Product2),
+  "dot": One(Dot),
+  "magnitude": One(Magnitude1),
+  "degrees": One(DegreeUnit),
+  "arcminutes": One(ArcMinuteUnit),
+  "arcseconds": One(ArcSecondUnit),
+  "gradians": One(GradianUnit),
+  "deg": One(DegreeFunction),
+  "grad": One(GradianFunction),
+  "vec2": One(Vector2S),
+  "vec3": One(Vector3S),
+  "mat2": One(Matrix4S),
+  "mat3": One(Matrix9S),
+};

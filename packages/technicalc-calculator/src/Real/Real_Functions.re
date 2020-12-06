@@ -1,6 +1,19 @@
 open Real_Types;
 open Real_Base;
 
+let%private ofDecimalInt = f =>
+  switch (Decimal.toFloat(f)->FloatUtil.intValue) {
+  | Some(intVal) => ofRational(intVal, 1, Unit)
+  | None => ofDecimal(f)
+  };
+
+let round = a => toDecimal(a)->Decimal.round->ofDecimalInt;
+let floor = a => toDecimal(a)->Decimal.floor->ofDecimalInt;
+let ceil = a => toDecimal(a)->Decimal.ceil->ofDecimalInt;
+
+let deg = a => Real_Arithmetic.div(a, Rational(1, 180, Pi));
+let grad = a => Real_Arithmetic.div(a, Rational(1, 200, Pi));
+
 let max = (a: t, b: t): t => gte(a, b) ? a : b;
 let min = (a: t, b: t): t => lte(a, b) ? a : b;
 

@@ -24,6 +24,8 @@ let stringOfFunction = x =>
   | Cot => "cot"
   | Tanh => "tanh"
   | Atanh => "arctanh"
+  | Deg => "deg"
+  | Grad => "grad"
   | Log => "log"
   | Re => "re"
   | Im => "im"

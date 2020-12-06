@@ -23,6 +23,8 @@ let handleGenericFunction = (arg, fn) =>
   | Cot => Cot(arg)
   | Tanh => Tanh(arg)
   | Atanh => Atanh(arg)
+  | Deg => Deg(arg)
+  | Grad => Grad(arg)
   | Log => Log(arg)
   | Re => Re(arg)
   | Im => Im(arg)

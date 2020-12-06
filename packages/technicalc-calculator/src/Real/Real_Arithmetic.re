@@ -47,16 +47,6 @@ let abs = a =>
   | Decimal(f) => ofDecimal(Decimal.abs(f))
   };
 
-let%private ofDecimalInt = f =>
-  switch (Decimal.toFloat(f)->FloatUtil.intValue) {
-  | Some(intVal) => ofRational(intVal, 1, Unit)
-  | None => ofDecimal(f)
-  };
-
-let round = a => toDecimal(a)->Decimal.round->ofDecimalInt;
-let floor = a => toDecimal(a)->Decimal.floor->ofDecimalInt;
-let ceil = a => toDecimal(a)->Decimal.ceil->ofDecimalInt;
-
 let add = (a, b) => {
   let rat =
     switch (a, b) {

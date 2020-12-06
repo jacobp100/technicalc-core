@@ -56,6 +56,8 @@ let rec eval = (~context, node: t): Value.t =>
   | Cot(a) => Value.cot(eval(~context, a))
   | Tanh(a) => Value.tanh(eval(~context, a))
   | Atanh(a) => Value.atanh(eval(~context, a))
+  | Deg(a) => Value.deg(eval(~context, a))
+  | Grad(a) => Value.grad(eval(~context, a))
   | Re(a) => Value.re(eval(~context, a))
   | Im(a) => Value.im(eval(~context, a))
   | Conj(a) => Value.conj(eval(~context, a))

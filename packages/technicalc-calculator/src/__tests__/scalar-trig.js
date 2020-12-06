@@ -119,3 +119,13 @@ test("atanh", () => {
     expect(actual).toMatchJsValue(expected, () => `atanh(${v})`);
   });
 });
+
+test("deg", () => {
+  const actual = TechniCalc.toInt(TechniCalc.deg(TechniCalc.pi));
+  expect(actual).toBe(180);
+});
+
+test("grad", () => {
+  const actual = TechniCalc.toInt(TechniCalc.grad(TechniCalc.pi));
+  expect(actual).toBe(200);
+});

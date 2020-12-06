@@ -1,4 +1,7 @@
 open Scalar_Types;
+open Scalar_Base;
+
+let neg = map(_, Real.neg);
 
 let add = (a: t, b: t): t =>
   switch (a, b) {
@@ -16,7 +19,7 @@ let add = (a: t, b: t): t =>
     `C((Real.add(aRe, bRe), Real.add(aIm, bIm)))
   };
 
-let sub = (a: t, b: t): t => add(a, Scalar_Functions.neg(b));
+let sub = (a: t, b: t): t => add(a, neg(b));
 
 let mul = (a: t, b: t): t =>
   switch (a, b) {

@@ -29,6 +29,9 @@ let round = a => mapScalar(a, Scalar.round);
 let floor = a => mapScalar(a, Scalar.floor);
 let ceil = a => mapScalar(a, Scalar.ceil);
 
+let deg = a => mapScalar(a, Scalar.deg);
+let grad = a => mapScalar(a, Scalar.grad);
+
 let%private map2Scalar = (a: t, b: t, fn: (Scalar.t, Scalar.t) => Scalar.t): t =>
   switch (a, b) {
   | (#Scalar.t as a, #Scalar.t as b) => fn(a, b)->ofScalar
