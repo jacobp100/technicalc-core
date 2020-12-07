@@ -15,5 +15,8 @@
     "error": "+101"
   },
   "namespace": "TechniCalcEditor",
-  "refmt": 3
+  "refmt": 3,
+  "js-post-build": {
+    "cmd": "/usr/local/bin/node ../../run-mapping.js"
+  }
 }
