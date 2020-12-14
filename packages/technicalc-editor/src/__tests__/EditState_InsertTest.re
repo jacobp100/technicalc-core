@@ -85,6 +85,29 @@ test("should move function when inserting fraction before", (.) => {
   expect(index)->toEqual(4);
 });
 
+test(
+  "should not move stationary function with no arguments when inserting fraction",
+  (.) => {
+    let {index, elements} =
+      make(~index=1, ~elements=[|SinS|], ~allowLabelEditing=false)
+      ->insert(Frac2S);
+
+    expect(elements)->toEqual([|SinS, Frac2S, Arg, Arg|]);
+    expect(index)->toEqual(2);
+  },
+);
+
+test(
+  "should not move stationary function with arguments when inserting fraction",
+  (.) => {
+  let {index, elements} =
+    make(~index=2, ~elements=[|NLog1, Arg|], ~allowLabelEditing=false)
+    ->insert(Frac2S);
+
+  expect(elements)->toEqual([|NLog1, Arg, Frac2S, Arg, Arg|]);
+  expect(index)->toEqual(3);
+});
+
 test("should move function when inserting fraction after", (.) => {
   let {index, elements} =
     make(~index=0, ~elements=[|Superscript1, Arg|], ~allowLabelEditing=false)

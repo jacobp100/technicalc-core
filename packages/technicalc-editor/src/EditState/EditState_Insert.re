@@ -29,13 +29,108 @@ let%private skipFunction = (x, ~from, ~direction) => {
   iter(~index=from, ~argLevel=0);
 };
 
+/*
+ It's verbose,
+ but it'll make the typechecker ensure correctness after adding new elemnets
+ */
+let%private elementIsStationary = (element: AST.t) =>
+  switch (element) {
+  | Acos
+  | Acosh
+  | Add
+  | Asin
+  | Asinh
+  | Atan
+  | Atanh
+  | DegreeFunction
+  | Div
+  | Dot
+  | Gamma
+  | GradianFunction
+  | Im
+  | Log
+  | Mul
+  | Re
+  | Sub
+  | CosecS
+  | CoshS
+  | CosS
+  | CotS
+  | SecS
+  | SinhS
+  | SinS
+  | TanhS
+  | TanS
+  | NLog1
+  | Differential2
+  | Product2
+  | Sum2
+  | Vector2S
+  | Integral3
+  | Vector3S
+  | Matrix4S
+  | Matrix9S => true
+  | Arg
+  | ArcMinuteUnit
+  | ArcSecondUnit
+  | Bin
+  | Conj
+  | DecimalSeparator
+  | DegreeUnit
+  | Factorial
+  | GradianUnit
+  | Hex
+  | Oct
+  | OpenBracket
+  | Percent
+  | UnitConversion(_)
+  | CloseBracketS
+  | ConstES
+  | ConstPiS
+  | CustomAtomS(_)
+  | ImaginaryUnitS
+  | LabelS(_)
+  | N0_S
+  | N1_S
+  | N2_S
+  | N3_S
+  | N4_S
+  | N5_S
+  | N6_S
+  | N7_S
+  | N8_S
+  | N9_S
+  | NA_S
+  | NB_S
+  | NC_S
+  | ND_S
+  | NE_S
+  | NF_S
+  | RandS
+  | VariableS(_)
+  | Magnitude1
+  | Superscript1
+  | Abs1S
+  | Ceil1S
+  | Floor1S
+  | Round1S
+  | Sqrt1S
+  | NCR2
+  | NPR2
+  | Frac2S
+  | Gcd2S
+  | Lcm2S
+  | Max2S
+  | Min2S
+  | NRoot2S
+  | RandInt2S => false
+  };
+
 let%private skipInsertables = (x: array(AST.t), ~from, ~direction) => {
   let rec iter = (~index, ~bracketLevel) =>
     switch (Belt.Array.get(x, index)) {
-    | None
-    | Some(Add | Sub | Mul | Div | Dot)
-    | Some(Asin | Asinh | Acos | Acosh | Atan | Atanh | Log | Re | Im | SinS)
-    | Some(SinhS | CosS | CoshS | TanS | TanhS | Gamma) when bracketLevel == 0 =>
+    | None when bracketLevel == 0 => Some(index)
+    | Some(element) when bracketLevel == 0 && elementIsStationary(element) =>
       Some(index)
     | None => None
     | Some(v) =>
@@ -53,7 +148,7 @@ let%private skipInsertables = (x: array(AST.t), ~from, ~direction) => {
       let nextIndex =
         shouldBreak ? None : skipFunction(x, ~from=index, ~direction);
       switch (nextIndex) {
-      | Some((_, Matrix4S | Matrix9S | Vector2S | Vector3S | Sum2 | Product2))
+      | Some((_, element)) when elementIsStationary(element) => Some(index)
       | None => Some(index)
       | Some((index, _)) => iter(~index, ~bracketLevel)
       };
