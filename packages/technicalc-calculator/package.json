@@ -13,7 +13,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^8.3.1",
+    "bs-platform": "^8.4.2",
     "cartesian": "^1.0.1",
     "lodash": "^4.17.13",
     "mathjs": "^8.1.0"
