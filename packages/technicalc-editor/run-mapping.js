@@ -1,25 +1,34 @@
 const path = require("path");
-const fs = require("fs");
 
-const files = [
-  {
-    in: "src/Encoding/Encoding_BuildElementMapping.bs",
-    out: "src/Encoding/Encoding_ElementMapping.js",
-  },
-  {
-    in: "src/Encoding/Encoding_BuildUnitMapping.bs",
-    out: "src/Encoding/Encoding_UnitMapping.js",
-  },
-];
+const input = path.relative(
+  __dirname,
+  path.join(process.cwd(), process.argv[2])
+);
 
-files.forEach((file) => {
-  // eslint-disable-next-line
-  const { mapping, reverseMapping } = require(path.join(__dirname, file.in));
+const output = new Map([
+  [
+    "src/Encoding/Encoding_BuildElementMapping.bs.js",
+    "src/Encoding/Encoding_ElementMapping.js",
+  ],
+  [
+    "src/Encoding/Encoding_BuildUnitMapping.bs.js",
+    "src/Encoding/Encoding_UnitMapping.js",
+  ],
+]).get(input);
+
+if (output != null) {
+  // Lazy load modules for perf
+  // Since this is is run for every build of every file in this module
+  /* eslint-disable global-require */
+  const fs = require("fs");
+  const requireEsm = require("esm")(module);
+
+  const { mapping, reverseMapping } = requireEsm(path.join(__dirname, input));
 
   const js = [
     `export const mapping = ${JSON.stringify(mapping)};`,
     `export const reverseMapping = ${JSON.stringify(reverseMapping)};`,
   ].join("\n");
 
-  fs.writeFileSync(path.join(__dirname, file.out), js);
-});
+  fs.writeFileSync(path.join(__dirname, output), js);
+}

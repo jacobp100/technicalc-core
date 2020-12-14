@@ -6,9 +6,8 @@
   "private": true,
   "scripts": {
     "clean": "yarn workspaces run clean",
-    "build-encoding-mapping": "yarn workspace technicalc-editor build",
-    "build-technicalc": "yarn build-encoding-mapping; yarn workspace technicalc-prebuilt build-technicalc",
-    "build": "yarn build-encoding-mapping; yarn workspace technicalc-prebuilt build",
+    "build-technicalc": "yarn workspace technicalc-prebuilt build-technicalc",
+    "build": "yarn workspace technicalc-prebuilt build",
     "test": "jest",
     "lint": "eslint ."
   },

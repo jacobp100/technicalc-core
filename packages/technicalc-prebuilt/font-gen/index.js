@@ -19,19 +19,17 @@ for (let i = 0x3b1; i <= 0x3c9; i += 1) {
   bold[i] = skewX(boldItalic[i], -15);
 }
 
-const createDir = (dir) => {
-  try {
+const ensureDir = (dir) => {
+  if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
-  } catch (e) {
-    // Ignore
   }
 };
 
 const fontsJsonPath = path.resolve(__dirname, "../fonts-json");
 const fontsAssetsPath = path.resolve(__dirname, "../fonts-assets");
 
-createDir(fontsJsonPath);
-createDir(fontsAssetsPath);
+ensureDir(fontsJsonPath);
+ensureDir(fontsAssetsPath);
 
 const buildJsonFont = (font, { preserveSvgChars }) => {
   Object.keys(font).forEach((key) => {
