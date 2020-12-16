@@ -37,6 +37,9 @@ module Elements = {
     | Ok(node) => (None, Some(node))
     | Error(i) => (Some(i), None)
     };
+
+  let bracketRanges = BracketUtil.bracketRanges;
+  let bracketRange = BracketUtil.bracketRange;
 };
 
 module Editor = {

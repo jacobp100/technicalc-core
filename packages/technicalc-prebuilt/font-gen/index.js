@@ -69,7 +69,7 @@ writeFont(normal, "normal", {
     0x2223,
   ],
 });
-writeFont(largeop, "largeop");
-writeFont(smallop, "smallop");
+writeFont(largeop, "largeop", { preserveSvgChars: true });
+writeFont(smallop, "smallop", { preserveSvgChars: true });
 writeFont(texSize3, "size3", { preserveSvgChars: true });
 writeFont(texSize4, "size4", { preserveSvgChars: true });

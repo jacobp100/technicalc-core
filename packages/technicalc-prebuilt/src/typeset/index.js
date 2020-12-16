@@ -38,21 +38,25 @@ export default (mml, display) => {
 
   const rootNode = math.typesetRoot.children[0];
 
-  const widths = new Map();
-  const setWidths = (wrappedNode) => {
+  const bboxes = new Map();
+  const advanceWidths = new Map();
+  const setBboxes = (wrappedNode) => {
     if (!wrappedNode.element) return;
     const { id } = wrappedNode.element.attributes;
-    const [, after] = parseId(id);
+    const [current, after] = parseId(id);
 
+    const bbox = wrappedNode.getBBox();
+
+    if (!Number.isNaN(current)) {
+      bboxes.set(current, bbox);
+    }
     if (!Number.isNaN(after)) {
-      const bbox = wrappedNode.getBBox();
-      const width = bbox.w;
-      widths.set(after, width);
+      advanceWidths.set(after, bbox.w);
     }
 
-    wrappedNode.childNodes.forEach(setWidths);
+    wrappedNode.childNodes.forEach(setBboxes);
   };
-  setWidths(wrapper);
+  setBboxes(wrapper);
 
   const positionMap = new Map();
   const setPositions = (element, inputTransform) => {
@@ -69,13 +73,21 @@ export default (mml, display) => {
       x /= 1e3;
       y /= 1e3;
 
+      const bbox = bboxes.get(current);
+      const width = (bbox?.w ?? 0) * scale;
+      const ascent = (bbox?.h ?? 0) * scale;
+      const descent = (bbox?.d ?? 0) * scale;
+
       if (!Number.isNaN(current)) {
-        positionMap.set(current, { x, y, scale });
+        const position = { x, y, scale, width, ascent, descent };
+        positionMap.set(current, position);
       }
       if (!Number.isNaN(after) && !positionMap.has(after)) {
-        const width = widths.get(after);
-        if (width == null) throw new Error(`No width for ${after}`);
-        positionMap.set(after, { x: x + width * scale, y, scale });
+        const advanceWidth = advanceWidths.get(after);
+        if (advanceWidth == null) throw new Error(`No width for ${after}`);
+        const positionX = x + advanceWidth;
+        const position = { x: positionX, y, scale, width: 0, ascent, descent };
+        positionMap.set(after, position);
       }
     }
 
