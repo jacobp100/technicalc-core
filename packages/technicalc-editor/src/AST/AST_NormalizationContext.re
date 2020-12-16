@@ -40,6 +40,15 @@ let%private isIterator = element =>
   | _ => false
   };
 
+let%private isTable = element =>
+  switch (element) {
+  | AST_Types.Vector2S
+  | Vector3S
+  | Matrix4S
+  | Matrix9S => true
+  | _ => false
+  };
+
 let%private noIterationRanges =
   validityStackReducer((. validityStack, element) => {
     let argCount = AST_Types.argCountExn(element);
@@ -47,12 +56,10 @@ let%private noIterationRanges =
   });
 
 let elementIsValid = (ast: array(AST_Types.t), element: AST_Types.t, index) =>
-  switch (element) {
-  | element when isIterator(element) =>
-    !noIterationRanges(ast)->Ranges.contains(index)
-  | Vector2S
-  | Vector3S
-  | Matrix4S
-  | Matrix9S => !noTableRanges(ast)->Ranges.contains(index)
-  | _ => true
+  if (isIterator(element)) {
+    !noIterationRanges(ast)->Ranges.contains(index);
+  } else if (isTable(element)) {
+    !noTableRanges(ast)->Ranges.contains(index);
+  } else {
+    true;
   };

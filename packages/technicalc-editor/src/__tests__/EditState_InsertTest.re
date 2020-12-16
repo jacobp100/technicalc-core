@@ -76,6 +76,31 @@ test("should move bracket groups when inserting fraction before", (.) => {
   expect(index)->toEqual(1);
 });
 
+test(
+  "should move bracket groups with operators when inserting fraction before",
+  (.) => {
+  let {index, elements} =
+    make(
+      ~index=5,
+      ~elements=[|OpenBracket, N1_S, Add, N2_S, CloseBracketS|],
+      ~allowLabelEditing=false,
+    )
+    ->insert(Frac2S);
+
+  expect(elements)
+  ->toEqual([|
+      Frac2S,
+      OpenBracket,
+      N1_S,
+      Add,
+      N2_S,
+      CloseBracketS,
+      Arg,
+      Arg,
+    |]);
+  expect(index)->toEqual(7);
+});
+
 test("should move function when inserting fraction before", (.) => {
   let {index, elements} =
     make(~index=2, ~elements=[|Superscript1, Arg|], ~allowLabelEditing=false)

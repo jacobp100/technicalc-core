@@ -33,7 +33,12 @@ let%private skipFunction = (x, ~from, ~direction) => {
  It's verbose,
  but it'll make the typechecker ensure correctness after adding new elemnets
  */
-let%private elementIsStationary = (element: AST.t) =>
+type skipMode =
+  | Movable
+  | TopLevelFixed
+  | FunctionFixed;
+
+let%private skipMode = (element: AST.t) =>
   switch (element) {
   | Acos
   | Acosh
@@ -69,7 +74,8 @@ let%private elementIsStationary = (element: AST.t) =>
   | Integral3
   | Vector3S
   | Matrix4S
-  | Matrix9S => true
+  | Matrix9S =>
+    AST_Types.argCountExn(element) !== 0 ? FunctionFixed : TopLevelFixed
   | Arg
   | ArcMinuteUnit
   | ArcSecondUnit
@@ -123,14 +129,15 @@ let%private elementIsStationary = (element: AST.t) =>
   | Max2S
   | Min2S
   | NRoot2S
-  | RandInt2S => false
+  | RandInt2S => Movable
   };
 
 let%private skipInsertables = (x: array(AST.t), ~from, ~direction) => {
   let rec iter = (~index, ~bracketLevel) =>
     switch (Belt.Array.get(x, index)) {
     | None when bracketLevel == 0 => Some(index)
-    | Some(element) when bracketLevel == 0 && elementIsStationary(element) =>
+    | Some(element)
+        when bracketLevel == 0 && skipMode(element) == TopLevelFixed =>
       Some(index)
     | None => None
     | Some(v) =>
@@ -148,7 +155,8 @@ let%private skipInsertables = (x: array(AST.t), ~from, ~direction) => {
       let nextIndex =
         shouldBreak ? None : skipFunction(x, ~from=index, ~direction);
       switch (nextIndex) {
-      | Some((_, element)) when elementIsStationary(element) => Some(index)
+      | Some((_, element)) when skipMode(element) == FunctionFixed =>
+        Some(index)
       | None => Some(index)
       | Some((index, _)) => iter(~index, ~bracketLevel)
       };
