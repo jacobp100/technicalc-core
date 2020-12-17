@@ -18,37 +18,34 @@ let%private rec prependBracketRanges = (ast: array(t), ranges, index) => {
       let range = {start, end_, level};
       iter(~ranges=[range, ...ranges], ~stack, i + 1);
     | (Some(element), _) =>
-      let (ranges, i) =
-        argCountExn(element)->iterArgs(~n=_, ast, ranges, i);
+      let argCount = argCountExn(element);
+      let (ranges, i) = iterArgs(~argCount, ast, ranges, i);
       iter(~ranges, ~stack, i + 1);
     };
   iter(~ranges, ~stack=[], index);
 }
-and iterArgs = (~n, ast, ranges, i) =>
-  if (n > 0) {
+and iterArgs = (~argCount, ast, ranges, i) =>
+  if (argCount > 0) {
     let (ranges, i) = prependBracketRanges(ast, ranges, i + 1);
-    iterArgs(~n=n - 1, ast, ranges, i);
+    iterArgs(~argCount=argCount - 1, ast, ranges, i);
   } else {
     (ranges, i);
   };
 
-let bracketRanges = (ast: array(t)) => {
-  let (ranges, _) = prependBracketRanges(ast, [], 0);
-  ranges;
-};
+// Returns bracket ranges in order of preference
+// The first range to encapsulate an index is the one to display to the user
+// Returns none on empty list for better value equality in React's useMemo
+let bracketRanges = (ast: array(t)) =>
+  switch (prependBracketRanges(ast, [], 0)) {
+  | ([], _) => None
+  | (ranges, _) => Belt.List.toArray(ranges)->Js.Array.reverseInPlace->Some
+  };
 
-let bracketRange = (ranges: list(bracketRange), index: int) => {
-  let rec iter = (~current, ranges) =>
-    switch (ranges) {
-    | [{start, end_} as bracketRange, ...rest] =>
-      let current =
-        if (start <= index && end_ >= index) {
-          Some(bracketRange);
-        } else {
-          current;
-        };
-      iter(~current, rest);
-    | [] => current
-    };
-  iter(~current=None, ranges);
-};
+let bracketRange = (ranges, index) =>
+  switch (ranges) {
+  | Some(ranges) =>
+    Belt.Array.getByU(ranges, (. {start, end_}) => {
+      start <= index && end_ >= index
+    })
+  | None => None
+  };

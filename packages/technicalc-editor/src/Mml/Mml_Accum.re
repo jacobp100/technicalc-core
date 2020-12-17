@@ -20,11 +20,11 @@ module DigitGroups = {
 
   let digitGroupingEnabled = x => x.state === GroupingDisabled;
 
-  let rec _flattenDigits = (~body, ~numbersRev) =>
+  let%private rec flattenDigits = (~body, ~numbersRev) =>
     switch (numbersRev) {
     | [c, b, a, ...tail] when tail != [] =>
-      _flattenDigits(~body, ~numbersRev=tail) ++ "<mn>,</mn>" ++ a ++ b ++ c
-    | [number, ...tail] => _flattenDigits(~body, ~numbersRev=tail) ++ number
+      flattenDigits(~body, ~numbersRev=tail) ++ "<mn>,</mn>" ++ a ++ b ++ c
+    | [number, ...tail] => flattenDigits(~body, ~numbersRev=tail) ++ number
     | [] => body
     };
 
@@ -33,7 +33,7 @@ module DigitGroups = {
     | GroupingDisabled
     | Normal
     | SkipGrouping => body
-    | GroupingDigits({numbersRev}) => _flattenDigits(~body, ~numbersRev)
+    | GroupingDigits({numbersRev}) => flattenDigits(~body, ~numbersRev)
     };
 
   let length = v => v.length;
@@ -120,7 +120,8 @@ module BracketGroups = {
     ],
   };
 
-  let _flattenBracketGroup = (~attributes=?, v, {openBracketRange, body}) => {
+  let%private flattenBracketGroup =
+              (~attributes=?, v, {openBracketRange, body}) => {
     let openBracket =
       elementWithRange(~attributes?, "mo", openBracketRange, "(");
     DigitGroups.digitGroupingEnabled(v.level0Body)
@@ -129,7 +130,10 @@ module BracketGroups = {
     ->DigitGroups.concat(body);
   };
 
-  let _invalidAttributes = [("class", "invalid"), ("stretchy", "false")];
+  let%private invalidAttributes = [
+    ("class", "invalid"),
+    ("stretchy", "false"),
+  ];
   let appendCloseBracket = (accum, range, superscript): t =>
     switch (accum.bracketGroups) {
     | [closed, ...nextBracketGroups] =>
@@ -143,7 +147,7 @@ module BracketGroups = {
         | None => elementWithRange("mo", range, ")")
         };
 
-      _flattenBracketGroup(accum, closed)
+      flattenBracketGroup(accum, closed)
       ->DigitGroups.append(closeBracket)
       ->DigitGroups.map(body =>
           switch (superscript) {
@@ -162,7 +166,7 @@ module BracketGroups = {
           DigitGroups.concat,
         );
     | [] =>
-      let attributes = _invalidAttributes;
+      let attributes = invalidAttributes;
       elementWithRange(~attributes, ~superscript?, "mo", range, ")")
       ->transformTopLevelWithArg(accum, _, DigitGroups.append);
     };
@@ -172,11 +176,7 @@ module BracketGroups = {
       switch (bracketGroups) {
       | [bracketGroup, ...tail] =>
         let body =
-          _flattenBracketGroup(
-            ~attributes=_invalidAttributes,
-            v,
-            bracketGroup,
-          );
+          flattenBracketGroup(~attributes=invalidAttributes, v, bracketGroup);
         DigitGroups.concat(iter(tail), body);
       | [] => level0Body
       };

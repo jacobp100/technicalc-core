@@ -169,6 +169,16 @@ Now we can apply superscript index as the end index of the base `<mn>` element. 
 </msup>
 ```
 
+### Brackets
+
+The implementation for bracket handling in `MML_Accum.re`, `Value_Row.re`, and `BracketUtil.re` is different in every case. It's not really possible to combine these under a generic implementation. However, they all follow the same rules:
+
+- An open bracket starts a new group on a stack
+- A close bracket closes the most recent group on a stack
+- A close bracket with no groups on the stack is ignored (and treated as invalid)
+- Groups left on the stack that were not terminated by a close bracket are ignored (and treated as invalid)
+- Each function argument starts a new stack, and restores the previous stack after the closing `Arg`
+
 ### Labels
 
 In the standard editing mode, labels act as placeholders, although they have content in (rather than being a blank square). The blank square is created by converting an empty array of elements to MML. However, labels are explicit elements.
