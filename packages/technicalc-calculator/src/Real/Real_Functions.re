@@ -19,7 +19,8 @@ let min = (a: t, b: t): t => lte(a, b) ? a : b;
 
 let gcd = (a: t, b: t): t =>
   switch (toInt(a), toInt(b)) {
-  | (Some(a), Some(b)) => ofInt(Real_Util.gcd(abs(a), abs(b)))
+  | (Some(a), Some(b)) =>
+    ofInt(Real_Util.gcd(IntUtil.abs(a), IntUtil.abs(b)))
   | _ => nan
   };
 
@@ -28,7 +29,7 @@ let lcm = (a: t, b: t): t =>
   | (Some(0), Some(_))
   | (Some(_), Some(0)) => zero
   | (Some(a), Some(b)) =>
-    let gcd = Real_Util.gcd(abs(a), abs(b));
+    let gcd = Real_Util.gcd(IntUtil.abs(a), IntUtil.abs(b));
     switch (SafeInt.(toInt(ofInt(a) * ofInt(b) / ofInt(gcd)))) {
     | Some(ans) => ofInt(ans)
     | None => nan

@@ -45,7 +45,7 @@ let%private rec iter = (~tokensRev, ~parseExponent, charList) =>
   | ['}', ...rest] => append(~tokensRev, ~parseExponent, rest, CloseBrace)
   | [',', ...rest] => append(~tokensRev, ~parseExponent, rest, Comma)
   | [('0'..'9' | 'a'..'f' | 'A'..'F') as char, ...rest] =>
-    let char = String.make(1, char);
+    let char = Obj.magic(char)->StringUtil.ofChar;
     let tokensRev =
       switch (tokensRev) {
       | [Integer(existing), ...rest] => [

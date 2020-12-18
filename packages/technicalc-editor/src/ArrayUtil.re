@@ -34,3 +34,5 @@ let splice = (x, ~offset, ~len) =>
     let subarray = Belt.Array.slice(x, ~offset, ~len);
     (out, subarray);
   };
+
+[@bs.send] external reverseInPlace: array('t) => array('t) = "reverse";

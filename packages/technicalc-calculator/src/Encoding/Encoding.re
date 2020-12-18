@@ -84,7 +84,7 @@ let readUint = ({string, index} as reader): option(int) => {
 };
 
 let encodeInt = value => {
-  let value = abs(value) lsl 1 lor (value < 0 ? 1 : 0);
+  let value = IntUtil.abs(value) lsl 1 lor (value < 0 ? 1 : 0);
   encodeUint(value);
 };
 

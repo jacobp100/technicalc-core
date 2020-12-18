@@ -48,7 +48,7 @@ let logReal = q =>
     if (Decimal.(f > zero)) {
       Decimal(Decimal.ln(f));
     } else {
-      invalid_arg("logReal");
+      assert(false);
     };
   };
 

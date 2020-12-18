@@ -4,7 +4,7 @@ let%private ofNumericString = a => {
   let magnitudes = ref(0);
   let out =
     Belt.Array.makeBy(String.length(a), i => {
-      switch (a.[i]) {
+      switch (Obj.magic(StringUtil.charAtUnsafe(a, i))) {
       | '+' => Add
       | '-' => Sub
       | '0' => N0_S

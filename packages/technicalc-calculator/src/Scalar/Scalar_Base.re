@@ -27,11 +27,13 @@ let isNaN = (a: t) =>
   };
 
 let ofFloat = (v): t =>
-  switch (classify_float(v)) {
-  | FP_normal
-  | FP_subnormal =>
+  if (!FloatUtil.isFinite(v)) {
+    nan;
+  } else if (v == 0.) {
+    `Z;
+  } else {
     let magnitude = 1.e6;
-    let intMaxF = float_of_int(max_int);
+    let intMaxF = float_of_int(IntUtil.maxInt);
     let numeratorF = v *. magnitude;
     switch (FloatUtil.intValue(numeratorF), FloatUtil.intValue(magnitude)) {
     | (Some(numerator), Some(denominator))
@@ -39,9 +41,6 @@ let ofFloat = (v): t =>
       `R(Real.ofRational(numerator, denominator, Unit))->normalize
     | _ => `R(Real.ofDecimal(Decimal.ofFloat(v)))->normalize
     };
-  | FP_zero => `Z
-  | FP_infinite
-  | FP_nan => nan
   };
 
 let toDecimal = (a: t): Decimal.t =>

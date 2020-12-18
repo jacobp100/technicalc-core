@@ -2,7 +2,8 @@ let createElement = (~attributes=[], element, body) => {
   let attributes =
     attributes
     ->Belt.List.map(((p, v)) => p ++ "=\"" ++ v ++ "\"")
-    ->String.concat(" ", _);
+    ->Belt.List.toArray
+    ->StringUtil.joinWith(" ");
   let head =
     switch (attributes) {
     | "" => "<" ++ element ++ ">"

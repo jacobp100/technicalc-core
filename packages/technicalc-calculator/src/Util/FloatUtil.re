@@ -14,11 +14,6 @@ let intValueExn = f => {
 // Only used in one place, don't bother inlining stuff for perf here
 let toInt = f => floor(f)->intValue;
 
-let isFinite = f =>
-  switch (classify_float(f)) {
-  | FP_zero
-  | FP_normal
-  | FP_subnormal => true
-  | FP_infinite
-  | FP_nan => false
-  };
+let isFinite = Js.Float.isFinite;
+
+let random = Js.Math.random;

@@ -1,5 +1,5 @@
 type bracketGroup = {
-  index: int,
+  openBracketIndex: int,
   func: option(Value_Types.funcitionLike),
   elements: MutableListBuilder.t(Value_Types.partialNode),
 };
@@ -11,32 +11,40 @@ type t = {
 
 let empty = {level0Body: MutableListBuilder.empty, bracketGroups: []};
 
-let append = (accum, element) =>
-  switch (accum) {
-  | {level0Body, bracketGroups: []} =>
-    let nextLevel0Body = MutableListBuilder.append(level0Body, element);
-    if (level0Body === nextLevel0Body) {
-      accum;
+let append = (v, element) =>
+  switch (v.bracketGroups) {
+  | [bracketGroup, ...rest] =>
+    let nextBracketGroupElements =
+      MutableListBuilder.append(bracketGroup.elements, element);
+
+    if (bracketGroup.elements === nextBracketGroupElements) {
+      v;
+    } else {
+      let nextBracketGroup = {
+        ...bracketGroup,
+        elements: nextBracketGroupElements,
+      };
+      {...v, bracketGroups: [nextBracketGroup, ...rest]};
+    };
+  | [] =>
+    let nextLevel0Body = MutableListBuilder.append(v.level0Body, element);
+
+    if (v.level0Body === nextLevel0Body) {
+      v;
     } else {
       {level0Body: nextLevel0Body, bracketGroups: []};
     };
-  | {bracketGroups: [bracketGroup, ...rest]} =>
-    let bracketGroup = {
-      ...bracketGroup,
-      elements: MutableListBuilder.append(bracketGroup.elements, element),
-    };
-    {...accum, bracketGroups: [bracketGroup, ...rest]};
   };
 
-let openBracket = ({level0Body, bracketGroups}, index, func) => {
+let appendOpenBracket = ({level0Body, bracketGroups}, openBracketIndex, func) => {
   level0Body,
   bracketGroups: [
-    {index, func, elements: MutableListBuilder.empty},
+    {openBracketIndex, func, elements: MutableListBuilder.empty},
     ...bracketGroups,
   ],
 };
 
-let closeBracket = ({level0Body, bracketGroups}) =>
+let appendCloseBracket = ({level0Body, bracketGroups}) =>
   switch (bracketGroups) {
   | [{func, elements}, ...rest] =>
     Some((
@@ -50,5 +58,5 @@ let closeBracket = ({level0Body, bracketGroups}) =>
 let toList = ({level0Body, bracketGroups}) =>
   switch (bracketGroups) {
   | [] => Ok(MutableListBuilder.toList(level0Body))
-  | [{index}, ..._] => Error(index)
+  | [{openBracketIndex}, ..._] => Error(openBracketIndex)
   };

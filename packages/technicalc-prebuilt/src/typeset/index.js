@@ -85,7 +85,7 @@ export default (mml, display) => {
       if (!Number.isNaN(after) && !positionMap.has(after)) {
         const advanceWidth = advanceWidths.get(after);
         if (advanceWidth == null) throw new Error(`No width for ${after}`);
-        const positionX = x + advanceWidth;
+        const positionX = x + advanceWidth * scale;
         const position = { x: positionX, y, scale, width: 0, ascent, descent };
         positionMap.set(after, position);
       }

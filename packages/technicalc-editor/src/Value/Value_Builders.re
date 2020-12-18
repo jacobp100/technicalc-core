@@ -33,11 +33,10 @@ let handleGenericFunction = (arg, fn) =>
 
 let handleFunction = (body, fn) =>
   switch (fn) {
-  | Value_Types.GenericFunction({func, squareResultSuperscript}) =>
+  | Value_Types.GenericFunction({func, resultSuperscript}) =>
     let value = handleGenericFunction(body, func);
-    switch (squareResultSuperscript) {
-    | Some(squareResultSuperscript) =>
-      Node.Pow(value, squareResultSuperscript)
+    switch (resultSuperscript) {
+    | Some(resultSuperscript) => Node.Pow(value, resultSuperscript)
     | None => value
     };
   | NLog({base}) => Div(Log(body), Log(base))

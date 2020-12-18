@@ -154,8 +154,6 @@ let unitPowerToMml =
     };
 
 let unitPowersToMml =
-    (units: array(TechniCalcCalculator.Unit_Types.unitPower)) => {
-  let unitsMmlList =
-    Belt.Array.mapU(units, unitPowerToMml)->Belt.List.fromArray;
-  String.concat("<mspace width=\"0.1em\" />", unitsMmlList);
-};
+    (units: array(TechniCalcCalculator.Unit_Types.unitPower)) =>
+  Belt.Array.mapU(units, unitPowerToMml)
+  ->StringUtil.joinWith("<mspace width=\"0.1em\" />");

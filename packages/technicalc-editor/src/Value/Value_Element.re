@@ -10,14 +10,10 @@ let map = (element: foldState('a), i, i') =>
   | (Operator(_) | Percent | UnitConversion(_)) as e
   | (CloseBracket(_) | Digit(_) | Magnitude(_)) as e =>
     Value_Types.Unresolved(e, i, i')
-  | Function({func, squareResultSuperscript}) =>
-    let squareResultSuperscript =
-      Belt.Option.map(squareResultSuperscript, superscriptBody);
-    UnresolvedFunction(
-      GenericFunction({func, squareResultSuperscript}),
-      i,
-      i',
-    );
+  | Function({func, resultSuperscript}) =>
+    let resultSuperscript =
+      Belt.Option.map(resultSuperscript, superscriptBody);
+    UnresolvedFunction(GenericFunction({func, resultSuperscript}), i, i');
   | NLog({base}) => UnresolvedFunction(NLog({base: base}), i, i')
   | Sum({from, to_}) => UnresolvedFunction(Sum({from, to_}), i, i')
   | Product({from, to_}) => UnresolvedFunction(Product({from, to_}), i, i')

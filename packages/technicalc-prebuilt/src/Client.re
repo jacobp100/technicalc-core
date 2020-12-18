@@ -140,14 +140,19 @@ module Value = {
 };
 
 module Work = {
-  let calculate = (body, context): Work.t => {
+  [@bs.scope "Object"] [@bs.val]
+  external entries: Js.Dict.t('a) => array((string, 'a)) = "entries";
+
+  let calculate =
+      (body, context: option(Js.Dict.t(TechniCalcCalculator.Value_Types.t)))
+      : Work.t => {
     let context =
-      Js.Nullable.bind(context, (. context) =>
-        Js.Dict.map(
-          (. value) => TechniCalcCalculator.Value_Encoding.encode(value),
-          context,
-        )
-      );
+      switch (context) {
+      | Some(context) =>
+        entries(context)
+        ->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
+      | None => [||]
+      };
     Calculate(body, context);
   };
   let convertUnits = (body, fromUnits, toUnits): Work.t =>

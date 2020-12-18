@@ -7,6 +7,8 @@ type countDirection =
 
 let%private skipFunction = (x, ~from, ~direction) => {
   let step = direction == Forwards ? 1 : (-1);
+  let argLevelStep = step;
+
   let rec iter = (~index, ~argLevel) =>
     switch (Belt.Array.get(x, index)) {
     | None => None
@@ -14,16 +16,17 @@ let%private skipFunction = (x, ~from, ~direction) => {
       let index = index + step;
       let argLevel =
         switch (v) {
-        | AST.Arg => argLevel - 1
-        | _ => argLevel + AST.argCountExn(v)
+        | AST.Arg => argLevel - argLevelStep
+        | _ => argLevel + argLevelStep * AST.argCountExn(v)
         };
-      switch (compare(argLevel, 0), direction) {
-      | (0, _) =>
+
+      if (argLevel == 0) {
         let fn = direction == Forwards ? Belt.Array.getExn(x, from) : v;
         Some((index, fn));
-      | ((-1), Backwards)
-      | (1, Forwards) => iter(~index, ~argLevel)
-      | _ => None
+      } else if (argLevel > 0) {
+        iter(~index, ~argLevel);
+      } else {
+        None;
       };
     };
   iter(~index=from, ~argLevel=0);
@@ -166,7 +169,9 @@ let%private skipInsertables = (x: array(AST.t), ~from, ~direction) => {
 
 let%private countInsertables = (x: array(AST.t), ~from, ~direction) =>
   switch (skipInsertables(x, ~from, ~direction)) {
-  | Some(index) => abs(from - index)
+  | Some(index) =>
+    let i = from - index;
+    i > 0 ? i : - i;
   | None => 0
   };
 

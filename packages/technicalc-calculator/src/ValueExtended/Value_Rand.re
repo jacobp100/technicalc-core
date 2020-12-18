@@ -1,9 +1,20 @@
 open Value_Base;
 
-let rand = () => Random.float(1.)->ofFloat;
+let rand = () => FloatUtil.random()->ofFloat;
 
-let randInt = (a, b) =>
-  switch (a->toInt, b->toInt) {
-  | (Some(a), Some(b)) => (min(a, b) + Random.int(abs(b - a)))->ofInt
-  | _ => nan
+let randInt = (a, b) => {
+  let int =
+    switch (a->toInt, b->toInt) {
+    | (Some(a), Some(b)) =>
+      FloatUtil.toInt(
+        min(a, b)->float_of_int
+        +. FloatUtil.random()
+        *. float_of_int(b - a)->abs_float,
+      )
+    | _ => None
+    };
+  switch (int) {
+  | Some(i) => ofInt(i)
+  | None => nan
   };
+};

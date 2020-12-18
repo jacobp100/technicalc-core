@@ -26,7 +26,8 @@ let rec eval = (~context, node: t): Value.t =>
     }
     ->Value.ofMatrix
   | OfEncoded(a) => Value.decode(a)->Belt.Option.getWithDefault(`N)
-  | Variable(ident) => Belt.Map.String.getWithDefault(context, ident, `N)
+  | Variable(ident) =>
+    AST_Context.get(context, ident)->Belt.Option.getWithDefault(`N)
   | Add(a, b) => Value.add(eval(~context, a), eval(~context, b))
   | Sub(a, b) => Value.sub(eval(~context, a), eval(~context, b))
   | Mul(a, b) => Value.mul(eval(~context, a), eval(~context, b))
@@ -95,18 +96,18 @@ let rec eval = (~context, node: t): Value.t =>
     Units.convert(eval(~context, body), ~fromUnits, ~toUnits)
   }
 and createEvalCb = (~context, body, x) =>
-  eval(~context=Belt.Map.String.set(context, "x", x), body)
+  eval(~context=AST_Context.set(context, "x", x), body)
 and evalScalar = (~context, x): Scalar.t =>
   switch (eval(~context, x)) {
   | #Scalar.t as s => s
   | _ => Scalar.nan
   };
 
-let eval = (~context=Belt.Map.String.empty, v) => eval(~context, v);
+let eval = (~context=AST_Context.empty, v) => eval(~context, v);
 
 let solveRoot = (body, initial) => {
   let fn = value => {
-    let context = Belt.Map.String.empty->Belt.Map.String.set("x", value);
+    let context = AST_Context.(set(empty, "x", value));
     eval(~context, body);
   };
 

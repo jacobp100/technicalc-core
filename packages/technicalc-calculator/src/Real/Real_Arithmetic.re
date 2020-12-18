@@ -153,7 +153,7 @@ let div = (a, b) => {
 
 let powInt = (a, b) => {
   let powAbsB =
-    switch (a, Pervasives.abs(b)) {
+    switch (a, IntUtil.abs(b)) {
     | (Rational(0, 0, Unit), 0) => Some(nan)
     | (Rational(_), 0) => Some(ofInt(1))
     | (_, 1) => Some(a)

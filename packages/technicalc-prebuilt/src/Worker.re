@@ -17,24 +17,21 @@ let make = self => {
     switch (work) {
     | Work.Calculate(a, context) =>
       let context =
-        switch (Js.Nullable.toOption(context)) {
-        | Some(context) =>
-          context
-          ->Js.Dict.entries
-          ->Belt.Array.reduce(Belt.Map.String.empty, (accum, (key, value)) => {
-              TechniCalcCalculator.(
-                Value_Encoding.decode(value)
-                ->Belt.Option.getWithDefault(Value_Base.nan)
-                ->Belt.Map.String.set(accum, key, _)
-              )
-            })
-        | None => Belt.Map.String.empty
-        };
+        Belt.Array.reduce(
+          context,
+          TechniCalcCalculator.AST_Context.empty,
+          (accum, (key, value)) => {
+          TechniCalcCalculator.(
+            Value_Encoding.decode(value)
+            ->Belt.Option.getWithDefault(Value_Base.nan)
+            ->TechniCalcCalculator.AST_Context.set(accum, key, _)
+          )
+        });
       let res = eval(~context, a);
       [|res|];
     | ConvertUnits(a, fromUnits, toUnits) =>
       let res =
-        eval(~context=Belt.Map.String.empty, a)
+        eval(~context=TechniCalcCalculator.AST_Context.empty, a)
         ->TechniCalcCalculator.Units.convert(~fromUnits, ~toUnits);
       [|res|];
     | SolveRoot(body, initial) =>

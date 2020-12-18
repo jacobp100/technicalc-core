@@ -47,17 +47,17 @@ let%private nprNcr = (symbol, n, r, range) => {
 
 let%private table = (~numRows, ~numColumns, elements, superscript, range) => {
   let inner =
-    Belt.List.makeBy(numRows, row =>
-      Belt.List.makeBy(numColumns, column =>
+    Belt.Array.makeBy(numRows, row => {
+      Belt.Array.makeBy(numColumns, column => {
         createElement(
           "mtd",
           elements->Belt.Array.getUnsafe(row * numColumns + column),
         )
-      )
-      ->String.concat("", _)
+      })
+      ->StringUtil.join
       ->createElement("mtr", _)
-    )
-    ->String.concat("", _)
+    })
+    ->StringUtil.join
     ->createElement("mtable", _);
   let body = createElement("mo", "[") ++ inner ++ createElement("mo", "]");
   elementWithRange(~superscript?, "mrow", range, body);
@@ -133,7 +133,7 @@ let reduce = (accum, element: foldState(string), range) =>
       mml,
     )
     ->Mml_Accum.append(accum, _)
-  | Function({func, squareResultSuperscript: superscript}) =>
+  | Function({func, resultSuperscript: superscript}) =>
     let attributes = func == AST.Gamma ? [("mathvariant", "normal")] : [];
     Mml_Util.stringOfFunction(func)
     ->elementWithRange(~superscript?, ~attributes, "mi", range, _)

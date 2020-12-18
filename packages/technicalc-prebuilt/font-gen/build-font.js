@@ -101,6 +101,15 @@ module.exports = ({ familyName, styleName }, chars) => {
     })
     .filter((glyph) => glyph !== null);
 
+  glyphs.unshift(
+    new Glyph({
+      name: ".notdef",
+      unicode: 0,
+      advanceWidth: 0,
+      path: new Path(),
+    })
+  );
+
   const font = new Font({
     familyName,
     styleName,

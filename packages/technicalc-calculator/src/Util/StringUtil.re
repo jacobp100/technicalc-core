@@ -7,13 +7,9 @@ external split: (string, ~separator: string) => array(string) = "split";
 [@bs.send]
 external replaceFirst: (string, string, string) => string = "replace";
 [@bs.send] external slice: (string, int, int) => string = "slice";
+[@bs.send] external toUpperCase: string => string = "toUpperCase";
+[@bs.send] external repeat: (string, int) => string = "repeat";
 
 external charToInt: char => int = "%identity";
 
-let rec splitOnChar = (value, character) =>
-  switch (
-    Js.String.splitAtMost(value, ~limit=1, charToInt(character)->ofChar)
-  ) {
-  | [|head, tail|] => [head, ...splitOnChar(tail, character)]
-  | _ => [value]
-  };
+let make = (length, char: char) => ofChar(charToInt(char))->repeat(length);

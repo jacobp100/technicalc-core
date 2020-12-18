@@ -85,7 +85,7 @@ type foldState('a) =
     })
   | Function({
       func,
-      squareResultSuperscript: option(superscript('a)),
+      resultSuperscript: option(superscript('a)),
     })
   | Gcd({
       a: 'a,
@@ -178,9 +178,6 @@ type foldState('a) =
     });
 
 type range = (int, int);
-
-exception ExpectedArg;
-exception UnexpectedArg(int);
 
 let superscriptBody = superscript => superscript.superscriptBody;
 
@@ -393,7 +390,7 @@ let reduceMap =
   and readArg = (~accum=initial, ~start=?, i) => {
     let start = Belt.Option.getWithDefault(start, i);
     switch (Belt.Array.get(input, i)) {
-    | None => raise(ExpectedArg)
+    | None => assert(false)
     | Some(Arg) =>
       let i' = i;
       (map(accum, (start, i')), i' + 1);
@@ -410,12 +407,12 @@ let reduceMap =
     | _ => (None, i)
     }
   and func = (i, func) => {
-    (Function({func, squareResultSuperscript: None}), i + 1);
+    (Function({func, resultSuperscript: None}), i + 1);
   }
   and funcS = (i, func) => {
     let i' = i + 1;
-    let (squareResultSuperscript, i') = readSuperscript(i');
-    (Function({func, squareResultSuperscript}), i');
+    let (resultSuperscript, i') = readSuperscript(i');
+    (Function({func, resultSuperscript}), i');
   }
   and vectorS = (i, ~numElements) => {
     let i' = i + 1;
@@ -449,7 +446,7 @@ let reduceMap =
   let rec readUntilEnd = (~accum=initial, i) =>
     switch (Belt.Array.get(input, i)) {
     | None => map(accum, (0, i))
-    | Some(Arg) => raise(UnexpectedArg(i))
+    | Some(Arg) => assert(false)
     | Some(_) =>
       let (node, i') = readNodeExn(i);
       readUntilEnd(~accum=reduce(accum, node, (i, i')), i');

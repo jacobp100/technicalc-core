@@ -38,8 +38,8 @@ let ofRational = (n, d, c) =>
     nan;
   } else {
     let n = d >= 0 ? n : - n;
-    let d = abs(d);
-    let gcd = gcd(abs(n), d);
+    let d = IntUtil.abs(d);
+    let gcd = gcd(IntUtil.abs(n), d);
     let n = n / gcd;
     let d = d / gcd;
 

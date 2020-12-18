@@ -14,6 +14,20 @@ const createConfig = ({ name, entry, outputDirectory, target = "web" }) => ({
   },
   target,
   externals: ["react", /^react-native-svg/],
+  module: {
+    rules: [
+      // Reduce precision of built-in constants in decimal.js
+      // From the default of 1000 to 100
+      {
+        test: /decimal\.js/,
+        loader: "string-replace-loader",
+        options: {
+          search: /(\d\.\d{99})\d+/g,
+          replace: "$1",
+        },
+      },
+    ],
+  },
   resolve: {
     alias: {
       "bs-platform": path.resolve(__dirname, "node_modules/bs-platform"),
@@ -21,8 +35,18 @@ const createConfig = ({ name, entry, outputDirectory, target = "web" }) => ({
   },
   plugins: [
     new webpack.NormalModuleReplacementPlugin(
-      /svg[\\/]fonts[\\/]tex[\\/].*.js$/,
-      require.resolve("./mathjax-stubs/fonts")
+      /svg[\\/]fonts[\\/]tex[\\/].*\.js$/,
+      (result) => {
+        // https://github.com/webpack/webpack/blob/master/lib/NormalModuleReplacementPlugin.js
+        const basename = path.basename(result.request);
+        const file = require.resolve(`./fonts-stubs/${basename}`);
+        // eslint-disable-next-line no-param-reassign
+        result.request = file;
+        if (result.createData != null) {
+          // eslint-disable-next-line no-param-reassign
+          result.createData.resource = file;
+        }
+      }
     ),
     new webpack.NormalModuleReplacementPlugin(
       /util[\\/]Entities.js$/,

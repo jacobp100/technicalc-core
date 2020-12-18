@@ -25,10 +25,10 @@ const ensureDir = (dir) => {
   }
 };
 
-const fontsJsonPath = path.resolve(__dirname, "../fonts-json");
+const fontsStubs = path.resolve(__dirname, "../fonts-stubs");
 const fontsAssetsPath = path.resolve(__dirname, "../fonts-assets");
 
-ensureDir(fontsJsonPath);
+ensureDir(fontsStubs);
 ensureDir(fontsAssetsPath);
 
 const buildJsonFont = (font, { preserveSvgChars }) => {
@@ -46,6 +46,8 @@ const buildJsonFont = (font, { preserveSvgChars }) => {
   return JSON.stringify(font);
 };
 
+const camelCase = (s) => s.replace(/-(\w)/g, (_, c) => c.toUpperCase());
+
 const writeFont = (font, name, options = {}) => {
   if (options.preserveSvgChars !== true) {
     fs.writeFileSync(
@@ -54,22 +56,61 @@ const writeFont = (font, name, options = {}) => {
     );
   }
 
+  const stubName = name.startsWith("size") ? `tex-${name}` : name;
+
   fs.writeFileSync(
-    path.join(fontsJsonPath, `${name}.json`),
+    path.join(fontsStubs, `${stubName}.json`),
     buildJsonFont(font, options)
   );
+
+  fs.writeFileSync(
+    path.join(fontsStubs, `${stubName}.js`),
+    `export { default as ${camelCase(stubName)} } from './${stubName}.json';\n`
+  );
 };
+
+const verticalBracketExtensions = [0x239c, 0x239f, 0x23a2, 0x23a5];
 
 writeFont(boldItalic, "bold-italic");
 writeFont(bold, "bold");
 writeFont(italic, "italic");
 writeFont(normal, "normal", {
-  preserveSvgChars: [
-    // abs and d/dx with large content
-    0x2223,
-  ],
+  // abs and d/dx with large content
+  preserveSvgChars: [0x2223],
 });
-writeFont(largeop, "largeop", { preserveSvgChars: true });
-writeFont(smallop, "smallop", { preserveSvgChars: true });
-writeFont(texSize3, "size3", { preserveSvgChars: true });
-writeFont(texSize4, "size4", { preserveSvgChars: true });
+writeFont(largeop, "largeop", {
+  preserveSvgChars: verticalBracketExtensions,
+});
+writeFont(smallop, "smallop", {
+  preserveSvgChars: verticalBracketExtensions,
+});
+writeFont(texSize3, "size3", {
+  preserveSvgChars: verticalBracketExtensions,
+});
+writeFont(texSize4, "size4", {
+  preserveSvgChars: verticalBracketExtensions,
+});
+
+const stubFont = (name) => {
+  fs.writeFileSync(
+    path.join(fontsStubs, `${name}.js`),
+    `export const ${camelCase(name)} = {};\n`
+  );
+};
+
+stubFont("double-struck");
+stubFont("fraktur-bold");
+stubFont("fraktur");
+stubFont("monospace");
+stubFont("sans-serif-bold-italic");
+stubFont("sans-serif-bold");
+stubFont("sans-serif-italic");
+stubFont("sans-serif");
+stubFont("script-bold");
+stubFont("script");
+stubFont("tex-calligraphic-bold");
+stubFont("tex-calligraphic");
+stubFont("tex-mathit");
+stubFont("tex-oldstyle-bold");
+stubFont("tex-oldstyle");
+stubFont("tex-variant");

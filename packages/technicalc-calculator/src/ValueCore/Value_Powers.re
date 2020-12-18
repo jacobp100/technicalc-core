@@ -21,7 +21,7 @@ let rec pow = (a: t, b: t): t =>
   | (`Z, `Z) => `N
   | (`R(Rational(n, d, Unit)), `R(Rational(1, 2, Unit))) when isSquare(d) =>
     let denSqrt = float_of_int(d)->sqrt->FloatUtil.intValueExn;
-    let r = Real.ofRational(1, denSqrt, Sqrt(abs(n)));
+    let r = Real.ofRational(1, denSqrt, Sqrt(IntUtil.abs(n)));
     if (n >= 0) {
       ofReal(r);
     } else {

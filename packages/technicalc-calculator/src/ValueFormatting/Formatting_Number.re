@@ -4,7 +4,7 @@ let trimTraillingZeros = (~startIndex=0, ~endIndex=?, string) => {
   let sliceIndex = ref(endIndex);
   let break = ref(false);
   while (sliceIndex^ >= startIndex && ! break^) {
-    switch (Js.String.get(string, sliceIndex^)) {
+    switch (StringUtil.stringCharAtUnsafe(string, sliceIndex^)) {
     | "0" => sliceIndex := sliceIndex^ - 1
     | "." =>
       sliceIndex := sliceIndex^ - 1;
@@ -13,8 +13,8 @@ let trimTraillingZeros = (~startIndex=0, ~endIndex=?, string) => {
     };
   };
 
-  String.sub(string, 0, sliceIndex^ + 1)
-  ++ String.sub(string, endIndex + 1, String.length(string) - 1 - endIndex);
+  StringUtil.slice(string, 0, sliceIndex^ + 1)
+  ++ StringUtil.slice(string, endIndex + 1, String.length(string));
 };
 
 let adddigitGrouping = (~startIndex=0, ~endIndex=?, string) => {
@@ -24,9 +24,9 @@ let adddigitGrouping = (~startIndex=0, ~endIndex=?, string) => {
   while (index^ > startIndex) {
     let len = String.length(baseStr^);
     baseStr :=
-      String.sub(baseStr^, 0, index^)
+      StringUtil.slice(baseStr^, 0, index^)
       ++ ","
-      ++ String.sub(baseStr^, index^, len - index^);
+      ++ StringUtil.slice(baseStr^, index^, len);
     index := index^ - 3;
   };
   baseStr^;
@@ -52,7 +52,7 @@ let formatInteger = (~base=10, ~digitGrouping=false, num) => {
     } else {
       str;
     };
-  String.uppercase_ascii(str);
+  StringUtil.toUpperCase(str);
 };
 
 let formatDecimal =
@@ -74,7 +74,7 @@ let formatDecimal =
     if (maxDecimalPlaces == 0) {
       "";
     } else if (Decimal.(decimalPart == zero)) {
-      String.make(minDecimalPlaces, '0');
+      StringUtil.make(minDecimalPlaces, '0');
     } else {
       let decimalAsInteger =
         Decimal.(
@@ -82,7 +82,7 @@ let formatDecimal =
         );
       let baseStr = decimalToString(~base, decimalAsInteger);
       let str =
-        String.make(maxDecimalPlaces - String.length(baseStr), '0')
+        StringUtil.make(maxDecimalPlaces - String.length(baseStr), '0')
         ++ baseStr;
       trimTraillingZeros(~startIndex=minDecimalPlaces, str);
     };

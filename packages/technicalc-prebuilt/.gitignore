@@ -13,5 +13,5 @@ coverage
 
 /dist
 /fonts-assets
-/fonts-json
+/fonts-stubs
 /test.js

@@ -38,7 +38,7 @@ and iterArgs = (~argCount, ast, ranges, i) =>
 let bracketRanges = (ast: array(t)) =>
   switch (prependBracketRanges(ast, [], 0)) {
   | ([], _) => None
-  | (ranges, _) => Belt.List.toArray(ranges)->Js.Array.reverseInPlace->Some
+  | (ranges, _) => Belt.List.toArray(ranges)->ArrayUtil.reverseInPlace->Some
   };
 
 let bracketRange = (ranges, index) =>

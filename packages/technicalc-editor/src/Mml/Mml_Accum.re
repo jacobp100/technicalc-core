@@ -98,7 +98,7 @@ module BracketGroups = {
     bracketGroups: [],
   };
 
-  let transformTopLevelWithArg = ({level0Body, bracketGroups}, arg, fn) =>
+  let transformCurrentGroupWithArg = ({level0Body, bracketGroups}, arg, fn) =>
     switch (bracketGroups) {
     | [{body} as bracketGroup, ...rest] => {
         level0Body,
@@ -134,8 +134,8 @@ module BracketGroups = {
     ("class", "invalid"),
     ("stretchy", "false"),
   ];
-  let appendCloseBracket = (accum, range, superscript): t =>
-    switch (accum.bracketGroups) {
+  let appendCloseBracket = (v, range, superscript): t =>
+    switch (v.bracketGroups) {
     | [closed, ...nextBracketGroups] =>
       // We want the superscript to be over the whole bracket group,
       // not just over the close bracket
@@ -147,7 +147,7 @@ module BracketGroups = {
         | None => elementWithRange("mo", range, ")")
         };
 
-      flattenBracketGroup(accum, closed)
+      flattenBracketGroup(v, closed)
       ->DigitGroups.append(closeBracket)
       ->DigitGroups.map(body =>
           switch (superscript) {
@@ -160,18 +160,18 @@ module BracketGroups = {
           | None => createElement("mrow", body)
           }
         )
-      ->transformTopLevelWithArg(
-          {...accum, bracketGroups: nextBracketGroups},
+      ->transformCurrentGroupWithArg(
+          {...v, bracketGroups: nextBracketGroups},
           _,
           DigitGroups.concat,
         );
     | [] =>
       let attributes = invalidAttributes;
       elementWithRange(~attributes, ~superscript?, "mo", range, ")")
-      ->transformTopLevelWithArg(accum, _, DigitGroups.append);
+      ->transformCurrentGroupWithArg(v, _, DigitGroups.append);
     };
 
-  let flatten = ({level0Body, bracketGroups} as v) => {
+  let%private flatten = ({level0Body, bracketGroups} as v) => {
     let rec iter = bracketGroups =>
       switch (bracketGroups) {
       | [bracketGroup, ...tail] =>
@@ -201,21 +201,25 @@ module BracketGroups = {
 
 let make = BracketGroups.make;
 let append = (body, element) =>
-  BracketGroups.transformTopLevelWithArg(body, element, DigitGroups.append);
+  BracketGroups.transformCurrentGroupWithArg(
+    body,
+    element,
+    DigitGroups.append,
+  );
 let appendDigit = (body, element) =>
-  BracketGroups.transformTopLevelWithArg(
+  BracketGroups.transformCurrentGroupWithArg(
     body,
     element,
     DigitGroups.appendDigit,
   );
 let appendDecimalSeparator = (body, element) =>
-  BracketGroups.transformTopLevelWithArg(
+  BracketGroups.transformCurrentGroupWithArg(
     body,
     element,
     DigitGroups.appendDecimalSeparator,
   );
 let appendBasePrefix = (body, element) =>
-  BracketGroups.transformTopLevelWithArg(
+  BracketGroups.transformCurrentGroupWithArg(
     body,
     element,
     DigitGroups.appendBasePrefix,

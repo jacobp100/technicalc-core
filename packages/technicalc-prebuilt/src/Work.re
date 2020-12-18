@@ -1,7 +1,9 @@
 type node = TechniCalcCalculator.AST_Types.t;
 
+type context = array((string, string));
+
 type t =
-  | Calculate(node, Js.nullable(Js.Dict.t(string)))
+  | Calculate(node, context)
   | ConvertUnits(
       node,
       array(TechniCalcCalculator.Unit_Types.unitPower),

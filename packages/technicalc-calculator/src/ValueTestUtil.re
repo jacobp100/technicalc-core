@@ -19,8 +19,8 @@ let resolve = a => AST_Evaluation.eval(a);
 let resolveWithContext = (jsContext, a) => {
   let context =
     Js.Dict.entries(jsContext)
-    ->Belt.Array.reduce(Belt.Map.String.empty, (accum, (key, value)) =>
-        Belt.Map.String.set(accum, key, value)
+    ->Belt.Array.reduce(AST_Context.empty, (accum, (key, value)) =>
+        AST_Context.set(accum, key, value)
       );
   AST_Evaluation.eval(~context, a);
 };
@@ -114,7 +114,7 @@ let%private mapMatrix = (a: Value.t, fn: Scalar.t => 'a): array(array('a)) => {
       [|fn(d), fn(e), fn(f)|],
       [|fn(g), fn(h), fn(i)|],
     |]
-  | _ => invalid_arg("Not a matrix")
+  | _ => assert(false)
   };
 };
 

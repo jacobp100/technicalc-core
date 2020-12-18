@@ -3,7 +3,7 @@ type node = TechniCalcCalculator.AST_Types.t;
 type funcitionLike =
   | GenericFunction({
       func: AST.func,
-      squareResultSuperscript: option(node),
+      resultSuperscript: option(node),
     })
   | NLog({base: node})
   | Sum({

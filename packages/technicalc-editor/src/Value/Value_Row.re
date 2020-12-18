@@ -170,11 +170,11 @@ let handleBrackets = elements => {
         Unresolved(OpenBracket, i, _),
         ...after,
       ] =>
-      iter(Value_BracketAccum.openBracket(accum, i, Some(fn)), after)
+      iter(Value_BracketAccum.appendOpenBracket(accum, i, Some(fn)), after)
     | [Unresolved(OpenBracket, i, _), ...after] =>
-      iter(Value_BracketAccum.openBracket(accum, i, None), after)
+      iter(Value_BracketAccum.appendOpenBracket(accum, i, None), after)
     | [Unresolved(CloseBracket(superscript), _, i'), ...after] =>
-      switch (Value_BracketAccum.closeBracket(accum)) {
+      switch (Value_BracketAccum.appendCloseBracket(accum)) {
       | Some((accum, func, elements)) =>
         switch (next(elements)) {
         | Ok(arg) =>
