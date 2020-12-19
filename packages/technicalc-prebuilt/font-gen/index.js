@@ -58,14 +58,16 @@ const writeFont = (font, name, options = {}) => {
 
   const stubName = name.startsWith("size") ? `tex-${name}` : name;
 
-  fs.writeFileSync(
-    path.join(fontsStubs, `${stubName}.json`),
-    buildJsonFont(font, options)
-  );
+  const exportName = camelCase(stubName);
+  const json = buildJsonFont(font, options);
+
+  if (json.includes("'")) {
+    throw new Error("Invalid JSON");
+  }
 
   fs.writeFileSync(
     path.join(fontsStubs, `${stubName}.js`),
-    `export { default as ${camelCase(stubName)} } from './${stubName}.json';\n`
+    `export const ${exportName} = JSON.parse('${json}');\n`
   );
 };
 
@@ -102,9 +104,11 @@ writeFont(texSize4, "size4", {
 });
 
 const stubFont = (name) => {
+  const exportName = camelCase(name);
+
   fs.writeFileSync(
     path.join(fontsStubs, `${name}.js`),
-    `export const ${camelCase(name)} = {};\n`
+    `export const ${exportName} = {};\n`
   );
 };
 
