@@ -69,7 +69,17 @@ const writeFont = (font, name, options = {}) => {
   );
 };
 
-const verticalBracketExtensions = [0x239c, 0x239f, 0x23a2, 0x23a5];
+const verticalBracketExtensions = [
+  // Parentheses
+  0x239c,
+  0x239f,
+  // Square brackets
+  0x23a2,
+  0x23a5,
+  // Square root
+  0xe000,
+  0xe001,
+];
 
 writeFont(boldItalic, "bold-italic");
 writeFont(bold, "bold");
