@@ -226,9 +226,9 @@ let reduce = (accum, element: foldState(string), range) =>
     ->Mml_Accum.append(accum, _)
   | UnitConversion({fromUnits, toUnits}) =>
     let body =
-      Mml_Units.unitPowersToMml(fromUnits)
+      Mml_Units.toMml(fromUnits)
       ++ "<mo>&RightArrow;</mo>"
-      ++ Mml_Units.unitPowersToMml(toUnits);
+      ++ Mml_Units.toMml(toUnits);
     elementWithRange("mrow", range, body)->Mml_Accum.append(accum, _);
   };
 

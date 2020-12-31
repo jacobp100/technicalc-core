@@ -176,9 +176,7 @@ module Units = {
 
   let unitsCompatible = TechniCalcCalculator.Unit_Dimensions.unitsCompatible;
 
-  let unitToMml = TechniCalcEditor.Mml_Units.unitToMml;
-  let unitPowerToMml = TechniCalcEditor.Mml_Units.unitPowerToMml;
-  let unitPowersToMml = TechniCalcEditor.Mml_Units.unitPowersToMml;
+  let toMml = TechniCalcEditor.Mml_Units.toMml;
 
   let units = Units.units;
 };
