@@ -242,5 +242,3 @@ fs.writeFileSync(
   path.resolve(__dirname, "../dist/constants.json"),
   JSON.stringify(out)
 );
-
-export {};

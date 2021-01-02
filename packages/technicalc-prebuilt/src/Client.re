@@ -167,21 +167,22 @@ module Work = {
 };
 
 module Units = {
-  let encodeUnitParts = TechniCalcEditor.Encoding_Units.encodeUnitParts;
-  let decodeUnitParts = encoded =>
-    TechniCalcCalculator.Encoding.read(
-      encoded,
-      TechniCalcEditor.Encoding_Units.readUnitParts,
-    );
+  // let encodeUnitParts = TechniCalcEditor.Encoding_Units.encodeUnitParts;
+  // let decodeUnitParts = encoded =>
+  //   TechniCalcCalculator.Encoding.read(
+  //     encoded,
+  //     TechniCalcEditor.Encoding_Units.readUnitParts,
+  //   );
 
   let unitsCompatible = TechniCalcCalculator.Unit_Dimensions.unitsCompatible;
 
   let toMml = TechniCalcEditor.Mml_Units.toMml;
 
-  let units = Units.units;
-  let prefixes = Units.prefixes;
+  let prefixes = Units_Util.prefixes;
 
-  let prefixToString = Units.prefixToString;
-  let unitToString = Units.unitToString;
-  let prefixValueToMml = Units.prefixValueToMml;
+  let prefixToString = Units_Util.prefixToString;
+  let unitToString = Units_Util.unitToString;
+  let unitPartsToString = Units_Util.unitPartsToString;
+
+  let prefixValueToMml = Units_Util.prefixValueToMml;
 };
