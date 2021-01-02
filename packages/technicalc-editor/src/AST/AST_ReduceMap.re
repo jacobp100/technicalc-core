@@ -169,8 +169,8 @@ type foldState('a) =
       superscript: option(superscript('a)),
     })
   | UnitConversion({
-      fromUnits: array(TechniCalcCalculator.Unit_Types.unitPower),
-      toUnits: array(TechniCalcCalculator.Unit_Types.unitPower),
+      fromUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
+      toUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
     })
   | Variable({
       nucleus: string,

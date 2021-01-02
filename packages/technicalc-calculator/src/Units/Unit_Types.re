@@ -1,8 +1,29 @@
+type prefix =
+  | Unit
+  | Femto
+  | Pico
+  | Nano
+  | Micro
+  | Milli
+  | Centi
+  | Deci
+  | Deca
+  | Hecto
+  | Kilo
+  | Mega
+  | Giga
+  | Tera
+  | Peta
+  | Kibi
+  | Mebi
+  | Gibi
+  | Tebi
+  | Pebi;
+
 /*
  This would be much better as a polymorphic variant, but it meant any switch
  statement over values took over 1kb of JS to compile
  */
-
 type unitType =
   /* Time */
   | Second
@@ -14,11 +35,6 @@ type unitType =
   | Year
   | Decade
   | Century
-  | Femtosecond
-  | Picosecond
-  | Nanosecond
-  | Microsecond
-  | Millisecond
   /* Length */
   | Meter
   | Inch
@@ -29,25 +45,12 @@ type unitType =
   | LightYear
   | Parsec
   | Angstrom
-  | Femtometer
-  | Picometer
-  | Nanometer
-  | Micrometer
-  | Millimeter
-  | Centimeter
-  | Kilometer
   /* Mass */
   | Gram
   | Tonne
   | Ounce
   | Pound
   | Stone
-  | Femtogram
-  | Picogram
-  | Nanogram
-  | Microgram
-  | Milligram
-  | Kilogram
   /* Area */
   | Acre
   | Hectare
@@ -61,83 +64,35 @@ type unitType =
   | Teaspoon
   | Tablespoon
   | FluidOunce
-  | Milliliter
-  | Centiliter
   /* Speed */
   | Knot
   /* Force */
   | Newton
   | PoundForce
-  | FemtoNewton
-  | PicoNewton
-  | NanoNewton
-  | MicroNewton
-  | MilliNewton
-  | KiloNewton
-  | MegaNewton
-  | GigaNewton
-  | TeraNewton
-  | PetaNewton
   /* Pressure */
   | Pascal
   | Atmosphere
   | Bar
-  | HectoPascal
-  | KiloPascal
-  | Millibar
   /* Energy */
   | Joule
   | Calorie
   | ElectronVolt
   | BTU
   | Therm
-  | Femtojoule
-  | Picojoule
-  | Nanojoule
-  | Microjoule
-  | Millijoule
-  | Centijoule
-  | Kilojoule
-  | Megajoule
-  | Gigajoule
-  | Terajoule
-  | Petajoule
   /* Power */
   | Watt
   | Horsepower
   | MetricHorsepower
-  | Nanowatt
-  | Microwatt
-  | Milliwatt
-  | Kilowatt
-  | Megawatt
-  | Gigawatt
   /* Memory */
   | Bit
   | Byte
-  | Kilobit
-  | Megabit
-  | Gigabit
-  | Terabit
-  | Petabit
-  | Kibibit
-  | Mebibit
-  | Gibibit
-  | Tebibit
-  | Pebibit
-  | Kilobyte
-  | Megabyte
-  | Gigabyte
-  | Terabyte
-  | Petabyte
-  | Kibibyte
-  | Mebibyte
-  | Gibibyte
-  | Tebibyte
-  | Pebibyte
   /* Temperature */
   | Kelvin
   | Celsius
   | Fahrenheit;
 
-type unitPower = (unitType, int);
+type unitPart = {
+  prefix,
+  unit: unitType,
+  power: int,
+};

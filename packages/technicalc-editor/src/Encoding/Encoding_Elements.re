@@ -1,13 +1,13 @@
 open TechniCalcCalculator.Encoding;
 
 let%private encodeUnitConversion = (~fromUnits, ~toUnits) =>
-  Encoding_Units.encodeUnitPowers(fromUnits)
-  ++ Encoding_Units.encodeUnitPowers(toUnits);
+  Encoding_Units.encodeUnitParts(fromUnits)
+  ++ Encoding_Units.encodeUnitParts(toUnits);
 
 let%private readUnitConversion = reader =>
   switch (
-    Encoding_Units.readUnitPowers(reader),
-    Encoding_Units.readUnitPowers(reader),
+    Encoding_Units.readUnitParts(reader),
+    Encoding_Units.readUnitParts(reader),
   ) {
   | (Some(fromUnits), Some(toUnits)) =>
     Some(AST_Types.UnitConversion({fromUnits, toUnits}))

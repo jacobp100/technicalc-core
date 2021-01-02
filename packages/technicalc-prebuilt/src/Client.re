@@ -167,11 +167,11 @@ module Work = {
 };
 
 module Units = {
-  let encodeUnitPowers = TechniCalcEditor.Encoding_Units.encodeUnitPowers;
-  let decodeUnitPowers = encoded =>
+  let encodeUnitParts = TechniCalcEditor.Encoding_Units.encodeUnitParts;
+  let decodeUnitParts = encoded =>
     TechniCalcCalculator.Encoding.read(
       encoded,
-      TechniCalcEditor.Encoding_Units.readUnitPowers,
+      TechniCalcEditor.Encoding_Units.readUnitParts,
     );
 
   let unitsCompatible = TechniCalcCalculator.Unit_Dimensions.unitsCompatible;
@@ -179,4 +179,9 @@ module Units = {
   let toMml = TechniCalcEditor.Mml_Units.toMml;
 
   let units = Units.units;
+  let prefixes = Units.prefixes;
+
+  let prefixToString = Units.prefixToString;
+  let unitToString = Units.unitToString;
+  let prefixValueToMml = Units.prefixValueToMml;
 };

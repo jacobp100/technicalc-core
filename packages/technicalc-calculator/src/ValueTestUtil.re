@@ -121,6 +121,11 @@ let%private mapMatrix = (a: Value.t, fn: Scalar.t => 'a): array(array('a)) => {
 let toFloatsMatrix = mapMatrix(_, Scalar.toFloat);
 let toComplexFloatsMatrix = mapMatrix(_, toComplexFloats);
 
+let testPrefixes = Js.Dict.empty();
+Js.Dict.set(testPrefixes, "unit", Unit_Types.Unit);
+Js.Dict.set(testPrefixes, "milli", Unit_Types.Milli);
+Js.Dict.set(testPrefixes, "kilo", Unit_Types.Kilo);
+
 let testUnits = Js.Dict.empty();
 Js.Dict.set(testUnits, "second", Unit_Types.Second);
 Js.Dict.set(testUnits, "hour", Unit_Types.Hour);

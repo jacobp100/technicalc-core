@@ -1,8 +1,8 @@
 open TechniCalcCalculator.Unit_Types;
 
-[@bs.module "./Encoding_ElementMapping"]
+[@bs.module "./Encoding_UnitMapping"]
 external mapping: array(int) = "mapping";
-[@bs.module "./Encoding_ElementMapping"]
+[@bs.module "./Encoding_UnitMapping"]
 external reverseMapping: array(unitType) = "reverseMapping";
 
 let toUint = (element: unitType): int =>

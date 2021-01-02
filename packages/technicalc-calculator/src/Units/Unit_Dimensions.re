@@ -34,12 +34,7 @@ let ofUnit = (v: unitType) =>
   | Month
   | Year
   | Decade
-  | Century
-  | Femtosecond
-  | Picosecond
-  | Nanosecond
-  | Microsecond
-  | Millisecond => time
+  | Century => time
   /* Length */
   | Meter
   | Inch
@@ -49,26 +44,13 @@ let ofUnit = (v: unitType) =>
   | NauticalMile
   | LightYear
   | Parsec
-  | Angstrom
-  | Femtometer
-  | Picometer
-  | Nanometer
-  | Micrometer
-  | Millimeter
-  | Centimeter
-  | Kilometer => length
+  | Angstrom => length
   /* Mass */
   | Gram
   | Tonne
   | Ounce
   | Pound
-  | Stone
-  | Femtogram
-  | Picogram
-  | Nanogram
-  | Microgram
-  | Milligram
-  | Kilogram => mass
+  | Stone => mass
   /* Area */
   | Acre
   | Hectare => area
@@ -81,92 +63,40 @@ let ofUnit = (v: unitType) =>
   | USCup
   | Teaspoon
   | Tablespoon
-  | FluidOunce
-  | Milliliter
-  | Centiliter => volume
+  | FluidOunce => volume
   /* Speed */
   | Knot => speed
   /* Force */
   | Newton
-  | PoundForce
-  | FemtoNewton
-  | PicoNewton
-  | NanoNewton
-  | MicroNewton
-  | MilliNewton
-  | KiloNewton
-  | MegaNewton
-  | GigaNewton
-  | TeraNewton
-  | PetaNewton => force
+  | PoundForce => force
   /* Pressure */
   | Pascal
   | Atmosphere
-  | Bar
-  | HectoPascal
-  | KiloPascal
-  | Millibar => pressure
+  | Bar => pressure
   /* Energy */
   | Joule
   | Calorie
   | ElectronVolt
   | BTU
-  | Therm
-  | Femtojoule
-  | Picojoule
-  | Nanojoule
-  | Microjoule
-  | Millijoule
-  | Centijoule
-  | Kilojoule
-  | Megajoule
-  | Gigajoule
-  | Terajoule
-  | Petajoule => energy
+  | Therm => energy
   /* Power */
   | Watt
   | Horsepower
-  | MetricHorsepower
-  | Nanowatt
-  | Microwatt
-  | Milliwatt
-  | Kilowatt
-  | Megawatt
-  | Gigawatt => power
+  | MetricHorsepower => power
   /* Memory */
   | Bit
-  | Byte
-  | Kilobit
-  | Megabit
-  | Gigabit
-  | Terabit
-  | Petabit
-  | Kibibit
-  | Mebibit
-  | Gibibit
-  | Tebibit
-  | Pebibit
-  | Kilobyte
-  | Megabyte
-  | Gigabyte
-  | Terabyte
-  | Petabyte
-  | Kibibyte
-  | Mebibyte
-  | Gibibyte
-  | Tebibyte
-  | Pebibyte => memory
+  | Byte => memory
   /* Temperature */
   | Kelvin
   | Celsius
   | Fahrenheit => temperature
   };
 
-let ofUnitPowers = (units: array(unitPower)) =>
+let ofUnitParts = (units: array(unitPart)) =>
   Belt.Array.reduceU(
     units,
     empty,
-    (. comdinedDimensions, (unit, power)) => {
+    (. comdinedDimensions, {unit, power}) => {
       let dimensions = ofUnit(unit);
       {
         length: comdinedDimensions.length + dimensions.length * power,
@@ -186,5 +116,5 @@ let equal = (a: t, b: t) =>
   && a.memory == b.memory
   && a.temperature == b.temperature;
 
-let unitsCompatible = (a: array(unitPower), b: array(unitPower)) =>
-  equal(ofUnitPowers(a), ofUnitPowers(b));
+let unitsCompatible = (a: array(unitPart), b: array(unitPart)) =>
+  equal(ofUnitParts(a), ofUnitParts(b));

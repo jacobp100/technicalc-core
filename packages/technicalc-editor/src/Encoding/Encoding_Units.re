@@ -1,21 +1,24 @@
 open TechniCalcCalculator.Encoding;
 
-let%private encodeUnitPower =
-  (. (unitType, power): TechniCalcCalculator.Unit_Types.unitPower) =>
-    Encoding_Unit.toUint(unitType)->encodeUint ++ encodeInt(power);
+let%private encodeUnitPart =
+  (. {prefix, unit, power}: TechniCalcCalculator.Unit_Types.unitPart) =>
+    Encoding_Prefix.toUint(prefix)->encodeUint
+    ++ Encoding_Unit.toUint(unit)->encodeUint
+    ++ encodeInt(power);
 
 let%private readUnitPower =
-  (. reader) =>
-    switch (readUint(reader), readInt(reader)) {
-    | (Some(unit), Some(power)) =>
-      switch (Encoding_Unit.ofUint(unit)) {
-      | Some(unit) =>
-        Some((unit, power): TechniCalcCalculator.Unit_Types.unitPower)
-      | None => None
+  (. reader) => (
+    switch (readUint(reader), readUint(reader), readInt(reader)) {
+    | (Some(prefix), Some(unit), Some(power)) =>
+      switch (Encoding_Prefix.ofUint(prefix), Encoding_Unit.ofUint(unit)) {
+      | (Some(prefix), Some(unit)) => Some({prefix, unit, power})
+      | _ => None
       }
     | _ => None
-    };
+    }:
+      option(TechniCalcCalculator.Unit_Types.unitPart)
+  );
 
-let encodeUnitPowers = units => encodeArray(units, encodeUnitPower);
+let encodeUnitParts = units => encodeArray(units, encodeUnitPart);
 
-let readUnitPowers = reader => readArray(reader, readUnitPower);
+let readUnitParts = reader => readArray(reader, readUnitPower);

@@ -14,6 +14,10 @@ const output = new Map([
     "src/Encoding/Encoding_BuildUnitMapping.bs.js",
     "src/Encoding/Encoding_UnitMapping.js",
   ],
+  [
+    "src/Encoding/Encoding_BuildPrefixMapping.bs.js",
+    "src/Encoding/Encoding_PrefixMapping.js",
+  ],
 ]).get(input);
 
 if (output != null) {

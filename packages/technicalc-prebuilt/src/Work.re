@@ -6,8 +6,8 @@ type t =
   | Calculate(node, context)
   | ConvertUnits(
       node,
-      array(TechniCalcCalculator.Unit_Types.unitPower),
-      array(TechniCalcCalculator.Unit_Types.unitPower),
+      array(TechniCalcCalculator.Unit_Types.unitPart),
+      array(TechniCalcCalculator.Unit_Types.unitPart),
     )
   | SolveRoot(node, node)
   | Quadratic(node, node, node)
