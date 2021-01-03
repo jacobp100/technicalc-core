@@ -13,25 +13,24 @@ type self = {
 let make = self => {
   open TechniCalcCalculator.AST;
 
+  let decodeContext = context =>
+    Belt.Array.reduce(
+      context, TechniCalcCalculator.AST_Context.empty, (accum, (key, value)) => {
+      TechniCalcCalculator.(
+        Value_Encoding.decode(value)
+        ->Belt.Option.getWithDefault(Value_Base.nan)
+        ->TechniCalcCalculator.AST_Context.set(accum, key, _)
+      )
+    });
+
   let getResults = work =>
     switch (work) {
     | Work.Calculate(a, context) =>
-      let context =
-        Belt.Array.reduce(
-          context,
-          TechniCalcCalculator.AST_Context.empty,
-          (accum, (key, value)) => {
-          TechniCalcCalculator.(
-            Value_Encoding.decode(value)
-            ->Belt.Option.getWithDefault(Value_Base.nan)
-            ->TechniCalcCalculator.AST_Context.set(accum, key, _)
-          )
-        });
-      let res = eval(~context, a);
+      let res = eval(~context=decodeContext(context), a);
       [|res|];
-    | ConvertUnits(a, fromUnits, toUnits) =>
+    | ConvertUnits(a, fromUnits, toUnits, context) =>
       let res =
-        eval(~context=TechniCalcCalculator.AST_Context.empty, a)
+        eval(~context=decodeContext(context), a)
         ->TechniCalcCalculator.Units.convert(~fromUnits, ~toUnits);
       [|res|];
     | SolveRoot(body, initial) =>

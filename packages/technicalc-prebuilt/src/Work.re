@@ -8,6 +8,7 @@ type t =
       node,
       array(TechniCalcCalculator.Unit_Types.unitPart),
       array(TechniCalcCalculator.Unit_Types.unitPart),
+      context,
     )
   | SolveRoot(node, node)
   | Quadratic(node, node, node)

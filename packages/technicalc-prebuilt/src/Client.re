@@ -140,23 +140,19 @@ module Value = {
 };
 
 module Work = {
-  [@bs.scope "Object"] [@bs.val]
-  external entries: Js.Dict.t('a) => array((string, 'a)) = "entries";
+  let%private encodeContext = context =>
+    switch (context) {
+    | Some(context) =>
+      Js.Dict.entries(context)
+      ->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
+    | None => [||]
+    };
 
-  let calculate =
-      (body, context: option(Js.Dict.t(TechniCalcCalculator.Value_Types.t)))
-      : Work.t => {
-    let context =
-      switch (context) {
-      | Some(context) =>
-        entries(context)
-        ->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
-      | None => [||]
-      };
-    Calculate(body, context);
+  let calculate = (body, context): Work.t => {
+    Calculate(body, encodeContext(context));
   };
-  let convertUnits = (body, fromUnits, toUnits): Work.t =>
-    ConvertUnits(body, fromUnits, toUnits);
+  let convertUnits = (body, fromUnits, toUnits, context): Work.t =>
+    ConvertUnits(body, fromUnits, toUnits, encodeContext(context));
   let solveRoot = (body, initial): Work.t => SolveRoot(body, initial);
   let quadratic = (a, b, c): Work.t => Quadratic(a, b, c);
   let cubic = (a, b, c, d): Work.t => Cubic(a, b, c, d);
