@@ -169,8 +169,4 @@ test("should handle multiple labels in a row between non-label elements", (.) =>
 
   let state = previous(state);
   expect(state.index)->toBe(0);
-  // expect(setIndex(state, 0).index)->toBe(0);
-  // expect(setIndex(state, 1).index)->toBe(1);
-  // expect(setIndex(state, 2).index)->toBe(2);
-  // expect(setIndex(state, 3).index)->toBe(2);
 });

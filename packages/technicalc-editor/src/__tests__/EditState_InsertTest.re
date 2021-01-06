@@ -279,3 +279,64 @@ test("should only remove a single label when inserting", (.) => {
   ->toEqual([|N1_S, LabelS({mml: "x"}), N2_S, LabelS({mml: "z"}), N3_S|]);
   expect(index)->toEqual(3);
 });
+
+test("should select first label when inserting array", (.) => {
+  let {index} =
+    make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+    ->insertArray([|
+        N1_S,
+        LabelS({mml: "selected"}),
+        N2_S,
+        LabelS({mml: "not_selected"}),
+        N3_S,
+      |]);
+
+  expect(index)->toBe(1);
+});
+
+test("should select first empty argument when inserting array", (.) => {
+  let {index} =
+    make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+    ->insertArray([|Frac2S, Arg, Arg|]);
+
+  expect(index)->toBe(1);
+});
+
+test("should not select non-empty arguments when inserting array", (.) => {
+  let {index} =
+    make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+    ->insertArray([|Frac2S, N1_S, Arg, Arg|]);
+
+  expect(index)->toBe(3);
+});
+
+test(
+  "should not select non-empty arguments in functions after the first when inserting array",
+  (.) => {
+    let {index} =
+      make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+      ->insertArray([|Frac2S, N1_S, Arg, N2_S, Arg, Superscript1, Arg|]);
+
+    expect(index)->toBe(6);
+  },
+);
+
+test(
+  "should select after array when inserting array with no labels or placeholders",
+  (.) => {
+    let {index} =
+      make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+      ->insertArray([|
+          Frac2S,
+          N1_S,
+          Arg,
+          N2_S,
+          Arg,
+          Superscript1,
+          N3_S,
+          Arg,
+        |]);
+
+    expect(index)->toBe(8);
+  },
+);

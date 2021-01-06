@@ -15,7 +15,7 @@ let rec im = (a: t): t =>
   | `Z
   | `R(_) => `Z
   | `I(_) => a
-  | `C(_, im) => ofImag(im)
+  | `C(_, im) => ofReal(im)
   | `P(p) => im(Value_Util.percentToNumerical(p))
   | _ => `N
   };

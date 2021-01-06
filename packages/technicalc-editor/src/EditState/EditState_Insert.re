@@ -239,6 +239,23 @@ let insert =
   };
 };
 
+let%private firstLabelOrEmptyArgumentIndexExn = (elements: array(AST.t)) => {
+  let rec iter = (~argWillFormPlaceholder, i) =>
+    switch (Belt.Array.get(elements, i)) {
+    | Some(LabelS(_)) => Some(i)
+    | Some(Arg) =>
+      if (argWillFormPlaceholder) {
+        Some(i);
+      } else {
+        iter(~argWillFormPlaceholder=true, i + 1);
+      }
+    | Some(e) =>
+      iter(~argWillFormPlaceholder=AST_Types.argCountExn(e) !== 0, i + 1)
+    | None => None
+    };
+  iter(~argWillFormPlaceholder=false, 0);
+};
+
 let insertArray =
     (
       {index, elements, allowLabelEditing} as editState,
@@ -256,12 +273,7 @@ let insertArray =
     let elements = ArrayUtil.insertArray(elements, insertedElements, index);
 
     let advanceBy =
-      Belt.Array.getIndexByU(insertedElements, (. element) =>
-        switch (element) {
-        | LabelS(_) => true
-        | _ => false
-        }
-      )
+      firstLabelOrEmptyArgumentIndexExn(insertedElements)
       ->Belt.Option.getWithDefault(Belt.Array.length(insertedElements));
 
     let index = index + advanceBy;
