@@ -4,13 +4,17 @@ type context = array((string, string));
 
 type t =
   | Calculate(node, context)
-  | ConvertUnits(
-      node,
-      array(TechniCalcCalculator.Unit_Types.unitPart),
-      array(TechniCalcCalculator.Unit_Types.unitPart),
+  | ConvertUnits({
+      body: node,
+      fromUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
+      toUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
       context,
-    )
-  | SolveRoot(node, node)
+    })
+  | SolveRoot({
+      lhs: node,
+      rhs: node,
+      initialGuess: node,
+    })
   | Quadratic(node, node, node)
   | Cubic(node, node, node, node)
   | Var2(node, node, node, node, node, node)

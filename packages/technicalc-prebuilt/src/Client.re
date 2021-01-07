@@ -152,8 +152,14 @@ module Work = {
     Calculate(body, encodeContext(context));
   };
   let convertUnits = (body, fromUnits, toUnits, context): Work.t =>
-    ConvertUnits(body, fromUnits, toUnits, encodeContext(context));
-  let solveRoot = (body, initial): Work.t => SolveRoot(body, initial);
+    ConvertUnits({
+      body,
+      fromUnits,
+      toUnits,
+      context: encodeContext(context),
+    });
+  let solveRoot = (lhs, rhs, initialGuess): Work.t =>
+    SolveRoot({lhs, rhs, initialGuess});
   let quadratic = (a, b, c): Work.t => Quadratic(a, b, c);
   let cubic = (a, b, c, d): Work.t => Cubic(a, b, c, d);
   let var2 = (x0, y0, c0, x1, y1, c1): Work.t =>

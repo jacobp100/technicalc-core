@@ -25,16 +25,17 @@ let make = self => {
 
   let getResults = work =>
     switch (work) {
-    | Work.Calculate(a, context) =>
-      let res = eval(~context=decodeContext(context), a);
+    | Work.Calculate(body, context) =>
+      let res = eval(~context=decodeContext(context), body);
       [|res|];
-    | ConvertUnits(a, fromUnits, toUnits, context) =>
+    | ConvertUnits({body, fromUnits, toUnits, context}) =>
       let res =
-        eval(~context=decodeContext(context), a)
+        eval(~context=decodeContext(context), body)
         ->TechniCalcCalculator.Units.convert(~fromUnits, ~toUnits);
       [|res|];
-    | SolveRoot(body, initial) =>
-      let res = solveRoot(body, initial);
+    | SolveRoot({lhs, rhs, initialGuess}) =>
+      let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs);
+      let res = solveRoot(body, initialGuess);
       [|res|];
     | Quadratic(a, b, c) =>
       let (x0, x1) = solveQuadratic(a, b, c);
