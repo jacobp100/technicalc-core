@@ -159,7 +159,7 @@ let out = data.map(({ title: baseTitle, tex }) => {
   let formattedTex = tex;
   formattedTex = formattedTex.replace(
     /(?:\$([^$]*)\$|([^$,]+))/g,
-    (full, texString, rawString) => {
+    (_full, texString, rawString) => {
       if (texString) return texString;
       if (rawString) return `{\\rm ${rawString}}`;
       throw new Error("Oh");
@@ -188,18 +188,17 @@ let out = data.map(({ title: baseTitle, tex }) => {
       .replace("magnetic", "mag.")
       .trim();
 
-  const { value, valueUtf } = nist.find(
-    (item) => normalizeTitle(baseTitle) === normalizeTitle(item.title)
-  );
+  const baseTitleNormalized = normalizeTitle(baseTitle);
+  const { value, valueUtf } = nist.find((item) => {
+    return baseTitleNormalized === normalizeTitle(item.title);
+  });
   let symbolMml;
 
   try {
     symbolMml = unnestDocument(Typeset(formattedTex, true));
     // Remove mrows that only contain one element
-    symbolMml = symbolMml.replace(
-      /<mrow>(<(\w+)[^>]*>[^<]*<\/\2>)<\/mrow>/g,
-      "$1"
-    );
+    symbolMml = symbolMml
+      .replace(/<mrow>(<(\w+)[^>]*>[^<]*<\/\2>)<\/mrow>/g, "$1");
 
     if (symbolMml.includes("merror")) {
       throw new Error(`Invalid tex ${tex}`);
@@ -214,7 +213,106 @@ let out = data.map(({ title: baseTitle, tex }) => {
 
   const title = baseTitle[0].toUpperCase() + baseTitle.slice(1);
 
-  return { title, value, symbolMml, valueUtf };
+  const alias = Array.from(
+    symbolMml.matchAll(/<m([ino]|text)[^>]*>([^<>]+)<\/m\1>/g),
+    (match) => match[2]
+  )
+    .join("")
+    .toLowerCase()
+    .replace(/[()]/g, "")
+    .replace(/&#x([0-9A-Fa-f]+);/g, (fullMatch, code) => {
+      switch (parseInt(code, 16)) {
+        case 0xa0: // NO-BREAK SPACE
+        case 0x2061: // FUNCTION APPLICATION?
+          return "";
+        case 0x03b1:
+        case 0x0391:
+          return "alpha";
+        case 0x03b2:
+        case 0x0392:
+          return "beta";
+        case 0x03b3:
+        case 0x0393:
+          return "gamma";
+        case 0x03b4:
+        case 0x0394:
+          return "delta";
+        case 0x03b5:
+        case 0x0395:
+          return "epsilon";
+        case 0x03b6:
+        case 0x0396:
+          return "zeta";
+        case 0x03b7:
+        case 0x0397:
+          return "eta";
+        case 0x03b8:
+        case 0x0398:
+          return "theta";
+        case 0x03b9:
+        case 0x0399:
+          return "iota";
+        case 0x03ba:
+        case 0x039a:
+          return "kappa";
+        case 0x03bb:
+        case 0x039b:
+          return "lambda";
+        case 0x03bc:
+        case 0x039c:
+          return "mu";
+        case 0x03bd:
+        case 0x039d:
+          return "nu";
+        case 0x03be:
+        case 0x039e:
+          return "xi";
+        case 0x03bf:
+        case 0x039f:
+          return "omicron";
+        case 0x03c0:
+        case 0x03a0:
+          return "pi";
+        case 0x03c1:
+        case 0x03a1:
+          return "rho";
+        case 0x03c3:
+        case 0x03a3:
+          return "sigma";
+        case 0x03c4:
+        case 0x03a4:
+          return "tau";
+        case 0x03c5:
+        case 0x03a5:
+          return "upsilon";
+        case 0x03c6:
+        case 0x03a6:
+          return "phi";
+        case 0x03c7:
+        case 0x03a7:
+          return "chi";
+        case 0x03c8:
+        case 0x03a8:
+          return "psi";
+        case 0x03c9:
+        case 0x03a9:
+          return "omega";
+        case 0x127:
+          return "hbar";
+        case 0x2032:
+          return "prime";
+        case 0x2212:
+          return "-";
+        case 0x2217:
+          return "*";
+        case 0x221e:
+          return "inf";
+        default:
+          throw new Error(`Failed to replace ${fullMatch}`);
+      }
+    });
+
+  return { title, alias, value, symbolMml, valueUtf };
 });
 
 out = out
