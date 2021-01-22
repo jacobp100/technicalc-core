@@ -146,6 +146,12 @@ let reduce = (accum, element: foldState(string), range) =>
   | Frac({num, den, superscript}) =>
     elementWithRange(~superscript?, "mfrac", range, num ++ den)
     ->Mml_Accum.append(accum, _)
+  | MFrac({integer, num, den, superscript}) =>
+    createElement(
+      "mrow",
+      integer ++ elementWithRange(~superscript?, "mfrac", range, num ++ den),
+    )
+    ->Mml_Accum.append(accum, _)
   | Sqrt({radicand, superscript}) =>
     elementWithRange(~superscript?, "msqrt", range, radicand)
     ->Mml_Accum.append(accum, _)

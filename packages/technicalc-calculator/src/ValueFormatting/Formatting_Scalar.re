@@ -23,7 +23,36 @@ let%private formatExponential = ((base, exponent), format) =>
     ++ "</msup>"
   };
 
-let%private formatTuple = (re, format): string => {
+let%private formatRow = (x, format) =>
+  switch (format) {
+  | Some({mode: MathML}) => "<mrow>" ++ x ++ "</mrow>"
+  | _ => x
+  };
+
+let%private formatConstantMultiple = (~formatAsRow, n, c, format): string => {
+  let (base, digitGrouping) =
+    switch (format) {
+    | Some(format) => (Some(format.base), Some(format.digitGrouping))
+    | None => (None, None)
+    };
+
+  switch (
+    Formatting_Number.formatInteger(
+      ~base?,
+      ~digitGrouping?,
+      Decimal.ofInt(n),
+    ),
+    Formatting_Constant.toString(~format, c),
+  ) {
+  | ("1", "") => formatNumber("1", format)
+  | ("1", constant) => constant
+  | (numerator, constant) =>
+    let out = formatNumber(numerator, format) ++ constant;
+    formatAsRow ? formatRow(out, format) : out;
+  };
+};
+
+let%private formatReal = (re, format): string => {
   let (base, digitGrouping) =
     switch (format) {
     | Some(format) => (Some(format.base), Some(format.digitGrouping))
@@ -31,49 +60,64 @@ let%private formatTuple = (re, format): string => {
     };
 
   switch (re, format) {
-  | (Real.Rational(n, d, c), Some({style: Natural}) | None) =>
+  | (Real.Rational(n, 1, c), Some({style: Natural(_)})) =>
     let minus = n < 0 ? formatOperator("-", format) : "";
+    let n = IntUtil.abs(n);
+    let constantMultiple =
+      formatConstantMultiple(~formatAsRow=false, n, c, format);
+    minus ++ constantMultiple;
+  | (
+      Real.Rational(n, d, c),
+      Some({mode, style: Natural({mixedFractions})}),
+    ) =>
+    let minus = n < 0 ? formatOperator("-", format) : "";
+    let n = IntUtil.abs(n);
 
-    let (top, needsWrap) =
-      switch (
-        Formatting_Number.formatInteger(
-          ~base?,
-          ~digitGrouping?,
-          IntUtil.abs(n)->Decimal.ofInt,
-        ),
-        Formatting_Constant.toString(~format, c),
-      ) {
-      | ("1", "") => (formatNumber("1", format), false)
-      | ("1", constant) => (constant, false)
-      | (numerator, constant) => (
-          formatNumber(numerator, format) ++ constant,
-          true,
-        )
+    let (before, n) =
+      if (mixedFractions && c == Unit) {
+        let integer = n / d;
+        let remainder = IntUtil.safeMod(n, d);
+        let before =
+          integer == 0
+            ? ""
+            : Formatting_Number.formatInteger(
+                ~base?,
+                ~digitGrouping?,
+                Decimal.ofInt(integer),
+              )
+              ->formatNumber(format);
+        (before, remainder);
+      } else {
+        ("", n);
       };
 
-    switch (
-      format,
+    let top = formatConstantMultiple(~formatAsRow=true, n, c, format);
+
+    let bottom =
       Formatting_Number.formatInteger(
         ~base?,
         ~digitGrouping?,
         Decimal.ofInt(d),
-      ),
-    ) {
-    | (_, "1") => minus ++ top
-    | (Some({mode: String}) | None, bottom) => minus ++ top ++ "/" ++ bottom
-    | (Some({mode: Unicode}), bottom) =>
-      minus ++ top ++ Formatting_Unicode.divide ++ bottom
-    | (Some({mode: Tex}), bottom) =>
-      minus ++ "\\frac{" ++ top ++ "}{" ++ bottom ++ "}"
-    | (Some({mode: MathML}), denominator) =>
-      let top = needsWrap ? "<mrow>" ++ top ++ "</mrow>" : top;
-      let bottom = formatNumber(denominator, format);
-      minus ++ "<mfrac>" ++ top ++ bottom ++ "</mfrac>";
+      )
+      ->formatNumber(format);
+
+    switch (mode) {
+    | String
+    | Unicode =>
+      let divide = mode == String ? "/" : Formatting_Unicode.divide;
+      let out = top ++ divide ++ bottom;
+      let out = before != "" ? before ++ "+" ++ out : out;
+      let out =
+        before != "" && minus != ""
+          ? minus ++ "(" ++ out ++ ")" : minus ++ out;
+      out;
+    | Tex => minus ++ before ++ "\\frac{" ++ top ++ "}{" ++ bottom ++ "}"
+    | MathML => minus ++ before ++ "<mfrac>" ++ top ++ bottom ++ "</mfrac>"
     };
   | (
       _,
       Some({
-        style: Natural | Decimal,
+        style: Natural(_) | Decimal,
         decimalMinMagnitude,
         decimalMaxMagnitude,
         precision,
@@ -120,35 +164,35 @@ let%private formatTuple = (re, format): string => {
       f,
     )
     ->formatExponential(format);
-  | (Decimal(f), None) => Decimal.toString(f)
+  | (_, None) => Real.toDecimal(re)->Decimal.toString
   };
 };
 
-let%private formatImagTuple = (re: Real.t, format): string => {
+let%private formatImag = (re: Real.t, format): string => {
   let i = formatVariable("i", format);
   let compact =
     switch (format) {
-    | Some({style: Natural | Decimal})
+    | Some({style: Natural(_) | Decimal})
     | None => true
     | _ => false
     };
   switch (compact, re) {
   | (true, Rational(1, 1, Unit)) => i
   | (true, Rational((-1), 1, Unit)) => formatOperator("-", format) ++ i
-  | _ => formatTuple(re, format) ++ i
+  | _ => formatReal(re, format) ++ i
   };
 };
 
 let toString = (~format=?, a: Scalar.t): string =>
   switch (a) {
   | `Z => formatNumber("0", format)
-  | `R(re) => formatTuple(re, format)
-  | `I(im) => formatImagTuple(im, format)
+  | `R(re) => formatReal(re, format)
+  | `I(im) => formatImag(im, format)
   | `C(re, im) =>
-    formatTuple(re, format)
+    formatReal(re, format)
     ++ formatOperator(
          Decimal.(Real.toDecimal(im) < zero) ? "-" : "+",
          format,
        )
-    ++ formatImagTuple(Real.abs(im), format)
+    ++ formatImag(Real.abs(im), format)
   };

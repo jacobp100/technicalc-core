@@ -100,6 +100,7 @@ type t =
   /* Atom3 */
   | Integral3
   /* Atom3S */
+  | MFrac3S
   | Vector3S
   /* Matrices */
   | Matrix4S
@@ -202,6 +203,7 @@ let argCountExn = (arg: t) =>
   /* Atom3 */
   | Integral3
   /* Atom3S */
+  | MFrac3S
   | Vector3S => 3
   /* Matrices */
   | Matrix4S => 4

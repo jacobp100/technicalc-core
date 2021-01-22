@@ -61,25 +61,29 @@ let toString = (x, maybeFormat) => {
       switch (styleGet(f)) {
       | Some("decimal") => Decimal
       | Some("engineering") => Engineering
-      | _ => Natural
+      | Some("natural-mixed") => Natural({mixedFractions: true})
+      | _ => defaultFormat.style
       },
     base:
-      baseGet(f)->Belt.Option.getWithDefault(Formatting_Types.default.base),
+      baseGet(f)
+      ->Belt.Option.getWithDefault(Formatting_Types.defaultFormat.base),
     precision:
       precisionGet(f)
-      ->Belt.Option.getWithDefault(Formatting_Types.default.precision),
+      ->Belt.Option.getWithDefault(Formatting_Types.defaultFormat.precision),
     digitGrouping:
       digitGroupingGet(f)
-      ->Belt.Option.getWithDefault(Formatting_Types.default.digitGrouping),
+      ->Belt.Option.getWithDefault(
+          Formatting_Types.defaultFormat.digitGrouping,
+        ),
     decimalMinMagnitude:
       decimalMinMagnitudeGet(f)
       ->Belt.Option.getWithDefault(
-          Formatting_Types.default.decimalMinMagnitude,
+          Formatting_Types.defaultFormat.decimalMinMagnitude,
         ),
     decimalMaxMagnitude:
       decimalMaxMagnitudeGet(f)
       ->Belt.Option.getWithDefault(
-          Formatting_Types.default.decimalMaxMagnitude,
+          Formatting_Types.defaultFormat.decimalMaxMagnitude,
         ),
   };
 

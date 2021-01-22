@@ -33,6 +33,8 @@ let map = (element: foldState('a), i, i') =>
   | ConstE(superscript) => withSuperscript(E, superscript)->Resolved
   | Frac({num, den, superscript}) =>
     withSuperscript(Div(num, den), superscript)->Resolved
+  | MFrac({integer, num, den, superscript}) =>
+    withSuperscript(Add(integer, Div(num, den)), superscript)->Resolved
   | Min({a, b, superscript}) =>
     withSuperscript(Min(a, b), superscript)->Resolved
   | Max({a, b, superscript}) =>

@@ -132,7 +132,8 @@ let%private skipMode = (element: AST.t) =>
   | Max2S
   | Min2S
   | NRoot2S
-  | RandInt2S => Movable
+  | RandInt2S
+  | MFrac3S => Movable
   };
 
 let%private skipInsertables = (x: array(AST.t), ~from, ~direction) => {

@@ -6,6 +6,7 @@ module DigitGroups = {
     | Normal
     | SkipGrouping /* After decimal points etc. */
     | GroupingDigits({numbersRev: list(string)});
+
   type t = {
     state,
     body: string,

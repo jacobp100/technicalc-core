@@ -98,9 +98,9 @@ module Value = {
   let toUnicode = (x, maybePrecision) => {
     open Value_Formatting;
     let precision =
-      maybePrecision->Belt.Option.getWithDefault(default.precision);
+      maybePrecision->Belt.Option.getWithDefault(defaultFormat.precision);
     toString(
-      ~format={...default, mode: Unicode, style: Decimal, precision},
+      ~format={...defaultFormat, mode: Unicode, style: Decimal, precision},
       x,
     );
   };
@@ -119,20 +119,21 @@ module Value = {
         switch (styleGet(f)) {
         | Some("decimal") => Decimal
         | Some("engineering") => Engineering
-        | _ => Natural
+        | Some("natural-mixed") => Natural({mixedFractions: true})
+        | _ => defaultFormat.style
         },
-      base: baseGet(f)->Belt.Option.getWithDefault(default.base),
+      base: baseGet(f)->Belt.Option.getWithDefault(defaultFormat.base),
       precision:
-        precisionGet(f)->Belt.Option.getWithDefault(default.precision),
+        precisionGet(f)->Belt.Option.getWithDefault(defaultFormat.precision),
       digitGrouping:
         digitGroupingGet(f)
-        ->Belt.Option.getWithDefault(default.digitGrouping),
+        ->Belt.Option.getWithDefault(defaultFormat.digitGrouping),
       decimalMinMagnitude:
         decimalMinMagnitudeGet(f)
-        ->Belt.Option.getWithDefault(default.decimalMinMagnitude),
+        ->Belt.Option.getWithDefault(defaultFormat.decimalMinMagnitude),
       decimalMaxMagnitude:
         decimalMaxMagnitudeGet(f)
-        ->Belt.Option.getWithDefault(default.decimalMaxMagnitude),
+        ->Belt.Option.getWithDefault(defaultFormat.decimalMaxMagnitude),
     };
 
     toString(~format, ~inline, x);

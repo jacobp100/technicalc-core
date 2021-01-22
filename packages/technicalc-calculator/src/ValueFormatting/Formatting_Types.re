@@ -5,7 +5,7 @@ type mode =
   | MathML;
 
 type style =
-  | Natural
+  | Natural({mixedFractions: bool})
   | Decimal
   | Engineering;
 
@@ -19,9 +19,9 @@ type format = {
   decimalMaxMagnitude: int,
 };
 
-let default = {
+let defaultFormat = {
   mode: String,
-  style: Natural,
+  style: Natural({mixedFractions: false}),
   base: 10,
   precision: 12,
   digitGrouping: true,

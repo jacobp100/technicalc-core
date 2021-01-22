@@ -1,4 +1,4 @@
-let%private makeSureThisIsTheLastIndex = 84;
+let%private makeSureThisIsTheLastIndex = 85;
 let%private toUint = (element: AST.t) =>
   switch (element) {
   /* Most common (make var-int encoding more efficient) */
@@ -88,7 +88,9 @@ let%private toUint = (element: AST.t) =>
   | SecS => 81
   | CotS => 82
   | DegreeFunction => 83
-  | GradianFunction => makeSureThisIsTheLastIndex
+  | GradianFunction => 84
+  /* Second set additions */
+  | MFrac3S => makeSureThisIsTheLastIndex
   /* Custom handling */
   | UnitConversion(_)
   | CustomAtomS(_)

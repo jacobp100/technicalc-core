@@ -108,6 +108,12 @@ type foldState('a) =
       superscript: option(superscript('a)),
     })
   | Magnitude({value: 'a})
+  | MFrac({
+      integer: 'a,
+      num: 'a,
+      den: 'a,
+      superscript: option(superscript('a)),
+    })
   | Min({
       a: 'a,
       b: 'a,
@@ -346,6 +352,12 @@ let reduceMap =
       let (den, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
       (Frac({num, den, superscript}), i');
+    | MFrac3S =>
+      let (integer, i') = readArg(i + 1);
+      let (num, i') = readArg(i');
+      let (den, i') = readArg(i');
+      let (superscript, i') = readSuperscript(i');
+      (MFrac({integer, num, den, superscript}), i');
     | Min2S =>
       let (a, i') = readArg(i + 1);
       let (b, i') = readArg(i');
