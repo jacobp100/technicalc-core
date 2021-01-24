@@ -211,7 +211,8 @@ let%private insertElement = (elements, element, index) => {
     let mfrac =
       Belt.Array.concatMany([|[|element|], integer, [|Arg, Arg, Arg|]|]);
     let elements = ArrayUtil.insertArray(elements, mfrac, index - s);
-    (elements, index + 1);
+    let nextIndex = s > 0 ? index + 2 : index + 1;
+    (elements, nextIndex);
   | _ =>
     let args =
       switch (AST.argCountExn(element)) {
