@@ -61,7 +61,12 @@ export default (mml, display) => {
   const positionMap = new Map();
   const setPositions = (element, inputTransform) => {
     const { attributes = {}, children } = element;
-    const { id, transform: cssTransform } = attributes;
+    const {
+      id,
+      transform: cssTransform,
+      "data-mml-node": kind,
+      "data-selection-before": selectionBefore,
+    } = attributes;
 
     const nodeTransform = parseTransform(cssTransform);
     const transform = combineTransforms(inputTransform, nodeTransform);
@@ -70,18 +75,26 @@ export default (mml, display) => {
       const [current, after] = parseId(id);
       // eslint-disable-next-line prefer-const
       let { tX: x, tY: y, s: scale } = transform;
-      x /= 1e3;
-      y /= 1e3;
+      x *= 1e-3;
+      y *= 1e-3;
 
       const bbox = bboxes.get(current);
       const width = (bbox?.w ?? 0) * scale;
       const ascent = (bbox?.h ?? 0) * scale;
       const descent = (bbox?.d ?? 0) * scale;
 
-      if (!Number.isNaN(current)) {
+      const defaultSelectionBefore = kind === "mo" ? "avoid" : undefined;
+      const shouldAvoidSelectionBefore =
+        (selectionBefore ?? defaultSelectionBefore) === "avoid";
+
+      if (
+        !Number.isNaN(current) &&
+        !(shouldAvoidSelectionBefore && positionMap.has(current))
+      ) {
         const position = { x, y, scale, width, ascent, descent };
         positionMap.set(current, position);
       }
+
       if (!Number.isNaN(after) && !positionMap.has(after)) {
         const advanceWidth = advanceWidths.get(after);
         if (advanceWidth == null) throw new Error(`No width for ${after}`);

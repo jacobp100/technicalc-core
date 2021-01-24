@@ -14,7 +14,10 @@ const { AllPackages } = require("mathjax-full/js/input/tex/AllPackages.js");
 const MmlVisitor = require("mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js")
   .SerializedMmlVisitor;
 
-const { Value } = require("../dist/client");
+const dist = require("../dist");
+
+// eslint-disable-next-line import/no-dynamic-require
+const { Value } = require(path.join(dist, "client"));
 const titles = require("./titles");
 
 const Typeset = (string, display) => {
@@ -197,8 +200,10 @@ let out = data.map(({ title: baseTitle, tex }) => {
   try {
     symbolMml = unnestDocument(Typeset(formattedTex, true));
     // Remove mrows that only contain one element
-    symbolMml = symbolMml
-      .replace(/<mrow>(<(\w+)[^>]*>[^<]*<\/\2>)<\/mrow>/g, "$1");
+    symbolMml = symbolMml.replace(
+      /<mrow>(<(\w+)[^>]*>[^<]*<\/\2>)<\/mrow>/g,
+      "$1"
+    );
 
     if (symbolMml.includes("merror")) {
       throw new Error(`Invalid tex ${tex}`);
@@ -336,7 +341,4 @@ out.forEach(({ title, symbolMml }) => {
 //   (values) => values.length > 0
 // );
 
-fs.writeFileSync(
-  path.resolve(__dirname, "../dist/constants.json"),
-  JSON.stringify(out)
-);
+fs.writeFileSync(path.resolve(dist, "constants.json"), JSON.stringify(out));

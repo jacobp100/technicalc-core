@@ -12,37 +12,36 @@ let createElement = (~attributes=[], element, body) => {
   head ++ body ++ "</" ++ element ++ ">";
 };
 
-let elementWithRange =
-    (~attributes=[], ~superscript=?, element, (i, i'), body) =>
-  switch (superscript) {
-  | None =>
-    let attributes = [
-      ("id", string_of_int(i) ++ ":" ++ string_of_int(i')),
-      ...attributes,
-    ];
-    createElement(~attributes, element, body);
-  | Some({AST.superscriptBody, index: s}) =>
-    let base =
-      createElement(
-        ~attributes=[("id", ":" ++ string_of_int(s)), ...attributes],
-        element,
-        body,
-      );
+let createSuperscript =
+    (~containerAttributes=[], ~attributes=[], superscript, element, body) => {
+  let {AST.superscriptBody, index: s} = superscript;
+  let base =
     createElement(
-      ~attributes=[("id", string_of_int(i) ++ ":" ++ string_of_int(i'))],
-      "msup",
-      base ++ superscriptBody,
+      ~attributes=[("id", ":" ++ string_of_int(s)), ...attributes],
+      element,
+      body,
     );
-  };
-
-module Placeholder = {
-  let attributes = [("class", "placeholder"), ("mathvariant", "normal")];
-  let element = "mi";
-  let body = "&#x25a1;";
+  createElement(
+    ~attributes=containerAttributes,
+    "msup",
+    base ++ superscriptBody,
+  );
 };
 
-let xSetRow = value =>
-  createElement(
-    "mrow",
-    createElement("mi", "x") ++ createElement("mo", "=") ++ value,
-  );
+let createElementWithRange =
+    (~attributes=[], ~superscript=?, (i, i'), element, body) => {
+  let idAttribute = ("id", string_of_int(i) ++ ":" ++ string_of_int(i'));
+
+  switch (superscript) {
+  | None =>
+    createElement(~attributes=[idAttribute, ...attributes], element, body)
+  | Some(superscript) =>
+    createSuperscript(
+      ~containerAttributes=[idAttribute],
+      ~attributes,
+      superscript,
+      element,
+      body,
+    )
+  };
+};

@@ -140,11 +140,7 @@ var SVGWrapper = (function (_super) {
     }
     this.element = this.adaptor.append(
       parent,
-      this.svg("g", {
-        /* CUSTOM CODE BEGIN */
-        // "data-mml-node": this.node.kind
-        /* CUSTOM CODE END */
-      })
+      this.svg("g", { "data-mml-node": this.node.kind })
     );
     return this.element;
   };

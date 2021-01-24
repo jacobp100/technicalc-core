@@ -3,9 +3,9 @@ export const toNumberDefaultNaN = (x) => (x !== "" ? Number(x) : NaN);
 
 export const parseViewbox = (input) => {
   let [, y, width, height] = input.split(" ").map(Number);
-  y = Math.min(y / 1e3, -0.8);
-  width = width / 1e3;
-  height = Math.max(height / 1e3, 1);
+  y = Math.min(y * 1e-3, -0.8);
+  width = width * 1e-3;
+  height = Math.max(height * 1e-3, 1);
   const ascent = -y;
   return { width, height, ascent };
 };

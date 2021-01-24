@@ -204,6 +204,14 @@ let%private insertElement = (elements, element, index) => {
     let elements = ArrayUtil.insertArray(elements, frac, index - s);
     let nextIndex = s > 0 ? index + 2 : index + 1;
     (elements, nextIndex);
+  | MFrac3S =>
+    let s = countInsertables(elements, ~from=index - 1, ~direction=Backwards);
+    let (elements, integer) =
+      ArrayUtil.splice(elements, ~offset=index - s, ~len=s);
+    let mfrac =
+      Belt.Array.concatMany([|[|element|], integer, [|Arg, Arg, Arg|]|]);
+    let elements = ArrayUtil.insertArray(elements, mfrac, index - s);
+    (elements, index + 1);
   | _ =>
     let args =
       switch (AST.argCountExn(element)) {
