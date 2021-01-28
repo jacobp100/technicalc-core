@@ -3,10 +3,6 @@ type captureGroup = {
   elements: array(AST.t),
 };
 
-let isInCaptureGroup = (s: EditState.t) =>
-  !s.formatCaptureGroups
-    ? EditState_Util.isEmptyCaptureGroup(s.elements, s.index - 1) : false;
-
 let captureGroups = (elements: array(AST.t)): array(captureGroup) => {
   let rec iter = (~captureGroupStartStack=[], ~captureGroups=[], i) =>
     switch (Belt.Array.get(elements, i)) {

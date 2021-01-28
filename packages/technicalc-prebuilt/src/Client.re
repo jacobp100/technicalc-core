@@ -62,8 +62,6 @@ module Editor = {
     | Many(elements) => EditState.insertArray(ast, elements)
     };
   let delete = EditState.delete;
-
-  let isInCaptureGroup = CaptureGroupUtil.isInCaptureGroup;
 };
 
 module Keys = {

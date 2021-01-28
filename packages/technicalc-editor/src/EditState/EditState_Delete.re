@@ -1,6 +1,16 @@
 open EditState_Types;
 open EditState_Base;
 
+let%private isEmptyCaptureGroup = (elements, index) =>
+  switch (Belt.Array.get(elements, index)) {
+  | Some(AST.CaptureGroupStart(_)) =>
+    switch (Belt.Array.get(elements, index + 1)) {
+    | Some(CaptureGroupEndS) => true
+    | _ => false
+    }
+  | _ => false
+  };
+
 let%private rec matchNEmptyArgs = (elements, ~index, ~count) =>
   if (count == 0) {
     true;
@@ -91,13 +101,7 @@ let delete = (editState: t) => {
   let possibleEmptyCaptureGroupStart =
     formatCaptureGroups ? index - 2 : index - 1;
 
-  let isEmptyCaptureGroup =
-    EditState_Util.isEmptyCaptureGroup(
-      elements,
-      possibleEmptyCaptureGroupStart,
-    );
-
-  if (isEmptyCaptureGroup) {
+  if (isEmptyCaptureGroup(elements, possibleEmptyCaptureGroupStart)) {
     let index = possibleEmptyCaptureGroupStart;
     let (elements, _) = ArrayUtil.splice(elements, ~offset=index, ~len=2);
     make(~index, ~elements, ~formatCaptureGroups);

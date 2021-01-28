@@ -1,13 +1,3 @@
-let isEmptyCaptureGroup = (elements, index) =>
-  switch (Belt.Array.get(elements, index)) {
-  | Some(AST.CaptureGroupStart(_)) =>
-    switch (Belt.Array.get(elements, index + 1)) {
-    | Some(CaptureGroupEndS) => true
-    | _ => false
-    }
-  | _ => false
-  };
-
 type preferredShiftDirection =
   | NoShift
   | Forwards
