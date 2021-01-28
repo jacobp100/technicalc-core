@@ -3,7 +3,7 @@ open Value_Builders;
 
 let map = (element: foldState('a), i, i') =>
   switch (element) {
-  | AST.(Superscript(_) | Label(_)) =>
+  | AST.(Superscript(_) | CaptureGroupPlaceholder(_)) =>
     // Handled in Value.re
     assert(false)
   | (Angle(_) | Base(_) | Conj | DecimalSeparator | Factorial | OpenBracket) as e

@@ -40,6 +40,8 @@ module Elements = {
 
   let bracketRanges = BracketUtil.bracketRanges;
   let bracketRange = BracketUtil.bracketRange;
+
+  let captureGroups = CaptureGroupUtil.captureGroups;
 };
 
 module Editor = {
@@ -62,6 +64,8 @@ module Editor = {
     | Many(elements) => EditState.insertArray(ast, elements)
     };
   let delete = EditState.delete;
+
+  let isInCaptureGroup = CaptureGroupUtil.isInCaptureGroup;
 };
 
 module Keys = {
@@ -76,7 +80,11 @@ module Keys = {
     })
     ->Keys.One;
 
-  let label = (~mml) => AST.LabelS({mml: mml})->Keys.One;
+  let label = (~placeholderMml) =>
+    Keys.Many([|
+      CaptureGroupStart({placeholderMml: placeholderMml}),
+      CaptureGroupEndS,
+    |]);
 
   let equation = (~elements) => Keys.Many(elements);
 };

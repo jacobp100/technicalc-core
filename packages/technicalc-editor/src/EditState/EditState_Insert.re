@@ -43,6 +43,8 @@ type skipMode =
 
 let%private skipMode = (element: AST.t) =>
   switch (element) {
+  | CaptureGroupStart(_)
+  | CaptureGroupEndS
   | Acos
   | Acosh
   | Add
@@ -98,7 +100,6 @@ let%private skipMode = (element: AST.t) =>
   | ConstPiS
   | CustomAtomS(_)
   | ImaginaryUnitS
-  | LabelS(_)
   | N0_S
   | N1_S
   | N2_S
@@ -227,19 +228,9 @@ let%private insertElement = (elements, element, index) => {
   };
 };
 
-let%private deleteLabelAtIndex = (elements: array(AST.t), index: int) =>
-  switch (Belt.Array.get(elements, index)) {
-  | Some(LabelS(_)) =>
-    let (elements, _) = ArrayUtil.splice(elements, ~offset=index, ~len=1);
-    elements;
-  | _ => elements
-  };
-
 let insert =
     ({index, elements, allowLabelEditing} as editState, element: AST.t) => {
   let elements = AST.normalize(elements);
-  let elements =
-    allowLabelEditing ? elements : deleteLabelAtIndex(elements, index);
 
   if (AST_NormalizationContext.elementIsValid(elements, element, index)) {
     let (elements, index) = insertElement(elements, element, index);
@@ -249,10 +240,10 @@ let insert =
   };
 };
 
-let%private firstLabelOrEmptyArgumentIndexExn = (elements: array(AST.t)) => {
+let%private firstCaptureGroupOrEmptyArgumentIndex = (elements: array(AST.t)) => {
   let rec iter = (~argWillFormPlaceholder, i) =>
     switch (Belt.Array.get(elements, i)) {
-    | Some(LabelS(_)) => Some(i)
+    | Some(CaptureGroupStart(_)) => Some(i + 1)
     | Some(Arg) =>
       if (argWillFormPlaceholder) {
         Some(i);
@@ -272,18 +263,16 @@ let insertArray =
       insertedElements: array(AST.t),
     ) => {
   let elements = AST.normalize(elements);
-  let elements =
-    allowLabelEditing ? elements : deleteLabelAtIndex(elements, index);
 
   let valid =
-    Belt.Array.every(insertedElements, element =>
+    Belt.Array.every(insertedElements, element => {
       AST_NormalizationContext.elementIsValid(elements, element, index)
-    );
+    });
   if (valid) {
     let elements = ArrayUtil.insertArray(elements, insertedElements, index);
 
     let advanceBy =
-      firstLabelOrEmptyArgumentIndexExn(insertedElements)
+      firstCaptureGroupOrEmptyArgumentIndex(insertedElements)
       ->Belt.Option.getWithDefault(Belt.Array.length(insertedElements));
 
     let index = index + advanceBy;

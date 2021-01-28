@@ -8,7 +8,7 @@ let parse = (elements: array(t)) => {
     if (error^ == None) {
       switch (element) {
       | Superscript(_)
-      | Label(_) =>
+      | CaptureGroupPlaceholder(_) =>
         error := Some(i);
         MutableListBuilder.empty;
       | _ =>

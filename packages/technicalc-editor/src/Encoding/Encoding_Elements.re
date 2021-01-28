@@ -38,8 +38,9 @@ let%private encodeElement =
     | UnitConversion(_) => ""
     | CustomAtomS({mml, value}) =>
       encodeUint(257) ++ encodeCustomAtom(~mml, ~value)
-    | LabelS({mml}) => encodeUint(258) ++ encodeString(mml)
     | VariableS(string) => encodeUint(259) ++ encodeString(string)
+    | CaptureGroupStart({placeholderMml}) =>
+      encodeUint(260) ++ encodeString(placeholderMml)
     | element => Encoding_Element.toUint(element)->encodeUint
     };
 
@@ -49,14 +50,16 @@ let%private readElement =
     // | Some(256) => readUnitConversion(reader)
     | Some(256) => None
     | Some(257) => readCustomAtom(reader)
-    | Some(258) =>
-      switch (readString(reader)) {
-      | Some(mml) => Some(LabelS({mml: mml}))
-      | None => None
-      }
+    | Some(258) => /* Was label */ None
     | Some(259) =>
       switch (readString(reader)) {
       | Some(string) => Some(VariableS(string))
+      | None => None
+      }
+    | Some(260) =>
+      switch (readString(reader)) {
+      | Some(placeholderMml) =>
+        Some(CaptureGroupStart({placeholderMml: placeholderMml}))
       | None => None
       }
     | Some(value) => Encoding_Element.ofUint(value)

@@ -6,33 +6,32 @@ let setIndex = ({elements, allowLabelEditing}, index) => {
   {index, elements, allowLabelEditing};
 };
 
-let previous = ({index, elements, allowLabelEditing}) => {
-  let index =
-    preferredInsertionIndex(~index=index - 1, ~elements, ~allowLabelEditing);
-  {index, elements, allowLabelEditing};
-};
+let%private moveIndexInDirection =
+            (~forwards, {index, elements, allowLabelEditing}) => {
+  let step = forwards ? 1 : (-1);
 
-let next = ({index, elements, allowLabelEditing}) => {
-  let index =
-    if (allowLabelEditing) {
-      index + 1;
-    } else {
-      // This can be less strict than in preferredInsertionIndex
-      // Because those checks will be done below
-      let rec iter = index =>
-        if (!EditState_Util.indexIsValid(elements, index)) {
-          iter(index + 1);
-        } else {
-          index;
-        };
-
-      iter(index + 1);
+  let rec iter = index =>
+    switch (
+      EditState_Util.preferredShiftDirection(
+        ~index,
+        ~elements,
+        ~allowLabelEditing,
+      )
+    ) {
+    | NoShift =>
+      let index =
+        preferredInsertionIndex(~index, ~elements, ~allowLabelEditing);
+      {index, elements, allowLabelEditing};
+    | Forwards
+    | Backwards => iter(index + step)
     };
 
-  // Move backwards if we're still in an invalid position
-  let index = preferredInsertionIndex(~index, ~elements, ~allowLabelEditing);
-  {index, elements, allowLabelEditing};
+  iter(index + step);
 };
+
+let previous = s => moveIndexInDirection(~forwards=false, s);
+
+let next = s => moveIndexInDirection(~forwards=true, s);
 
 let moveStart = ({elements, allowLabelEditing}) => {
   let index =

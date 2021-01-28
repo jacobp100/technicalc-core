@@ -51,6 +51,10 @@ type foldState('a) =
     })
   | Angle(angle)
   | Base(base)
+  | CaptureGroupPlaceholder({
+      placeholderMml: string,
+      superscript: option(superscript('a)),
+    })
   | Ceil({
       arg: 'a,
       superscript: option(superscript('a)),
@@ -97,10 +101,6 @@ type foldState('a) =
       from: 'a,
       to_: 'a,
       body: 'a,
-    })
-  | Label({
-      mml: string,
-      superscript: option(superscript('a)),
     })
   | Lcm({
       a: 'a,
@@ -208,6 +208,10 @@ let%private digitNucleus = digit =>
   | _ => assert(false)
   };
 
+type readResult('a) =
+  | Node(foldState('a), int, int)
+  | Empty;
+
 let reduceMap =
     (
       input: array(t),
@@ -216,21 +220,30 @@ let reduceMap =
       ~initial: 'accum,
     )
     : 'value => {
-  let rec readNodeExn = (i): (foldState('a), int) =>
+  let rec readNodeExn = (i): readResult('a) =>
     switch (Belt.Array.getExn(input, i)) {
-    | Conj => (Conj, i + 1)
-    | DecimalSeparator => (DecimalSeparator, i + 1)
-    | Factorial => (Factorial, i + 1)
-    | OpenBracket => (OpenBracket, i + 1)
-    | Percent => (Percent, i + 1)
-    | Bin => (Base(Bin), i + 1)
-    | Oct => (Base(Oct), i + 1)
-    | Hex => (Base(Hex), i + 1)
-    | Add => (Operator(Add), i + 1)
-    | Sub => (Operator(Sub), i + 1)
-    | Mul => (Operator(Mul), i + 1)
-    | Div => (Operator(Div), i + 1)
-    | Dot => (Operator(Dot), i + 1)
+    | CaptureGroupStart({placeholderMml}) =>
+      switch (Belt.Array.get(input, i + 1)) {
+      | Some(CaptureGroupEndS) =>
+        let i' = i + 2;
+        let (superscript, i') = readSuperscript(i');
+        Node(CaptureGroupPlaceholder({placeholderMml, superscript}), i, i');
+      | _ => Empty
+      }
+    | CaptureGroupEndS => Empty
+    | Conj => Node(Conj, i, i + 1)
+    | DecimalSeparator => Node(DecimalSeparator, i, i + 1)
+    | Factorial => Node(Factorial, i, i + 1)
+    | OpenBracket => Node(OpenBracket, i, i + 1)
+    | Percent => Node(Percent, i, i + 1)
+    | Bin => Node(Base(Bin), i, i + 1)
+    | Oct => Node(Base(Oct), i, i + 1)
+    | Hex => Node(Base(Hex), i, i + 1)
+    | Add => Node(Operator(Add), i, i + 1)
+    | Sub => Node(Operator(Sub), i, i + 1)
+    | Mul => Node(Operator(Mul), i, i + 1)
+    | Div => Node(Operator(Div), i, i + 1)
+    | Dot => Node(Operator(Dot), i, i + 1)
     | Acos => func(i, Acos)
     | Acosh => func(i, Acosh)
     | Asin => func(i, Asin)
@@ -252,147 +265,141 @@ let reduceMap =
     | CosecS => funcS(i, Cosec)
     | SecS => funcS(i, Sec)
     | CotS => funcS(i, Cot)
-    | DegreeUnit => (Angle(Degree), i + 1)
-    | ArcMinuteUnit => (Angle(ArcMinute), i + 1)
-    | ArcSecondUnit => (Angle(ArcSecond), i + 1)
-    | GradianUnit => (Angle(Gradian), i + 1)
-    | UnitConversion({fromUnits, toUnits}) => (
-        UnitConversion({fromUnits, toUnits}),
-        i + 1,
-      )
+    | DegreeUnit => Node(Angle(Degree), i, i + 1)
+    | ArcMinuteUnit => Node(Angle(ArcMinute), i, i + 1)
+    | ArcSecondUnit => Node(Angle(ArcSecond), i, i + 1)
+    | GradianUnit => Node(Angle(Gradian), i, i + 1)
+    | UnitConversion({fromUnits, toUnits}) =>
+      Node(UnitConversion({fromUnits, toUnits}), i, i + 1)
     | CloseBracketS =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      (CloseBracket(superscript), i');
+      Node(CloseBracket(superscript), i, i');
     | ConstPiS =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      (ConstPi(superscript), i');
+      Node(ConstPi(superscript), i, i');
     | ConstES =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      (ConstE(superscript), i');
+      Node(ConstE(superscript), i, i');
     | CustomAtomS({mml, value}) =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      (CustomAtom({mml, value, superscript}), i');
+      Node(CustomAtom({mml, value, superscript}), i, i');
     | (N0_S | N1_S | N2_S | N3_S | N4_S | N5_S | N6_S | N7_S | N8_S | N9_S) as digit
     | (NA_S | NB_S | NC_S | ND_S | NE_S | NF_S) as digit =>
       let nucleus = digitNucleus(digit);
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      (Digit({nucleus, superscript}), i');
+      Node(Digit({nucleus, superscript}), i, i');
     | ImaginaryUnitS =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      (ImaginaryUnit(superscript), i');
+      Node(ImaginaryUnit(superscript), i, i');
     | RandS =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      (Rand(superscript), i');
+      Node(Rand(superscript), i, i');
     | VariableS(nucleus) =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      (Variable({nucleus, superscript}), i');
-    | LabelS({mml}) =>
-      let i' = i + 1;
-      let (superscript, i') = readSuperscript(i');
-      (Label({mml, superscript}), i');
+      Node(Variable({nucleus, superscript}), i, i');
     | Magnitude1 =>
       let (value, i') = readArg(i + 1);
-      (Magnitude({value: value}), i');
+      Node(Magnitude({value: value}), i, i');
     | Superscript1 =>
       let (superscript, i') = readArg(i + 1);
-      (Superscript(superscript), i');
+      Node(Superscript(superscript), i, i');
     | NLog1 =>
       let (base, i') = readArg(i + 1);
-      (NLog({base: base}), i');
+      Node(NLog({base: base}), i, i');
     | Abs1S =>
       let (arg, i') = readArg(i + 1);
       let (superscript, i') = readSuperscript(i');
-      (Abs({arg, superscript}), i');
+      Node(Abs({arg, superscript}), i, i');
     | Ceil1S =>
       let (arg, i') = readArg(i + 1);
       let (superscript, i') = readSuperscript(i');
-      (Ceil({arg, superscript}), i');
+      Node(Ceil({arg, superscript}), i, i');
     | Floor1S =>
       let (arg, i') = readArg(i + 1);
       let (superscript, i') = readSuperscript(i');
-      (Floor({arg, superscript}), i');
+      Node(Floor({arg, superscript}), i, i');
     | Round1S =>
       let (arg, i') = readArg(i + 1);
       let (superscript, i') = readSuperscript(i');
-      (Round({arg, superscript}), i');
+      Node(Round({arg, superscript}), i, i');
     | Sqrt1S =>
       let (radicand, i') = readArg(i + 1);
       let (superscript, i') = readSuperscript(i');
-      (Sqrt({radicand, superscript}), i');
+      Node(Sqrt({radicand, superscript}), i, i');
     | Differential2 =>
       let (body, i') = readArg(i + 1);
       let (at, i') = readArg(i');
-      (Differential({at, body}), i');
+      Node(Differential({at, body}), i, i');
     | NCR2 =>
       let (n, i') = readArg(i + 1);
       let (r, i') = readArg(i');
-      (NCR({n, r}), i');
+      Node(NCR({n, r}), i, i');
     | NPR2 =>
       let (n, i') = readArg(i + 1);
       let (r, i') = readArg(i');
-      (NPR({n, r}), i');
+      Node(NPR({n, r}), i, i');
     | Product2 =>
       let (from, i') = readArg(i + 1);
       let (to_, i') = readArg(i');
-      (Product({from, to_}), i');
+      Node(Product({from, to_}), i, i');
     | Sum2 =>
       let (from, i') = readArg(i + 1);
       let (to_, i') = readArg(i');
-      (Sum({from, to_}), i');
+      Node(Sum({from, to_}), i, i');
     | Frac2S =>
       let (num, i') = readArg(i + 1);
       let (den, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
-      (Frac({num, den, superscript}), i');
+      Node(Frac({num, den, superscript}), i, i');
     | MFrac3S =>
       let (integer, i') = readArg(i + 1);
       let (num, i') = readArg(i');
       let (den, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
-      (MFrac({integer, num, den, superscript}), i');
+      Node(MFrac({integer, num, den, superscript}), i, i');
     | Min2S =>
       let (a, i') = readArg(i + 1);
       let (b, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
-      (Min({a, b, superscript}), i');
+      Node(Min({a, b, superscript}), i, i');
     | Max2S =>
       let (a, i') = readArg(i + 1);
       let (b, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
-      (Max({a, b, superscript}), i');
+      Node(Max({a, b, superscript}), i, i');
     | Gcd2S =>
       let (a, i') = readArg(i + 1);
       let (b, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
-      (Gcd({a, b, superscript}), i');
+      Node(Gcd({a, b, superscript}), i, i');
     | Lcm2S =>
       let (a, i') = readArg(i + 1);
       let (b, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
-      (Lcm({a, b, superscript}), i');
+      Node(Lcm({a, b, superscript}), i, i');
     | NRoot2S =>
       let (degree, i') = readArg(i + 1);
       let (radicand, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
-      (NRoot({degree, radicand, superscript}), i');
+      Node(NRoot({degree, radicand, superscript}), i, i');
     | RandInt2S =>
       let (a, i') = readArg(i + 1);
       let (b, i') = readArg(i');
       let (superscript, i') = readSuperscript(i');
-      (RandInt({a, b, superscript}), i');
+      Node(RandInt({a, b, superscript}), i, i');
     | Integral3 =>
       let (from, i') = readArg(i + 1);
       let (to_, i') = readArg(i');
       let (body, i') = readArg(i');
-      (Integral({from, to_, body}), i');
+      Node(Integral({from, to_, body}), i, i');
     | Vector2S => vectorS(i, ~numElements=2)
     | Vector3S => vectorS(i, ~numElements=3)
     | Matrix4S => tableS(i, ~numRows=2, ~numColumns=2)
@@ -407,24 +414,36 @@ let reduceMap =
       let i' = i;
       (map(accum, (start, i')), i' + 1);
     | Some(_) =>
-      let (node, i') = readNodeExn(i);
-      readArg(~accum=reduce(accum, node, (i, i')), i');
+      switch (readNodeExn(i)) {
+      | Node(node, i, i') =>
+        readArg(~accum=reduce(accum, node, (i, i')), i')
+      | Empty => readArg(~accum, i + 1)
+      }
     };
   }
-  and readSuperscript = i =>
-    switch (Belt.Array.get(input, i)) {
-    | Some(Superscript1) =>
-      let (superscriptBody, i') = readArg(i + 1);
-      (Some({superscriptBody, index: i}), i');
-    | _ => (None, i)
-    }
+  and readSuperscript = argEndIndex => {
+    let rec iter = i =>
+      switch (Belt.Array.get(input, i)) {
+      | Some(Superscript1) =>
+        let (superscriptBody, i') = readArg(i + 1);
+        (Some({superscriptBody, index: argEndIndex}), i');
+      | Some(CaptureGroupEndS) =>
+        // If a superscript occurs immediately after a capture group, apply the
+        // superscript to the last element within the capture group
+        iter(i + 1)
+      | _ => (None, argEndIndex)
+      };
+
+    iter(argEndIndex);
+  }
   and func = (i, func) => {
-    (Function({func, resultSuperscript: None}), i + 1);
+    let i' = i + 1;
+    Node(Function({func, resultSuperscript: None}), i, i');
   }
   and funcS = (i, func) => {
     let i' = i + 1;
     let (resultSuperscript, i') = readSuperscript(i');
-    (Function({func, resultSuperscript}), i');
+    Node(Function({func, resultSuperscript}), i, i');
   }
   and vectorS = (i, ~numElements) => {
     let i' = i + 1;
@@ -438,7 +457,7 @@ let reduceMap =
         },
       );
     let (superscript, i') = readSuperscript(i');
-    (Vector({elements, superscript}), i');
+    Node(Vector({elements, superscript}), i, i');
   }
   and tableS = (i, ~numRows, ~numColumns) => {
     let i' = i + 1;
@@ -452,7 +471,7 @@ let reduceMap =
         },
       );
     let (superscript, i') = readSuperscript(i');
-    (Table({elements, numRows, numColumns, superscript}), i');
+    Node(Table({elements, numRows, numColumns, superscript}), i, i');
   };
 
   let rec readUntilEnd = (~accum=initial, i) =>
@@ -460,8 +479,11 @@ let reduceMap =
     | None => map(accum, (0, i))
     | Some(Arg) => assert(false)
     | Some(_) =>
-      let (node, i') = readNodeExn(i);
-      readUntilEnd(~accum=reduce(accum, node, (i, i')), i');
+      switch (readNodeExn(i)) {
+      | Node(node, i, i') =>
+        readUntilEnd(~accum=reduce(accum, node, (i, i')), i')
+      | Empty => readUntilEnd(~accum, i + 1)
+      }
     };
 
   readUntilEnd(0);

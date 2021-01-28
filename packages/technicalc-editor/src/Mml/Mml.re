@@ -167,9 +167,12 @@ let reduce = (accum, element: foldState(string), range) =>
   | CustomAtom({mml, superscript}) =>
     createElementWithRange(~superscript?, range, "mrow", mml)
     ->Mml_Accum.append(accum, _)
-  | Label({mml, superscript}) =>
+  | CaptureGroupPlaceholder({placeholderMml: mml, superscript}) =>
     let attributes = Placeholder.attributes;
-    createElementWithRange(~attributes, ~superscript?, range, "mrow", mml)
+    let phantomId = Belt.Int.toString(fst(range) + 1) ++ ":";
+    let body =
+      createElement(~attributes=[("id", phantomId)], "mphantom", "") ++ mml;
+    createElementWithRange(~attributes, ~superscript?, range, "mrow", body)
     ->Mml_Accum.append(accum, _);
   | Function({func, resultSuperscript: superscript}) =>
     let attributes = func == AST.Gamma ? [("mathvariant", "normal")] : [];

@@ -250,48 +250,75 @@ test("should insert tables outside of tables", (.) => {
   expect(elements)->toEqual([|Vector2S, Arg, Arg, Vector2S, Arg, Arg|]);
 });
 
-test("should remove label when inserting", (.) => {
+test("should insert within capture group", (.) => {
   let {index, elements} =
     make(
-      ~index=1,
-      ~elements=[|N1_S, LabelS({mml: "x"}), N3_S|],
+      ~index=2,
+      ~elements=[|
+        N1_S,
+        CaptureGroupStart({placeholderMml: "x"}),
+        CaptureGroupEndS,
+        N3_S,
+      |],
       ~allowLabelEditing=false,
     )
     ->insert(N2_S);
 
-  expect(elements)->toEqual([|N1_S, N2_S, N3_S|]);
-  expect(index)->toEqual(2);
-});
-
-test("should only remove a single label when inserting", (.) => {
-  let testElements = [|
-    AST.N1_S,
-    LabelS({mml: "x"}),
-    LabelS({mml: "y"}),
-    LabelS({mml: "z"}),
-    N3_S,
-  |];
-  let {index, elements} =
-    make(~index=2, ~elements=testElements, ~allowLabelEditing=false)
-    ->insert(N2_S);
-
   expect(elements)
-  ->toEqual([|N1_S, LabelS({mml: "x"}), N2_S, LabelS({mml: "z"}), N3_S|]);
+  ->toEqual([|
+      N1_S,
+      CaptureGroupStart({placeholderMml: "x"}),
+      N2_S,
+      CaptureGroupEndS,
+      N3_S,
+    |]);
   expect(index)->toEqual(3);
 });
 
-test("should select first label when inserting array", (.) => {
+test("should only insert within current capture group", (.) => {
+  let testElements = [|
+    AST.N1_S,
+    CaptureGroupStart({placeholderMml: "x"}),
+    CaptureGroupEndS,
+    CaptureGroupStart({placeholderMml: "y"}),
+    CaptureGroupEndS,
+    CaptureGroupStart({placeholderMml: "z"}),
+    CaptureGroupEndS,
+    N3_S,
+  |];
+  let {index, elements} =
+    make(~index=4, ~elements=testElements, ~allowLabelEditing=false)
+    ->insert(N2_S);
+
+  expect(elements)
+  ->toEqual([|
+      N1_S,
+      CaptureGroupStart({placeholderMml: "x"}),
+      CaptureGroupEndS,
+      CaptureGroupStart({placeholderMml: "y"}),
+      N2_S,
+      CaptureGroupEndS,
+      CaptureGroupStart({placeholderMml: "z"}),
+      CaptureGroupEndS,
+      N3_S,
+    |]);
+  expect(index)->toEqual(5);
+});
+
+test("should select first capture group when inserting array", (.) => {
   let {index} =
     make(~index=0, ~elements=[||], ~allowLabelEditing=false)
     ->insertArray([|
         N1_S,
-        LabelS({mml: "selected"}),
+        CaptureGroupStart({placeholderMml: "selected"}),
+        CaptureGroupEndS,
         N2_S,
-        LabelS({mml: "not_selected"}),
+        CaptureGroupStart({placeholderMml: "not_selected"}),
+        CaptureGroupEndS,
         N3_S,
       |]);
 
-  expect(index)->toBe(1);
+  expect(index)->toBe(2);
 });
 
 test("should select first empty argument when inserting array", (.) => {
@@ -322,7 +349,7 @@ test(
 );
 
 test(
-  "should select after array when inserting array with no labels or placeholders",
+  "should select after array when inserting array with no capture groups or placeholders",
   (.) => {
     let {index} =
       make(~index=0, ~elements=[||], ~allowLabelEditing=false)
