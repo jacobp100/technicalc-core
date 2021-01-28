@@ -22,8 +22,6 @@ module Elements = {
   let encode = Encoding.encode;
   let decode = Encoding.decode;
 
-  let ofValue = AST.ofValue;
-
   let toMml = (x, maybeFormat, maybeInline) => {
     let digitGrouping =
       Belt.Option.flatMap(maybeFormat, digitGroupingGet)
