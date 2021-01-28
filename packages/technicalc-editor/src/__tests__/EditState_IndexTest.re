@@ -9,7 +9,7 @@ test("should handle a single capture group", (.) => {
         CaptureGroupStart({placeholderMml: ""}),
         CaptureGroupEndS,
       |],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     );
 
   expect(state.index)->toBe(1);
@@ -34,7 +34,7 @@ test("should handle capture groups in functions", (.) => {
         CaptureGroupEndS,
         Arg,
       |],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     );
 
   expect(state.index)->toBe(0);
@@ -84,7 +84,7 @@ test("should handle empty capture groups with superscripts", (.) => {
         N2_S,
         Arg,
       |],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     );
 
   expect(state.index)->toBe(1);
@@ -133,7 +133,7 @@ test("should handle filled capture groups with superscripts", (.) => {
         N2_S,
         Arg,
       |],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     );
 
   expect(state.index)->toBe(1);
@@ -183,7 +183,7 @@ test("should handle multiple capture groups in a row", (.) => {
         CaptureGroupStart({placeholderMml: ""}),
         CaptureGroupEndS,
       |],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     );
 
   expect(state.index)->toBe(1);
@@ -231,7 +231,7 @@ test(
           CaptureGroupEndS,
           N2_S,
         |],
-        ~allowLabelEditing=false,
+        ~formatCaptureGroups=false,
       );
 
     expect(state.index)->toBe(0);
@@ -276,7 +276,7 @@ test("should not select within a capture group when label editing", (.) => {
         CaptureGroupStart({placeholderMml: ""}),
         CaptureGroupEndS,
       |],
-      ~allowLabelEditing=true,
+      ~formatCaptureGroups=true,
     );
 
   expect(state.index)->toBe(0);

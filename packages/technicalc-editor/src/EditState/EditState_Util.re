@@ -14,10 +14,10 @@ type preferredShiftDirection =
   | Backwards;
 
 let preferredShiftDirection =
-    (~index, ~elements: array(AST.t), ~allowLabelEditing) => {
+    (~index, ~elements: array(AST.t), ~formatCaptureGroups) => {
   let previousElement = Belt.Array.get(elements, index - 1);
 
-  if (!allowLabelEditing) {
+  if (!formatCaptureGroups) {
     let currentElement = Belt.Array.get(elements, index);
 
     switch (previousElement, currentElement) {
@@ -33,7 +33,7 @@ let preferredShiftDirection =
   };
 };
 
-let preferredInsertionIndex = (~index, ~elements, ~allowLabelEditing) => {
+let preferredInsertionIndex = (~index, ~elements, ~formatCaptureGroups) => {
   /* Note returning an index of length _is_ valid */
   let length = Belt.Array.length(elements);
 
@@ -42,7 +42,7 @@ let preferredInsertionIndex = (~index, ~elements, ~allowLabelEditing) => {
   let clampedIndex = min(clampedIndex, length);
 
   let rec iter = index =>
-    switch (preferredShiftDirection(~index, ~elements, ~allowLabelEditing)) {
+    switch (preferredShiftDirection(~index, ~elements, ~formatCaptureGroups)) {
     | Backwards =>
       let nextIndex = index - 1;
       let canMoveIndex = nextIndex >= 0;

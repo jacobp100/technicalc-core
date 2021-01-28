@@ -3,7 +3,7 @@ open EditState;
 
 test("should delete empty magnitude", (.) => {
   let {index, elements} =
-    make(~index=1, ~elements=[|Magnitude1, Arg|], ~allowLabelEditing=false)
+    make(~index=1, ~elements=[|Magnitude1, Arg|], ~formatCaptureGroups=false)
     ->delete;
 
   expect(elements)->toEqual([||]);
@@ -15,7 +15,7 @@ test("should not delete filled magnitude", (.) => {
     make(
       ~index=1,
       ~elements=[|Magnitude1, N0_S, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -28,7 +28,7 @@ test("should insert parts of fraction when deleting", (.) => {
     make(
       ~index=1,
       ~elements=[|Frac2S, N1_S, Arg, N2_S, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -41,7 +41,7 @@ test("should not delete arg elements", (.) => {
     make(
       ~index=3,
       ~elements=[|Magnitude1, N0_S, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -59,7 +59,7 @@ test("should delete empty capture groups at index", (.) => {
         CaptureGroupEndS,
         N2_S,
       |],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -79,7 +79,7 @@ test(
         CaptureGroupEndS,
         N2_S,
       |],
-      ~allowLabelEditing=true,
+      ~formatCaptureGroups=true,
     )
     ->delete;
 
@@ -104,7 +104,7 @@ test(
         CaptureGroupEndS,
         N2_S,
       |],
-      ~allowLabelEditing=true,
+      ~formatCaptureGroups=true,
     )
     ->delete;
 
@@ -122,7 +122,7 @@ test("should delete empty capture groups immediately after label index", (.) => 
         CaptureGroupEndS,
         N2_S,
       |],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -144,7 +144,7 @@ describe("should only delete a single capture empty group", (.) => {
 
   test("capture group 1", (.) => {
     let {index, elements} =
-      make(~index=2, ~elements=testElements, ~allowLabelEditing=false)
+      make(~index=2, ~elements=testElements, ~formatCaptureGroups=false)
       ->delete;
 
     expect(elements)
@@ -161,7 +161,7 @@ describe("should only delete a single capture empty group", (.) => {
 
   test("capture group 2", (.) => {
     let {index, elements} =
-      make(~index=4, ~elements=testElements, ~allowLabelEditing=false)
+      make(~index=4, ~elements=testElements, ~formatCaptureGroups=false)
       ->delete;
 
     expect(elements)
@@ -178,7 +178,7 @@ describe("should only delete a single capture empty group", (.) => {
 
   test("capture group 3", (.) => {
     let {index, elements} =
-      make(~index=6, ~elements=testElements, ~allowLabelEditing=false)
+      make(~index=6, ~elements=testElements, ~formatCaptureGroups=false)
       ->delete;
 
     expect(elements)

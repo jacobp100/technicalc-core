@@ -3,7 +3,7 @@ open EditState;
 
 test("should insert fraction consuming characters", (.) => {
   let {index, elements} =
-    make(~index=1, ~elements=[|N1_S, N2_S|], ~allowLabelEditing=false)
+    make(~index=1, ~elements=[|N1_S, N2_S|], ~formatCaptureGroups=false)
     ->insert(Frac2S);
 
   expect(elements)->toEqual([|Frac2S, N1_S, Arg, N2_S, Arg|]);
@@ -15,7 +15,7 @@ test("should insert fraction consuming non-operator characters", (.) => {
     make(
       ~index=3,
       ~elements=[|N1_S, Add, N2_S, N3_S, Add, N4_S|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -29,7 +29,7 @@ test("should insert fraction inside bracket group", (.) => {
     make(
       ~index=3,
       ~elements=[|N1_S, OpenBracket, N2_S, N3_S, CloseBracketS, N4_S|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -53,7 +53,7 @@ test("should move bracket groups when inserting fraction after", (.) => {
     make(
       ~index=3,
       ~elements=[|OpenBracket, N1_S, CloseBracketS|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -67,7 +67,7 @@ test("should move bracket groups when inserting fraction before", (.) => {
     make(
       ~index=0,
       ~elements=[|OpenBracket, N1_S, CloseBracketS|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -83,7 +83,7 @@ test(
     make(
       ~index=5,
       ~elements=[|OpenBracket, N1_S, Add, N2_S, CloseBracketS|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -103,7 +103,11 @@ test(
 
 test("should move function when inserting fraction before", (.) => {
   let {index, elements} =
-    make(~index=2, ~elements=[|Superscript1, Arg|], ~allowLabelEditing=false)
+    make(
+      ~index=2,
+      ~elements=[|Superscript1, Arg|],
+      ~formatCaptureGroups=false,
+    )
     ->insert(Frac2S);
 
   expect(elements)->toEqual([|Frac2S, Superscript1, Arg, Arg, Arg|]);
@@ -114,7 +118,7 @@ test(
   "should not move stationary function with no arguments when inserting fraction",
   (.) => {
     let {index, elements} =
-      make(~index=1, ~elements=[|SinS|], ~allowLabelEditing=false)
+      make(~index=1, ~elements=[|SinS|], ~formatCaptureGroups=false)
       ->insert(Frac2S);
 
     expect(elements)->toEqual([|SinS, Frac2S, Arg, Arg|]);
@@ -126,7 +130,7 @@ test(
   "should not move stationary function with arguments when inserting fraction",
   (.) => {
   let {index, elements} =
-    make(~index=2, ~elements=[|NLog1, Arg|], ~allowLabelEditing=false)
+    make(~index=2, ~elements=[|NLog1, Arg|], ~formatCaptureGroups=false)
     ->insert(Frac2S);
 
   expect(elements)->toEqual([|NLog1, Arg, Frac2S, Arg, Arg|]);
@@ -135,7 +139,11 @@ test(
 
 test("should move function when inserting fraction after", (.) => {
   let {index, elements} =
-    make(~index=0, ~elements=[|Superscript1, Arg|], ~allowLabelEditing=false)
+    make(
+      ~index=0,
+      ~elements=[|Superscript1, Arg|],
+      ~formatCaptureGroups=false,
+    )
     ->insert(Frac2S);
 
   expect(elements)->toEqual([|Frac2S, Arg, Superscript1, Arg, Arg|]);
@@ -147,7 +155,7 @@ test("should insert fraction in 1st argument of 2ary function", (.) => {
     make(
       ~index=1,
       ~elements=[|RandInt2S, Arg, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -160,7 +168,7 @@ test("should insert fraction in 2nd argument of 2ary function", (.) => {
     make(
       ~index=2,
       ~elements=[|RandInt2S, Arg, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -170,7 +178,11 @@ test("should insert fraction in 2nd argument of 2ary function", (.) => {
 
 test("should insert fraction in another fraction's numerator", (.) => {
   let {index, elements} =
-    make(~index=1, ~elements=[|Frac2S, Arg, Arg|], ~allowLabelEditing=false)
+    make(
+      ~index=1,
+      ~elements=[|Frac2S, Arg, Arg|],
+      ~formatCaptureGroups=false,
+    )
     ->insert(Frac2S);
 
   expect(elements)->toEqual([|Frac2S, Frac2S, Arg, Arg, Arg, Arg|]);
@@ -179,7 +191,11 @@ test("should insert fraction in another fraction's numerator", (.) => {
 
 test("should insert fraction in another fraction's denominator", (.) => {
   let {index, elements} =
-    make(~index=2, ~elements=[|Frac2S, Arg, Arg|], ~allowLabelEditing=false)
+    make(
+      ~index=2,
+      ~elements=[|Frac2S, Arg, Arg|],
+      ~formatCaptureGroups=false,
+    )
     ->insert(Frac2S);
 
   expect(elements)->toEqual([|Frac2S, Arg, Frac2S, Arg, Arg, Arg|]);
@@ -191,7 +207,7 @@ test("should not move matrices or vectors when inserting fraction after", (.) =>
     make(
       ~index=3,
       ~elements=[|Vector2S, Arg, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -203,7 +219,7 @@ test("should not move matrices or vectors when inserting fraction before", (.) =
     make(
       ~index=0,
       ~elements=[|Vector2S, Arg, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Frac2S);
 
@@ -212,7 +228,7 @@ test("should not move matrices or vectors when inserting fraction before", (.) =
 
 test("should not insert iteratables inside iterator ranges", (.) => {
   let state =
-    make(~index=1, ~elements=[|Sum2, Arg, Arg|], ~allowLabelEditing=false);
+    make(~index=1, ~elements=[|Sum2, Arg, Arg|], ~formatCaptureGroups=false);
   let result = state->insert(Sum2);
 
   expect(result)->toBe(state);
@@ -220,7 +236,7 @@ test("should not insert iteratables inside iterator ranges", (.) => {
 
 test("should insert iteratables outside of iterator ranges", (.) => {
   let {elements} =
-    make(~index=3, ~elements=[|Sum2, Arg, Arg|], ~allowLabelEditing=false)
+    make(~index=3, ~elements=[|Sum2, Arg, Arg|], ~formatCaptureGroups=false)
     ->insert(Sum2);
 
   expect(elements)->toEqual([|Sum2, Arg, Arg, Sum2, Arg, Arg|]);
@@ -231,7 +247,7 @@ test("should not insert tables inside tables", (.) => {
     make(
       ~index=1,
       ~elements=[|Vector2S, Arg, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     );
   let result = state->insert(Vector2S);
 
@@ -243,7 +259,7 @@ test("should insert tables outside of tables", (.) => {
     make(
       ~index=3,
       ~elements=[|Vector2S, Arg, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(Vector2S);
 
@@ -260,7 +276,7 @@ test("should insert within capture group", (.) => {
         CaptureGroupEndS,
         N3_S,
       |],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->insert(N2_S);
 
@@ -287,7 +303,7 @@ test("should only insert within current capture group", (.) => {
     N3_S,
   |];
   let {index, elements} =
-    make(~index=4, ~elements=testElements, ~allowLabelEditing=false)
+    make(~index=4, ~elements=testElements, ~formatCaptureGroups=false)
     ->insert(N2_S);
 
   expect(elements)
@@ -307,7 +323,7 @@ test("should only insert within current capture group", (.) => {
 
 test("should select first capture group when inserting array", (.) => {
   let {index} =
-    make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+    make(~index=0, ~elements=[||], ~formatCaptureGroups=false)
     ->insertArray([|
         N1_S,
         CaptureGroupStart({placeholderMml: "selected"}),
@@ -323,7 +339,7 @@ test("should select first capture group when inserting array", (.) => {
 
 test("should select first empty argument when inserting array", (.) => {
   let {index} =
-    make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+    make(~index=0, ~elements=[||], ~formatCaptureGroups=false)
     ->insertArray([|Frac2S, Arg, Arg|]);
 
   expect(index)->toBe(1);
@@ -331,7 +347,7 @@ test("should select first empty argument when inserting array", (.) => {
 
 test("should not select non-empty arguments when inserting array", (.) => {
   let {index} =
-    make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+    make(~index=0, ~elements=[||], ~formatCaptureGroups=false)
     ->insertArray([|Frac2S, N1_S, Arg, Arg|]);
 
   expect(index)->toBe(3);
@@ -341,7 +357,7 @@ test(
   "should not select non-empty arguments in functions after the first when inserting array",
   (.) => {
     let {index} =
-      make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+      make(~index=0, ~elements=[||], ~formatCaptureGroups=false)
       ->insertArray([|Frac2S, N1_S, Arg, N2_S, Arg, Superscript1, Arg|]);
 
     expect(index)->toBe(6);
@@ -352,7 +368,7 @@ test(
   "should select after array when inserting array with no capture groups or placeholders",
   (.) => {
     let {index} =
-      make(~index=0, ~elements=[||], ~allowLabelEditing=false)
+      make(~index=0, ~elements=[||], ~formatCaptureGroups=false)
       ->insertArray([|
           Frac2S,
           N1_S,

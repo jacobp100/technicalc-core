@@ -85,11 +85,11 @@ let%private deleteEmptySuperscript = (elements, index) =>
   };
 
 let delete = (editState: t) => {
-  let {index, elements, allowLabelEditing} = editState;
+  let {index, elements, formatCaptureGroups} = editState;
   let elements = AST.normalize(elements);
 
   let possibleEmptyCaptureGroupStart =
-    allowLabelEditing ? index - 2 : index - 1;
+    formatCaptureGroups ? index - 2 : index - 1;
 
   let isEmptyCaptureGroup =
     EditState_Util.isEmptyCaptureGroup(
@@ -100,7 +100,7 @@ let delete = (editState: t) => {
   if (isEmptyCaptureGroup) {
     let index = possibleEmptyCaptureGroupStart;
     let (elements, _) = ArrayUtil.splice(elements, ~offset=index, ~len=2);
-    make(~index, ~elements, ~allowLabelEditing);
+    make(~index, ~elements, ~formatCaptureGroups);
   } else if (index > 0) {
     let index = index - 1;
     let elements =
@@ -113,7 +113,7 @@ let delete = (editState: t) => {
         ->deleteEmptySuperscript(index)
         ->ArrayUtil.insertArray(spread, index)
       };
-    make(~index, ~elements, ~allowLabelEditing);
+    make(~index, ~elements, ~formatCaptureGroups);
   } else {
     editState;
   };

@@ -229,12 +229,12 @@ let%private insertElement = (elements, element, index) => {
 };
 
 let insert =
-    ({index, elements, allowLabelEditing} as editState, element: AST.t) => {
+    ({index, elements, formatCaptureGroups} as editState, element: AST.t) => {
   let elements = AST.normalize(elements);
 
   if (AST_NormalizationContext.elementIsValid(elements, element, index)) {
     let (elements, index) = insertElement(elements, element, index);
-    make(~index, ~elements, ~allowLabelEditing);
+    make(~index, ~elements, ~formatCaptureGroups);
   } else {
     editState;
   };
@@ -259,7 +259,7 @@ let%private firstCaptureGroupOrEmptyArgumentIndex = (elements: array(AST.t)) => 
 
 let insertArray =
     (
-      {index, elements, allowLabelEditing} as editState,
+      {index, elements, formatCaptureGroups} as editState,
       insertedElements: array(AST.t),
     ) => {
   let elements = AST.normalize(elements);
@@ -276,7 +276,7 @@ let insertArray =
       ->Belt.Option.getWithDefault(Belt.Array.length(insertedElements));
 
     let index = index + advanceBy;
-    make(~index, ~elements, ~allowLabelEditing);
+    make(~index, ~elements, ~formatCaptureGroups);
   } else {
     editState;
   };

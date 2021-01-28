@@ -1,13 +1,14 @@
 open EditState_Types;
 open EditState_Util;
 
-let setIndex = ({elements, allowLabelEditing}, index) => {
-  let index = preferredInsertionIndex(~index, ~elements, ~allowLabelEditing);
-  {index, elements, allowLabelEditing};
+let setIndex = ({elements, formatCaptureGroups}, index) => {
+  let index =
+    preferredInsertionIndex(~index, ~elements, ~formatCaptureGroups);
+  {index, elements, formatCaptureGroups};
 };
 
 let%private moveIndexInDirection =
-            (~forwards, {index, elements, allowLabelEditing}) => {
+            (~forwards, {index, elements, formatCaptureGroups}) => {
   let step = forwards ? 1 : (-1);
 
   let rec iter = index =>
@@ -15,13 +16,13 @@ let%private moveIndexInDirection =
       EditState_Util.preferredShiftDirection(
         ~index,
         ~elements,
-        ~allowLabelEditing,
+        ~formatCaptureGroups,
       )
     ) {
     | NoShift =>
       let index =
-        preferredInsertionIndex(~index, ~elements, ~allowLabelEditing);
-      {index, elements, allowLabelEditing};
+        preferredInsertionIndex(~index, ~elements, ~formatCaptureGroups);
+      {index, elements, formatCaptureGroups};
     | Forwards
     | Backwards => iter(index + step)
     };
@@ -33,18 +34,18 @@ let previous = s => moveIndexInDirection(~forwards=false, s);
 
 let next = s => moveIndexInDirection(~forwards=true, s);
 
-let moveStart = ({elements, allowLabelEditing}) => {
+let moveStart = ({elements, formatCaptureGroups}) => {
   let index =
-    preferredInsertionIndex(~index=0, ~elements, ~allowLabelEditing);
-  {index, elements, allowLabelEditing};
+    preferredInsertionIndex(~index=0, ~elements, ~formatCaptureGroups);
+  {index, elements, formatCaptureGroups};
 };
 
-let moveEnd = ({elements, allowLabelEditing}) => {
+let moveEnd = ({elements, formatCaptureGroups}) => {
   let index =
     preferredInsertionIndex(
       ~index=Belt.Array.length(elements),
       ~elements,
-      ~allowLabelEditing,
+      ~formatCaptureGroups,
     );
-  {index, elements, allowLabelEditing};
+  {index, elements, formatCaptureGroups};
 };

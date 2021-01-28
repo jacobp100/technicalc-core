@@ -4,7 +4,7 @@ type captureGroup = {
 };
 
 let isInCaptureGroup = (s: EditState.t) =>
-  !s.allowLabelEditing
+  !s.formatCaptureGroups
     ? EditState_Util.isEmptyCaptureGroup(s.elements, s.index - 1) : false;
 
 let captureGroups = (elements: array(AST.t)): array(captureGroup) => {
