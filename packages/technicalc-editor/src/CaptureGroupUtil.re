@@ -11,7 +11,7 @@ let%private contains = (captureGroups, ~placeholderMml, ~elements) =>
     && Belt.Array.eqU(elements, x.elements, elementsEqU)
   });
 
-let captureGroups = (elements: array(AST.t)): array(captureGroup) => {
+let populatedCaptureGroups = (elements: array(AST.t)): array(captureGroup) => {
   let rec iter = (~captureGroupStartStack=[], ~captureGroups=[], i) =>
     switch (Belt.Array.get(elements, i)) {
     | Some(CaptureGroupStart({placeholderMml})) =>
@@ -36,6 +36,22 @@ let captureGroups = (elements: array(AST.t)): array(captureGroup) => {
       }
     | Some(_) => iter(~captureGroupStartStack, ~captureGroups, i + 1)
     | None => Belt.List.toArray(captureGroups)->ArrayUtil.reverseInPlace
+    };
+
+  iter(0);
+};
+
+let emptyCaptureGroups = (elements: array(AST.t)) => {
+  let length = Belt.Array.length(elements);
+
+  let rec iter = (~captureGroups=[], i) =>
+    if (i >= length) {
+      Belt.List.toArray(captureGroups)->ArrayUtil.reverseInPlace;
+    } else {
+      let captureGroups =
+        EditState_Util.isEmptyCaptureGroup(elements, i)
+          ? [i, ...captureGroups] : captureGroups;
+      iter(~captureGroups, i + 1);
     };
 
   iter(0);

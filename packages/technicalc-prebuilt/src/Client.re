@@ -39,7 +39,8 @@ module Elements = {
   let bracketRanges = BracketUtil.bracketRanges;
   let bracketRange = BracketUtil.bracketRange;
 
-  let captureGroups = CaptureGroupUtil.captureGroups;
+  let populatedCaptureGroups = CaptureGroupUtil.populatedCaptureGroups;
+  let emptyCaptureGroups = CaptureGroupUtil.emptyCaptureGroups;
 
   let insertRanges = InsertUtil.insertRanges;
   let canInsertTable = InsertUtil.canInsertTable;
