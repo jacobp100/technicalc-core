@@ -44,29 +44,57 @@ let%private encodeElement =
     | element => Encoding_Element.toUint(element)->encodeUint
     };
 
+// Required to handle legacy LabelS encoding
+let%private removeMeWrapInArray = (x: option(AST.t)): option(array(AST.t)) =>
+  switch (x) {
+  | Some(x) => Some([|x|])
+  | None => None
+  };
+
+let%private removeMeConcatArray =
+            (x: option(array(array(AST.t)))): option(array(AST.t)) =>
+  switch (x) {
+  | Some(flattenMe) => Some(Belt.Array.concatMany(flattenMe))
+  | None => None
+  };
+
 let%private readElement =
   (. reader) =>
     switch (readUint(reader)) {
     // | Some(256) => readUnitConversion(reader)
     | Some(256) => None
-    | Some(257) => readCustomAtom(reader)
-    | Some(258) => /* Was label */ None
-    | Some(259) =>
-      switch (readString(reader)) {
-      | Some(string) => Some(VariableS(string))
-      | None => None
-      }
-    | Some(260) =>
+    | Some(257) => readCustomAtom(reader)->removeMeWrapInArray
+    | Some(258) =>
+      // Was LabelS - to be removed at a later date
       switch (readString(reader)) {
       | Some(placeholderMml) =>
-        Some(CaptureGroupStart({placeholderMml: placeholderMml}))
+        Some([|
+          CaptureGroupStart({placeholderMml: placeholderMml}),
+          CaptureGroupEndS,
+        |])
       | None => None
       }
-    | Some(value) => Encoding_Element.ofUint(value)
+    | Some(259) =>
+      removeMeWrapInArray(
+        switch (readString(reader)) {
+        | Some(string) => Some(VariableS(string))
+        | None => None
+        },
+      )
+    | Some(260) =>
+      removeMeWrapInArray(
+        switch (readString(reader)) {
+        | Some(placeholderMml) =>
+          Some(CaptureGroupStart({placeholderMml: placeholderMml}))
+        | None => None
+        },
+      )
+    | Some(value) => Encoding_Element.ofUint(value)->removeMeWrapInArray
     | None => None
     };
 
 let encodeElements = (input: array(AST.t)) =>
   encodeArray(input, encodeElement);
 
-let readElements = reader => readArray(reader, readElement);
+let readElements = reader =>
+  readArray(reader, readElement)->removeMeConcatArray;
