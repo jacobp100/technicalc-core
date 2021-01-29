@@ -108,6 +108,20 @@ type t =
   | Matrix4S
   | Matrix9S;
 
+let eq = (a: t, b: t) =>
+  switch (a, b) {
+  | (
+      CaptureGroupStart({placeholderMml: a1}),
+      CaptureGroupStart({placeholderMml: b1}),
+    ) =>
+    a1 == b1
+  | (UnitConversion(_), UnitConversion(_)) => false // Not used yet (ignore)
+  | (CustomAtomS({mml: a1, value: a2}), CustomAtomS({mml: b1, value: b2})) =>
+    a1 == b1 && a2 == b2
+  | (VariableS(a1), VariableS(b1)) => a1 == b1
+  | (a, b) => a === b
+  };
+
 let argCountExn = (arg: t) =>
   switch (arg) {
   /* Arg */

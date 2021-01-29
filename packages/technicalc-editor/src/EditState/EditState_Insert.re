@@ -1,12 +1,8 @@
 open EditState_Types;
 open EditState_Base;
 
-type countDirection =
-  | Forwards
-  | Backwards;
-
 let%private skipFunction = (x, ~from, ~direction) => {
-  let step = direction == Forwards ? 1 : (-1);
+  let step = direction == EditState_Util.Forwards ? 1 : (-1);
   let argLevelStep = step;
 
   let rec iter = (~index, ~argLevel) =>
@@ -79,8 +75,7 @@ let%private skipMode = (element: AST.t) =>
   | Integral3
   | Vector3S
   | Matrix4S
-  | Matrix9S =>
-    AST_Types.argCountExn(element) !== 0 ? FunctionFixed : TopLevelFixed
+  | Matrix9S => AST.argCountExn(element) !== 0 ? FunctionFixed : TopLevelFixed
   | Arg
   | ArcMinuteUnit
   | ArcSecondUnit
@@ -154,7 +149,7 @@ let%private skipInsertables = (x: array(AST.t), ~from, ~direction) => {
         };
       let shouldBreak =
         switch (direction) {
-        | Forwards => bracketLevel < 0
+        | EditState_Util.Forwards => bracketLevel < 0
         | Backwards => bracketLevel > 0
         };
       let nextIndex =
@@ -240,10 +235,11 @@ let insert =
   };
 };
 
-let%private firstCaptureGroupOrEmptyArgumentIndex = (elements: array(AST.t)) => {
+let%private firstCaptureGroupOrEmptyArgumentIndex =
+            (~formatCaptureGroups, elements: array(AST.t)) => {
   let rec iter = (~argWillFormPlaceholder, i) =>
     switch (Belt.Array.get(elements, i)) {
-    | Some(CaptureGroupStart(_)) => Some(i + 1)
+    | Some(CaptureGroupStart(_)) when !formatCaptureGroups => Some(i + 1)
     | Some(Arg) =>
       if (argWillFormPlaceholder) {
         Some(i);
@@ -251,7 +247,7 @@ let%private firstCaptureGroupOrEmptyArgumentIndex = (elements: array(AST.t)) => 
         iter(~argWillFormPlaceholder=true, i + 1);
       }
     | Some(e) =>
-      iter(~argWillFormPlaceholder=AST_Types.argCountExn(e) !== 0, i + 1)
+      iter(~argWillFormPlaceholder=AST.argCountExn(e) !== 0, i + 1)
     | None => None
     };
   iter(~argWillFormPlaceholder=false, 0);
@@ -272,7 +268,10 @@ let insertArray =
     let elements = ArrayUtil.insertArray(elements, insertedElements, index);
 
     let advanceBy =
-      firstCaptureGroupOrEmptyArgumentIndex(insertedElements)
+      firstCaptureGroupOrEmptyArgumentIndex(
+        ~formatCaptureGroups,
+        insertedElements,
+      )
       ->Belt.Option.getWithDefault(Belt.Array.length(insertedElements));
 
     let index = index + advanceBy;

@@ -141,6 +141,7 @@ type foldState('a) =
   | OpenBracket
   | Operator(operator)
   | Percent
+  | Placeholder(option(superscript('a)))
   | Product({
       from: 'a,
       to_: 'a,
@@ -163,7 +164,6 @@ type foldState('a) =
       from: 'a,
       to_: 'a,
     })
-  | Superscript('a)
   | Vector({
       elements: array('a),
       superscript: option(superscript('a)),
@@ -187,7 +187,7 @@ type range = (int, int);
 
 let superscriptBody = superscript => superscript.superscriptBody;
 
-let%private digitNucleus = digit =>
+let%private digitNucleusExn = digit =>
   switch (digit) {
   | AST_Types.N0_S => "0"
   | N1_S => "1"
@@ -289,7 +289,7 @@ let reduceMap =
       Node(CustomAtom({mml, value, superscript}), i, i');
     | (N0_S | N1_S | N2_S | N3_S | N4_S | N5_S | N6_S | N7_S | N8_S | N9_S) as digit
     | (NA_S | NB_S | NC_S | ND_S | NE_S | NF_S) as digit =>
-      let nucleus = digitNucleus(digit);
+      let nucleus = digitNucleusExn(digit);
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
       Node(Digit({nucleus, superscript}), i, i');
@@ -309,8 +309,9 @@ let reduceMap =
       let (value, i') = readArg(i + 1);
       Node(Magnitude({value: value}), i, i');
     | Superscript1 =>
-      let (superscript, i') = readArg(i + 1);
-      Node(Superscript(superscript), i, i');
+      let (superscriptBody, i') = readArg(i + 1);
+      let superscript = Some({superscriptBody, index: i + 1});
+      Node(Placeholder(superscript), i, i');
     | NLog1 =>
       let (base, i') = readArg(i + 1);
       Node(NLog({base: base}), i, i');

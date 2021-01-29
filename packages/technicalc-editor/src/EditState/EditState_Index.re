@@ -9,23 +9,31 @@ let setIndex = ({elements, formatCaptureGroups}, index) => {
 
 let%private moveIndexInDirection =
             (~forwards, {index, elements, formatCaptureGroups}) => {
+  /* Note returning an index of length _is_ valid */
+  let length = Belt.Array.length(elements);
   let step = forwards ? 1 : (-1);
 
-  let rec iter = index =>
-    switch (
+  let rec iter = index => {
+    let preferredShiftDirection =
       EditState_Util.preferredShiftDirection(
         ~index,
         ~elements,
         ~formatCaptureGroups,
-      )
-    ) {
-    | NoShift =>
+      );
+    let nextIndex =
+      switch (preferredShiftDirection) {
+      | Some(_) => Some(index + step)
+      | None => None
+      };
+    switch (nextIndex) {
+    | Some(nextIndex) when nextIndex >= 0 && nextIndex <= length =>
+      iter(nextIndex)
+    | _ =>
       let index =
         preferredInsertionIndex(~index, ~elements, ~formatCaptureGroups);
       {index, elements, formatCaptureGroups};
-    | Forwards
-    | Backwards => iter(index + step)
     };
+  };
 
   iter(index + step);
 };

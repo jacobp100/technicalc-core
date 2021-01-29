@@ -10,7 +10,7 @@ open TechniCalcCalculator.Encoding;
 //     Encoding_Units.readUnitParts(reader),
 //   ) {
 //   | (Some(fromUnits), Some(toUnits)) =>
-//     Some(AST_Types.UnitConversion({fromUnits, toUnits}))
+//     Some(AST.UnitConversion({fromUnits, toUnits}))
 //   | _ => None
 //   };
 
@@ -26,7 +26,7 @@ let%private readCustomAtom = reader =>
     // This is a round-trip, but it does check for validity
     // And is required to get the reader in the right position
     let value = TechniCalcCalculator.Encoding_Value.encodeValue(value);
-    AST_Types.CustomAtomS({mml, value})->Some;
+    AST.CustomAtomS({mml, value})->Some;
   | _ => None
   };
 

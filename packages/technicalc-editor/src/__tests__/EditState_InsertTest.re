@@ -383,3 +383,17 @@ test(
     expect(index)->toBe(8);
   },
 );
+
+test(
+  "should select after a capture group when inserting in format capture group mode",
+  (.) => {
+    let {index} =
+      make(~index=0, ~elements=[||], ~formatCaptureGroups=true)
+      ->insertArray([|
+          CaptureGroupStart({placeholderMml: ""}),
+          CaptureGroupEndS,
+        |]);
+
+    expect(index)->toBe(2);
+  },
+);

@@ -3,6 +3,14 @@ type captureGroup = {
   elements: array(AST.t),
 };
 
+let%private elementsEqU = (. a, b) => AST.eq(a, b);
+
+let%private contains = (captureGroups, ~placeholderMml, ~elements) =>
+  Belt.List.someU(captureGroups, (. x) => {
+    placeholderMml == x.placeholderMml
+    && Belt.Array.eqU(elements, x.elements, elementsEqU)
+  });
+
 let captureGroups = (elements: array(AST.t)): array(captureGroup) => {
   let rec iter = (~captureGroupStartStack=[], ~captureGroups=[], i) =>
     switch (Belt.Array.get(elements, i)) {
@@ -20,7 +28,9 @@ let captureGroups = (elements: array(AST.t)): array(captureGroup) => {
           ->AST_Types.normalize;
         let captureGroups =
           Belt.Array.length(elements) != 0
+          && !contains(captureGroups, ~placeholderMml, ~elements)
             ? [{placeholderMml, elements}, ...captureGroups] : captureGroups;
+
         iter(~captureGroupStartStack, ~captureGroups, i + 1);
       | [] => iter(~captureGroupStartStack, ~captureGroups, i + 1)
       }

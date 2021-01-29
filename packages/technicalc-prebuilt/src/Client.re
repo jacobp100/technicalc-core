@@ -40,6 +40,10 @@ module Elements = {
   let bracketRange = BracketUtil.bracketRange;
 
   let captureGroups = CaptureGroupUtil.captureGroups;
+
+  let insertRanges = InsertUtil.insertRanges;
+  let canInsertTable = InsertUtil.canInsertTable;
+  let canInsertIteration = InsertUtil.canInsertIteration;
 };
 
 module Editor = {

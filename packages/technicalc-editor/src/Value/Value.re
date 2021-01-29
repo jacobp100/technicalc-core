@@ -7,7 +7,7 @@ let parse = (elements: array(t)) => {
   let reduce = (accum, element, (i, i')) =>
     if (error^ == None) {
       switch (element) {
-      | Superscript(_)
+      | Placeholder(_)
       | CaptureGroupPlaceholder(_) =>
         error := Some(i);
         MutableListBuilder.empty;
