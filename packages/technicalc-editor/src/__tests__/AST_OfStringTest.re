@@ -71,3 +71,18 @@ test("nested arguments", (.) => {
   expect(ofString("4^3^2"))
   ->toEqual([|N4_S, Superscript1, N3_S, Superscript1, N2_S, Arg, Arg|])
 });
+
+test("nested arguments with operator at end", (.) => {
+  expect(ofString("4^3^2 + 1"))
+  ->toEqual([|
+      N4_S,
+      Superscript1,
+      N3_S,
+      Superscript1,
+      N2_S,
+      Arg,
+      Arg,
+      Add,
+      N1_S,
+    |])
+});
