@@ -19,6 +19,8 @@ type format = {
 module Elements = {
   open TechniCalcEditor;
 
+  let ofString = AST.ofString;
+
   let encode = Encoding.encode;
   let decode = Encoding.decode;
 
