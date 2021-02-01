@@ -9,7 +9,7 @@ let randInt = (a, b) => {
       FloatUtil.toInt(
         min(a, b)->Belt.Float.fromInt
         +. FloatUtil.random()
-        *. Belt.Float.fromInt(b - a)->abs_float,
+        *. Belt.Float.fromInt(b - a)->FloatUtil.abs,
       )
     | _ => None
     };

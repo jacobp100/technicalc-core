@@ -40,7 +40,7 @@ let%private cubicRaphson = (a, b, c, d) => {
   let m1 = toDecimal(m1)->Decimal.toFloat;
 
   let midpoint = (m0 +. m1) /. 2.;
-  let range = abs_float(m0 -. m1);
+  let range = FloatUtil.abs(m0 -. m1);
   let values = [midpoint, midpoint -. range, midpoint +. range];
 
   let af = toDecimal(a)->Decimal.toFloat;

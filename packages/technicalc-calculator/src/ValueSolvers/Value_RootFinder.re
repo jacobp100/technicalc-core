@@ -37,7 +37,7 @@ let solveRoot = (f, initial) => {
     let m = ofFloat(mFloat);
     let fm = f(m);
     let fmFloat = toDecimal(fm)->Decimal.toFloat;
-    if (abs_float(fmFloat) < precision) {
+    if (FloatUtil.abs(fmFloat) < precision) {
       m;
     } else if (iterations > 0) {
       let iterations = iterations - 1;
@@ -59,7 +59,7 @@ let solveRoot = (f, initial) => {
       | None => f(xReal)
       };
     let fx = fxReal->toDecimal->Decimal.toFloat;
-    if (abs_float(fx) < precision) {
+    if (FloatUtil.abs(fx) < precision) {
       xReal;
     } else if (iterations > 0) {
       /*
@@ -74,8 +74,8 @@ let solveRoot = (f, initial) => {
           `Bisect((x, xPrev))
         | Some({xPrev, fxPrev})
             when
-              abs_float(fx -. fxPrev) < optimiseGradientLimit
-              && abs_float(x -. xPrev) < optimiseGradientLimit =>
+              FloatUtil.abs(fx -. fxPrev) < optimiseGradientLimit
+              && FloatUtil.abs(x -. xPrev) < optimiseGradientLimit =>
           `Gradient((fx -. fxPrev) /. (x -. xPrev))
         | _ =>
           `Gradient(
@@ -115,7 +115,7 @@ let solveRoot = (f, initial) => {
     let (xPrev, fxPrev) = (x, fx);
     let x = Value_Core.(x - fx / f'x);
     let fx = f(x);
-    if (toDecimal(fx)->Decimal.toFloat->abs_float < precision) {
+    if (toDecimal(fx)->Decimal.toFloat->FloatUtil.abs < precision) {
       x;
     } else {
       let previous =
