@@ -37,11 +37,8 @@ let%private formatConstantMultiple = (~formatAsRow, n, c, format): string => {
     };
 
   switch (
-    Formatting_Number.formatInteger(
-      ~base?,
-      ~digitGrouping?,
-      Decimal.ofInt(n),
-    ),
+    Decimal.ofInt(n)
+    ->Formatting_Number.formatInteger(~base?, ~digitGrouping?, _),
     Formatting_Constant.toString(~format, c),
   ) {
   | ("1", "") => formatNumber("1", format)
@@ -66,10 +63,7 @@ let%private formatReal = (re, format): string => {
     let constantMultiple =
       formatConstantMultiple(~formatAsRow=false, n, c, format);
     minus ++ constantMultiple;
-  | (
-      Real.Rational(n, d, c),
-      Some({mode, style: Natural({mixedFractions})}),
-    ) =>
+  | (Rational(n, d, c), Some({mode, style: Natural({mixedFractions})})) =>
     let minus = n < 0 ? formatOperator("-", format) : "";
     let n = IntUtil.abs(n);
 
@@ -80,11 +74,8 @@ let%private formatReal = (re, format): string => {
         let before =
           integer == 0
             ? ""
-            : Formatting_Number.formatInteger(
-                ~base?,
-                ~digitGrouping?,
-                Decimal.ofInt(integer),
-              )
+            : Decimal.ofInt(integer)
+              ->Formatting_Number.formatInteger(~base?, ~digitGrouping?, _)
               ->formatNumber(format);
         (before, remainder);
       } else {
@@ -94,11 +85,8 @@ let%private formatReal = (re, format): string => {
     let top = formatConstantMultiple(~formatAsRow=true, n, c, format);
 
     let bottom =
-      Formatting_Number.formatInteger(
-        ~base?,
-        ~digitGrouping?,
-        Decimal.ofInt(d),
-      )
+      Decimal.ofInt(d)
+      ->Formatting_Number.formatInteger(~base?, ~digitGrouping?, _)
       ->formatNumber(format);
 
     switch (mode) {
@@ -114,15 +102,8 @@ let%private formatReal = (re, format): string => {
     | Tex => minus ++ before ++ "\\frac{" ++ top ++ "}{" ++ bottom ++ "}"
     | MathML => minus ++ before ++ "<mfrac>" ++ top ++ bottom ++ "</mfrac>"
     };
-  | (
-      _,
-      Some({
-        style: Natural(_) | Decimal,
-        decimalMinMagnitude,
-        decimalMaxMagnitude,
-        precision,
-      }),
-    ) =>
+  | (_, Some({style: Natural(_) | Decimal} as format')) =>
+    let {decimalMinMagnitude, decimalMaxMagnitude, precision} = format';
     let f = Real.toDecimal(re);
     let valueMagnitude = DecimalUtil.magnitude(f);
     let insideMagnitudeThreshold =

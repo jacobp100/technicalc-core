@@ -29,7 +29,7 @@ let normalize = a =>
 let ofDecimal = f => Decimal(f)->normalize;
 
 let ofInt = n => {
-  assert(n->float_of_int->int_of_float == n);
+  assert(n->Belt.Float.fromInt->Belt.Int.fromFloat == n);
   Rational(n, 1, Unit);
 };
 

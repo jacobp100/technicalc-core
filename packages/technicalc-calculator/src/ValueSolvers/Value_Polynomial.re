@@ -14,7 +14,7 @@ let epsilon = 1.e-4;
 let base = 27720; /* Divisible by all numbers 1-12 */
 /* FIXME - test int overflow */
 let roundToPrecision = x =>
-  switch (FloatUtil.toInt(x *. float_of_int(base))) {
+  switch (FloatUtil.toInt(x *. Belt.Float.fromInt(base))) {
   | Some(i) => ofInt(i) / ofInt(base)
   | None => ofFloat(x)
   };

@@ -90,6 +90,14 @@ test("formats engineering notation", (.) => {
   expect(stringOfFloat(-0.5, format))->toBe("-500.000000000000e-3");
 });
 
+test("formats other bases", (.) => {
+  let format = base => {...defaultFormat, base};
+
+  expect(stringOfFloat(100., format(2)))->toBe("0b1,100,100");
+  expect(stringOfFloat(100., format(8)))->toBe("0o144");
+  expect(stringOfFloat(100., format(16)))->toBe("0x64");
+});
+
 test("formats various numbers correctly", (.) => {
   let convert = x =>
     ofString(x)->Belt.Option.getExn->toString(~format=defaultFormat, _);

@@ -17,7 +17,7 @@ let createSuperscript =
   let {AST.superscriptBody, index: s} = superscript;
   let base =
     createElement(
-      ~attributes=[("id", ":" ++ string_of_int(s)), ...attributes],
+      ~attributes=[("id", ":" ++ Belt.Int.toString(s)), ...attributes],
       element,
       body,
     );
@@ -30,7 +30,10 @@ let createSuperscript =
 
 let createElementWithRange =
     (~attributes=[], ~superscript=?, (i, i'), element, body) => {
-  let idAttribute = ("id", string_of_int(i) ++ ":" ++ string_of_int(i'));
+  let idAttribute = (
+    "id",
+    Belt.Int.toString(i) ++ ":" ++ Belt.Int.toString(i'),
+  );
 
   switch (superscript) {
   | None =>

@@ -196,7 +196,7 @@ module BracketGroups = {
           switch (superscript) {
           | Some({AST.superscriptBody}) =>
             createElement(
-              ~attributes=[("id", ":" ++ snd(range)->string_of_int)],
+              ~attributes=[("id", ":" ++ snd(range)->Belt.Int.toString)],
               "msup",
               createElement("mrow", body) ++ superscriptBody,
             )

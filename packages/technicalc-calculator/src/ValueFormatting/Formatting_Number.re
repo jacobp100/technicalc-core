@@ -1,4 +1,12 @@
-let trimTraillingZeros = (~startIndex=0, ~endIndex=?, string) => {
+let%private basePrefixExn = base =>
+  switch (base) {
+  | 2 => "0b"
+  | 8 => "0o"
+  | 16 => "0x"
+  | _ => ""
+  };
+
+let%private trimTraillingZeros = (~startIndex=0, ~endIndex=?, string) => {
   let endIndex =
     endIndex->Belt.Option.getWithDefault(String.length(string) - 1);
   let sliceIndex = ref(endIndex);
@@ -17,7 +25,7 @@ let trimTraillingZeros = (~startIndex=0, ~endIndex=?, string) => {
   ++ StringUtil.slice(string, endIndex + 1, String.length(string));
 };
 
-let adddigitGrouping = (~startIndex=0, ~endIndex=?, string) => {
+let%private adddigitGrouping = (~startIndex=0, ~endIndex=?, string) => {
   let endIndex = endIndex->Belt.Option.getWithDefault(String.length(string));
   let baseStr = ref(string);
   let index = ref(endIndex - 3);
@@ -52,7 +60,7 @@ let formatInteger = (~base=10, ~digitGrouping=false, num) => {
     } else {
       str;
     };
-  StringUtil.toUpperCase(str);
+  basePrefixExn(base) ++ StringUtil.toUpperCase(str);
 };
 
 let formatDecimal =
@@ -109,6 +117,6 @@ let formatExponential =
       ~maxDecimalPlaces,
       Decimal.(num / ofInt(10) ** ofInt(exponent)),
     );
-  let exponentPart = string_of_int(exponent);
+  let exponentPart = Belt.Int.toString(exponent);
   (decimalPart, exponentPart);
 };
