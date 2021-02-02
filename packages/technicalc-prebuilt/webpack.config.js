@@ -1,12 +1,13 @@
 const path = require("path");
 const webpack = require("webpack");
+const dist = require("./dist");
 
 const createConfig = ({ name, entry, target = "web" }) => ({
   mode: "production",
   entry,
   output: {
     filename: `${name.toLowerCase()}.js`,
-    path: path.resolve(__dirname, "../../dist"),
+    path: dist,
     library: name,
     libraryTarget: "umd",
     globalObject: "typeof self !== 'undefined' ? self : undefined",

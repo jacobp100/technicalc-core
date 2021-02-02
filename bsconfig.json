@@ -1,0 +1,21 @@
+{
+  "name": "technicalc-core",
+  "version": "0.1.0",
+  "sources": [],
+  "package-specs": {
+    "module": "es6-global",
+    "in-source": true
+  },
+  "suffix": ".bs.js",
+  "pinned-dependencies": [
+    "technicalc-calculator",
+    "technicalc-editor",
+    "technicalc-prebuilt"
+  ],
+  "bs-dependencies": ["technicalc-calculator", "technicalc-editor"],
+  "warnings": {
+    "number": "A+101",
+    "error": true
+  },
+  "refmt": 3
+}

@@ -10,10 +10,17 @@ Each package has its own (hopefully) comprehensive readme. See,
 - [technicalc-editor](https://github.com/jacobp100/technicalc-core/tree/master/packages/technicalc-editor)
 - [technicalc-prebuilt](https://github.com/jacobp100/technicalc-core/tree/master/packages/technicalc-prebuilt)
 
-All packages share a lint and test infrastructure. They each have their own build setup, but there's a top level build command for convenience.
+All packages share compilation, linting, and testing infrastructure.
 
-```
+```bash
 yarn lint
 yarn test
-yarn build
+yarn build-packages # compiles all packages with rescript-compiler
+yarn watch-packages # same as above - but in watch mode
+```
+
+To generate a bundle (via technicalc-prebuilt), it's
+
+```bash
+yarn build # output to /dist
 ```

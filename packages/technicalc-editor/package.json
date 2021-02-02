@@ -1,11 +1,7 @@
 {
   "name": "technicalc-editor",
   "version": "0.0.1",
-  "scripts": {
-    "clean": "bsb -clean-world",
-    "build": "bsb -make-world",
-    "watch": "bsb -make-world -w"
-  },
+  "scripts": {},
   "keywords": [
     "BuckleScript"
   ],

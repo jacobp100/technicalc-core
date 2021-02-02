@@ -1,3 +1,8 @@
 .DS_Store
-/node_modules
+.merlin
+.bsb.lock
+npm-debug.log
+/lib/bs/
+/node_modules/
+
 /dist

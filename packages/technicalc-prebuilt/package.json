@@ -2,18 +2,13 @@
   "name": "technicalc-prebuilt",
   "version": "0.0.1",
   "scripts": {
-    "clean-technicalc": "bsb -clean-world",
-    "build-technicalc": "bsb -make-world",
-    "watch-technicalc": "bsb -make-world -w",
     "build-constants": "node constants",
     "build-units": "node units",
     "build-fonts": "node font-gen",
+    "build-static-content": "yarn build-fonts && yarn build-constants && yarn build-units",
     "build-bundles": "webpack",
-    "watch-bundles": "yarn webpack --watch",
-    "clean": "yarn clean-technicalc",
-    "build-static-content": "yarn build-fonts",
-    "build-modules": "yarn build-technicalc && yarn build-bundles && yarn build-constants && yarn build-units",
-    "build": "yarn build-static-content && yarn build-modules"
+    "watch-bundles": "webpack --watch",
+    "build": "yarn build-static-content && yarn build-bundles"
   },
   "keywords": [],
   "author": "",

@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 // Android font: GFS Didot
+const requireEsm = require("esm")(module);
 const fs = require("fs");
 const path = require("path");
 const { TeX } = require("mathjax-full/js/input/tex.js");
@@ -11,13 +12,14 @@ const { liteAdaptor } = require("mathjax-full/js/adaptors/liteAdaptor.js");
 
 const { AllPackages } = require("mathjax-full/js/input/tex/AllPackages.js");
 
-const MmlVisitor = require("mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js")
-  .SerializedMmlVisitor;
+const {
+  SerializedMmlVisitor,
+} = require("mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js");
 
 const dist = require("../dist");
 
 // eslint-disable-next-line import/no-dynamic-require
-const { Value } = require(path.join(dist, "client"));
+const { Value } = requireEsm("../src/Client.bs.js");
 const titles = require("./titles");
 
 const Typeset = (string, display) => {
@@ -29,7 +31,7 @@ const Typeset = (string, display) => {
     OutputJax: svg,
   });
 
-  const visitor = new MmlVisitor();
+  const visitor = new SerializedMmlVisitor();
   const toMathML = (node) => visitor.visitTree(node, html);
 
   const math = new html.options.MathItem(string, tex, display);
