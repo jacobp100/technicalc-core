@@ -1,6 +1,9 @@
 type t =
   /* Arg */
   | Arg
+  /* Caputure Group */
+  | CaptureGroupStart({placeholderMml: string})
+  | CaptureGroupEndS
   /* Atom */
   | Acos
   | Acosh
@@ -44,7 +47,6 @@ type t =
   | CosS
   | CotS
   | ImaginaryUnitS
-  | LabelS({mml: string})
   | N0_S
   | N1_S
   | N2_S
@@ -106,10 +108,27 @@ type t =
   | Matrix4S
   | Matrix9S;
 
+let eq = (a: t, b: t) =>
+  switch (a, b) {
+  | (
+      CaptureGroupStart({placeholderMml: a1}),
+      CaptureGroupStart({placeholderMml: b1}),
+    ) =>
+    a1 == b1
+  | (UnitConversion(_), UnitConversion(_)) => false // Not used yet (ignore)
+  | (CustomAtomS({mml: a1, value: a2}), CustomAtomS({mml: b1, value: b2})) =>
+    a1 == b1 && a2 == b2
+  | (VariableS(a1), VariableS(b1)) => a1 == b1
+  | (a, b) => a === b
+  };
+
 let argCountExn = (arg: t) =>
   switch (arg) {
   /* Arg */
   | Arg => assert(false)
+  /* Caputure Group Start */
+  | CaptureGroupStart(_)
+  | CaptureGroupEndS
   /* Atom */
   | Acos
   | Acosh
@@ -151,7 +170,6 @@ let argCountExn = (arg: t) =>
   | CotS
   | CustomAtomS(_)
   | ImaginaryUnitS
-  | LabelS(_)
   | N0_S
   | N1_S
   | N2_S
@@ -239,7 +257,6 @@ let normalize = (ast: array(t)) =>
   switch (normalizationState(ast, 0, 0)) {
   | `Ok => ast
   | `GenericError =>
-    Js.log("Non-normalized ast (fixing)");
     let remaining = ref(0);
     let ast =
       Belt.Array.keep(ast, element =>
@@ -259,6 +276,5 @@ let normalize = (ast: array(t)) =>
       ast;
     };
   | `TooFewArgsError(remaining) =>
-    Js.log("Too few args in ast (fixing)");
-    Belt.Array.concat(ast, Belt.Array.make(remaining, Arg));
+    Belt.Array.concat(ast, Belt.Array.make(remaining, Arg))
   };

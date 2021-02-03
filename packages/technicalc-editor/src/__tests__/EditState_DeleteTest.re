@@ -3,7 +3,7 @@ open EditState;
 
 test("should delete empty magnitude", (.) => {
   let {index, elements} =
-    make(~index=1, ~elements=[|Magnitude1, Arg|], ~allowLabelEditing=false)
+    make(~index=1, ~elements=[|Magnitude1, Arg|], ~formatCaptureGroups=false)
     ->delete;
 
   expect(elements)->toEqual([||]);
@@ -15,7 +15,7 @@ test("should not delete filled magnitude", (.) => {
     make(
       ~index=1,
       ~elements=[|Magnitude1, N0_S, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -28,7 +28,7 @@ test("should insert parts of fraction when deleting", (.) => {
     make(
       ~index=1,
       ~elements=[|Frac2S, N1_S, Arg, N2_S, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -41,7 +41,7 @@ test("should not delete arg elements", (.) => {
     make(
       ~index=3,
       ~elements=[|Magnitude1, N0_S, Arg|],
-      ~allowLabelEditing=false,
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -49,38 +49,17 @@ test("should not delete arg elements", (.) => {
   expect(index)->toEqual(2);
 });
 
-test("should delete labels at index", (.) => {
-  let {index, elements} =
-    make(
-      ~index=1,
-      ~elements=[|N1_S, LabelS({mml: "x"}), N2_S|],
-      ~allowLabelEditing=false,
-    )
-    ->delete;
-
-  expect(elements)->toEqual([|N1_S, N2_S|]);
-  expect(index)->toEqual(1);
-});
-
-test("should not delete labels at index when allowing label editing", (.) => {
-  let {index, elements} =
-    make(
-      ~index=1,
-      ~elements=[|N1_S, LabelS({mml: "x"}), N2_S|],
-      ~allowLabelEditing=true,
-    )
-    ->delete;
-
-  expect(elements)->toEqual([|LabelS({mml: "x"}), N2_S|]);
-  expect(index)->toEqual(0);
-});
-
-test("should delete labels immediately after label index", (.) => {
+test("should delete empty capture groups at index", (.) => {
   let {index, elements} =
     make(
       ~index=2,
-      ~elements=[|N1_S, LabelS({mml: "x"}), N2_S|],
-      ~allowLabelEditing=false,
+      ~elements=[|
+        N1_S,
+        CaptureGroupStart({placeholderMml: "x"}),
+        CaptureGroupEndS,
+        N2_S,
+      |],
+      ~formatCaptureGroups=false,
     )
     ->delete;
 
@@ -88,52 +67,129 @@ test("should delete labels immediately after label index", (.) => {
   expect(index)->toEqual(1);
 });
 
-describe("should only delete a single label", (.) => {
+test(
+  "should not delete empty capture groups at index when allowing label editing",
+  (.) => {
+  let {index, elements} =
+    make(
+      ~index=1,
+      ~elements=[|
+        N1_S,
+        CaptureGroupStart({placeholderMml: "x"}),
+        CaptureGroupEndS,
+        N2_S,
+      |],
+      ~formatCaptureGroups=true,
+    )
+    ->delete;
+
+  expect(elements)
+  ->toEqual([|
+      CaptureGroupStart({placeholderMml: "x"}),
+      CaptureGroupEndS,
+      N2_S,
+    |]);
+  expect(index)->toEqual(0);
+});
+
+test(
+  "should delete empty capture groups before index when allowing label editing",
+  (.) => {
+  let {index, elements} =
+    make(
+      ~index=3,
+      ~elements=[|
+        N1_S,
+        CaptureGroupStart({placeholderMml: "x"}),
+        CaptureGroupEndS,
+        N2_S,
+      |],
+      ~formatCaptureGroups=true,
+    )
+    ->delete;
+
+  expect(elements)->toEqual([|N1_S, N2_S|]);
+  expect(index)->toEqual(1);
+});
+
+test("should delete empty capture groups immediately after label index", (.) => {
+  let {index, elements} =
+    make(
+      ~index=2,
+      ~elements=[|
+        N1_S,
+        CaptureGroupStart({placeholderMml: "x"}),
+        CaptureGroupEndS,
+        N2_S,
+      |],
+      ~formatCaptureGroups=false,
+    )
+    ->delete;
+
+  expect(elements)->toEqual([|N1_S, N2_S|]);
+  expect(index)->toEqual(1);
+});
+
+describe("should only delete a single capture empty group", (.) => {
   let testElements = [|
     AST.N1_S,
-    LabelS({mml: "x"}),
-    LabelS({mml: "y"}),
-    LabelS({mml: "z"}),
+    CaptureGroupStart({placeholderMml: "x"}),
+    CaptureGroupEndS,
+    CaptureGroupStart({placeholderMml: "y"}),
+    CaptureGroupEndS,
+    CaptureGroupStart({placeholderMml: "z"}),
+    CaptureGroupEndS,
     N2_S,
   |];
 
-  test("index 1", (.) => {
+  test("capture group 1", (.) => {
     let {index, elements} =
-      make(~index=1, ~elements=testElements, ~allowLabelEditing=false)
+      make(~index=2, ~elements=testElements, ~formatCaptureGroups=false)
       ->delete;
 
     expect(elements)
-    ->toEqual([|N1_S, LabelS({mml: "y"}), LabelS({mml: "z"}), N2_S|]);
-    expect(index)->toEqual(1);
-  });
-
-  test("index 2", (.) => {
-    let {index, elements} =
-      make(~index=2, ~elements=testElements, ~allowLabelEditing=false)
-      ->delete;
-
-    expect(elements)
-    ->toEqual([|N1_S, LabelS({mml: "y"}), LabelS({mml: "z"}), N2_S|]);
-    expect(index)->toEqual(1);
-  });
-
-  test("index 3", (.) => {
-    let {index, elements} =
-      make(~index=3, ~elements=testElements, ~allowLabelEditing=false)
-      ->delete;
-
-    expect(elements)
-    ->toEqual([|N1_S, LabelS({mml: "x"}), LabelS({mml: "z"}), N2_S|]);
+    ->toEqual([|
+        N1_S,
+        CaptureGroupStart({placeholderMml: "y"}),
+        CaptureGroupEndS,
+        CaptureGroupStart({placeholderMml: "z"}),
+        CaptureGroupEndS,
+        N2_S,
+      |]);
     expect(index)->toEqual(2);
   });
 
-  test("index 4", (.) => {
+  test("capture group 2", (.) => {
     let {index, elements} =
-      make(~index=4, ~elements=testElements, ~allowLabelEditing=false)
+      make(~index=4, ~elements=testElements, ~formatCaptureGroups=false)
       ->delete;
 
     expect(elements)
-    ->toEqual([|N1_S, LabelS({mml: "x"}), LabelS({mml: "y"}), N2_S|]);
-    expect(index)->toEqual(3);
+    ->toEqual([|
+        N1_S,
+        CaptureGroupStart({placeholderMml: "x"}),
+        CaptureGroupEndS,
+        CaptureGroupStart({placeholderMml: "z"}),
+        CaptureGroupEndS,
+        N2_S,
+      |]);
+    expect(index)->toEqual(4);
+  });
+
+  test("capture group 3", (.) => {
+    let {index, elements} =
+      make(~index=6, ~elements=testElements, ~formatCaptureGroups=false)
+      ->delete;
+
+    expect(elements)
+    ->toEqual([|
+        N1_S,
+        CaptureGroupStart({placeholderMml: "x"}),
+        CaptureGroupEndS,
+        CaptureGroupStart({placeholderMml: "y"}),
+        CaptureGroupEndS,
+        N2_S,
+      |]);
+    expect(index)->toEqual(4);
   });
 });

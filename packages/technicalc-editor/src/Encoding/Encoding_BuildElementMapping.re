@@ -1,4 +1,4 @@
-let%private makeSureThisIsTheLastIndex = 85;
+let%private makeSureThisIsTheLastIndex = 86;
 let%private toUint = (element: AST.t) =>
   switch (element) {
   /* Most common (make var-int encoding more efficient) */
@@ -89,13 +89,15 @@ let%private toUint = (element: AST.t) =>
   | CotS => 82
   | DegreeFunction => 83
   | GradianFunction => 84
-  /* Second set additions */
-  | MFrac3S => makeSureThisIsTheLastIndex
+  /* Third set additions */
+  | MFrac3S => 85
+  /* Fourth set additions */
+  | CaptureGroupEndS => makeSureThisIsTheLastIndex
   /* Custom handling */
   | UnitConversion(_)
   | CustomAtomS(_)
-  | LabelS(_)
-  | VariableS(_) => assert(false)
+  | VariableS(_)
+  | CaptureGroupStart(_) => assert(false)
   };
 
 let mapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, 0);

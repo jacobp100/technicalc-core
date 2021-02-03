@@ -72,7 +72,7 @@ let%private tokenizeBase = (~base, string) => {
   iter(
     ~tokensRev=[],
     ~parseExponent,
-    Belt.List.makeBy(String.length(string), i => {
+    Belt.List.makeByU(String.length(string), (. i) => {
       Obj.magic(StringUtil.charAtUnsafe(string, i))
     }),
   );

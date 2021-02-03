@@ -14,7 +14,7 @@ let epsilon = 1.e-4;
 let base = 27720; /* Divisible by all numbers 1-12 */
 /* FIXME - test int overflow */
 let roundToPrecision = x =>
-  switch (FloatUtil.toInt(x *. float_of_int(base))) {
+  switch (FloatUtil.toInt(x *. Belt.Float.fromInt(base))) {
   | Some(i) => ofInt(i) / ofInt(base)
   | None => ofFloat(x)
   };
@@ -40,7 +40,7 @@ let%private cubicRaphson = (a, b, c, d) => {
   let m1 = toDecimal(m1)->Decimal.toFloat;
 
   let midpoint = (m0 +. m1) /. 2.;
-  let range = abs_float(m0 -. m1);
+  let range = FloatUtil.abs(m0 -. m1);
   let values = [midpoint, midpoint -. range, midpoint +. range];
 
   let af = toDecimal(a)->Decimal.toFloat;

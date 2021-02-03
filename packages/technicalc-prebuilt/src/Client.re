@@ -19,10 +19,10 @@ type format = {
 module Elements = {
   open TechniCalcEditor;
 
+  let ofString = AST.ofString;
+
   let encode = Encoding.encode;
   let decode = Encoding.decode;
-
-  let ofValue = AST.ofValue;
 
   let toMml = (x, maybeFormat, maybeInline) => {
     let digitGrouping =
@@ -40,6 +40,13 @@ module Elements = {
 
   let bracketRanges = BracketUtil.bracketRanges;
   let bracketRange = BracketUtil.bracketRange;
+
+  let populatedCaptureGroups = CaptureGroupUtil.populatedCaptureGroups;
+  let emptyCaptureGroups = CaptureGroupUtil.emptyCaptureGroups;
+
+  let insertRanges = InsertUtil.insertRanges;
+  let canInsertTable = InsertUtil.canInsertTable;
+  let canInsertIteration = InsertUtil.canInsertIteration;
 };
 
 module Editor = {
@@ -76,7 +83,11 @@ module Keys = {
     })
     ->Keys.One;
 
-  let label = (~mml) => AST.LabelS({mml: mml})->Keys.One;
+  let label = (~placeholderMml) =>
+    Keys.Many([|
+      CaptureGroupStart({placeholderMml: placeholderMml}),
+      CaptureGroupEndS,
+    |]);
 
   let equation = (~elements) => Keys.Many(elements);
 };

@@ -12,7 +12,7 @@ let percentToNumerical = Value_Util.percentToNumerical;
 
 let halfS = `R(Real.Rational(1, 2, Unit));
 
-let%private isSquare = x => float_of_int(x)->sqrt->FloatUtil.isInt;
+let%private isSquare = x => Belt.Float.fromInt(x)->sqrt->FloatUtil.isInt;
 
 let rec pow = (a: t, b: t): t =>
   switch (a, b) {
@@ -20,7 +20,7 @@ let rec pow = (a: t, b: t): t =>
   | (`R(_) | `I(_) | `C(_), `Z) => one
   | (`Z, `Z) => `N
   | (`R(Rational(n, d, Unit)), `R(Rational(1, 2, Unit))) when isSquare(d) =>
-    let denSqrt = float_of_int(d)->sqrt->FloatUtil.intValueExn;
+    let denSqrt = Belt.Float.fromInt(d)->sqrt->FloatUtil.intValueExn;
     let r = Real.ofRational(1, denSqrt, Sqrt(IntUtil.abs(n)));
     if (n >= 0) {
       ofReal(r);

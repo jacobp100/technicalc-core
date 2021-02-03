@@ -10,7 +10,7 @@ let cubic = (a, b, c, d, start) => {
     let f'x = 3. *. a *. x^ ** 2. +. 2. *. b *. x^ +. c;
     let dx = fx != 0. && f'x != 0. ? fx /. f'x : 0.;
 
-    if (abs_float(dx) < epsilon) {
+    if (FloatUtil.abs(dx) < epsilon) {
       i := maxI;
     } else {
       x := x^ -. fx /. f'x;

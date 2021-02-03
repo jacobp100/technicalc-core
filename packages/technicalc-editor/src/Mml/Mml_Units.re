@@ -110,7 +110,7 @@ let%private unitPowerMml =
     switch (power) {
     | 1 => prefixUnitMml(prefix, unit)
     | _ =>
-      let powerMml = "<mn>" ++ string_of_int(power) ++ "</mn>";
+      let powerMml = "<mn>" ++ Belt.Int.toString(power) ++ "</mn>";
       "<msup>" ++ prefixUnitMml(prefix, unit) ++ powerMml ++ "</msup>";
     };
 

@@ -33,11 +33,11 @@ let ofFloat = (v): t =>
     `Z;
   } else {
     let magnitude = 1.e6;
-    let intMaxF = float_of_int(IntUtil.maxInt);
+    let intMaxF = Belt.Float.fromInt(IntUtil.maxInt);
     let numeratorF = v *. magnitude;
     switch (FloatUtil.intValue(numeratorF), FloatUtil.intValue(magnitude)) {
     | (Some(numerator), Some(denominator))
-        when abs_float(numeratorF) < intMaxF =>
+        when FloatUtil.abs(numeratorF) < intMaxF =>
       `R(Real.ofRational(numerator, denominator, Unit))->normalize
     | _ => `R(Real.ofDecimal(Decimal.ofFloat(v)))->normalize
     };

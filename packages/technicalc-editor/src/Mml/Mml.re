@@ -104,8 +104,8 @@ let%private table = (~numRows, ~numColumns, elements, superscript, range) => {
   createElementWithRange(~superscript?, range, "mrow", body);
 };
 
-let reduce = (accum, element: foldState(string), range) =>
-  switch (element) {
+let reduce = (accum, stateElement: foldState(string), range) =>
+  switch (stateElement) {
   | OpenBracket => Mml_Accum.appendOpenBracket(accum, range)
   | CloseBracket(superscript) =>
     Mml_Accum.appendCloseBracket(accum, range, superscript)
@@ -118,15 +118,6 @@ let reduce = (accum, element: foldState(string), range) =>
   | Base(base) =>
     createElementWithRange(range, "mn", Mml_Util.stringOfBase(base))
     ->Mml_Accum.appendBasePrefix(accum, _)
-  | Superscript(superscript) =>
-    let placeholder =
-      createElement(
-        ~attributes=Placeholder.attributes,
-        Placeholder.element,
-        Placeholder.body,
-      );
-    createElementWithRange(range, "msup", placeholder ++ superscript)
-    ->Mml_Accum.append(accum, _);
   | Percent =>
     createElementWithRange(range, "mn", "%")->Mml_Accum.append(accum, _)
   | Angle(Degree) =>
@@ -167,10 +158,18 @@ let reduce = (accum, element: foldState(string), range) =>
   | CustomAtom({mml, superscript}) =>
     createElementWithRange(~superscript?, range, "mrow", mml)
     ->Mml_Accum.append(accum, _)
-  | Label({mml, superscript}) =>
+  | CaptureGroupPlaceholder({placeholderMml: mml, superscript}) =>
     let attributes = Placeholder.attributes;
-    createElementWithRange(~attributes, ~superscript?, range, "mrow", mml)
+    let phantomId = Belt.Int.toString(fst(range) + 1) ++ ":";
+    let body =
+      createElement(~attributes=[("id", phantomId)], "mphantom", "") ++ mml;
+    createElementWithRange(~attributes, ~superscript?, range, "mrow", body)
     ->Mml_Accum.append(accum, _);
+  | Placeholder(superscript) =>
+    Placeholder.(
+      createElementWithRange(~attributes, ~superscript?, range, element, body)
+      ->Mml_Accum.append(accum, _)
+    )
   | Function({func, resultSuperscript: superscript}) =>
     let attributes = func == AST.Gamma ? [("mathvariant", "normal")] : [];
     Mml_Util.stringOfFunction(func)

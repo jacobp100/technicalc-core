@@ -1,16 +1,6 @@
 open EditState_Types;
 open EditState_Base;
 
-let%private isIsolatedLabel = (elements, index) =>
-  switch (Belt.Array.get(elements, index)) {
-  | Some(AST.LabelS(_)) =>
-    switch (Belt.Array.get(elements, index - 1)) {
-    | Some(LabelS(_)) => false
-    | _ => true
-    }
-  | _ => false
-  };
-
 let%private rec matchNEmptyArgs = (elements, ~index, ~count) =>
   if (count == 0) {
     true;
@@ -48,7 +38,7 @@ type deletionMode =
 
 let%private deletionMode = (elements, index) =>
   switch (Belt.Array.get(elements, index)) {
-  | Some(AST.Arg) => Keep
+  | Some(AST.Arg | CaptureGroupStart(_) | CaptureGroupEndS) => Keep
   | Some(Superscript1 | Sqrt1S | Frac2S) =>
     Spread(nArgsSlice(elements, index))
   | Some(NRoot2S) =>
@@ -95,12 +85,22 @@ let%private deleteEmptySuperscript = (elements, index) =>
   };
 
 let delete = (editState: t) => {
-  let {index, elements, allowLabelEditing} = editState;
+  let {index, elements, formatCaptureGroups} = editState;
   let elements = AST.normalize(elements);
 
-  if (!allowLabelEditing && isIsolatedLabel(elements, index)) {
-    let (elements, _) = ArrayUtil.splice(elements, ~offset=index, ~len=1);
-    make(~index, ~elements, ~allowLabelEditing);
+  let possibleEmptyCaptureGroupStart =
+    formatCaptureGroups ? index - 2 : index - 1;
+
+  let isEmptyCaptureGroup =
+    EditState_Util.isEmptyCaptureGroup(
+      elements,
+      possibleEmptyCaptureGroupStart,
+    );
+
+  if (isEmptyCaptureGroup) {
+    let index = possibleEmptyCaptureGroupStart;
+    let (elements, _) = ArrayUtil.splice(elements, ~offset=index, ~len=2);
+    make(~index, ~elements, ~formatCaptureGroups);
   } else if (index > 0) {
     let index = index - 1;
     let elements =
@@ -113,7 +113,7 @@ let delete = (editState: t) => {
         ->deleteEmptySuperscript(index)
         ->ArrayUtil.insertArray(spread, index)
       };
-    make(~index, ~elements, ~allowLabelEditing);
+    make(~index, ~elements, ~formatCaptureGroups);
   } else {
     editState;
   };

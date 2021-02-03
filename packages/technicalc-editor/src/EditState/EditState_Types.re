@@ -1,7 +1,7 @@
 type t = {
   index: int,
   elements: array(AST.t),
-  allowLabelEditing: bool,
+  formatCaptureGroups: bool,
 };
 
-let empty = {index: 0, elements: [||], allowLabelEditing: false};
+let empty = {index: 0, elements: [||], formatCaptureGroups: false};

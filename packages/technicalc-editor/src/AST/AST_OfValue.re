@@ -1,36 +1,5 @@
 open AST_Types;
-
-let%private ofNumericString = a => {
-  let magnitudes = ref(0);
-  let out =
-    Belt.Array.makeBy(String.length(a), i => {
-      switch (Obj.magic(StringUtil.charAtUnsafe(a, i))) {
-      | '+' => Add
-      | '-' => Sub
-      | '0' => N0_S
-      | '1' => N1_S
-      | '2' => N2_S
-      | '3' => N3_S
-      | '4' => N4_S
-      | '5' => N5_S
-      | '6' => N6_S
-      | '7' => N7_S
-      | '8' => N8_S
-      | '9' => N9_S
-      | 'e'
-      | 'E' =>
-        magnitudes := magnitudes^ + 1;
-        Magnitude1;
-      | _ => N0_S
-      }
-    });
-
-  if (magnitudes^ > 0) {
-    Belt.Array.concat(out, Belt.Array.make(magnitudes^, Arg));
-  } else {
-    out;
-  };
-};
+open AST_OfString;
 
 let ofConstant = (a: TechniCalcCalculator.Real_Constant.t) =>
   switch (a) {
@@ -39,13 +8,13 @@ let ofConstant = (a: TechniCalcCalculator.Real_Constant.t) =>
   | Sqrt(s) =>
     Belt.Array.concatMany([|
       [|Sqrt1S|],
-      ofNumericString(Belt.Int.toString(s)),
+      ofString(Belt.Int.toString(s)),
       [|Arg|],
     |])
   | Exp(e) =>
     Belt.Array.concatMany([|
       [|Sqrt1S|],
-      ofNumericString(Belt.Int.toString(e)),
+      ofString(Belt.Int.toString(e)),
       [|Arg|],
     |])
   };
@@ -53,7 +22,7 @@ let ofConstant = (a: TechniCalcCalculator.Real_Constant.t) =>
 let ofReal = (a: TechniCalcCalculator.Real.t) =>
   switch (a) {
   | Rational(n, d, c) =>
-    let out = Belt.Int.toString(n)->ofNumericString;
+    let out = Belt.Int.toString(n)->ofString;
     let out = c != Unit ? Belt.Array.concat(out, ofConstant(c)) : out;
     let out =
       if (d != 1) {
@@ -61,14 +30,14 @@ let ofReal = (a: TechniCalcCalculator.Real.t) =>
           [|Frac2S|],
           out,
           [|Arg|],
-          Belt.Int.toString(d)->ofNumericString,
+          Belt.Int.toString(d)->ofString,
           [|Arg|],
         |]);
       } else {
         out;
       };
     out;
-  | Decimal(f) => TechniCalcCalculator.Decimal.toString(f)->ofNumericString
+  | Decimal(f) => TechniCalcCalculator.Decimal.toString(f)->ofString
   };
 
 let ofScalar = (a: TechniCalcCalculator.Scalar.t) =>

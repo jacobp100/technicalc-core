@@ -1,14 +1,14 @@
 open EditState_Types;
 open EditState_Util;
 
-let make = (~index, ~elements, ~allowLabelEditing) => {
-  index: preferredInsertionIndex(~index, ~elements, ~allowLabelEditing),
+let make = (~index, ~elements, ~formatCaptureGroups) => {
+  index: preferredInsertionIndex(~index, ~elements, ~formatCaptureGroups),
   elements,
-  allowLabelEditing,
+  formatCaptureGroups,
 };
 
-let clear = ({allowLabelEditing}) => {
+let clear = ({formatCaptureGroups}) => {
   index: 0,
   elements: [||],
-  allowLabelEditing,
+  formatCaptureGroups,
 };
