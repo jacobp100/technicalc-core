@@ -12,10 +12,15 @@ let toDecimal = a =>
   | Sqrt(ac) => Decimal.(ofInt(ac)->sqrt)
   };
 
-let simplifySqrt = ac =>
+type simplificationState =
+  | None
+  | Zero
+  | Factor(int, t);
+
+let%private simplifySqrt = ac =>
   switch (ac) {
-  | 0 => `Z
-  | 1 => `Factor((1, Unit))
+  | 0 => Zero
+  | 1 => Factor(1, Unit)
   | _ =>
     let sqrtArg = ref(ac);
     let multiplier = ref(1);
@@ -31,20 +36,20 @@ let simplifySqrt = ac =>
     };
 
     let constant = sqrtArg^ == 1 ? Unit : Sqrt(sqrtArg^);
-    multiplier^ != 1 ? `Factor((multiplier^, constant)) : `None;
+    multiplier^ != 1 ? Factor(multiplier^, constant) : None;
   };
 
-let simplifyExp = a =>
+let%private simplifyExp = a =>
   switch (a) {
-  | 0 => `Factor((1, Unit))
-  | _ => `None
+  | 0 => Factor(1, Unit)
+  | _ => None
   };
 
 let simplify = a =>
   switch (a) {
   | Sqrt(ac) => simplifySqrt(ac)
-  | Exp(0) => `Factor((1, Unit))
-  | _ => `None
+  | Exp(ac) => simplifyExp(ac)
+  | _ => None
   };
 
 let equal = (a, b) =>

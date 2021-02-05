@@ -10,5 +10,4 @@ npm-debug.log
 
 *.bs.js
 playground.js
-dist
 coverage

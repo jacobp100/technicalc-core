@@ -12,7 +12,11 @@
     "technicalc-editor",
     "technicalc-prebuilt"
   ],
-  "bs-dependencies": ["technicalc-calculator", "technicalc-editor"],
+  "bs-dependencies": [
+    "technicalc-calculator",
+    "technicalc-editor",
+    "technicalc-prebuilt"
+  ],
   "warnings": {
     "number": "A+101",
     "error": true

@@ -28,6 +28,10 @@ type previous = {
   fxPrev: float,
 };
 
+type iterationMode =
+  | Bisect(float, float)
+  | Gradient(float);
+
 let solveRoot = (f, initial) => {
   let precision = 1e-8;
   let optimiseGradientLimit = 2.;
@@ -69,24 +73,24 @@ let solveRoot = (f, initial) => {
       let op =
         switch (previous) {
         | Some({xPrev, fxPrev}) when fx > 0. && fxPrev < 0. =>
-          `Bisect((xPrev, x))
+          Bisect(xPrev, x)
         | Some({xPrev, fxPrev}) when fx < 0. && fxPrev > 0. =>
-          `Bisect((x, xPrev))
+          Bisect(x, xPrev)
         | Some({xPrev, fxPrev})
             when
               FloatUtil.abs(fx -. fxPrev) < optimiseGradientLimit
               && FloatUtil.abs(x -. xPrev) < optimiseGradientLimit =>
-          `Gradient((fx -. fxPrev) /. (x -. xPrev))
+          Gradient((fx -. fxPrev) /. (x -. xPrev))
         | _ =>
-          `Gradient(
+          Gradient(
             Value_Calculus.derivative(f, xReal)->toDecimal->Decimal.toFloat,
           )
         };
 
       switch (op) {
-      | `Bisect(negativeX, positiveX) =>
+      | Bisect(negativeX, positiveX) =>
         bisectFloat(~negativeX, ~positiveX, ())
-      | `Gradient(f'x) =>
+      | Gradient(f'x) =>
         let iterations = iterations - 1;
         let previous = Some({xPrev: x, fxPrev: fx});
 

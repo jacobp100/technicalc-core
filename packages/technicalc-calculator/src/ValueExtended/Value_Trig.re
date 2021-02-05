@@ -6,13 +6,21 @@ let%private mapReal = (x: t, f: Real.t => Real.t) =>
   | _ => x
   };
 
+type realBounds =
+  | Real(Decimal.t, DecimalUtil.bounds)
+  | Complex
+  | NaN;
+
 let%private realBounds = (~lower=?, ~upper=?, x: t) =>
   switch (x) {
-  | `Z => DecimalUtil.bounds(~lower?, ~upper?, Decimal.zero)
-  | `R(re) => DecimalUtil.bounds(~lower?, ~upper?, Real.toDecimal(re))
-  | `I(im) => `I(im)
-  | `C(re, im) => `C((re, im))
-  | _ => `N
+  | `Z =>
+    Real(Decimal.zero, DecimalUtil.bounds(~lower?, ~upper?, Decimal.zero))
+  | `R(re) =>
+    let decimal = Real.toDecimal(re);
+    Real(decimal, DecimalUtil.bounds(~lower?, ~upper?, Real.toDecimal(re)));
+  | `I(_)
+  | `C(_, _) => Complex
+  | _ => NaN
   };
 
 let%private mapRealDecimal = (x: t, f: Decimal.t => Decimal.t): t =>
@@ -53,14 +61,11 @@ let asin = (a: t): t =>
   | `I(_)
   | `C(_) =>
     switch (realBounds(~lower=Decimal.minusOne, ~upper=Decimal.one, a)) {
-    | `BothBound
-    | `LowerBound
-    | `UpperBound
-    | `Inside(_) => mapRealDecimal(a, Decimal.asin)
-    | `Outside
-    | `I(_)
-    | `C(_) => - i * log(i * a + sqrt(one - a * a))
-    | `N => `N
+    | Real(_, BothBound | LowerBound | UpperBound | Inside) =>
+      mapRealDecimal(a, Decimal.asin)
+    | Real(_, Outside)
+    | Complex => - i * log(i * a + sqrt(one - a * a))
+    | NaN => `N
     }
   | `M(_)
   | `V(_)
@@ -117,14 +122,11 @@ let acos = (a: t): t =>
   | `I(_)
   | `C(_) =>
     switch (realBounds(~lower=Decimal.minusOne, ~upper=Decimal.one, a)) {
-    | `BothBound
-    | `LowerBound
-    | `UpperBound
-    | `Inside(_) => mapRealDecimal(a, Decimal.acos)
-    | `Outside
-    | `I(_)
-    | `C(_) => ofReal(Real.ofRational(1, 2, Pi)) - asin(a)
-    | `N => `N
+    | Real(_, BothBound | LowerBound | UpperBound | Inside) =>
+      mapRealDecimal(a, Decimal.acos)
+    | Real(_, Outside)
+    | Complex => ofReal(Real.ofRational(1, 2, Pi)) - asin(a)
+    | NaN => `N
     }
   | `M(_)
   | `V(_)
@@ -143,14 +145,11 @@ let cosh = (x: t): t =>
 
 let acosh = (x: t): t =>
   switch (realBounds(~lower=Decimal.one, x)) {
-  | `Inside(f) => Decimal.acosh(f)->ofDecimal
-  | `LowerBound => zero
-  | `BothBound
-  | `UpperBound
-  | `Outside
+  | Real(f, Inside) => Decimal.acosh(f)->ofDecimal
+  | Real(_, LowerBound) => zero
+  | Real(_, BothBound | UpperBound | Outside)
   /* acosh ix != i cosh x */
-  | `I(_)
-  | `C(_) =>
+  | Complex =>
     /* From complex.js library */
     let res = acos(x);
     let imLteZero =
@@ -166,7 +165,7 @@ let acosh = (x: t): t =>
     } else {
       - res * i;
     };
-  | `N => `N
+  | NaN => `N
   };
 
 let tan = (x: t): t =>
@@ -248,14 +247,15 @@ let tanh = (x: t): t =>
 
 let atanh = (x: t): t =>
   switch (realBounds(~lower=Decimal.minusOne, ~upper=Decimal.one, x)) {
-  | `Inside(f) => Decimal.atanh(f)->ofDecimal
-  | `BothBound
-  | `LowerBound
-  | `UpperBound => `N
-  | `I(im) => i * ofReal(im)->atan
-  | `Outside
-  | `C(_) =>
-    let two = ofInt(2);
-    log((one + x) / (one - x)) / two;
-  | `N => `N
+  | Real(f, Inside) => Decimal.atanh(f)->ofDecimal
+  | Real(_, BothBound | LowerBound | UpperBound) => `N
+  | Real(_, Outside)
+  | Complex =>
+    switch (x) {
+    | `I(im) => i * ofReal(im)->atan
+    | _ =>
+      let two = ofInt(2);
+      log((one + x) / (one - x)) / two;
+    }
+  | NaN => `N
   };

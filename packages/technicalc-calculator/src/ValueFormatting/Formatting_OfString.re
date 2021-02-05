@@ -258,14 +258,19 @@ let%private partialParseScalar = (~base, tokens) => {
   };
 };
 
+type astConstructor =
+  | Scalar(Scalar.t)
+  | Percent(Scalar.t)
+  | Row(list(astConstructor));
+
 let%private parseValue = (~base, tokens) => {
   let rec iter = tokens =>
     switch (tokens) {
     | [OpenBrace, ...rest] => parseUntilCloseBrace(rest)
     | rest =>
       switch (partialParseScalar(~base, rest)) {
-      | Some((scalar, [])) => Some((`Scalar(scalar), []))
-      | Some((scalar, [Percent])) => Some((`Percent(scalar), []))
+      | Some((scalar, [])) => Some((Scalar(scalar), []))
+      | Some((scalar, [Percent])) => Some((Percent(scalar), []))
       | _ => None
       }
     }
@@ -281,7 +286,7 @@ let%private parseValue = (~base, tokens) => {
       switch (elementsRev) {
       | Some([scalar]) => Some((scalar, rest))
       | Some(elementsRev) =>
-        Some((`Row(Belt.List.reverse(elementsRev)), rest))
+        Some((Row(Belt.List.reverse(elementsRev)), rest))
       | None => None
       };
     | [Comma, ...rest] when level == 0 =>
@@ -319,27 +324,20 @@ let%private parseValue = (~base, tokens) => {
     };
 
   switch (ast) {
-  | Some(`Scalar(scalar)) => Some(Value_Base.ofScalar(scalar))
-  | Some(`Row([`Scalar(a), `Scalar(b)]))
-  | Some(`Row([`Row([`Scalar(a)]), `Row([`Scalar(b)])])) =>
+  | Some(Scalar(scalar)) => Some(Value_Base.ofScalar(scalar))
+  | Some(Row([Scalar(a), Scalar(b)]))
+  | Some(Row([Row([Scalar(a)]), Row([Scalar(b)])])) =>
     Some(Value_Base.ofVector([|a, b|]))
-  | Some(`Row([`Scalar(a), `Scalar(b), `Scalar(c)]))
-  | Some(
-      `Row([`Row([`Scalar(a)]), `Row([`Scalar(b)]), `Row([`Scalar(c)])]),
-    ) =>
+  | Some(Row([Scalar(a), Scalar(b), Scalar(c)]))
+  | Some(Row([Row([Scalar(a)]), Row([Scalar(b)]), Row([Scalar(c)])])) =>
     Some(Value_Base.ofVector([|a, b, c|]))
-  | Some(
-      `Row([
-        `Row([`Scalar(a), `Scalar(b)]),
-        `Row([`Scalar(c), `Scalar(d)]),
-      ]),
-    ) =>
+  | Some(Row([Row([Scalar(a), Scalar(b)]), Row([Scalar(c), Scalar(d)])])) =>
     Matrix.make(2, 2, [|a, b, c, d|])->Value_Base.ofMatrix->Some
   | Some(
-      `Row([
-        `Row([`Scalar(a), `Scalar(b), `Scalar(c)]),
-        `Row([`Scalar(d), `Scalar(e), `Scalar(f)]),
-        `Row([`Scalar(g), `Scalar(h), `Scalar(i)]),
+      Row([
+        Row([Scalar(a), Scalar(b), Scalar(c)]),
+        Row([Scalar(d), Scalar(e), Scalar(f)]),
+        Row([Scalar(g), Scalar(h), Scalar(i)]),
       ]),
     ) =>
     Matrix.make(3, 3, [|a, b, c, d, e, f, g, h, i|])

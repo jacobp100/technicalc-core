@@ -243,20 +243,25 @@ let argEndIndex = (ast: array(t), index) => {
   iter(~pending=0, index);
 };
 
-let rec normalizationState = (ast, remaining, i) =>
+type normalizationState =
+  | Ok
+  | GenericError
+  | TooFewArgsError(int);
+
+let%private rec normalizationState = (ast, remaining, i) =>
   switch (remaining, Belt.Array.get(ast, i)) {
-  | (0, Some(Arg)) => `GenericError
+  | (0, Some(Arg)) => GenericError
   | (_, Some(Arg)) => normalizationState(ast, remaining - 1, i + 1)
   | (_, Some(v)) =>
     normalizationState(ast, remaining + argCountExn(v), i + 1)
-  | (0, None) => `Ok
-  | (_, None) => `TooFewArgsError(remaining)
+  | (0, None) => Ok
+  | (_, None) => TooFewArgsError(remaining)
   };
 
 let normalize = (ast: array(t)) =>
   switch (normalizationState(ast, 0, 0)) {
-  | `Ok => ast
-  | `GenericError =>
+  | Ok => ast
+  | GenericError =>
     let remaining = ref(0);
     let ast =
       Belt.Array.keep(ast, element =>
@@ -275,6 +280,6 @@ let normalize = (ast: array(t)) =>
     } else {
       ast;
     };
-  | `TooFewArgsError(remaining) =>
+  | TooFewArgsError(remaining) =>
     Belt.Array.concat(ast, Belt.Array.make(remaining, Arg))
   };

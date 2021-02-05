@@ -7,6 +7,13 @@ let magnitude = f =>
     0;
   };
 
+type bounds =
+  | BothBound
+  | LowerBound
+  | UpperBound
+  | Inside
+  | Outside;
+
 let bounds = (~lower=?, ~upper=?, f) => {
   let lowerCompare =
     switch (lower) {
@@ -19,10 +26,10 @@ let bounds = (~lower=?, ~upper=?, f) => {
     | None => 1
     };
   switch (lowerCompare, upperCompare) {
-  | (0, 0) => `BothBound
-  | (0, _) => `LowerBound
-  | (_, 0) => `UpperBound
-  | ((-1), 1) => `Inside(f)
-  | _ => `Outside
+  | (0, 0) => BothBound
+  | (0, _) => LowerBound
+  | (_, 0) => UpperBound
+  | ((-1), 1) => Inside
+  | _ => Outside
   };
 };
