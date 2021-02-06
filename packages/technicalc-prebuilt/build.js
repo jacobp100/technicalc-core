@@ -3,7 +3,7 @@ const path = require("path");
 const util = require("util");
 const childProcess = require("child_process");
 const esbuild = require("esbuild");
-const { minify } = require("terser");
+const terser = require("terser");
 const dist = require("./dist");
 
 const minifyDecimalJsPlugin = {
@@ -50,34 +50,41 @@ const stubMathJaxPlugin = {
 
 const fast = process.argv.includes("--fast");
 
-const build = (file, outfile) =>
-  esbuild
-    .build({
-      entryPoints: [file],
-      format: "cjs",
-      bundle: true,
-      minify: true,
-      write: false,
-      external: ["react", "react-native-svg"],
-      plugins: [minifyDecimalJsPlugin, stubMathJaxPlugin],
-    })
-    .then((result) => {
-      const code = result.outputFiles[0].text;
-      return fast ? { code } : minify(code);
-    })
-    .then((result) => {
-      return fs.promises.writeFile(path.join(dist, outfile), result.code);
-    });
+const build = async (file, outfile) => {
+  const { outputFiles } = await esbuild.build({
+    entryPoints: [file],
+    format: "cjs",
+    bundle: true,
+    minify: true,
+    write: false,
+    external: ["react", "react-native-svg"],
+    plugins: [minifyDecimalJsPlugin, stubMathJaxPlugin],
+  });
+
+  let code = outputFiles[0].text;
+
+  if (!fast) {
+    code = (await terser.minify(code)).code;
+  }
+
+  await fs.promises.writeFile(path.join(dist, outfile), code);
+};
 
 const execFile = util.promisify(childProcess.execFile);
-const run = (filename, dependencies) => {
+const run = async (filename, dependencies) => {
   const perform = () => execFile("node", [filename]);
 
-  return fast
-    ? Promise.all(dependencies.map((f) => fs.promises.stat(f))).catch(() =>
-        perform()
-      )
-    : perform();
+  if (fast) {
+    const dependenciesStat = dependencies.map((f) => fs.promises.stat(f));
+
+    try {
+      await Promise.all(dependenciesStat);
+    } catch {
+      perform();
+    }
+  } else {
+    perform();
+  }
 };
 
 run("constants", [path.resolve(dist, "constants.json")]);
