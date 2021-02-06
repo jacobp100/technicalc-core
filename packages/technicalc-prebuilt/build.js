@@ -1,7 +1,10 @@
 const fs = require("fs");
 const path = require("path");
+const util = require("util");
+const childProcess = require("child_process");
 const esbuild = require("esbuild");
 const { minify } = require("terser");
+const dist = require("./dist");
 
 const minifyDecimalJsPlugin = {
   name: "minifyDecimalJsPlugin",
@@ -39,6 +42,8 @@ const stubMathJaxPlugin = {
   },
 };
 
+const execFile = util.promisify(childProcess.execFile);
+
 const build = (file, outfile) =>
   esbuild
     .build({
@@ -54,12 +59,14 @@ const build = (file, outfile) =>
       return minify(result.outputFiles[0].text);
     })
     .then((result) => {
-      return fs.promises.writeFile(
-        path.join(__dirname, "esbuild", outfile),
-        result.code
-      );
+      return fs.promises.writeFile(path.join(dist, outfile), result.code);
     });
 
-build("./src/Client.bs.js", "client.js");
-build("./src/Worker.bs.js", "worker.js");
-build("./src/typeset/index.js", "typeset.js");
+execFile("node", ["constants"]);
+execFile("node", ["units"]);
+
+execFile("node", ["font-gen"]).then(() => {
+  build("./src/Client.bs.js", "client.js");
+  build("./src/Worker.bs.js", "worker.js");
+  build("./src/typeset/index.js", "typeset.js");
+});

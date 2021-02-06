@@ -8,13 +8,13 @@
     "build-static-content": "yarn build-fonts && yarn build-constants && yarn build-units",
     "build-bundles": "webpack",
     "watch-bundles": "webpack --watch",
-    "build": "yarn build-static-content && yarn build-bundles"
+    "build": "node build"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^8.4.2",
+    "bs-platform": "dev",
     "esbuild": "^0.8.42",
     "mathjax-full": "3.0.1",
     "node-fetch": "^2.6.1",
