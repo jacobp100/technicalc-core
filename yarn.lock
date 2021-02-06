@@ -2339,6 +2339,11 @@ es-to-primitive@^1.2.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
+esbuild@^0.8.42:
+  version "0.8.42"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.42.tgz#26101cf17fe4c4602c7c767e3177cf0c538073ac"
+  integrity sha512-zUtj5RMqROCCCH0vV/a7cd8YQg8I0GWBhV3A3PklWRT+oM/YwVbnrtFnITzE1otGdnXplWHWdZ4OcYiV0PN+JQ==
+
 escalade@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/escalade/-/escalade-3.1.1.tgz#d8cfdc7000965c5a0174b4a82eaa5c0552742e40"
@@ -5242,6 +5247,15 @@ terser@^5.3.8:
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/terser/-/terser-5.5.1.tgz#540caa25139d6f496fdea056e414284886fb2289"
   integrity sha512-6VGWZNVP2KTUcltUQJ25TtNjx/XgdDsBDKGt8nN0MpydU36LmbPPcMBd2kmtZNNGVVDLg44k7GKeHHj+4zPIBQ==
+  dependencies:
+    commander "^2.20.0"
+    source-map "~0.7.2"
+    source-map-support "~0.5.19"
+
+terser@^5.6.0-beta:
+  version "5.6.0-beta"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-5.6.0-beta.tgz#26b1fcfbb4cce1b85eb5afd435e5a35b6dd1ac8e"
+  integrity sha512-XqPZwi17FkFr42a6eGITU4ZHPixz1ZmuM9URQ/waMwxHenKjrxPndHtnuhNJ399P8tWFQuzZTTdN4ce3e2s28Q==
   dependencies:
     commander "^2.20.0"
     source-map "~0.7.2"

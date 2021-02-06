@@ -19,7 +19,8 @@ const {
 const dist = require("../dist");
 
 // eslint-disable-next-line import/no-dynamic-require
-const { Value } = requireEsm("../src/Client.bs.js");
+// const { Value } = requireEsm("../src/Client.bs.js");
+const { Value } = requireEsm("../esbuild/client.min.js");
 const titles = require("./titles");
 
 const Typeset = (string, display) => {
