@@ -2,12 +2,6 @@
   "name": "technicalc-prebuilt",
   "version": "0.0.1",
   "scripts": {
-    "build-constants": "node constants",
-    "build-units": "node units",
-    "build-fonts": "node font-gen",
-    "build-static-content": "yarn build-fonts && yarn build-constants && yarn build-units",
-    "build-bundles": "webpack",
-    "watch-bundles": "webpack --watch",
     "build": "node build"
   },
   "keywords": [],
