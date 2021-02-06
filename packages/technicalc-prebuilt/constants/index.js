@@ -16,11 +16,13 @@ const {
   SerializedMmlVisitor,
 } = require("mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js");
 
-const dist = require("../dist");
-
 // eslint-disable-next-line import/no-dynamic-require
 const { Value } = requireEsm("../src/Client.bs.js");
+
+const dist = require("../dist");
+
 const titles = require("./titles");
+const data = require("./data");
 
 const Typeset = (string, display) => {
   const tex = new TeX({ packages: AllPackages.sort() });
@@ -75,18 +77,24 @@ const subscriptReplacements = {
   h: "h",
 };
 
-const data = require("./data");
+const normalizeTitle = (a) =>
+  a
+    .replace(/\s/g, "")
+    .toLowerCase()
+    .replace("moment", "mom.")
+    .replace("magnetic", "mag.")
+    .trim();
 
 const nist = fs
   .readFileSync(path.join(__dirname, "/data.csv"), "utf8")
   .split("\n")
   .filter((l) => l)
-  .map((l) =>
-    l
+  .map((l) => {
+    return l
       .match(/^("[^"]+"|[^,]+),([^,]+)\s*,([^,]+)$/)
       .slice(1)
-      .map((p) => p.replace(/^"/, "").replace(/"$/, "").trim())
-  )
+      .map((p) => p.replace(/^"/, "").replace(/"$/, "").trim());
+  })
   .map(([title, valueUnformatted, units]) => {
     if (valueUnformatted == null) throw new Error("Oh");
 
@@ -96,6 +104,7 @@ const nist = fs
       { style: "decimal" },
       true /* inline */
     );
+
     if (units) {
       const unitsMml = units
         .split(" ")
@@ -148,7 +157,9 @@ const nist = fs
       throw new Error(`Invalid valueUtf (${valueUtf})`);
     }
 
-    return { title, value, valueMml, valueUtf };
+    const titleNormalized = normalizeTitle(title);
+
+    return { titleNormalized, value, valueMml, valueUtf };
   });
 
 const formats = [
@@ -185,17 +196,9 @@ let out = data.map(({ title: baseTitle, tex }) => {
     formattedTex = "\\Phi_0";
   }
 
-  const normalizeTitle = (a) =>
-    a
-      .replace(/\s/g, "")
-      .toLowerCase()
-      .replace("moment", "mom.")
-      .replace("magnetic", "mag.")
-      .trim();
-
   const baseTitleNormalized = normalizeTitle(baseTitle);
   const { value, valueUtf } = nist.find((item) => {
-    return baseTitleNormalized === normalizeTitle(item.title);
+    return baseTitleNormalized === item.titleNormalized;
   });
   let symbolMml;
 
@@ -332,13 +335,13 @@ out = out
     return filter;
   });
 
-const test = new Map();
-out.forEach(({ title, symbolMml }) => {
-  const existing = test.get(symbolMml) || [];
-  existing.push(title);
-  test.set(symbolMml, existing);
-});
-
+// const test = new Map();
+// out.forEach(({ title, symbolMml }) => {
+//   const existing = test.get(symbolMml) || [];
+//   existing.push(title);
+//   test.set(symbolMml, existing);
+// });
+//
 // const conflicts = Array.from(test.values()).filter(
 //   (values) => values.length > 0
 // );
