@@ -1,7 +1,7 @@
 const escapeRe = /&#(x?)([0-9A-F]+);/gi;
 
 const escapeCharCode = (_fullMatch, x, charCode) => {
-  const n = parseInt(charCode, x.length !== 0 ? 16 : 10);
+  let n = parseInt(charCode, x.length !== 0 ? 16 : 10);
 
   if (n < 0x10000) {
     return String.fromCharCode(n);
