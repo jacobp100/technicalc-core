@@ -20,25 +20,31 @@ const minifyDecimalJsPlugin = {
 const stubMathJaxPlugin = {
   name: "stubMathJaxPlugin",
   setup(build) {
-    const texPath = require.resolve("mathjax-full/js/output/svg/fonts/tex.js");
+    const texPath = require.resolve("mathjax-full/js/output/svg/fonts/tex");
+    const texDir = path.resolve(texPath, "../tex");
     const fontsStubs = path.resolve(__dirname, "fonts-stubs");
 
     build.onResolve({ filter: /tex[\\/]/i }, (args) => {
-      const isSvgFontFile =
-        args.importer === texPath && args.path.startsWith("./tex");
-
-      return isSvgFontFile
+      return path.resolve(args.resolveDir, args.path).startsWith(texDir)
         ? { path: path.resolve(fontsStubs, path.basename(args.path)) }
-        : {};
+        : null;
     });
 
-    build.onResolve({ filter: /util[\\/]Entities.js$/i }, () => ({
-      path: path.resolve(__dirname, "mathjax-stubs/entities.js"),
-    }));
+    const entitiesPath = require.resolve("mathjax-full/js/util/Entities");
 
-    build.onResolve({ filter: /[\\/]output[\\/]svg[\\/]Wrapper.js$/i }, () => ({
-      path: path.resolve(__dirname, "mathjax-stubs/Wrapper.js"),
-    }));
+    build.onResolve({ filter: /Entities.js$/i }, (args) => {
+      return path.resolve(args.resolveDir, args.path) === entitiesPath
+        ? { path: require.resolve("./mathjax-stubs/entities.js") }
+        : null;
+    });
+
+    const wrapperPath = require.resolve("mathjax-full/js/output/svg/Wrapper");
+
+    build.onResolve({ filter: /Wrapper.js$/i }, (args) => {
+      return path.resolve(args.resolveDir, args.path) === wrapperPath
+        ? { path: require.resolve("./mathjax-stubs/Wrapper.js") }
+        : null;
+    });
   },
 };
 
