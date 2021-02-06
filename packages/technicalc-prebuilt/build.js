@@ -48,6 +48,8 @@ const stubMathJaxPlugin = {
   },
 };
 
+const fast = process.argv.includes("--fast");
+
 const execFile = util.promisify(childProcess.execFile);
 
 const build = (file, outfile) =>
@@ -62,7 +64,8 @@ const build = (file, outfile) =>
       plugins: [minifyDecimalJsPlugin, stubMathJaxPlugin],
     })
     .then((result) => {
-      return minify(result.outputFiles[0].text);
+      const code = result.outputFiles[0].text;
+      return fast ? { code } : minify(code);
     })
     .then((result) => {
       return fs.promises.writeFile(path.join(dist, outfile), result.code);
@@ -71,7 +74,18 @@ const build = (file, outfile) =>
 execFile("node", ["constants"]);
 execFile("node", ["units"]);
 
-execFile("node", ["font-gen"]).then(() => {
+const runFontGen = () => execFile("node", ["font-gen"]);
+
+const fontGen = fast
+  ? Promise.all([
+      fs.promises.stat(path.join(__dirname, "fonts-assets")),
+      fs.promises.stat(path.join(__dirname, "fonts-stubs")),
+    ]).catch(() => {
+      return runFontGen();
+    })
+  : runFontGen();
+
+fontGen.then(() => {
   build("./src/Client.bs.js", "client.js");
   build("./src/Worker.bs.js", "worker.js");
   build("./src/typeset/index.js", "typeset.js");
