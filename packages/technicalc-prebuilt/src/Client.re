@@ -50,6 +50,8 @@ module Elements = {
   let populatedCaptureGroups = CaptureGroupUtil.populatedCaptureGroups;
   let emptyCaptureGroups = CaptureGroupUtil.emptyCaptureGroups;
 
+  let inputSettingsMode = InputConfigUtil.inputSettingsMode;
+
   let insertRanges = InsertUtil.insertRanges;
   let canInsertTable = InsertUtil.canInsertTable;
   let canInsertIteration = InsertUtil.canInsertIteration;
