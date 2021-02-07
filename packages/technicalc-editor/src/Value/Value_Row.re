@@ -1,6 +1,17 @@
 open Value_Builders;
 open Value_Types;
 
+let%private applyAngle =
+            (value: Value_Types.node, angle: AST_ReduceMap.angle)
+            : Value_Types.node =>
+  switch (angle) {
+  | Radian => OfRad(value)
+  | Degree => OfDeg(value)
+  | ArcMinute => OfArcMin(value)
+  | ArcSecond => OfArcSec(value)
+  | Gradian => OfGrad(value)
+  };
+
 type parseResult =
   | Ok(node)
   | Error(int)
@@ -8,10 +19,21 @@ type parseResult =
 
 let rec parseRest = (~current=None, elements) =>
   switch (current, elements) {
-  | (Some(a), [Resolved(next), ...rest]) =>
-    parseRest(~current=Some(Node.Mul(a, next)), rest)
-  | (None, [Resolved(next), ...rest]) =>
-    parseRest(~current=Some(next), rest)
+  | (_, [Resolved(next), ...rest]) =>
+    let value =
+      switch (current) {
+      | Some(a) => Node.Mul(a, next)
+      | None => next
+      };
+    let (value, rest) =
+      switch (rest) {
+      | [Unresolved(Angle(angle), _, _), ...rest] => (
+          applyAngle(value, angle),
+          rest,
+        )
+      | _ => (value, rest)
+      };
+    parseRest(~current=Some(value), rest);
   | (Some(a), [Unresolved(Percent, _, _)]) => Ok(Percent(a))
   | (_, [UnresolvedFunction(_, _, i') | Unresolved(_, _, i'), ..._]) =>
     Error(i')
@@ -54,13 +76,9 @@ let parseNumbers = elements => {
     switch (rest) {
     | [Unresolved(Angle(angle), i, _), ...rest] =>
       let number =
-        switch (Value_NumberParser.toNode(numberState), angle) {
-        | (Some(number), Radian) => Some(Node.OfRad(number))
-        | (Some(number), Degree) => Some(Node.OfDeg(number))
-        | (Some(number), ArcMinute) => Some(OfArcMin(number))
-        | (Some(number), ArcSecond) => Some(OfArcSec(number))
-        | (Some(number), Gradian) => Some(OfGrad(number))
-        | (None, _) => None
+        switch (Value_NumberParser.toNode(numberState)) {
+        | Some(number) => Some(applyAngle(number, angle))
+        | None => None
         };
       switch (number, angleState, angle) {
       | (Some(number), None, _) =>
