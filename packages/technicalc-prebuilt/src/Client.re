@@ -158,15 +158,6 @@ module Value = {
 };
 
 module Work = {
-  let%private toConfig = (config): TechniCalcCalculator.AST_Types.config => {
-    angleMode:
-      switch (angleModeGet(config)) {
-      | Some("degree") => Degree
-      | Some("gradian") => Gradian
-      | _ => Radian
-      },
-  };
-
   let%private toContext = context =>
     switch (context) {
     | Some(context) =>
@@ -175,34 +166,29 @@ module Work = {
     | None => [||]
     };
 
-  let calculate = (config, body, context): Work.t => {
-    config: toConfig(config),
-    work: Calculate(body, toContext(context)),
-  };
-  let convertUnits = (config, body, fromUnits, toUnits, context): Work.t => {
-    config: toConfig(config),
-    work:
-      ConvertUnits({body, fromUnits, toUnits, context: toContext(context)}),
-  };
-  let solveRoot = (config, lhs, rhs, initialGuess): Work.t => {
-    config: toConfig(config),
-    work: SolveRoot({lhs, rhs, initialGuess}),
-  };
-  let quadratic = (config, a, b, c): Work.t => {
-    config: toConfig(config),
-    work: Quadratic(a, b, c),
-  };
-  let cubic = (config, a, b, c, d): Work.t => {
-    config: toConfig(config),
-    work: Cubic(a, b, c, d),
-  };
-  let var2 = (config, x0, y0, c0, x1, y1, c1): Work.t => {
-    config: toConfig(config),
-    work: Var2(x0, y0, c0, x1, y1, c1),
-  };
-  let var3 = (config, x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2): Work.t => {
-    config: toConfig(config),
-    work: Var3(x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2),
+  let calculate = (body, context): Work.work =>
+    Calculate(body, toContext(context));
+  let convertUnits = (body, fromUnits, toUnits, context): Work.work =>
+    ConvertUnits({body, fromUnits, toUnits, context: toContext(context)});
+  let solveRoot = (lhs, rhs, initialGuess): Work.work =>
+    SolveRoot({lhs, rhs, initialGuess});
+  let quadratic = (a, b, c): Work.work => Quadratic(a, b, c);
+  let cubic = (a, b, c, d): Work.work => Cubic(a, b, c, d);
+  let var2 = (x0, y0, c0, x1, y1, c1): Work.work =>
+    Var2(x0, y0, c0, x1, y1, c1);
+  let var3 = (x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2): Work.work =>
+    Var3(x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2);
+
+  let make = (config, work): Work.t => {
+    config: {
+      angleMode:
+        switch (angleModeGet(config)) {
+        | Some("degree") => Degree
+        | Some("gradian") => Gradian
+        | _ => Radian
+        },
+    },
+    work,
   };
 };
 
