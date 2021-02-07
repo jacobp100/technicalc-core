@@ -10,7 +10,7 @@ let one: t = `R(Rational(1, 1, Unit));
 let minusOne: t = `R(Rational(-1, 1, Unit));
 let i: t = `I(Rational(1, 1, Unit));
 let minusI: t = `I(Rational(-1, 1, Unit));
-let pi: t = `R(Rational(1, 1, Pi));
+let pi: t = `R(Rational(1, 1, Pi(1)));
 let e: t = `R(Rational(1, 1, Exp(1)));
 let nan: t = `N;
 

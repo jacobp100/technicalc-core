@@ -126,6 +126,8 @@ let reduce = (accum, stateElement: foldState(string), range) =>
   | Angle(angle) =>
     let superscript =
       switch (angle) {
+      | Radian =>
+        createElement(~attributes=[("mathvariant", "normal")], "mi", "r")
       | ArcMinute => createElement("mo", "&#x2032;")
       | ArcSecond => createElement("mo", "&#x2033;")
       | Gradian =>

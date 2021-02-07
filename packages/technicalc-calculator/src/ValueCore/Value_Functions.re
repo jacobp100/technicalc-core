@@ -29,8 +29,15 @@ let round = a => mapScalar(a, Scalar.round);
 let floor = a => mapScalar(a, Scalar.floor);
 let ceil = a => mapScalar(a, Scalar.ceil);
 
-let deg = a => mapScalar(a, Scalar.deg);
-let grad = a => mapScalar(a, Scalar.grad);
+let ofDeg = a => mapScalar(a, Scalar.ofDeg);
+let ofArcMin = a => mapScalar(a, Scalar.ofArcMin);
+let ofArcSec = a => mapScalar(a, Scalar.ofArcSec);
+let ofGrad = a => mapScalar(a, Scalar.ofGrad);
+
+let toDeg = a => mapScalar(a, Scalar.toDeg);
+let toArcMinute = a => mapScalar(a, Scalar.toArcMinute);
+let toArcSecond = a => mapScalar(a, Scalar.toArcSecond);
+let toGrad = a => mapScalar(a, Scalar.toGrad);
 
 let%private map2Scalar = (a: t, b: t, fn: (Scalar.t, Scalar.t) => Scalar.t): t =>
   switch (a, b) {

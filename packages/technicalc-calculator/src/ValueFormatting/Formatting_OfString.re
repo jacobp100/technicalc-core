@@ -91,7 +91,7 @@ let%private partialParseConstant = (~base, tokens) =>
     | Some(exp) => Some((Real_Constant.Exp(exp), rest))
     | None => None
     }
-  | [Pi, ...rest] => Some((Pi, rest))
+  | [Pi, ...rest] => Some((Pi(1), rest))
   | rest => Some((Unit, rest))
   };
 let%private partialParseFraction = (~base, tokens) => {

@@ -71,6 +71,7 @@ let%private skipMode = (element: AST.t) =>
   | Differential2
   | Product2
   | Sum2
+  | RadianFunction
   | Vector2S
   | Integral3
   | Vector3S
@@ -89,6 +90,7 @@ let%private skipMode = (element: AST.t) =>
   | Oct
   | OpenBracket
   | Percent
+  | RadianUnit
   | UnitConversion(_)
   | CloseBracketS
   | ConstES

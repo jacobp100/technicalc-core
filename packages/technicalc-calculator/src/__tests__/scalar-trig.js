@@ -121,11 +121,11 @@ test("atanh", () => {
 });
 
 test("deg", () => {
-  const actual = TechniCalc.toInt(TechniCalc.deg(TechniCalc.pi));
+  const actual = TechniCalc.toInt(TechniCalc.toDeg(TechniCalc.pi));
   expect(actual).toBe(180);
 });
 
 test("grad", () => {
-  const actual = TechniCalc.toInt(TechniCalc.grad(TechniCalc.pi));
+  const actual = TechniCalc.toInt(TechniCalc.toGrad(TechniCalc.pi));
   expect(actual).toBe(200);
 });

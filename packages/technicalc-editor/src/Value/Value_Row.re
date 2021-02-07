@@ -55,14 +55,11 @@ let parseNumbers = elements => {
     | [Unresolved(Angle(angle), i, _), ...rest] =>
       let number =
         switch (Value_NumberParser.toNode(numberState), angle) {
-        | (Some(number), Degree) =>
-          Some(Node.(Mul(number, Div(Pi, OfInt(180)))))
-        | (Some(number), ArcMinute) =>
-          Some(Mul(number, Div(Pi, OfInt(10800))))
-        | (Some(number), ArcSecond) =>
-          Some(Mul(number, Div(Pi, OfInt(648000))))
-        | (Some(number), Gradian) =>
-          Some(Mul(number, Div(Pi, OfInt(200))))
+        | (Some(number), Radian) => Some(Node.OfRad(number))
+        | (Some(number), Degree) => Some(Node.OfDeg(number))
+        | (Some(number), ArcMinute) => Some(OfArcMin(number))
+        | (Some(number), ArcSecond) => Some(OfArcSec(number))
+        | (Some(number), Gradian) => Some(OfGrad(number))
         | (None, _) => None
         };
       switch (number, angleState, angle) {

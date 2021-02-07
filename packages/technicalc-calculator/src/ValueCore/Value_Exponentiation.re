@@ -7,9 +7,9 @@ let arg = (re, im) =>
     let imF = Real.toDecimal(im);
     Real.Decimal(Decimal.atan2(imF, reF));
   } else if (Real.(im > zero)) {
-    Real.ofRational(1, 2, Pi);
+    Real.ofRational(1, 2, Pi(1));
   } else if (Real.(im < zero)) {
-    Real.ofRational(-1, 2, Pi);
+    Real.ofRational(-1, 2, Pi(1));
   } else {
     Real.nan;
   };
