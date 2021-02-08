@@ -1,3 +1,12 @@
+type angleMode =
+  | Degree
+  | Radian
+  | Gradian;
+
+type config = {angleMode};
+
+let defaultConfig = {angleMode: Radian};
+
 type t =
   | NaN
   | Zero
@@ -49,8 +58,14 @@ type t =
   | Cot(t)
   | Tanh(t)
   | Atanh(t)
-  | Deg(t)
-  | Grad(t)
+  | OfDeg(t)
+  | OfArcMin(t)
+  | OfArcSec(t)
+  | OfRad(t)
+  | OfGrad(t)
+  | ToDeg(t)
+  | ToRad(t)
+  | ToGrad(t)
   | Re(t)
   | Im(t)
   | Conj(t)

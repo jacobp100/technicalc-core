@@ -32,6 +32,7 @@ let stringOfFunction = x =>
   | Atanh => "arctanh"
   | Deg => "deg"
   | Grad => "grad"
+  | Rad => "rad"
   | Log => "log"
   | Re => "re"
   | Im => "im"

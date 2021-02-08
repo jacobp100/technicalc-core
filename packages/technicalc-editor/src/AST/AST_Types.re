@@ -32,6 +32,8 @@ type t =
   | Oct
   | OpenBracket
   | Percent
+  | RadianFunction
+  | RadianUnit
   | Re
   | Sub
   | UnitConversion({
@@ -157,6 +159,8 @@ let argCountExn = (arg: t) =>
   | Oct
   | OpenBracket
   | Percent
+  | RadianFunction
+  | RadianUnit
   | Re
   | Sub
   | UnitConversion(_)

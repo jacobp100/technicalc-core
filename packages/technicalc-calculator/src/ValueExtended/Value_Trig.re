@@ -48,15 +48,15 @@ let cosec = a => Value_Core.(div(one, sin(a)));
 
 let asin = (a: t): t =>
   switch (mapReal(a, Real.mod2Pi)) {
-  | `R(Rational((-1), 1, Unit)) => `R(Real.ofRational(-1, 2, Pi))
-  | `R(Rational((-1), 2, Sqrt(3))) => `R(Real.ofRational(-1, 3, Pi))
-  | `R(Rational((-1), 2, Sqrt(2))) => `R(Real.ofRational(-1, 4, Pi))
-  | `R(Rational((-1), 2, Unit)) => `R(Real.ofRational(-1, 6, Pi))
+  | `R(Rational((-1), 1, Unit)) => `R(Real.ofRational(-1, 2, Pi(1)))
+  | `R(Rational((-1), 2, Sqrt(3))) => `R(Real.ofRational(-1, 3, Pi(1)))
+  | `R(Rational((-1), 2, Sqrt(2))) => `R(Real.ofRational(-1, 4, Pi(1)))
+  | `R(Rational((-1), 2, Unit)) => `R(Real.ofRational(-1, 6, Pi(1)))
   | `Z => zero
-  | `R(Rational(1, 2, Unit)) => `R(Real.ofRational(1, 6, Pi))
-  | `R(Rational(1, 2, Sqrt(2))) => `R(Real.ofRational(1, 4, Pi))
-  | `R(Rational(1, 2, Sqrt(3))) => `R(Real.ofRational(1, 3, Pi))
-  | `R(Rational(1, 1, Unit)) => `R(Real.ofRational(1, 2, Pi))
+  | `R(Rational(1, 2, Unit)) => `R(Real.ofRational(1, 6, Pi(1)))
+  | `R(Rational(1, 2, Sqrt(2))) => `R(Real.ofRational(1, 4, Pi(1)))
+  | `R(Rational(1, 2, Sqrt(3))) => `R(Real.ofRational(1, 3, Pi(1)))
+  | `R(Rational(1, 1, Unit)) => `R(Real.ofRational(1, 2, Pi(1)))
   | `R(_)
   | `I(_)
   | `C(_) =>
@@ -109,14 +109,14 @@ let sec = a => Value_Core.(div(one, cos(a)));
 
 let acos = (a: t): t =>
   switch (mapReal(a, Real.mod2Pi)) {
-  | `R(Rational((-1), 1, Unit)) => `R(Real.ofRational(1, 1, Pi))
-  | `R(Rational((-1), 2, Sqrt(3))) => `R(Real.ofRational(5, 6, Pi))
-  | `R(Rational((-1), 2, Sqrt(2))) => `R(Real.ofRational(3, 4, Pi))
-  | `R(Rational((-1), 2, Unit)) => `R(Real.ofRational(2, 3, Pi))
-  | `Z => `R(Real.ofRational(1, 2, Pi))
-  | `R(Rational(1, 2, Unit)) => `R(Real.ofRational(1, 3, Pi))
-  | `R(Rational(1, 2, Sqrt(2))) => `R(Real.ofRational(1, 4, Pi))
-  | `R(Rational(1, 2, Sqrt(3))) => `R(Real.ofRational(1, 6, Pi))
+  | `R(Rational((-1), 1, Unit)) => `R(Real.ofRational(1, 1, Pi(1)))
+  | `R(Rational((-1), 2, Sqrt(3))) => `R(Real.ofRational(5, 6, Pi(1)))
+  | `R(Rational((-1), 2, Sqrt(2))) => `R(Real.ofRational(3, 4, Pi(1)))
+  | `R(Rational((-1), 2, Unit)) => `R(Real.ofRational(2, 3, Pi(1)))
+  | `Z => `R(Real.ofRational(1, 2, Pi(1)))
+  | `R(Rational(1, 2, Unit)) => `R(Real.ofRational(1, 3, Pi(1)))
+  | `R(Rational(1, 2, Sqrt(2))) => `R(Real.ofRational(1, 4, Pi(1)))
+  | `R(Rational(1, 2, Sqrt(3))) => `R(Real.ofRational(1, 6, Pi(1)))
   | `R(Rational(1, 1, Unit)) => zero
   | `R(_)
   | `I(_)
@@ -125,7 +125,7 @@ let acos = (a: t): t =>
     | Real(_, BothBound | LowerBound | UpperBound | Inside) =>
       mapRealDecimal(a, Decimal.acos)
     | Real(_, Outside)
-    | Complex => ofReal(Real.ofRational(1, 2, Pi)) - asin(a)
+    | Complex => ofReal(Real.ofRational(1, 2, Pi(1))) - asin(a)
     | NaN => `N
     }
   | `M(_)
@@ -171,14 +171,14 @@ let acosh = (x: t): t =>
 let tan = (x: t): t =>
   switch (mapReal(x, Real.mod2Pi)) {
   | `Z
-  | `R(Rational(1 | 2, 1, Pi)) => zero
-  | `R(Rational(1 | 5, 4, Pi)) => one
-  | `R(Rational(3 | 7, 4, Pi)) => minusOne
-  | `R(Rational(1 | 4, 3, Pi)) => `R(Real.ofRational(1, 1, Sqrt(3)))
-  | `R(Rational(2 | 5, 3, Pi)) => `R(Real.ofRational(-1, 1, Sqrt(3)))
-  | `R(Rational(1 | 7, 6, Pi)) => `R(Real.ofRational(1, 3, Sqrt(3)))
-  | `R(Rational(5 | 11, 6, Pi)) => `R(Real.ofRational(-1, 3, Sqrt(3)))
-  | `R(Rational(1 | 3, 2, Pi)) => `N
+  | `R(Rational(1 | 2, 1, Pi(1))) => zero
+  | `R(Rational(1 | 5, 4, Pi(1))) => one
+  | `R(Rational(3 | 7, 4, Pi(1))) => minusOne
+  | `R(Rational(1 | 4, 3, Pi(1))) => `R(Real.ofRational(1, 1, Sqrt(3)))
+  | `R(Rational(2 | 5, 3, Pi(1))) => `R(Real.ofRational(-1, 1, Sqrt(3)))
+  | `R(Rational(1 | 7, 6, Pi(1))) => `R(Real.ofRational(1, 3, Sqrt(3)))
+  | `R(Rational(5 | 11, 6, Pi(1))) => `R(Real.ofRational(-1, 3, Sqrt(3)))
+  | `R(Rational(1 | 3, 2, Pi(1))) => `N
   | `R(_) => mapRealDecimal(x, Decimal.tan)
   | `I(_)
   | `C(_) =>
@@ -196,13 +196,13 @@ let cot = a => Value_Core.(div(one, tan(a)));
 
 let atan = (a: t): t =>
   switch (mapReal(a, Real.mod2Pi)) {
-  | `R(Rational((-1), 1, Sqrt(3))) => `R(Real.ofRational(-1, 3, Pi))
-  | `R(Rational((-1), 1, Unit)) => `R(Real.ofRational(-1, 4, Pi))
-  | `R(Rational((-1), 3, Sqrt(3))) => `R(Real.ofRational(-1, 6, Pi))
+  | `R(Rational((-1), 1, Sqrt(3))) => `R(Real.ofRational(-1, 3, Pi(1)))
+  | `R(Rational((-1), 1, Unit)) => `R(Real.ofRational(-1, 4, Pi(1)))
+  | `R(Rational((-1), 3, Sqrt(3))) => `R(Real.ofRational(-1, 6, Pi(1)))
   | `Z => zero
-  | `R(Rational(1, 3, Sqrt(3))) => `R(Real.ofRational(1, 6, Pi))
-  | `R(Rational(1, 1, Unit)) => `R(Real.ofRational(1, 4, Pi))
-  | `R(Rational(1, 1, Sqrt(3))) => `R(Real.ofRational(1, 3, Pi))
+  | `R(Rational(1, 3, Sqrt(3))) => `R(Real.ofRational(1, 6, Pi(1)))
+  | `R(Rational(1, 1, Unit)) => `R(Real.ofRational(1, 4, Pi(1)))
+  | `R(Rational(1, 1, Sqrt(3))) => `R(Real.ofRational(1, 3, Pi(1)))
   | `R(_) => mapRealDecimal(a, Decimal.atan)
   | `I(Rational(1 | (-1), 1, Unit)) => `N
   | (`I(_) | `C(_)) as vV =>

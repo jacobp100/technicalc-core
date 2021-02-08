@@ -2,7 +2,7 @@ type node = TechniCalcCalculator.AST_Types.t;
 
 type context = array((string, string));
 
-type t =
+type work =
   | Calculate(node, context)
   | ConvertUnits({
       body: node,
@@ -32,3 +32,8 @@ type t =
       node,
       node,
     );
+
+type t = {
+  config: TechniCalcCalculator.AST_Types.config,
+  work,
+};

@@ -26,7 +26,7 @@ let%private appendElementWithImplicitMultiplication =
     Mml_Accum.append(accum, implicitMultiplication)
     ->Mml_Accum.append(element);
   | NoElement
-  | Operator =>
+  | OperatorOrFunction =>
     let element =
       createElementWithRange(
         ~attributes,
@@ -126,6 +126,8 @@ let reduce = (accum, stateElement: foldState(string), range) =>
   | Angle(angle) =>
     let superscript =
       switch (angle) {
+      | Radian =>
+        createElement(~attributes=[("mathvariant", "normal")], "mi", "r")
       | ArcMinute => createElement("mo", "&#x2032;")
       | ArcSecond => createElement("mo", "&#x2033;")
       | Gradian =>
@@ -174,12 +176,12 @@ let reduce = (accum, stateElement: foldState(string), range) =>
     let attributes = func == AST.Gamma ? [("mathvariant", "normal")] : [];
     Mml_Util.stringOfFunction(func)
     ->createElementWithRange(~superscript?, ~attributes, range, "mi", _)
-    ->Mml_Accum.append(accum, _);
+    ->Mml_Accum.appendOperatorOrFunction(accum, _);
   | Factorial =>
     createElementWithRange(range, "mo", "!")->Mml_Accum.append(accum, _)
   | Operator(op) =>
     createElementWithRange(range, "mo", Mml_Util.stringOfOperator(op))
-    ->Mml_Accum.appendOperator(accum, _)
+    ->Mml_Accum.appendOperatorOrFunction(accum, _)
   | Frac({num, den, superscript}) =>
     appendElementWithImplicitMultiplication(
       ~superscript,

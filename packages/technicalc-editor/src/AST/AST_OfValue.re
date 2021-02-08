@@ -4,17 +4,24 @@ open AST_OfString;
 let ofConstant = (a: TechniCalcCalculator.Real_Constant.t) =>
   switch (a) {
   | Unit => [||]
-  | Pi => [|ConstPiS|]
-  | Sqrt(s) =>
+  | Pi(1) => [|ConstPiS|]
+  | Exp(1) => [|ConstES|]
+  | Pi(e) =>
     Belt.Array.concatMany([|
-      [|Sqrt1S|],
-      ofString(Belt.Int.toString(s)),
+      [|ConstPiS, Superscript1|],
+      ofString(Belt.Int.toString(e)),
       [|Arg|],
     |])
   | Exp(e) =>
     Belt.Array.concatMany([|
-      [|Sqrt1S|],
+      [|ConstES, Superscript1|],
       ofString(Belt.Int.toString(e)),
+      [|Arg|],
+    |])
+  | Sqrt(s) =>
+    Belt.Array.concatMany([|
+      [|Sqrt1S|],
+      ofString(Belt.Int.toString(s)),
       [|Arg|],
     |])
   };

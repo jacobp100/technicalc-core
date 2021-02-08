@@ -1,4 +1,10 @@
 [@bs.deriving abstract]
+type config = {
+  [@bs.optional]
+  angleMode: string,
+};
+
+[@bs.deriving abstract]
 type format = {
   [@bs.optional]
   mode: string,
@@ -43,6 +49,8 @@ module Elements = {
 
   let populatedCaptureGroups = CaptureGroupUtil.populatedCaptureGroups;
   let emptyCaptureGroups = CaptureGroupUtil.emptyCaptureGroups;
+
+  let inputSettingsMode = InputConfigUtil.inputSettingsMode;
 
   let insertRanges = InsertUtil.insertRanges;
   let canInsertTable = InsertUtil.canInsertTable;
@@ -152,7 +160,7 @@ module Value = {
 };
 
 module Work = {
-  let%private encodeContext = context =>
+  let%private toContext = context =>
     switch (context) {
     | Some(context) =>
       Js.Dict.entries(context)
@@ -160,24 +168,30 @@ module Work = {
     | None => [||]
     };
 
-  let calculate = (body, context): Work.t => {
-    Calculate(body, encodeContext(context));
-  };
-  let convertUnits = (body, fromUnits, toUnits, context): Work.t =>
-    ConvertUnits({
-      body,
-      fromUnits,
-      toUnits,
-      context: encodeContext(context),
-    });
-  let solveRoot = (lhs, rhs, initialGuess): Work.t =>
+  let calculate = (body, context): Work.work =>
+    Calculate(body, toContext(context));
+  let convertUnits = (body, fromUnits, toUnits, context): Work.work =>
+    ConvertUnits({body, fromUnits, toUnits, context: toContext(context)});
+  let solveRoot = (lhs, rhs, initialGuess): Work.work =>
     SolveRoot({lhs, rhs, initialGuess});
-  let quadratic = (a, b, c): Work.t => Quadratic(a, b, c);
-  let cubic = (a, b, c, d): Work.t => Cubic(a, b, c, d);
-  let var2 = (x0, y0, c0, x1, y1, c1): Work.t =>
+  let quadratic = (a, b, c): Work.work => Quadratic(a, b, c);
+  let cubic = (a, b, c, d): Work.work => Cubic(a, b, c, d);
+  let var2 = (x0, y0, c0, x1, y1, c1): Work.work =>
     Var2(x0, y0, c0, x1, y1, c1);
-  let var3 = (x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2): Work.t =>
+  let var3 = (x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2): Work.work =>
     Var3(x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2);
+
+  let make = (config, work): Work.t => {
+    config: {
+      angleMode:
+        switch (angleModeGet(config)) {
+        | Some("degree") => Degree
+        | Some("gradian") => Gradian
+        | _ => Radian
+        },
+    },
+    work,
+  };
 };
 
 module Units = {

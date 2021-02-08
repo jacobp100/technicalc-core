@@ -21,6 +21,7 @@ type func =
   | Grad
   | Im
   | Log
+  | Rad
   | Re
   /* Superscripts supported */
   | Cos
@@ -33,6 +34,7 @@ type func =
   | Tan
   | Tanh;
 type angle =
+  | Radian
   | Degree
   | ArcMinute
   | ArcSecond
@@ -255,6 +257,7 @@ let reduceMap =
     | GradianFunction => func(i, Grad)
     | Im => func(i, Im)
     | Log => func(i, Log)
+    | RadianFunction => func(i, Rad)
     | Re => func(i, Re)
     | CoshS => funcS(i, Cosh)
     | CosS => funcS(i, Cos)
@@ -265,6 +268,7 @@ let reduceMap =
     | CosecS => funcS(i, Cosec)
     | SecS => funcS(i, Sec)
     | CotS => funcS(i, Cot)
+    | RadianUnit => Node(Angle(Radian), i, i + 1)
     | DegreeUnit => Node(Angle(Degree), i, i + 1)
     | ArcMinuteUnit => Node(Angle(ArcMinute), i, i + 1)
     | ArcSecondUnit => Node(Angle(ArcSecond), i, i + 1)

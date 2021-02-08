@@ -18,6 +18,11 @@ let%private safeRat = (n, d, c) => {
 let%private inv = a => {
   switch (a) {
   | Rational(n, d, Unit) => ofRational(d, n, Unit)
+  | Rational(n, d, Pi(exp) as c) =>
+    switch (SafeInt.negInt(exp)) {
+    | Some(exp) => ofRational(d, n, Pi(exp))
+    | _ => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
+    }
   | Rational(n, d, Exp(exp) as c) =>
     switch (SafeInt.negInt(exp)) {
     | Some(exp) => ofRational(d, n, Exp(exp))
@@ -98,6 +103,11 @@ let mul = (a, b) => {
     | (Rational(an, ad, c), Rational(bn, bd, Unit))
     | (Rational(an, ad, Unit), Rational(bn, bd, c)) =>
       mulRat(an, ad, bn, bd, c)
+    | (Rational(an, ad, Pi(aExp)), Rational(bn, bd, Pi(bExp))) =>
+      switch (SafeInt.addInt(aExp, bExp)) {
+      | Some(exp) => mulRat(an, ad, bn, bd, Pi(exp))
+      | _ => None
+      }
     | (Rational(an, ad, Exp(aExp)), Rational(bn, bd, Exp(bExp))) =>
       switch (SafeInt.addInt(aExp, bExp)) {
       | Some(exp) => mulRat(an, ad, bn, bd, Exp(exp))
@@ -132,6 +142,11 @@ let div = (a, b) => {
       divRat(an, ad, bn, bd, Unit)
     | (Rational(an, ad, c), Rational(bn, bd, Unit)) =>
       divRat(an, ad, bn, bd, c)
+    | (Rational(an, ad, Pi(aExp)), Rational(bn, bd, Pi(bExp))) =>
+      switch (SafeInt.subInt(aExp, bExp)) {
+      | Some(exp) => divRat(an, ad, bn, bd, Pi(exp))
+      | _ => None
+      }
     | (Rational(an, ad, Exp(aExp)), Rational(bn, bd, Exp(bExp))) =>
       switch (SafeInt.subInt(aExp, bExp)) {
       | Some(exp) => divRat(an, ad, bn, bd, Exp(exp))

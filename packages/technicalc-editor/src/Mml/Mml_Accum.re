@@ -10,7 +10,7 @@ module MmlPrettifier = {
 
   type lastElementType =
     | NoElement
-    | Operator
+    | OperatorOrFunction
     | Other;
 
   type t = {
@@ -66,8 +66,8 @@ module MmlPrettifier = {
 
   let append = (v, element) => appendWith(v, element);
 
-  let appendOperator = (v, element) =>
-    appendWith(~lastElementType=Operator, v, element);
+  let appendOperatorOrFunction = (v, element) =>
+    appendWith(~lastElementType=OperatorOrFunction, v, element);
 
   let appendDigit = (v, element) =>
     switch (v.digitGroupingState) {
@@ -100,7 +100,7 @@ module MmlPrettifier = {
   let appendWhitespace = (v, element) =>
     switch (v.lastElementType) {
     | NoElement
-    | Operator => v
+    | OperatorOrFunction => v
     | Other => append(v, element)
     };
 
@@ -251,11 +251,11 @@ let append = (body, element) =>
     element,
     MmlPrettifier.append,
   );
-let appendOperator = (body, element) =>
+let appendOperatorOrFunction = (body, element) =>
   BracketGroups.transformCurrentGroupWithArg(
     body,
     element,
-    MmlPrettifier.appendOperator,
+    MmlPrettifier.appendOperatorOrFunction,
   );
 let appendDigit = (body, element) =>
   BracketGroups.transformCurrentGroupWithArg(

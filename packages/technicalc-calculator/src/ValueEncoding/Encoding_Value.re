@@ -3,23 +3,28 @@ open Encoding;
 let%private encodeConstant = (constant: Real_Constant.t) =>
   switch (constant) {
   | Unit => encodeUint(0)
-  | Pi => encodeUint(1)
-  | Sqrt(sqrt) => encodeUint(2) ++ encodeInt(sqrt)
+  | Pi(exp) => encodeUint(4) ++ encodeInt(exp)
   | Exp(exp) => encodeUint(3) ++ encodeInt(exp)
+  | Sqrt(sqrt) => encodeUint(2) ++ encodeInt(sqrt)
   };
 
 let%private readConstant = reader => {
   switch (readUint(reader)) {
   | Some(0) => Some(Real_Constant.Unit)
-  | Some(1) => Some(Pi)
-  | Some(2) =>
+  | Some(1) => Some(Pi(1)) // Legacy encoding
+  | Some(4) =>
     switch (readInt(reader)) {
-    | Some(sqrt) => Some(Sqrt(sqrt))
+    | Some(exp) => Some(Pi(exp))
     | None => None
     }
   | Some(3) =>
     switch (readInt(reader)) {
     | Some(exp) => Some(Exp(exp))
+    | None => None
+    }
+  | Some(2) =>
+    switch (readInt(reader)) {
+    | Some(sqrt) => Some(Sqrt(sqrt))
     | None => None
     }
   | _ => None
