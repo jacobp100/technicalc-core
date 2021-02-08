@@ -1,3 +1,4 @@
+const requireEsm = require("esm")(module);
 const fs = require("fs").promises;
 const path = require("path");
 const util = require("util");
@@ -7,6 +8,23 @@ const terser = require("terser");
 const dist = require("./dist");
 
 const fontsStubsDir = path.resolve(__dirname, "./stubs/.fonts");
+
+const evalPlugin = {
+  name: "evalPlugin",
+  setup(build) {
+    build.onLoad({ filter: /_Eval/ }, (args) => {
+      const out = requireEsm(args.path);
+      const contents = Object.entries(out)
+        .map(([key, value]) => {
+          const valueJson = JSON.stringify(value);
+          const valueFast = `JSON.parse('${valueJson.replace(/'/g, "\\")}')`;
+          return `export const ${key} = ${valueFast}`;
+        })
+        .join("\n");
+      return { contents };
+    });
+  },
+};
 
 const minifyDecimalJsPlugin = {
   name: "minifyDecimalJsPlugin",
@@ -114,7 +132,7 @@ runNodeScript("scripts/fonts", [
     outfile: path.resolve(dist, "client.js"),
     format: "umd",
     globalName: "Client",
-    plugins: [minifyDecimalJsPlugin],
+    plugins: [minifyDecimalJsPlugin, evalPlugin],
   });
   build({
     entryPoints: ["./src/Worker.bs.js"],

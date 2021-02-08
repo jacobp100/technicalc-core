@@ -1,11 +1,6 @@
 open AST;
 
-[@bs.module "./Encoding_ElementMapping"]
-external mapping: array(int) = "mapping";
-[@bs.module "./Encoding_ElementMapping"]
-external reverseMapping: array(t) = "reverseMapping";
-
 let toUint = (element: t): int =>
-  Belt.Array.getExn(mapping, Obj.magic(element));
+  Belt.Array.getExn(Encoding_ElementMap_Eval.mapping, Obj.magic(element));
 let ofUint = (index: int): option(t) =>
-  Belt.Array.get(reverseMapping, index);
+  Belt.Array.get(Encoding_ElementMap_Eval.reverseMapping, index);
