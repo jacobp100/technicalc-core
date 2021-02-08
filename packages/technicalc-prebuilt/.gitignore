@@ -12,6 +12,4 @@ npm-debug.log
 playground.js
 coverage
 
-/fonts-assets
-/fonts-stubs
-/test.js
+/stubs/.*

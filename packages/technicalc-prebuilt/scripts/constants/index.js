@@ -16,10 +16,8 @@ const {
   SerializedMmlVisitor,
 } = require("mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js");
 
-// eslint-disable-next-line import/no-dynamic-require
-const { Value } = requireEsm("../src/Client.bs.js");
-
-const dist = require("../dist");
+const { Value } = requireEsm("../../src/Client.bs.js");
+const dist = require("../../dist");
 
 const titles = require("./titles");
 const data = require("./data");

@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 const util = require("util");
 const childProcess = require("child_process");
@@ -6,11 +6,13 @@ const esbuild = require("esbuild");
 const terser = require("terser");
 const dist = require("./dist");
 
+const fontsStubsDir = path.resolve(__dirname, "./stubs/.fonts");
+
 const minifyDecimalJsPlugin = {
   name: "minifyDecimalJsPlugin",
   setup(build) {
     build.onLoad({ filter: /decimal\.js$/ }, async (args) => {
-      const text = await fs.promises.readFile(args.path, "utf8");
+      const text = await fs.readFile(args.path, "utf8");
       const contents = text.replace(/(\d\.\d{99})\d+/g, "$1");
       return { contents };
     });
@@ -20,13 +22,14 @@ const minifyDecimalJsPlugin = {
 const stubMathJaxPlugin = {
   name: "stubMathJaxPlugin",
   setup(build) {
-    const texPath = require.resolve("mathjax-full/js/output/svg/fonts/tex");
-    const texDir = path.resolve(texPath, "../tex");
-    const fontsStubs = path.resolve(__dirname, "fonts-stubs");
+    const texDir = path.resolve(
+      require.resolve("mathjax-full/js/output/svg/fonts/tex"),
+      "../tex"
+    );
 
     build.onResolve({ filter: /tex[\\/]/i }, (args) => {
       return path.resolve(args.resolveDir, args.path).startsWith(texDir)
-        ? { path: path.resolve(fontsStubs, path.basename(args.path)) }
+        ? { path: path.resolve(fontsStubsDir, path.basename(args.path)) }
         : null;
     });
 
@@ -34,7 +37,7 @@ const stubMathJaxPlugin = {
 
     build.onResolve({ filter: /Entities.js$/i }, (args) => {
       return path.resolve(args.resolveDir, args.path) === entitiesPath
-        ? { path: require.resolve("./mathjax-stubs/entities.js") }
+        ? { path: require.resolve("./stubs/mathjax-full/entities") }
         : null;
     });
 
@@ -42,7 +45,7 @@ const stubMathJaxPlugin = {
 
     build.onResolve({ filter: /Wrapper.js$/i }, (args) => {
       return path.resolve(args.resolveDir, args.path) === wrapperPath
-        ? { path: require.resolve("./mathjax-stubs/Wrapper.js") }
+        ? { path: require.resolve("./stubs/mathjax-full/Wrapper") }
         : null;
     });
   },
@@ -50,51 +53,81 @@ const stubMathJaxPlugin = {
 
 const fast = process.argv.includes("--fast");
 
-const build = async (file, outfile) => {
+const build = async ({ outfile, format, globalName, ...rest }) => {
   const { outputFiles } = await esbuild.build({
-    entryPoints: [file],
-    format: "cjs",
     bundle: true,
     minify: true,
     write: false,
-    external: ["react", "react-native-svg"],
-    plugins: [minifyDecimalJsPlugin, stubMathJaxPlugin],
+    ...rest,
+    format: format === "umd" ? "esm" : format,
+    globalName: format === "umd" ? undefined : globalName,
   });
 
   let code = outputFiles[0].text;
+
+  if (format === "umd") {
+    // HACK: convert to UMD - only supports cjs and global var
+    const varName = "__EXPORTS__";
+    code = code
+      .replace(/import\s+(\w+)\s+from\s*"([^"]+)"/g, 'var $1 = require("$2")')
+      .replace(/export\s*\{([^{}]+)\}/, (_, inner) => {
+        const defaultExport = inner.match(/^(\w+) as default$/);
+        return defaultExport != null
+          ? `var ${varName}=${defaultExport[1]}`
+          : `var ${varName}={${inner.replace(/(\w+) as (\w+)/g, "$2:$1")}}`;
+      });
+    code = `(()=>{${code};typeof module!=='undefined'?module.exports=${varName}:self.${globalName}=${varName}})()`;
+  }
 
   if (!fast) {
     code = (await terser.minify(code)).code;
   }
 
-  await fs.promises.writeFile(path.join(dist, outfile), code);
+  await fs.writeFile(outfile, code);
 };
 
 const execFile = util.promisify(childProcess.execFile);
-const run = async (filename, dependencies) => {
-  const perform = () => execFile("node", [filename]);
+const runNodeScript = async (filename, dependencies) => {
+  const run = () => execFile("node", [filename]);
 
   if (fast) {
-    const dependenciesStat = dependencies.map((f) => fs.promises.stat(f));
-
     try {
+      const dependenciesStat = dependencies.map((f) => fs.stat(f));
       await Promise.all(dependenciesStat);
     } catch {
-      perform();
+      await run();
     }
   } else {
-    perform();
+    await run();
   }
 };
 
-run("constants", [path.resolve(dist, "constants.json")]);
-run("units", [path.resolve(dist, "units.json")]);
+runNodeScript("scripts/constants", [path.resolve(dist, "constants.json")]);
+runNodeScript("scripts/units", [path.resolve(dist, "units.json")]);
 
-run("font-gen", [
-  path.join(__dirname, "fonts-assets"),
-  path.join(__dirname, "fonts-stubs"),
+runNodeScript("scripts/fonts", [
+  fontsStubsDir,
+  path.resolve(dist, "fonts"),
 ]).then(() => {
-  build("./src/Client.bs.js", "client.js");
-  build("./src/Worker.bs.js", "worker.js");
-  build("./src/typeset/index.js", "typeset.js");
+  build({
+    entryPoints: ["./src/Client.bs.js"],
+    outfile: path.resolve(dist, "client.js"),
+    format: "umd",
+    globalName: "Client",
+    plugins: [minifyDecimalJsPlugin],
+  });
+  build({
+    entryPoints: ["./src/Worker.bs.js"],
+    outfile: path.resolve(dist, "worker.js"),
+    format: "umd",
+    globalName: "Worker",
+    plugins: [minifyDecimalJsPlugin],
+  });
+  build({
+    entryPoints: ["./src/typeset/index.js"],
+    outfile: path.resolve(dist, "typeset.js"),
+    format: "esm",
+    external: ["react", "react-native-svg"],
+    plugins: [stubMathJaxPlugin],
+  });
 });

@@ -15,7 +15,7 @@ module.exports = {
     "**/node_modules/",
     "**/dist",
     "packages/technicalc-calculator/decimal",
-    "packages/technicalc-prebuilt/mathjax-stubs",
+    "packages/technicalc-prebuilt/stubs",
     "**/*.bs.js",
   ],
   rules: {

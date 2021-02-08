@@ -10,6 +10,9 @@ const { normal } = require("mathjax-full/js/output/svg/fonts/tex/normal");
 const { smallop } = require("mathjax-full/js/output/svg/fonts/tex/smallop");
 const { texSize3 } = require("mathjax-full/js/output/svg/fonts/tex/tex-size3");
 const { texSize4 } = require("mathjax-full/js/output/svg/fonts/tex/tex-size4");
+
+const dist = require("../../dist");
+
 const { skewX } = require("./font-util");
 const buildFont = require("./build-font");
 
@@ -25,8 +28,8 @@ const ensureDir = (dir) => {
   }
 };
 
-const fontsStubs = path.resolve(__dirname, "../fonts-stubs");
-const fontsAssetsPath = path.resolve(__dirname, "../fonts-assets");
+const fontsStubs = path.resolve(__dirname, "../../stubs/.fonts");
+const fontsAssetsPath = path.resolve(dist, "fonts");
 
 ensureDir(fontsStubs);
 ensureDir(fontsAssetsPath);
