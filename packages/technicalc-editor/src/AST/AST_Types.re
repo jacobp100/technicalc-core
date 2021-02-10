@@ -49,6 +49,7 @@ type t =
   | CosS
   | CotS
   | ImaginaryUnitS
+  | IteratorXS
   | N0_S
   | N1_S
   | N2_S
@@ -75,7 +76,10 @@ type t =
       mml: string,
       value: string,
     })
-  | VariableS(string)
+  | VariableS({
+      id: string,
+      name: string,
+    })
   /* Atom1 */
   | Magnitude1
   | NLog1
@@ -120,7 +124,8 @@ let eq = (a: t, b: t) =>
   | (UnitConversion(_), UnitConversion(_)) => false // Not used yet (ignore)
   | (CustomAtomS({mml: a1, value: a2}), CustomAtomS({mml: b1, value: b2})) =>
     a1 == b1 && a2 == b2
-  | (VariableS(a1), VariableS(b1)) => a1 == b1
+  | (VariableS({id: a1, name: a2}), VariableS({id: b1, name: b2})) =>
+    a1 == b1 && a2 == b2
   | (a, b) => a === b
   };
 
@@ -174,6 +179,7 @@ let argCountExn = (arg: t) =>
   | CotS
   | CustomAtomS(_)
   | ImaginaryUnitS
+  | IteratorXS
   | N0_S
   | N1_S
   | N2_S

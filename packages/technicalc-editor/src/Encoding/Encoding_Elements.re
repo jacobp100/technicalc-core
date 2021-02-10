@@ -38,7 +38,8 @@ let%private encodeElement =
     | UnitConversion(_) => ""
     | CustomAtomS({mml, value}) =>
       encodeUint(257) ++ encodeCustomAtom(~mml, ~value)
-    | VariableS(string) => encodeUint(259) ++ encodeString(string)
+    | VariableS({id, name}) =>
+      encodeUint(261) ++ encodeString(id) ++ encodeString(name)
     | CaptureGroupStart({placeholderMml}) =>
       encodeUint(260) ++ encodeString(placeholderMml)
     | element => Encoding_Element.toUint(element)->encodeUint
@@ -74,11 +75,20 @@ let%private readElement =
         |])
       | None => None
       }
+    // Legacy encoding - to be removed at a later date
     | Some(259) =>
       removeMeWrapInArray(
         switch (readString(reader)) {
-        | Some(string) => Some(VariableS(string))
-        | None => None
+        | Some("x") => Some(IteratorXS)
+        | Some("Ans") => Some(VariableS({id: "Ans", name: "Ans"}))
+        | _ => None
+        },
+      )
+    | Some(261) =>
+      removeMeWrapInArray(
+        switch (readString(reader), readString(reader)) {
+        | (Some(id), Some(name)) => Some(VariableS({id, name}))
+        | _ => None
         },
       )
     | Some(260) =>

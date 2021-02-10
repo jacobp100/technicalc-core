@@ -2,7 +2,11 @@ open Jest;
 
 let parseEval = v =>
   switch (Value.parse(v)) {
-  | Ok(v) => Some(TechniCalcCalculator.AST.(eval(~config=defaultConfig, v)))
+  | Ok(v) =>
+    TechniCalcCalculator.AST.(
+      eval(~config=defaultConfig, ~context=emptyContext, v)
+    )
+    ->Some
   | _ => None
   };
 

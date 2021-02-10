@@ -1,7 +1,7 @@
 open Jest;
 
 test("possible solver bug report", (.) => {
-  open AST_Types;
+  open AST;
   let x = Variable("x");
   let ofFloat = a => OfFloat(a);
   let (+) = (a, b) => Add(a, b);
@@ -21,7 +21,13 @@ test("possible solver bug report", (.) => {
     * ofFloat(1. /. 2.)
     * (ofFloat(-1.) * x + ofFloat(2.5));
 
-  let root = AST.solveRoot(~config=defaultConfig, equation, ofFloat(0.));
+  let root =
+    AST.solveRoot(
+      ~config=defaultConfig,
+      ~context=AST_Context.empty,
+      equation,
+      ofFloat(0.),
+    );
 
   expect(Value.toFloat(root))->toBe(-5.);
 });

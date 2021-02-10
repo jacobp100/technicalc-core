@@ -104,6 +104,7 @@ type foldState('a) =
       to_: 'a,
       body: 'a,
     })
+  | IteratorX(option(superscript('a)))
   | Lcm({
       a: 'a,
       b: 'a,
@@ -181,7 +182,8 @@ type foldState('a) =
       toUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
     })
   | Variable({
-      nucleus: string,
+      id: string,
+      name: string,
       superscript: option(superscript('a)),
     });
 
@@ -301,14 +303,18 @@ let reduceMap =
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
       Node(ImaginaryUnit(superscript), i, i');
+    | IteratorXS =>
+      let i' = i + 1;
+      let (superscript, i') = readSuperscript(i');
+      Node(IteratorX(superscript), i, i');
     | RandS =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
       Node(Rand(superscript), i, i');
-    | VariableS(nucleus) =>
+    | VariableS({id, name}) =>
       let i' = i + 1;
       let (superscript, i') = readSuperscript(i');
-      Node(Variable({nucleus, superscript}), i, i');
+      Node(Variable({id, name, superscript}), i, i');
     | Magnitude1 =>
       let (value, i') = readArg(i + 1);
       Node(Magnitude({value: value}), i, i');

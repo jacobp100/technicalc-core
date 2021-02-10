@@ -25,8 +25,10 @@ let map = (element: foldState('a), i, i') =>
   | NCR({n, r}) => NCR(n, r)->Resolved
   | Differential({at, body}) => Differential({at, body})->Resolved
   | Integral({from, to_, body}) => Integral({from, to_, body})->Resolved
-  | Variable({nucleus, superscript}) =>
-    withSuperscript(Variable(nucleus), superscript)->Resolved
+  | IteratorX(superscript) =>
+    withSuperscript(IteratorX, superscript)->Resolved
+  | Variable({id, superscript}) =>
+    withSuperscript(Variable(id), superscript)->Resolved
   | CustomAtom({value, superscript}) =>
     withSuperscript(OfEncoded(value), superscript)->Resolved
   | ConstPi(superscript) => withSuperscript(Pi, superscript)->Resolved

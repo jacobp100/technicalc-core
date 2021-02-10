@@ -79,6 +79,7 @@ type t =
   | Max(t, t)
   | Gcd(t, t)
   | Lcm(t, t)
+  | IteratorX
   | Differential({
       at: t,
       body: t,

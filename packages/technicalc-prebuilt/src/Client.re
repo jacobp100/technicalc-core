@@ -50,6 +50,8 @@ module Elements = {
   let populatedCaptureGroups = CaptureGroupUtil.populatedCaptureGroups;
   let emptyCaptureGroups = CaptureGroupUtil.emptyCaptureGroups;
 
+  let getDependencies = DependencyUtil.getDependencies;
+
   let inputSettingsMode = InputConfigUtil.inputSettingsMode;
 
   let insertRanges = InsertUtil.insertRanges;
@@ -83,6 +85,8 @@ module Keys = {
   open TechniCalcEditor;
 
   let keys = Keys.keys;
+
+  let variable = (~id, ~name) => Keys.One(VariableS({id, name}));
 
   let customAtom = (~value, ~mml) =>
     AST.CustomAtomS({
@@ -160,18 +164,9 @@ module Value = {
 };
 
 module Work = {
-  let%private toContext = context =>
-    switch (context) {
-    | Some(context) =>
-      Js.Dict.entries(context)
-      ->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
-    | None => [||]
-    };
-
-  let calculate = (body, context): Work.work =>
-    Calculate(body, toContext(context));
-  let convertUnits = (body, fromUnits, toUnits, context): Work.work =>
-    ConvertUnits({body, fromUnits, toUnits, context: toContext(context)});
+  let calculate = (body): Work.work => Calculate(body);
+  let convertUnits = (body, fromUnits, toUnits): Work.work =>
+    ConvertUnits({body, fromUnits, toUnits});
   let solveRoot = (lhs, rhs, initialGuess): Work.work =>
     SolveRoot({lhs, rhs, initialGuess});
   let quadratic = (a, b, c): Work.work => Quadratic(a, b, c);
@@ -181,7 +176,7 @@ module Work = {
   let var3 = (x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2): Work.work =>
     Var3(x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2);
 
-  let make = (config, work): Work.t => {
+  let make = (config, context, work): Work.t => {
     config: {
       angleMode:
         switch (angleModeGet(config)) {
@@ -190,6 +185,13 @@ module Work = {
         | _ => Radian
         },
     },
+    context:
+      switch (context) {
+      | Some(context) =>
+        Js.Dict.entries(context)
+        ->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
+      | None => [||]
+      },
     work,
   };
 };
