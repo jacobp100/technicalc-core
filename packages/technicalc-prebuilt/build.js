@@ -123,24 +123,25 @@ const runNodeScript = async (filename, dependencies) => {
 runNodeScript("scripts/constants", [path.resolve(dist, "constants.json")]);
 runNodeScript("scripts/units", [path.resolve(dist, "units.json")]);
 
+build({
+  entryPoints: ["./src/Client.bs.js"],
+  outfile: path.resolve(dist, "client.js"),
+  format: "umd",
+  globalName: "Client",
+  plugins: [minifyDecimalJsPlugin, evalPlugin],
+});
+build({
+  entryPoints: ["./src/Worker.bs.js"],
+  outfile: path.resolve(dist, "worker.js"),
+  format: "umd",
+  globalName: "Worker",
+  plugins: [minifyDecimalJsPlugin],
+});
+
 runNodeScript("scripts/fonts", [
   fontsStubsDir,
   path.resolve(dist, "fonts"),
 ]).then(() => {
-  build({
-    entryPoints: ["./src/Client.bs.js"],
-    outfile: path.resolve(dist, "client.js"),
-    format: "umd",
-    globalName: "Client",
-    plugins: [minifyDecimalJsPlugin, evalPlugin],
-  });
-  build({
-    entryPoints: ["./src/Worker.bs.js"],
-    outfile: path.resolve(dist, "worker.js"),
-    format: "umd",
-    globalName: "Worker",
-    plugins: [minifyDecimalJsPlugin],
-  });
   build({
     entryPoints: ["./src/typeset/index.js"],
     outfile: path.resolve(dist, "typeset.js"),
