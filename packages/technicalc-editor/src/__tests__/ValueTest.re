@@ -3,7 +3,11 @@ open AST_Types;
 
 let parseEval = v =>
   switch (Value.parse(v)) {
-  | Ok(v) => Some(TechniCalcCalculator.AST.(eval(~config=defaultConfig, v)))
+  | Ok(v) =>
+    TechniCalcCalculator.AST.(
+      eval(~config=defaultConfig, ~context=emptyContext, v)
+    )
+    ->Some
   | _ => None
   };
 
@@ -57,7 +61,7 @@ test("parses functions", (.) => {
 });
 
 test("parses iteration operators", (.) => {
-  parseEval([|Sum2, N0_S, Arg, N3_S, Arg, VariableS("x"), Add, N1_S|])
+  parseEval([|Sum2, N0_S, Arg, N3_S, Arg, IteratorXS, Add, N1_S|])
   ->expect
   ->toEqual(Some(ofString("7")));
 
@@ -68,7 +72,7 @@ test("parses iteration operators", (.) => {
     N3_S,
     Arg,
     OpenBracket,
-    VariableS("x"),
+    IteratorXS,
     Add,
     N1_S,
     CloseBracketS,

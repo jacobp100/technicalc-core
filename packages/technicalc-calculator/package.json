@@ -8,7 +8,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "dev",
+    "bs-platform": "^9.0.0",
     "cartesian": "^1.0.1",
     "lodash": "^4.17.13",
     "mathjs": "^8.1.0"

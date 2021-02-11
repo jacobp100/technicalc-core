@@ -97,6 +97,7 @@ let%private skipMode = (element: AST.t) =>
   | ConstPiS
   | CustomAtomS(_)
   | ImaginaryUnitS
+  | IteratorXS
   | N0_S
   | N1_S
   | N2_S

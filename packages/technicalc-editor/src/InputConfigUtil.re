@@ -28,6 +28,7 @@ let hasAngleDependentFunction =
     | ConstES
     | CustomAtomS(_)
     | ImaginaryUnitS
+    | IteratorXS
     | N0_S
     | N1_S
     | N2_S

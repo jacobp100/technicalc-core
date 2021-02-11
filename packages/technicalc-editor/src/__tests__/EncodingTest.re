@@ -33,7 +33,8 @@ test("encodes and decodes", (.) => {
 // Remove this at a later date
 test("decodes legacy label element", (.) => {
   let labelIdentifier = TechniCalcCalculator.Encoding.encodeUint(258);
-  let dummyEncoding = Encoding.encode([|VariableS("test")|]);
+  let dummyEncoding =
+    Encoding.encode([|CaptureGroupStart({placeholderMml: "test"})|]);
   let encoded =
     Js.String.slice(~from=0, ~to_=1, dummyEncoding)
     ++ labelIdentifier

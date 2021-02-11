@@ -148,8 +148,11 @@ let reduce = (accum, stateElement: foldState(string), range) =>
     let body = createElement("mrow", body);
     createElementWithRange(range, "msup", body ++ value)
     ->Mml_Accum.append(accum, _);
-  | Variable({nucleus, superscript}) =>
-    createElementWithRange(~superscript?, range, "mi", nucleus)
+  | Variable({name, superscript}) =>
+    createElementWithRange(~superscript?, range, "mi", name)
+    ->Mml_Accum.append(accum, _)
+  | IteratorX(superscript) =>
+    createElementWithRange(~superscript?, range, "mi", "x")
     ->Mml_Accum.append(accum, _)
   | ConstPi(superscript) =>
     createElementWithRange(~superscript?, range, "mi", "&#x03C0;")

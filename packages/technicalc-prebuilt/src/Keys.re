@@ -4,6 +4,8 @@ type key =
   | One(t)
   | Many(array(t));
 
+let%private ans = VariableS({id: "Ans", name: "Ans"});
+
 let keys = {
   "0": One(N0_S),
   "1": One(N1_S),
@@ -63,10 +65,10 @@ let keys = {
   "tanh": One(TanhS),
   "atanh": One(Atanh),
   "i": One(ImaginaryUnitS),
-  "x": One(VariableS("x")),
+  "x": One(IteratorXS),
   "pi": One(ConstPiS),
   "e": One(ConstES),
-  "ans": One(VariableS("Ans")),
+  "ans": One(ans),
   "re": One(Re),
   "im": One(Im),
   "conj": One(Conj),

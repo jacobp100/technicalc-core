@@ -23,34 +23,51 @@ let make = self => {
       )
     });
 
-  let getResults = ({config, work}: Work.t) =>
+  let getResults = ({config, context, work}: Work.t) => {
+    let context = decodeContext(context);
     switch (work) {
-    | Calculate(body, context) =>
-      let res = eval(~config, ~context=decodeContext(context), body);
+    | Calculate(body) =>
+      let res = eval(~config, ~context, body);
       [|res|];
-    | ConvertUnits({body, fromUnits, toUnits, context}) =>
+    | ConvertUnits({body, fromUnits, toUnits}) =>
       let res =
-        eval(~config, ~context=decodeContext(context), body)
+        eval(~config, ~context, body)
         ->TechniCalcCalculator.Units.convert(~fromUnits, ~toUnits);
       [|res|];
     | SolveRoot({lhs, rhs, initialGuess}) =>
       let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs);
-      let res = solveRoot(~config, body, initialGuess);
+      let res = solveRoot(~config, ~context, body, initialGuess);
       [|res|];
     | Quadratic(a, b, c) =>
-      let (x0, x1) = solveQuadratic(~config, a, b, c);
+      let (x0, x1) = solveQuadratic(~config, ~context, a, b, c);
       [|x0, x1|];
     | Cubic(a, b, c, d) =>
-      let (x0, x1, x2) = solveCubic(~config, a, b, c, d);
+      let (x0, x1, x2) = solveCubic(~config, ~context, a, b, c, d);
       [|x0, x1, x2|];
     | Var2(x0, y0, c0, x1, y1, c1) =>
-      let (x, y) = solveVar2(~config, x0, y0, c0, x1, y1, c1);
+      let (x, y) = solveVar2(~config, ~context, x0, y0, c0, x1, y1, c1);
       [|x, y|];
     | Var3(x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2) =>
       let (x, y, z) =
-        solveVar3(~config, x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2);
+        solveVar3(
+          ~config,
+          ~context,
+          x0,
+          y0,
+          z0,
+          c0,
+          x1,
+          y1,
+          z1,
+          c1,
+          x2,
+          y2,
+          z2,
+          c2,
+        );
       [|x, y, z|];
     };
+  };
 
   let callback = e => {
     let arg =

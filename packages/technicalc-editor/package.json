@@ -8,7 +8,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "dev"
+    "bs-platform": "^9.0.0"
   },
   "dependencies": {
     "technicalc-calculator": "0.0.1"

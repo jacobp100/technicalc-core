@@ -3,12 +3,11 @@ type node = TechniCalcCalculator.AST_Types.t;
 type context = array((string, string));
 
 type work =
-  | Calculate(node, context)
+  | Calculate(node)
   | ConvertUnits({
       body: node,
       fromUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
       toUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
-      context,
     })
   | SolveRoot({
       lhs: node,
@@ -35,5 +34,6 @@ type work =
 
 type t = {
   config: TechniCalcCalculator.AST_Types.config,
+  context,
   work,
 };
