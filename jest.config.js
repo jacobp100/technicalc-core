@@ -1,4 +1,5 @@
 const commonConfig = {
+  transform: { "\\.m?[jt]sx?$": "babel-jest" },
   transformIgnorePatterns: ["node_modules/(?!(bs-platform)/)"],
 };
 
