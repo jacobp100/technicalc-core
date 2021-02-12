@@ -1,8 +1,9 @@
 {
   "name": "technicalc-prebuilt",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "build": "node build.mjs"
+    "build": "node build"
   },
   "keywords": [],
   "author": "",

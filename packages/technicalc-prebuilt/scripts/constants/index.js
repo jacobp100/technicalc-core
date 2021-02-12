@@ -8,8 +8,8 @@ import { liteAdaptor } from "mathjax-full/js/adaptors/liteAdaptor.js";
 import { AllPackages } from "mathjax-full/js/input/tex/AllPackages.js";
 import { SerializedMmlVisitor } from "mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js";
 import { Value } from "../../src/Client.mjs";
-import dist from "../../dist.mjs";
-import titles from "./titles.mjs";
+import dist from "../../dist.js";
+import titles from "./titles.js";
 
 const data = JSON.parse(
   fs.readFileSync(new URL("data.json", import.meta.url), "utf8")

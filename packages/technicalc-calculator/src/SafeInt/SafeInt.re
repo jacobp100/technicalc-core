@@ -1,22 +1,22 @@
 type t;
 
 external ofInt: int => t = "%identity";
-[@bs.module "./_SafeInt.mjs"] external toInt: t => option(int) = "toInt";
-[@bs.module "./_SafeInt.mjs"] external abs: t => t = "abs";
-[@bs.module "./_SafeInt.mjs"] external neg: t => t = "neg";
-[@bs.module "./_SafeInt.mjs"] external add: (t, t) => t = "add";
-[@bs.module "./_SafeInt.mjs"] external sub: (t, t) => t = "sub";
-[@bs.module "./_SafeInt.mjs"] external mul: (t, t) => t = "mul";
-[@bs.module "./_SafeInt.mjs"] external div: (t, t) => t = "div";
-[@bs.module "./_SafeInt.mjs"] external pow: (t, t) => t = "pow";
-[@bs.module "./_SafeInt.mjs"] external rem: (t, t) => t = "mod";
-[@bs.module "./_SafeInt.mjs"] external (~-): t => t = "neg";
-[@bs.module "./_SafeInt.mjs"] external (+): (t, t) => t = "add";
-[@bs.module "./_SafeInt.mjs"] external (-): (t, t) => t = "sub";
-[@bs.module "./_SafeInt.mjs"] external ( * ): (t, t) => t = "mul";
-[@bs.module "./_SafeInt.mjs"] external (/): (t, t) => t = "div";
-[@bs.module "./_SafeInt.mjs"] external ( ** ): (t, t) => t = "pow";
-[@bs.module "./_SafeInt.mjs"] external (mod): (t, t) => t = "mod";
+[@bs.module "./SafeInt.js"] external toInt: t => option(int) = "toInt";
+[@bs.module "./SafeInt.js"] external abs: t => t = "abs";
+[@bs.module "./SafeInt.js"] external neg: t => t = "neg";
+[@bs.module "./SafeInt.js"] external add: (t, t) => t = "add";
+[@bs.module "./SafeInt.js"] external sub: (t, t) => t = "sub";
+[@bs.module "./SafeInt.js"] external mul: (t, t) => t = "mul";
+[@bs.module "./SafeInt.js"] external div: (t, t) => t = "div";
+[@bs.module "./SafeInt.js"] external pow: (t, t) => t = "pow";
+[@bs.module "./SafeInt.js"] external rem: (t, t) => t = "mod";
+[@bs.module "./SafeInt.js"] external (~-): t => t = "neg";
+[@bs.module "./SafeInt.js"] external (+): (t, t) => t = "add";
+[@bs.module "./SafeInt.js"] external (-): (t, t) => t = "sub";
+[@bs.module "./SafeInt.js"] external ( * ): (t, t) => t = "mul";
+[@bs.module "./SafeInt.js"] external (/): (t, t) => t = "div";
+[@bs.module "./SafeInt.js"] external ( ** ): (t, t) => t = "pow";
+[@bs.module "./SafeInt.js"] external (mod): (t, t) => t = "mod";
 
 let negInt = a => ofInt(a)->neg->toInt;
 let absInt = a => ofInt(a)->abs->toInt;

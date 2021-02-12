@@ -7,9 +7,9 @@ import { normal } from "mathjax-full/js/output/svg/fonts/tex/normal.js";
 import { smallop } from "mathjax-full/js/output/svg/fonts/tex/smallop.js";
 import { texSize3 } from "mathjax-full/js/output/svg/fonts/tex/tex-size3.js";
 import { texSize4 } from "mathjax-full/js/output/svg/fonts/tex/tex-size4.js";
-import dist from "../../dist.mjs";
-import { skewX } from "./font-util.mjs";
-import buildFont from "./build-font.mjs";
+import dist from "../../dist.js";
+import { skewX } from "./font-util.js";
+import buildFont from "./build-font.js";
 
 // Add missing non-italic characters
 for (let i = 0x3b1; i <= 0x3c9; i += 1) {
