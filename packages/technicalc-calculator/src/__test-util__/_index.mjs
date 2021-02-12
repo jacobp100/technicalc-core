@@ -1,5 +1,5 @@
-import { range } from "lodash";
-import * as mathjs from "mathjs";
+import _ from "lodash";
+import * as mathjs from "mathjs/lib/esm";
 import baseCartesian from "cartesian";
 import * as TechniCalc from "../Value";
 import * as TechniCalcTest from "../ValueTestUtil";
@@ -45,7 +45,7 @@ export class Value {
   }
 }
 
-export const range12 = range(1, 12 + 1);
+export const range12 = _.range(1, 12 + 1);
 
 const existingFractions = new Set();
 export const fractionsTo12 = sample(

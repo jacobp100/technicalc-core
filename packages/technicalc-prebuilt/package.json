@@ -2,7 +2,7 @@
   "name": "technicalc-prebuilt",
   "version": "0.0.1",
   "scripts": {
-    "build": "node build"
+    "build": "node build.mjs"
   },
   "keywords": [],
   "author": "",

@@ -1,8 +1,8 @@
-import { range } from "lodash";
+import _ from "lodash";
 import * as TechniCalc from "../Value";
 import cartesian from "../__test-util__/_cartesian";
 
-const testValues = range(-2, 2 + 1, 1);
+const testValues = _.range(-2, 2 + 1, 1);
 
 const quadraticValues = cartesian([testValues, testValues]);
 

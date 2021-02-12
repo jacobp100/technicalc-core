@@ -1,5 +1,5 @@
-import { range } from "lodash";
-import * as mathjs from "mathjs";
+import _ from "lodash";
+import * as mathjs from "mathjs/lib/esm";
 import * as TechniCalc from "../Value";
 import cartesian from "./_cartesian";
 import { Value, fractionsTo12 } from "./_index";
@@ -29,6 +29,6 @@ export const trigValues = cartesian([fractionsTo12, fractionsTo12]).map(
 );
 
 export const complexValues = cartesian([
-  [0.5, 0.25, 0.75, ...range(-5, 5 + 1)],
-  [0.5, 0.25, 0.75, ...range(-5, 5 + 1)],
+  [0.5, 0.25, 0.75, ..._.range(-5, 5 + 1)],
+  [0.5, 0.25, 0.75, ..._.range(-5, 5 + 1)],
 ]).map(([re, im]) => Value.complex(re, im));

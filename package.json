@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
     "clean": "bsb -clean-world",
     "build-packages": "bsb -make-world",
@@ -11,16 +12,13 @@
     "build-bundles": "yarn workspace technicalc-prebuilt build",
     "watch-bundles": "yarn workspace technicalc-prebuilt watch-bundles",
     "build": "yarn build-packages && yarn build-bundles",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "lint": "eslint ."
   },
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.10",
-    "babel-jest": "^26.6.3",
     "bs-platform": "^9.0.0",
     "eslint": "^7.13.0",
     "eslint-config-airbnb-base": "^14.2.1",

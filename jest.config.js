@@ -1,11 +1,11 @@
 const commonConfig = {
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.([jt]sx?|mjs)$",
   moduleFileExtensions: ["mjs", "js"],
-  transform: { "\\.m?[jt]sx?$": "babel-jest" },
-  transformIgnorePatterns: ["node_modules/(?!(bs-platform|decimal.js)/)"],
+  // https://jestjs.io/docs/en/ecmascript-modules
+  transform: {},
 };
 
-module.exports = {
+export default {
   projects: [
     {
       displayName: "technicalc-calculator",

@@ -1,4 +1,4 @@
-import * as mathjs from "mathjs";
+import * as mathjs from "mathjs/lib/esm";
 import { matrixOfFloats } from "../ValueTestUtil";
 import cartesian from "./_cartesian";
 import { Value } from "./_index";

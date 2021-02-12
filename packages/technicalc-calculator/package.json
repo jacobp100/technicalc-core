@@ -11,7 +11,7 @@
     "bs-platform": "^9.0.0",
     "cartesian": "^1.0.1",
     "lodash": "^4.17.13",
-    "mathjs": "^8.1.0"
+    "mathjs": "^9.2.0"
   },
   "dependencies": {
     "decimal.js": "^10.2.0"

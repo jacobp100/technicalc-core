@@ -1,5 +1,5 @@
-import { range } from "lodash";
-import * as mathjs from "mathjs";
+import _ from "lodash";
+import * as mathjs from "mathjs/lib/esm";
 import * as TechniCalc from "../Value";
 import { matrixOfFloats, toString } from "../ValueTestUtil";
 import {
@@ -21,7 +21,7 @@ test("neg", () => {
 });
 
 test("pow", () => {
-  cartesian([values, range(0, 2 + 1).map(Value.float)]).forEach(([a, b]) => {
+  cartesian([values, _.range(0, 2 + 1).map(Value.float)]).forEach(([a, b]) => {
     const mathJsValue = mathjs.pow(a.jsValue, b.jsValue);
     expect(
       TechniCalc.pow(a.techniCalcValue, b.techniCalcValue)

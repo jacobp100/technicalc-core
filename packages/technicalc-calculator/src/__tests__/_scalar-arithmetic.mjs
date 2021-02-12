@@ -1,4 +1,4 @@
-import * as mathjs from "mathjs";
+import * as mathjs from "mathjs/lib/esm";
 import * as TechniCalc from "../Value";
 import { toMatchJsValue } from "../__test-util__/_index";
 import { complexValues } from "../__test-util__/_math-js";

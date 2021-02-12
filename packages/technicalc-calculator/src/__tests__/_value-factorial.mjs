@@ -1,12 +1,12 @@
-import { range } from "lodash";
-import * as mathjs from "mathjs";
+import _ from "lodash";
+import * as mathjs from "mathjs/lib/esm";
 import { Value, toMatchJsValue } from "../__test-util__/_index";
 import cartesian from "../__test-util__/_cartesian";
 import * as TechniCalc from "../Value";
 
 expect.extend({ toMatchJsValue });
 
-const baseValues = [...range(-2, 2 + 0.1, 0.1), ...range(2, 6 + 0.5, 0.5)];
+const baseValues = [..._.range(-2, 2 + 0.1, 0.1), ..._.range(2, 6 + 0.5, 0.5)];
 const values = cartesian([baseValues, baseValues]).map(([re, im]) =>
   Value.complex(re, im)
 );

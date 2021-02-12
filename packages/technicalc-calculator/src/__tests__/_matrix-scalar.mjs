@@ -1,5 +1,5 @@
-import { range } from "lodash";
-import * as mathjs from "mathjs";
+import _ from "lodash";
+import * as mathjs from "mathjs/lib/esm";
 import * as TechniCalc from "../Value";
 import {
   Value,
@@ -11,7 +11,7 @@ import cartesian from "../__test-util__/_cartesian";
 
 expect.extend({ toMatchJsValue, toMatchJsMatrix });
 
-const constantValues = range(-2, 2 + 1).map(Value.float);
+const constantValues = _.range(-2, 2 + 1).map(Value.float);
 const values = [
   ...cartesian([matrix2x2, constantValues]),
   ...cartesian([matrix3x3, constantValues]),
