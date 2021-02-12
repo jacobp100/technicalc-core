@@ -1,17 +1,17 @@
-const {
+import {
   one,
   minusOne,
   ofVector,
   ofString,
-  toString: toStringBase,
+  toString as toStringBase,
   add,
   div,
   mul,
   pi,
   i,
   nan,
-} = require("../Value.bs");
-const { toString, matrixOfFloats } = require("../ValueTestUtil.bs");
+} from "../Value";
+import { toString, matrixOfFloats } from "../ValueTestUtil";
 
 const [three, minusThree, threeHalves, minusThreeHalves, half, minusHalf] = [
   "3",

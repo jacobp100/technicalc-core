@@ -1,11 +1,11 @@
-const { range } = require("lodash");
-const mathjs = require("mathjs");
-const baseCartesian = require("cartesian");
-const sample = require("./sample");
-const TechniCalc = require("../Value.bs");
-const TechniCalcTest = require("../ValueTestUtil.bs");
+import { range } from "lodash";
+import * as mathjs from "mathjs";
+import baseCartesian from "cartesian";
+import * as TechniCalc from "../Value";
+import * as TechniCalcTest from "../ValueTestUtil";
+import sample from "./_sample";
 
-module.exports.Value = class Value {
+export class Value {
   constructor(jsValue, techniCalcValue, title = String(jsValue)) {
     this.title = title;
     this.techniCalcValue = techniCalcValue;
@@ -43,11 +43,12 @@ module.exports.Value = class Value {
   toString() {
     return this.title;
   }
-};
+}
 
-const range12 = range(1, 12 + 1);
+export const range12 = range(1, 12 + 1);
+
 const existingFractions = new Set();
-const fractionsTo12 = sample(
+export const fractionsTo12 = sample(
   baseCartesian([[0, ...range12], range12]).filter(([a, b]) => {
     const key = (a / b).toFixed(8);
     if (!existingFractions.has(key)) {
@@ -57,9 +58,6 @@ const fractionsTo12 = sample(
     return false;
   })
 );
-
-module.exports.range12 = range12;
-module.exports.fractionsTo12 = fractionsTo12;
 
 const isCloseTo = (a, b) => {
   if (Number.isNaN(a)) return Number.isNaN(b);
@@ -84,7 +82,7 @@ const asComplex = (a) => {
     : comp;
 };
 
-module.exports.toMatchJsValue = (received, expected, message) => {
+export const toMatchJsValue = (received, expected, message) => {
   const [actualRe, actualIm] = TechniCalcTest.toComplexFloats(received);
   const [expectedRe, expectedIm] = asComplex(expected);
 
@@ -102,7 +100,7 @@ module.exports.toMatchJsValue = (received, expected, message) => {
   };
 };
 
-module.exports.toMatchJsMatrix = (received, expected, message) => {
+export const toMatchJsMatrix = (received, expected, message) => {
   const techniCalcElements = TechniCalcTest.toComplexFloatsMatrix(received);
 
   let allPass = true;

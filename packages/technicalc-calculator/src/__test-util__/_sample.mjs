@@ -1,5 +1,5 @@
-const { sampleSize } = require("lodash");
+import { sampleSize } from "lodash";
 
 const sample = Number(process.env.SAMPLE);
-module.exports = (fullResult) =>
+export default (fullResult) =>
   !Number.isNaN(sample) ? sampleSize(fullResult, sample) : fullResult;

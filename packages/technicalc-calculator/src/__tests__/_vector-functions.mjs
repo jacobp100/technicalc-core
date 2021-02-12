@@ -1,8 +1,8 @@
-const mathjs = require("mathjs");
-const TechniCalc = require("../Value.bs");
-const { toMatchJsValue, toMatchJsMatrix } = require("../__test-util__");
-const { vector2, vector3 } = require("../__test-util__/math-js-vector");
-const cartesian = require("../__test-util__/cartesian");
+import * as mathjs from "mathjs";
+import * as TechniCalc from "../Value";
+import { toMatchJsValue, toMatchJsMatrix } from "../__test-util__/_index";
+import { vector2, vector3 } from "../__test-util__/_math-js-vector";
+import cartesian from "../__test-util__/_cartesian";
 
 expect.extend({ toMatchJsValue, toMatchJsMatrix });
 

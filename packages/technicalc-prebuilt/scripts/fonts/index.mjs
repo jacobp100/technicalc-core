@@ -1,20 +1,15 @@
-const fs = require("fs");
-const path = require("path");
-const {
-  boldItalic,
-} = require("mathjax-full/js/output/svg/fonts/tex/bold-italic");
-const { bold } = require("mathjax-full/js/output/svg/fonts/tex/bold");
-const { italic } = require("mathjax-full/js/output/svg/fonts/tex/italic");
-const { largeop } = require("mathjax-full/js/output/svg/fonts/tex/largeop");
-const { normal } = require("mathjax-full/js/output/svg/fonts/tex/normal");
-const { smallop } = require("mathjax-full/js/output/svg/fonts/tex/smallop");
-const { texSize3 } = require("mathjax-full/js/output/svg/fonts/tex/tex-size3");
-const { texSize4 } = require("mathjax-full/js/output/svg/fonts/tex/tex-size4");
-
-const dist = require("../../dist");
-
-const { skewX } = require("./font-util");
-const buildFont = require("./build-font");
+import fs from "node:fs";
+import { boldItalic } from "mathjax-full/js/output/svg/fonts/tex/bold-italic.js";
+import { bold } from "mathjax-full/js/output/svg/fonts/tex/bold.js";
+import { italic } from "mathjax-full/js/output/svg/fonts/tex/italic.js";
+import { largeop } from "mathjax-full/js/output/svg/fonts/tex/largeop.js";
+import { normal } from "mathjax-full/js/output/svg/fonts/tex/normal.js";
+import { smallop } from "mathjax-full/js/output/svg/fonts/tex/smallop.js";
+import { texSize3 } from "mathjax-full/js/output/svg/fonts/tex/tex-size3.js";
+import { texSize4 } from "mathjax-full/js/output/svg/fonts/tex/tex-size4.js";
+import dist from "../../dist.mjs";
+import { skewX } from "./font-util.mjs";
+import buildFont from "./build-font.mjs";
 
 // Add missing non-italic characters
 for (let i = 0x3b1; i <= 0x3c9; i += 1) {
@@ -28,8 +23,8 @@ const ensureDir = (dir) => {
   }
 };
 
-const fontsStubs = path.resolve(__dirname, "../../stubs/.fonts");
-const fontsAssetsPath = path.resolve(dist, "fonts");
+const fontsStubs = new URL("../../stubs/.fonts/", import.meta.url);
+const fontsAssetsPath = new URL("fonts/", dist);
 
 ensureDir(fontsStubs);
 ensureDir(fontsAssetsPath);
@@ -54,7 +49,7 @@ const camelCase = (s) => s.replace(/-(\w)/g, (_, c) => c.toUpperCase());
 const writeFont = (font, name, options = {}) => {
   if (options.preserveSvgChars !== true) {
     fs.writeFileSync(
-      path.join(fontsAssetsPath, `mathjax-${name}.otf`),
+      new URL(`mathjax-${name}.otf`, fontsAssetsPath),
       buildFont({ familyName: `mathjax-${name}`, styleName: "Regular" }, font)
     );
   }
@@ -69,7 +64,7 @@ const writeFont = (font, name, options = {}) => {
   }
 
   fs.writeFileSync(
-    path.join(fontsStubs, `${stubName}.js`),
+    new URL(`${stubName}.js`, fontsStubs),
     `export const ${exportName} = JSON.parse('${json}');\n`
   );
 };
@@ -110,7 +105,7 @@ const stubFont = (name) => {
   const exportName = camelCase(name);
 
   fs.writeFileSync(
-    path.join(fontsStubs, `${name}.js`),
+    new URL(`${name}.js`, fontsStubs),
     `export const ${exportName} = {};\n`
   );
 };

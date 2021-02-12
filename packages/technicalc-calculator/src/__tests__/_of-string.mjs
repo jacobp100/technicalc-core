@@ -1,5 +1,5 @@
-const TechniCalc = require("../Value.bs");
-const TechniCalcTest = require("../ValueTestUtil.bs");
+import * as TechniCalc from "../Value";
+import * as TechniCalcTest from "../ValueTestUtil";
 
 test("parses strings", () => {
   const convert = (x, opt) =>

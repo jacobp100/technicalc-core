@@ -1,9 +1,9 @@
-const mathjs = require("mathjs");
-const TechniCalc = require("../Value.bs");
-const TechniCalcTest = require("../ValueTestUtil.bs");
-const { toMatchJsMatrix } = require("../__test-util__");
-const { matrix2x2, matrix3x3 } = require("../__test-util__/math-js-matrix");
-const cartesian = require("../__test-util__/cartesian");
+import * as mathjs from "mathjs";
+import * as TechniCalc from "../Value";
+import * as TechniCalcTest from "../ValueTestUtil";
+import { toMatchJsMatrix } from "../__test-util__/_index";
+import { matrix2x2, matrix3x3 } from "../__test-util__/_math-js-matrix";
+import cartesian from "../__test-util__/_cartesian";
 
 expect.extend({ toMatchJsMatrix });
 

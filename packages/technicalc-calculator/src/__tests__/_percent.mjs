@@ -1,6 +1,6 @@
-const { toMatchJsValue } = require("../__test-util__");
-const TechniCalc = require("../Value.bs");
-const { percentOfFloat } = require("../ValueTestUtil.bs");
+import { toMatchJsValue } from "../__test-util__/_index";
+import * as TechniCalc from "../Value";
+import { percentOfFloat } from "../ValueTestUtil";
 
 expect.extend({ toMatchJsValue });
 

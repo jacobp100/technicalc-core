@@ -1,10 +1,10 @@
-const TechniCalc = require("../Value.bs");
-const cartesian = require("./cartesian");
-const { Value } = require(".");
+import * as TechniCalc from "../Value";
+import cartesian from "./_cartesian";
+import { Value } from "./_index";
 
 const elements = [0, 1, -1, 5];
 
-const vector2 = cartesian([elements, elements]).map(
+export const vector2 = cartesian([elements, elements]).map(
   ([a, b]) =>
     new Value(
       [a, b],
@@ -12,9 +12,8 @@ const vector2 = cartesian([elements, elements]).map(
       `[${a}, ${b}]`
     )
 );
-module.exports.vector2 = vector2;
 
-const vector3 = cartesian([elements, elements, elements]).map(
+export const vector3 = cartesian([elements, elements, elements]).map(
   ([a, b, c]) =>
     new Value(
       [a, b, c],
@@ -22,4 +21,3 @@ const vector3 = cartesian([elements, elements, elements]).map(
       `[${a}, ${b}, ${c}]`
     )
 );
-module.exports.vector3 = vector3;

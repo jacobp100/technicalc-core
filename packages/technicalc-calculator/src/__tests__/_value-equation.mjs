@@ -1,6 +1,6 @@
-const { range } = require("lodash");
-const TechniCalc = require("../Value.bs");
-const cartesian = require("../__test-util__/cartesian");
+import { range } from "lodash";
+import * as TechniCalc from "../Value";
+import cartesian from "../__test-util__/_cartesian";
 
 const testValues = range(-2, 2 + 1, 1);
 

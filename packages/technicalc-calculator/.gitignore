@@ -8,6 +8,7 @@ npm-debug.log
 
 .vscode
 
-*.bs.js
+*.mjs
+!**/_*.mjs
 playground.js
 coverage

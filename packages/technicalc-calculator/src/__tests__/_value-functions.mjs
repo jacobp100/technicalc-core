@@ -1,5 +1,5 @@
-const { toMatchJsValue } = require("../__test-util__");
-const TechniCalc = require("../Value.bs");
+import { toMatchJsValue } from "../__test-util__/_index";
+import * as TechniCalc from "../Value";
 
 expect.extend({ toMatchJsValue });
 

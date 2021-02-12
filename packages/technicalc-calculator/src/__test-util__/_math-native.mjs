@@ -1,6 +1,6 @@
-const TechniCalc = require("../Value.bs");
-const cartesian = require("./cartesian");
-const { Value, range12, fractionsTo12 } = require(".");
+import * as TechniCalc from "../Value";
+import cartesian from "./_cartesian";
+import { Value, range12, fractionsTo12 } from "./_index";
 
 const range12Values = range12.map(Value.float);
 const range12NegativeValues = range12.map((x) => Value.float(-x));
@@ -33,11 +33,8 @@ const positiveValues = [...range12Values, ...trigPositiveValues];
 
 const values = [...positiveValues, ...range12NegativeValues];
 
-const binaryValues = cartesian([values, values]);
-module.exports.binaryValues = binaryValues;
+export const binaryValues = cartesian([values, values]);
 
-const positiveBinaryValues = cartesian([positiveValues, positiveValues]);
-module.exports.positiveBinaryValues = positiveBinaryValues;
+export const positiveBinaryValues = cartesian([positiveValues, positiveValues]);
 
-const trigValues = [...trigPositiveValues, ...trigNegativeValues];
-module.exports.trigValues = trigValues;
+export const trigValues = [...trigPositiveValues, ...trigNegativeValues];

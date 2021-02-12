@@ -1,8 +1,8 @@
-const { range } = require("lodash");
-const mathjs = require("mathjs");
-const { Value, toMatchJsValue } = require("../__test-util__");
-const cartesian = require("../__test-util__/cartesian");
-const TechniCalc = require("../Value.bs");
+import { range } from "lodash";
+import * as mathjs from "mathjs";
+import { Value, toMatchJsValue } from "../__test-util__/_index";
+import cartesian from "../__test-util__/_cartesian";
+import * as TechniCalc from "../Value";
 
 expect.extend({ toMatchJsValue });
 

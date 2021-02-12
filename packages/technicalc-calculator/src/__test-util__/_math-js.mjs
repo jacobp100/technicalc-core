@@ -1,10 +1,10 @@
-const { range } = require("lodash");
-const mathjs = require("mathjs");
-const TechniCalc = require("../Value.bs");
-const cartesian = require("./cartesian");
-const { Value, fractionsTo12 } = require(".");
+import { range } from "lodash";
+import * as mathjs from "mathjs";
+import * as TechniCalc from "../Value";
+import cartesian from "./_cartesian";
+import { Value, fractionsTo12 } from "./_index";
 
-const trigValues = cartesian([fractionsTo12, fractionsTo12]).map(
+export const trigValues = cartesian([fractionsTo12, fractionsTo12]).map(
   ([[numRe, denomRe], [numIm, denomIm]]) =>
     new Value(
       mathjs.complex((Math.PI * numRe) / denomRe, (Math.PI * numIm) / denomIm),
@@ -28,10 +28,7 @@ const trigValues = cartesian([fractionsTo12, fractionsTo12]).map(
     )
 );
 
-module.exports.trigValues = trigValues;
-
-const complexValues = cartesian([
+export const complexValues = cartesian([
   [0.5, 0.25, 0.75, ...range(-5, 5 + 1)],
   [0.5, 0.25, 0.75, ...range(-5, 5 + 1)],
 ]).map(([re, im]) => Value.complex(re, im));
-module.exports.complexValues = complexValues;

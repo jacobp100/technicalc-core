@@ -1,9 +1,9 @@
-const mathjs = require("mathjs");
-const { matrixOfFloats } = require("../ValueTestUtil.bs");
-const cartesian = require("./cartesian");
-const { Value } = require(".");
+import * as mathjs from "mathjs";
+import { matrixOfFloats } from "../ValueTestUtil";
+import cartesian from "./_cartesian";
+import { Value } from "./_index";
 
-const matrix2x2 = cartesian([
+export const matrix2x2 = cartesian([
   [0, -1, 1, 5],
   [0, -1, 1],
   [0, 1, 5],
@@ -19,9 +19,8 @@ const matrix2x2 = cartesian([
       `[[${a}, ${b}], [${c}, ${d}]]`
     )
 );
-module.exports.matrix2x2 = matrix2x2;
 
-const matrix3x3 = cartesian([
+export const matrix3x3 = cartesian([
   [0, -1],
   [0, 1],
   [0, 5],
@@ -43,4 +42,3 @@ const matrix3x3 = cartesian([
       `[[${a}, ${b}, ${c}], [${d}, ${e}, ${f}], [${g}, ${h}, ${i}]]`
     )
 );
-module.exports.matrix3x3 = matrix3x3;

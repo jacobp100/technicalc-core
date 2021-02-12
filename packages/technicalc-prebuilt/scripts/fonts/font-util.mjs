@@ -1,4 +1,4 @@
-module.exports.skewX = (char, deg) => {
+export const skewX = (char, deg) => {
   const c = Math.atan((deg * 2 * Math.PI) / 360);
   const data = char.slice();
   const p = data

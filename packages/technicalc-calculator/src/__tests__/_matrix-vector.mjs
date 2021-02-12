@@ -1,6 +1,6 @@
-const TechniCalc = require("../Value.bs");
-const TechniCalcTest = require("../ValueTestUtil.bs");
-const { toMatchJsMatrix } = require("../__test-util__");
+import * as TechniCalc from "../Value";
+import * as TechniCalcTest from "../ValueTestUtil";
+import { toMatchJsMatrix } from "../__test-util__/_index";
 
 expect.extend({ toMatchJsMatrix });
 

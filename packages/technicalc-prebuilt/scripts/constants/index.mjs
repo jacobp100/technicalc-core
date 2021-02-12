@@ -1,26 +1,19 @@
 /* eslint-disable no-console */
 // Android font: GFS Didot
-const requireEsm = require("esm")(module);
-const fs = require("fs");
-const path = require("path");
-const { TeX } = require("mathjax-full/js/input/tex.js");
-const { SVG } = require("mathjax-full/js/output/svg.js");
-const {
-  HTMLDocument,
-} = require("mathjax-full/js/handlers/html/HTMLDocument.js");
-const { liteAdaptor } = require("mathjax-full/js/adaptors/liteAdaptor.js");
+import fs from "node:fs";
+import { TeX } from "mathjax-full/js/input/tex.js";
+import { SVG } from "mathjax-full/js/output/svg.js";
+import { HTMLDocument } from "mathjax-full/js/handlers/html/HTMLDocument.js";
+import { liteAdaptor } from "mathjax-full/js/adaptors/liteAdaptor.js";
+import { AllPackages } from "mathjax-full/js/input/tex/AllPackages.js";
+import { SerializedMmlVisitor } from "mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js";
+import { Value } from "../../src/Client.mjs";
+import dist from "../../dist.mjs";
+import titles from "./titles.mjs";
 
-const { AllPackages } = require("mathjax-full/js/input/tex/AllPackages.js");
-
-const {
-  SerializedMmlVisitor,
-} = require("mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js");
-
-const { Value } = requireEsm("../../src/Client.bs.js");
-const dist = require("../../dist");
-
-const titles = require("./titles");
-const data = require("./data");
+const data = JSON.parse(
+  fs.readFileSync(new URL("data.json", import.meta.url), "utf8")
+);
 
 const Typeset = (string, display) => {
   const tex = new TeX({ packages: AllPackages.sort() });
@@ -84,7 +77,7 @@ const normalizeTitle = (a) =>
     .trim();
 
 const nist = fs
-  .readFileSync(path.join(__dirname, "/data.csv"), "utf8")
+  .readFileSync(new URL("data.csv", import.meta.url), "utf8")
   .split("\n")
   .filter((l) => l)
   .map((l) => {
@@ -344,4 +337,4 @@ out = out
 //   (values) => values.length > 0
 // );
 
-fs.writeFileSync(path.resolve(dist, "constants.json"), JSON.stringify(out));
+fs.writeFileSync(new URL("constants.json", dist), JSON.stringify(out));

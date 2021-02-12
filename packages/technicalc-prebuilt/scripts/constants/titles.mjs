@@ -1,4 +1,4 @@
-module.exports = new Map([
+export default new Map([
   ["Alpha particle mass", true],
   ["Alpha particle mass energy equivalent", false],
   ["Alpha particle mass in u", false],
@@ -310,5 +310,5 @@ module.exports = new Map([
   ["Weak mixing angle", false],
   ["Wien frequency displacement law constant", true],
   ["Wien wavelength displacement law constant", true],
-  ["{220} lattice spacing of silicon", true]
+  ["{220} lattice spacing of silicon", true],
 ]);

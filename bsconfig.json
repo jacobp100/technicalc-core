@@ -6,7 +6,7 @@
     "module": "es6-global",
     "in-source": true
   },
-  "suffix": ".bs.js",
+  "suffix": ".mjs",
   "pinned-dependencies": [
     "technicalc-calculator",
     "technicalc-editor",

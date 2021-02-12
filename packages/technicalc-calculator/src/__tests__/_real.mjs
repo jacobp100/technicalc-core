@@ -1,15 +1,5 @@
-const {
-  ofFloat,
-  pi,
-  add,
-  mul,
-  div,
-  sqrt,
-  log,
-  exp,
-  sin,
-} = require("../Value.bs");
-const { toString } = require("../ValueTestUtil.bs");
+import { ofFloat, pi, add, mul, div, sqrt, log, exp, sin } from "../Value";
+import { toString } from "../ValueTestUtil";
 
 test("simplifies division by two square roots", () => {
   expect(toString(div(sqrt(ofFloat(10)), sqrt(ofFloat(2))))).toEqual("sqrt(5)");

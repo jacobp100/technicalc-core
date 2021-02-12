@@ -9,7 +9,7 @@
     "module": "es6-global",
     "in-source": true
   },
-  "suffix": ".bs.js",
+  "suffix": ".mjs",
   "bs-dependencies": ["technicalc-calculator", "technicalc-editor"],
   "warnings": {
     "error": "+101"

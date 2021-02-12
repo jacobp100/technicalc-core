@@ -1,7 +1,7 @@
-const { AST } = require("../ValueTestUtil.bs");
-const { defaultConfig } = require("../AST/AST_Types.bs");
-const { solveRoot } = require("../AST/AST_Evaluation.bs");
-const { toMatchJsValue } = require("../__test-util__");
+import { AST } from "../ValueTestUtil";
+import { defaultConfig } from "../AST/AST_Types";
+import { solveRoot } from "../AST/AST_Evaluation";
+import { toMatchJsValue } from "../__test-util__/_index";
 
 expect.extend({ toMatchJsValue });
 

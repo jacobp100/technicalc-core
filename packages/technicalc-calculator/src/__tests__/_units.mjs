@@ -1,6 +1,6 @@
-const TechniCalc = require("../Value.bs");
-const { testPrefixes, testUnits } = require("../ValueTestUtil.bs");
-const { convert } = require("../Units/Units.bs");
+import * as TechniCalc from "../Value";
+import { testPrefixes, testUnits } from "../ValueTestUtil";
+import { convert } from "../Units/Units";
 
 const c = (value, fromUnits, toUnits) =>
   TechniCalc.toFloat(convert(value, fromUnits, toUnits));

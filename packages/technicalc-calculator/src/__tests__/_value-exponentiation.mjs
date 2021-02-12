@@ -1,8 +1,8 @@
-const mathjs = require("mathjs");
-const { toMatchJsValue } = require("../__test-util__");
-const { complexValues } = require("../__test-util__/math-js");
-const TechniCalc = require("../Value.bs");
-const TechniCalcTest = require("../ValueTestUtil.bs");
+import * as mathjs from "mathjs";
+import { toMatchJsValue } from "../__test-util__/_index";
+import { complexValues } from "../__test-util__/_math-js";
+import * as TechniCalc from "../Value";
+import * as TechniCalcTest from "../ValueTestUtil";
 
 expect.extend({ toMatchJsValue });
 

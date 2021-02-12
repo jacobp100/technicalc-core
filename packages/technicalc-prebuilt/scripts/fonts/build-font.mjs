@@ -1,4 +1,4 @@
-const { Font, Glyph, Path } = require("opentype.js");
+import { Font, Glyph, Path } from "opentype.js";
 
 const pathRegexp = /([A-Z])\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*/gi;
 
@@ -69,7 +69,7 @@ const pathDataToPath = (pathData) => {
   return path;
 };
 
-module.exports = ({ familyName, styleName }, chars) => {
+export default ({ familyName, styleName }, chars) => {
   const unitsPerEm = 1000;
   let ascender = 0;
   let descender = 0;

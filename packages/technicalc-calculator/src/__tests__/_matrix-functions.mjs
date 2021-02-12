@@ -1,10 +1,14 @@
-const { range } = require("lodash");
-const mathjs = require("mathjs");
-const TechniCalc = require("../Value.bs");
-const { matrixOfFloats, toString } = require("../ValueTestUtil.bs");
-const { Value, toMatchJsValue, toMatchJsMatrix } = require("../__test-util__");
-const { matrix2x2, matrix3x3 } = require("../__test-util__/math-js-matrix");
-const cartesian = require("../__test-util__/cartesian");
+import { range } from "lodash";
+import * as mathjs from "mathjs";
+import * as TechniCalc from "../Value";
+import { matrixOfFloats, toString } from "../ValueTestUtil";
+import {
+  Value,
+  toMatchJsValue,
+  toMatchJsMatrix,
+} from "../__test-util__/_index";
+import { matrix2x2, matrix3x3 } from "../__test-util__/_math-js-matrix";
+import cartesian from "../__test-util__/_cartesian";
 
 expect.extend({ toMatchJsValue, toMatchJsMatrix });
 

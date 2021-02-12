@@ -1,6 +1,8 @@
 const commonConfig = {
+  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.([jt]sx?|mjs)$",
+  moduleFileExtensions: ["mjs", "js"],
   transform: { "\\.m?[jt]sx?$": "babel-jest" },
-  transformIgnorePatterns: ["node_modules/(?!(bs-platform)/)"],
+  transformIgnorePatterns: ["node_modules/(?!(bs-platform|decimal.js)/)"],
 };
 
 module.exports = {
