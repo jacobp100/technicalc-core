@@ -1,6 +1,6 @@
 import * as TechniCalc from "../Value";
 import * as TechniCalcTest from "../ValueTestUtil";
-import { toMatchJsMatrix } from "../__test-util__/_index";
+import { toMatchJsMatrix } from "../__test-util__/index";
 
 expect.extend({ toMatchJsMatrix });
 

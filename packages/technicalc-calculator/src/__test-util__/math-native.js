@@ -1,6 +1,6 @@
 import * as TechniCalc from "../Value";
-import cartesian from "./_cartesian";
-import { Value, range12, fractionsTo12 } from "./_index";
+import cartesian from "./cartesian";
+import { Value, range12, fractionsTo12 } from "./index";
 
 const range12Values = range12.map(Value.float);
 const range12NegativeValues = range12.map((x) => Value.float(-x));

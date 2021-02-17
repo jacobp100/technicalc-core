@@ -1,7 +1,7 @@
 import _ from "lodash";
 import * as mathjs from "mathjs/lib/esm";
-import { Value, toMatchJsValue } from "../__test-util__/_index";
-import cartesian from "../__test-util__/_cartesian";
+import { Value, toMatchJsValue } from "../__test-util__/index";
+import cartesian from "../__test-util__/cartesian";
 import * as TechniCalc from "../Value";
 
 expect.extend({ toMatchJsValue });

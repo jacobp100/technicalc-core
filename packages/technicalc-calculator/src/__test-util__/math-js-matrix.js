@@ -1,7 +1,7 @@
 import * as mathjs from "mathjs/lib/esm";
 import { matrixOfFloats } from "../ValueTestUtil";
-import cartesian from "./_cartesian";
-import { Value } from "./_index";
+import cartesian from "./cartesian";
+import { Value } from "./index";
 
 export const matrix2x2 = cartesian([
   [0, -1, 1, 5],

@@ -1,8 +1,8 @@
 import _ from "lodash";
 import * as mathjs from "mathjs/lib/esm";
 import * as TechniCalc from "../Value";
-import cartesian from "./_cartesian";
-import { Value, fractionsTo12 } from "./_index";
+import cartesian from "./cartesian";
+import { Value, fractionsTo12 } from "./index";
 
 export const trigValues = cartesian([fractionsTo12, fractionsTo12]).map(
   ([[numRe, denomRe], [numIm, denomIm]]) =>

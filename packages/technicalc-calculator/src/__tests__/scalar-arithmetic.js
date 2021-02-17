@@ -1,8 +1,8 @@
 import * as mathjs from "mathjs/lib/esm";
 import * as TechniCalc from "../Value";
-import { toMatchJsValue } from "../__test-util__/_index";
-import { complexValues } from "../__test-util__/_math-js";
-import cartesian from "../__test-util__/_cartesian";
+import { toMatchJsValue } from "../__test-util__/index";
+import { complexValues } from "../__test-util__/math-js";
+import cartesian from "../__test-util__/cartesian";
 
 expect.extend({ toMatchJsValue });
 

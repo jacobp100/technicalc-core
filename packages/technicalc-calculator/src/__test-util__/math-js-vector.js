@@ -1,6 +1,6 @@
 import * as TechniCalc from "../Value";
-import cartesian from "./_cartesian";
-import { Value } from "./_index";
+import cartesian from "./cartesian";
+import { Value } from "./index";
 
 const elements = [0, 1, -1, 5];
 

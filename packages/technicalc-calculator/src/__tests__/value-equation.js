@@ -1,6 +1,6 @@
 import _ from "lodash";
 import * as TechniCalc from "../Value";
-import cartesian from "../__test-util__/_cartesian";
+import cartesian from "../__test-util__/cartesian";
 
 const testValues = _.range(-2, 2 + 1, 1);
 

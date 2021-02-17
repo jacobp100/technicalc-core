@@ -1,4 +1,4 @@
-import { toMatchJsValue } from "../__test-util__/_index";
+import { toMatchJsValue } from "../__test-util__/index";
 import * as TechniCalc from "../Value";
 
 expect.extend({ toMatchJsValue });

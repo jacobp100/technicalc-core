@@ -3,7 +3,7 @@ import * as mathjs from "mathjs/lib/esm";
 import baseCartesian from "cartesian";
 import * as TechniCalc from "../Value";
 import * as TechniCalcTest from "../ValueTestUtil";
-import sample from "./_sample";
+import sample from "./sample";
 
 export class Value {
   constructor(jsValue, techniCalcValue, title = String(jsValue)) {
