@@ -19,7 +19,7 @@
     "packages/*"
   ],
   "devDependencies": {
-    "bs-platform": "^9.0.0",
+    "bs-platform": "^9.0.1",
     "eslint": "^7.13.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^6.15.0",
