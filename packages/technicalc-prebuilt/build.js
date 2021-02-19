@@ -19,7 +19,7 @@ const evalPlugin = {
       const contents = Object.entries(out)
         .map(([key, value]) => {
           const valueJson = JSON.stringify(value);
-          const valueFast = `JSON.parse('${valueJson.replace(/'/g, "\\")}')`;
+          const valueFast = `JSON.parse('${valueJson.replace(/'/g, "\\'")}')`;
           return `export const ${key} = ${valueFast}`;
         })
         .join("\n");
