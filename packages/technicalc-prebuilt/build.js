@@ -5,11 +5,11 @@ import childProcess from "node:child_process";
 import { createRequire } from "module";
 import esbuild from "esbuild";
 import * as terser from "terser";
-import dist from "./dist.js";
+
+const dist = new URL("../../dist/", import.meta.url);
+const stubsDir = new URL("stubs/", import.meta.url);
 
 const require = createRequire(import.meta.url);
-
-const stubsDir = new URL("stubs/", import.meta.url);
 
 const evalPlugin = {
   name: "evalPlugin",
@@ -47,9 +47,10 @@ const stubMathJaxPlugin = {
       "../tex/"
     );
 
+    const fontsStubsDir = new URL(".fonts/", stubsDir);
     build.onResolve({ filter: /tex[\\/]/i }, (args) => {
       const url = path.resolve(args.resolveDir, args.path).startsWith(texDir)
-        ? new URL(`.fonts/${path.basename(args.path)}`, stubsDir)
+        ? new URL(path.basename(args.path), fontsStubsDir)
         : null;
       return url != null ? { path: url.pathname } : null;
     });
@@ -108,13 +109,14 @@ const build = async ({ outfile, format, globalName, ...rest }) => {
 };
 
 const execFile = util.promisify(childProcess.execFile);
-const runNodeScript = async (filename, dependencies) => {
-  const run = () => execFile("node", [filename]);
+const runNodeScript = async (filename, args) => {
+  const run = () =>
+    execFile("node", [filename, ...args.map((arg) => arg.pathname)]);
 
   if (fast) {
     try {
-      const dependenciesStat = dependencies.map((f) => fs.stat(f));
-      await Promise.all(dependenciesStat);
+      const argsStat = args.map((f) => fs.stat(f));
+      await Promise.all(argsStat);
     } catch {
       await run();
     }
@@ -142,8 +144,8 @@ build({
 });
 
 runNodeScript("scripts/fonts", [
-  new URL(".fonts", stubsDir),
   new URL("fonts", dist),
+  new URL(".fonts", stubsDir),
 ]).then(() => {
   build({
     entryPoints: [new URL("src/typeset/index.js", import.meta.url).pathname],

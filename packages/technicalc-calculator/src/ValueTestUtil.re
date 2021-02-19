@@ -32,6 +32,8 @@ type format = {
   [@bs.optional]
   style: string,
   [@bs.optional]
+  locale: string,
+  [@bs.optional]
   base: int,
   [@bs.optional]
   precision: int,
@@ -63,6 +65,11 @@ let toString = (x, maybeFormat) => {
       | Some("engineering") => Engineering
       | Some("natural-mixed") => Natural({mixedFractions: true})
       | _ => defaultFormat.style
+      },
+    locale:
+      switch (localeGet(f)) {
+      | Some("european") => European
+      | _ => defaultFormat.locale
       },
     base:
       baseGet(f)

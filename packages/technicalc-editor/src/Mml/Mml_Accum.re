@@ -1,5 +1,6 @@
 open Mml_Builders;
 open Mml_Util;
+open Mml_Types;
 
 module MmlPrettifier = {
   type digitGroupingState =
@@ -14,20 +15,26 @@ module MmlPrettifier = {
     | Other;
 
   type t = {
+    locale,
     body: string,
     length: int,
     digitGroupingState,
     lastElementType,
   };
 
-  let make = (~digitGrouping) => {
+  let make = (~locale, ~digitGrouping) => {
+    locale,
     body: "",
     length: 0,
     digitGroupingState: digitGrouping ? Normal : GroupingDisabled,
     lastElementType: NoElement,
   };
 
-  let digitGroupingEnabled = x => x.digitGroupingState === GroupingDisabled;
+  let clear = x =>
+    make(
+      ~locale=x.locale,
+      ~digitGrouping=x.digitGroupingState === GroupingDisabled,
+    );
 
   let lastElementType = x => x.lastElementType;
 
@@ -59,9 +66,10 @@ module MmlPrettifier = {
       | Some(digitGroupingState) => digitGroupingState
       | None => defaultDigitGroupingState(v)
       };
+    let {locale} = v;
     let body = toString(v) ++ element;
     let length = v.length + 1;
-    {body, length, digitGroupingState, lastElementType};
+    {locale, body, length, digitGroupingState, lastElementType};
   };
 
   let append = (v, element) => appendWith(v, element);
@@ -80,6 +88,7 @@ module MmlPrettifier = {
         | _ => []
         };
       {
+        locale: v.locale,
         body: v.body,
         length: v.length + 1,
         digitGroupingState:
@@ -105,6 +114,7 @@ module MmlPrettifier = {
     };
 
   let concat = (a, b) => {
+    locale: a.locale,
     body: toString(a) ++ toString(b),
     length: a.length + b.length,
     digitGroupingState: defaultDigitGroupingState(a),
@@ -113,6 +123,7 @@ module MmlPrettifier = {
   };
 
   let map = (v, fn) => {
+    locale: v.locale,
     body: toString(v)->fn,
     length: v.length,
     digitGroupingState: defaultDigitGroupingState(v),
@@ -130,8 +141,8 @@ module BracketGroups = {
     bracketGroups: list(bracketGroup),
   };
 
-  let make = (~digitGrouping) => {
-    level0Body: MmlPrettifier.make(~digitGrouping),
+  let make = (~locale, ~digitGrouping) => {
+    level0Body: MmlPrettifier.make(~locale, ~digitGrouping),
     bracketGroups: [],
   };
 
@@ -153,12 +164,7 @@ module BracketGroups = {
   let appendOpenBracket = (v, openBracketRange) => {
     ...v,
     bracketGroups: [
-      {
-        openBracketRange,
-        body:
-          MmlPrettifier.digitGroupingEnabled(v.level0Body)
-          ->MmlPrettifier.make(~digitGrouping=_),
-      },
+      {openBracketRange, body: MmlPrettifier.clear(v.level0Body)},
       ...v.bracketGroups,
     ],
   };
@@ -167,8 +173,7 @@ module BracketGroups = {
               (~attributes=?, v, {openBracketRange, body}) => {
     let openBracket =
       createElementWithRange(~attributes?, openBracketRange, "mo", "(");
-    MmlPrettifier.digitGroupingEnabled(v.level0Body)
-    ->MmlPrettifier.make(~digitGrouping=_)
+    MmlPrettifier.clear(v.level0Body)
     ->MmlPrettifier.append(openBracket)
     ->MmlPrettifier.concat(body);
   };

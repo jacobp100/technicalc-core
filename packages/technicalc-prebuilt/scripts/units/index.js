@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { json } from "../../src/Units_Json.mjs";
-import dist from "../../dist.js";
 
-fs.writeFileSync(new URL("units.json", dist), JSON.stringify(json));
+const outputFilename = process.argv[2];
+
+fs.writeFileSync(outputFilename, JSON.stringify(json));

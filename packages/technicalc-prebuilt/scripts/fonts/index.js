@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import { boldItalic } from "mathjax-full/js/output/svg/fonts/tex/bold-italic.js";
 import { bold } from "mathjax-full/js/output/svg/fonts/tex/bold.js";
 import { italic } from "mathjax-full/js/output/svg/fonts/tex/italic.js";
@@ -7,9 +8,11 @@ import { normal } from "mathjax-full/js/output/svg/fonts/tex/normal.js";
 import { smallop } from "mathjax-full/js/output/svg/fonts/tex/smallop.js";
 import { texSize3 } from "mathjax-full/js/output/svg/fonts/tex/tex-size3.js";
 import { texSize4 } from "mathjax-full/js/output/svg/fonts/tex/tex-size4.js";
-import dist from "../../dist.js";
 import { skewX } from "./font-util.js";
 import buildFont from "./build-font.js";
+
+const fontsAssetsPath = process.argv[2];
+const fontsStubs = process.argv[3];
 
 // Add missing non-italic characters
 for (let i = 0x3b1; i <= 0x3c9; i += 1) {
@@ -22,9 +25,6 @@ const ensureDir = (dir) => {
     fs.mkdirSync(dir);
   }
 };
-
-const fontsStubs = new URL("../../stubs/.fonts/", import.meta.url);
-const fontsAssetsPath = new URL("fonts/", dist);
 
 ensureDir(fontsStubs);
 ensureDir(fontsAssetsPath);
@@ -49,7 +49,7 @@ const camelCase = (s) => s.replace(/-(\w)/g, (_, c) => c.toUpperCase());
 const writeFont = (font, name, options = {}) => {
   if (options.preserveSvgChars !== true) {
     fs.writeFileSync(
-      new URL(`mathjax-${name}.otf`, fontsAssetsPath),
+      path.join(fontsAssetsPath, `mathjax-${name}.otf`),
       buildFont({ familyName: `mathjax-${name}`, styleName: "Regular" }, font)
     );
   }
@@ -64,7 +64,7 @@ const writeFont = (font, name, options = {}) => {
   }
 
   fs.writeFileSync(
-    new URL(`${stubName}.js`, fontsStubs),
+    path.join(fontsStubs, `${stubName}.js`),
     `export const ${exportName} = JSON.parse('${json}');\n`
   );
 };
@@ -105,7 +105,7 @@ const stubFont = (name) => {
   const exportName = camelCase(name);
 
   fs.writeFileSync(
-    new URL(`${name}.js`, fontsStubs),
+    path.join(fontsStubs, `${name}.js`),
     `export const ${exportName} = {};\n`
   );
 };

@@ -2,6 +2,8 @@ open AST;
 open Mml_Builders;
 open Mml_Util;
 
+include Mml_Types;
+
 let map = (accum, range) => Mml_Accum.toString(accum, range);
 
 let%private implicitMultiplication =
@@ -285,14 +287,14 @@ let reduce = (accum, stateElement: foldState(string), range) =>
     createElementWithRange(range, "mrow", body)->Mml_Accum.append(accum, _);
   };
 
-let create = (~digitGrouping=true, ~inline=false, elements) => {
+let create = (~locale=English, ~digitGrouping=true, ~inline=false, elements) => {
   let body =
     if (Belt.Array.length(elements) != 0) {
       AST.reduceMap(
         elements,
         ~reduce,
         ~map,
-        ~initial=Mml_Accum.make(~digitGrouping),
+        ~initial=Mml_Accum.make(~locale, ~digitGrouping),
       );
     } else {
       "";

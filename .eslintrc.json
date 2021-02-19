@@ -1,0 +1,28 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "extends": ["airbnb-base", "prettier"],
+  "ignorePatterns": [
+    "node_modules/",
+    "**/node_modules/",
+    "**/dist",
+    "packages/technicalc-calculator/decimal",
+    "packages/technicalc-prebuilt/stubs",
+    "**/*.bs.js"
+  ],
+  "rules": {
+    "arrow-body-style": [0],
+    "import/no-extraneous-dependencies": [0],
+    "import/no-unresolved": [0],
+    "import/prefer-default-export": [0],
+    "import/extensions": [0]
+  }
+}

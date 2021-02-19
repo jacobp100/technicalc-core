@@ -1,3 +1,5 @@
+open Formatting_Types;
+
 let%private basePrefixExn = base =>
   switch (base) {
   | 2 => "0b"
@@ -25,15 +27,23 @@ let%private trimTraillingZeros = (~startIndex=0, ~endIndex=?, string) => {
   ++ StringUtil.slice(string, endIndex + 1, String.length(string));
 };
 
-let%private adddigitGrouping = (~startIndex=0, ~endIndex=?, string) => {
+let%private adddigitGrouping =
+            (~locale=English, ~startIndex=0, ~endIndex=?, string) => {
   let endIndex = endIndex->Belt.Option.getWithDefault(String.length(string));
   let baseStr = ref(string);
   let index = ref(endIndex - 3);
+
+  let grouping =
+    switch (locale) {
+    | English => ","
+    | European => "."
+    };
+
   while (index^ > startIndex) {
     let len = String.length(baseStr^);
     baseStr :=
       StringUtil.slice(baseStr^, 0, index^)
-      ++ ","
+      ++ grouping
       ++ StringUtil.slice(baseStr^, index^, len);
     index := index^ - 3;
   };
@@ -65,6 +75,7 @@ let formatInteger = (~base=10, ~digitGrouping=false, num) => {
 
 let formatDecimal =
     (
+      ~locale=English,
       ~base=10,
       ~digitGrouping=false,
       ~minDecimalPlaces=0,
@@ -96,14 +107,27 @@ let formatDecimal =
     };
 
   if (decimal != "") {
-    integer ++ "." ++ decimal;
+    let separator =
+      switch (locale) {
+      | English => "."
+      | European => ","
+      };
+
+    integer ++ separator ++ decimal;
   } else {
     integer;
   };
 };
 
 let formatExponential =
-    (~base=10, ~exponent=?, ~minDecimalPlaces=0, ~maxDecimalPlaces, num) => {
+    (
+      ~locale=English,
+      ~base=10,
+      ~exponent=?,
+      ~minDecimalPlaces=0,
+      ~maxDecimalPlaces,
+      num,
+    ) => {
   let exponent =
     switch (exponent) {
     | Some(exponent) => exponent
@@ -111,6 +135,7 @@ let formatExponential =
     };
   let decimalPart =
     formatDecimal(
+      ~locale,
       ~base,
       ~digitGrouping=false,
       ~minDecimalPlaces,
