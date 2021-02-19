@@ -90,14 +90,12 @@ const build = async ({ outfile, format, globalName, ...rest }) => {
   if (format === "umd") {
     // HACK: convert to UMD - only supports cjs and global var
     const varName = "__EXPORTS__";
-    code = code
-      .replace(/import\s+(\w+)\s+from\s*"([^"]+)"/g, 'var $1 = require("$2")')
-      .replace(/export\s*\{([^{}]+)\}/, (_, inner) => {
-        const defaultExport = inner.match(/^(\w+) as default$/);
-        return defaultExport != null
-          ? `var ${varName}=${defaultExport[1]}`
-          : `var ${varName}={${inner.replace(/(\w+) as (\w+)/g, "$2:$1")}}`;
-      });
+    code = code.replace(/export\s*\{([^{}]+)\}/, (_, inner) => {
+      const defaultExport = inner.match(/^(\w+) as default$/);
+      return defaultExport != null
+        ? `var ${varName}=${defaultExport[1]}`
+        : `var ${varName}={${inner.replace(/(\w+) as (\w+)/g, "$2:$1")}}`;
+    });
     code = `(()=>{${code};typeof module!=='undefined'?module.exports=${varName}:self.${globalName}=${varName}})()`;
   }
 
