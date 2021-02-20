@@ -7,7 +7,10 @@ test("unsigned integers", (.) => {
 
     let decoded = read(encoded, readUint);
     expect(decoded)->toEqual(Some(value));
-  }
+  };
+
+  // This should work - it's just a very inefficient encoding
+  expect(encodeUint(-1)->read(readUint))->toEqual(Some(-1));
 });
 
 test("integers", (.) => {
