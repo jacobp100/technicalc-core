@@ -115,8 +115,7 @@ let reduce = (accum, stateElement: foldState(string), range) =>
     createElementWithRange(~superscript?, range, "mn", nucleus)
     ->Mml_Accum.appendDigit(accum, _)
   | DecimalSeparator =>
-    createElementWithRange(range, "mn", ".")
-    ->Mml_Accum.appendDecimalSeparator(accum, _)
+    Mml_Accum.appendDecimalSeparator(accum, range)
   | Base(base) =>
     createElementWithRange(range, "mn", Mml_Util.stringOfBase(base))
     ->Mml_Accum.appendBasePrefix(accum, _)

@@ -127,31 +127,26 @@ const nist = fs
       throw new Error(`Invalid MML for ${title}`);
     }
 
-    let valueUtf = Value.toUnicode(Value.ofString(value));
-
+    let unitsUtf = "";
     if (units) {
-      const unitsUtf = units
+      unitsUtf = units
         .replace("ohm", "Ω")
         .replace(/([_^])([-\w]+)/g, (_, subSuper, subSuperArg) => {
           const map =
             subSuper === "^" ? superscriptReplacements : subscriptReplacements;
           return Array.from(subSuperArg, (x) => {
             const val = map[x];
-            if (val == null)
-              throw new Error(`No mapping for ${x} (${valueUtf})`);
+            if (val == null) {
+              throw new Error(`No mapping for ${x}`);
+            }
             return val;
           }).join("");
         });
-      valueUtf += ` ${unitsUtf}`;
-    }
-
-    if (valueUtf.includes("^") || valueUtf.includes("_")) {
-      throw new Error(`Invalid valueUtf (${valueUtf})`);
     }
 
     const titleNormalized = normalizeTitle(title);
 
-    return { titleNormalized, value, valueMml, valueUtf };
+    return { titleNormalized, value, valueMml, unitsUtf };
   });
 
 const formats = [
@@ -189,7 +184,7 @@ let out = data.map(({ title: baseTitle, tex }) => {
   }
 
   const baseTitleNormalized = normalizeTitle(baseTitle);
-  const { value, valueUtf } = nist.find((item) => {
+  const { value, unitsUtf } = nist.find((item) => {
     return baseTitleNormalized === item.titleNormalized;
   });
   let symbolMml;
@@ -314,7 +309,7 @@ let out = data.map(({ title: baseTitle, tex }) => {
       }
     });
 
-  return { title, alias, value, symbolMml, valueUtf };
+  return { title, alias, value, symbolMml, unitsUtf };
 });
 
 out = out

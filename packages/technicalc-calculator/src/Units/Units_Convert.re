@@ -24,7 +24,7 @@ let%private prefixValue = (prefix: prefix) =>
   | Pebi => 1125899906842624.
   };
 
-let%private unitLinearValue = (unit: unitType) =>
+let%private unitLinearValueExn = (unit: unitType) =>
   switch (unit) {
   /* Time */
   | Second => 1.
@@ -116,7 +116,7 @@ let%private transformUnits =
       let nextPower = power * unitPowerMultiplier;
       Decimal.(
         value
-        * ofFloat(prefixValue(prefix) *. unitLinearValue(linearUnit))
+        * ofFloat(prefixValue(prefix) *. unitLinearValueExn(linearUnit))
         ** ofInt(nextPower)
       );
     };

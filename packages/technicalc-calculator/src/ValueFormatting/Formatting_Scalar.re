@@ -30,15 +30,15 @@ let%private formatRow = (x, format) =>
   };
 
 let%private formatConstantMultiple = (~formatAsRow, n, c, format): string => {
-  let (base, digitGrouping) =
+  let {locale, base, digitGrouping} =
     switch (format) {
-    | Some(format) => (Some(format.base), Some(format.digitGrouping))
-    | None => (None, None)
+    | Some(format) => format
+    | None => defaultFormat
     };
 
   switch (
     Decimal.ofInt(n)
-    ->Formatting_Number.formatInteger(~base?, ~digitGrouping?, _),
+    ->Formatting_Number.formatInteger(~locale, ~base, ~digitGrouping, _),
     Formatting_Constant.toString(~format, c),
   ) {
   | ("1", "") => formatNumber("1", format)
@@ -50,14 +50,10 @@ let%private formatConstantMultiple = (~formatAsRow, n, c, format): string => {
 };
 
 let%private formatReal = (re, format): string => {
-  let (locale, base, digitGrouping) =
+  let {locale, base, digitGrouping} =
     switch (format) {
-    | Some(format) => (
-        Some(format.locale),
-        Some(format.base),
-        Some(format.digitGrouping),
-      )
-    | None => (None, None, None)
+    | Some(format) => format
+    | None => defaultFormat
     };
 
   switch (re, format) {
@@ -79,7 +75,12 @@ let%private formatReal = (re, format): string => {
           integer == 0
             ? ""
             : Decimal.ofInt(integer)
-              ->Formatting_Number.formatInteger(~base?, ~digitGrouping?, _)
+              ->Formatting_Number.formatInteger(
+                  ~locale,
+                  ~base,
+                  ~digitGrouping,
+                  _,
+                )
               ->formatNumber(format);
         (before, remainder);
       } else {
@@ -90,7 +91,7 @@ let%private formatReal = (re, format): string => {
 
     let bottom =
       Decimal.ofInt(d)
-      ->Formatting_Number.formatInteger(~base?, ~digitGrouping?, _)
+      ->Formatting_Number.formatInteger(~locale, ~base, ~digitGrouping, _)
       ->formatNumber(format);
 
     switch (mode) {
@@ -116,17 +117,17 @@ let%private formatReal = (re, format): string => {
 
     if (insideMagnitudeThreshold) {
       Formatting_Number.formatDecimal(
-        ~locale?,
-        ~base?,
-        ~digitGrouping?,
+        ~locale,
+        ~base,
+        ~digitGrouping,
         ~maxDecimalPlaces=precision,
         f,
       )
       ->formatNumber(format);
     } else {
       Formatting_Number.formatExponential(
-        ~locale?,
-        ~base?,
+        ~locale,
+        ~base,
         ~exponent=DecimalUtil.magnitude(f),
         ~maxDecimalPlaces=precision,
         f,
@@ -144,8 +145,8 @@ let%private formatReal = (re, format): string => {
         - ((- magnitude + 2) / 3 * 3);
       };
     Formatting_Number.formatExponential(
-      ~locale?,
-      ~base?,
+      ~locale,
+      ~base,
       ~exponent,
       ~minDecimalPlaces=precision,
       ~maxDecimalPlaces=precision,

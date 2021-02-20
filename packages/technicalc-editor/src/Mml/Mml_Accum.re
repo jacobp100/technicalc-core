@@ -38,20 +38,28 @@ module MmlPrettifier = {
 
   let lastElementType = x => x.lastElementType;
 
-  let%private rec flattenDigits = (~body, ~numbersRev) =>
-    switch (numbersRev) {
-    | [c, b, a, ...tail] when tail != [] =>
-      flattenDigits(~body, ~numbersRev=tail) ++ "<mn>,</mn>" ++ a ++ b ++ c
-    | [number, ...tail] => flattenDigits(~body, ~numbersRev=tail) ++ number
-    | [] => body
-    };
+  let%private flattenDigits = (v, ~numbersRev) => {
+    let separator =
+      switch (v.locale) {
+      | English => "<mn>,</mn>"
+      | European => "<mn>.</mn>"
+      };
+    let rec iter = (~numbersRev) =>
+      switch (numbersRev) {
+      | [c, b, a, ...tail] when tail != [] =>
+        iter(~numbersRev=tail) ++ separator ++ a ++ b ++ c
+      | [number, ...tail] => iter(~numbersRev=tail) ++ number
+      | [] => v.body
+      };
+    iter(~numbersRev);
+  };
 
-  let toString = ({digitGroupingState, body}) =>
+  let toString = ({digitGroupingState, body} as v) =>
     switch (digitGroupingState) {
     | GroupingDisabled
     | Normal
     | SkipGrouping => body
-    | GroupingDigits({numbersRev}) => flattenDigits(~body, ~numbersRev)
+    | GroupingDigits({numbersRev}) => flattenDigits(v, ~numbersRev)
     };
 
   let length = v => v.length;
@@ -97,14 +105,24 @@ module MmlPrettifier = {
       };
     };
 
-  let appendDecimalSeparator = (v, element) => {
+  let appendDecimalSeparator = (v, range) => {
+    let digitGroupingState =
+      v.digitGroupingState == GroupingDisabled
+        ? GroupingDisabled : SkipGrouping;
+    let element =
+      switch (v.locale) {
+      | English => createElementWithRange(range, "mn", ".")
+      | European => createElementWithRange(range, "mn", ",")
+      };
+    appendWith(~digitGroupingState, v, element);
+  };
+
+  let appendBasePrefix = (v, element) => {
     let digitGroupingState =
       v.digitGroupingState == GroupingDisabled
         ? GroupingDisabled : SkipGrouping;
     appendWith(~digitGroupingState, v, element);
   };
-
-  let appendBasePrefix = appendDecimalSeparator;
 
   let appendWhitespace = (v, element) =>
     switch (v.lastElementType) {

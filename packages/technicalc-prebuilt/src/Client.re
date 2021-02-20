@@ -174,7 +174,7 @@ module Value = {
 
   let%private getFormat = (~mode, maybeFormat: option(format)) =>
     switch (maybeFormat) {
-    | None => Value_Formatting.defaultFormat
+    | None => {...Value_Formatting.defaultFormat, mode}
     | Some(format) => {
         mode,
         style: formatStyle(format),

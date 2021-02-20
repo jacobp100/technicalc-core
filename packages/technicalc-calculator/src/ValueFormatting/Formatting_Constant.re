@@ -1,12 +1,17 @@
 open Formatting_Types;
 
 let%private f = (format, v) => {
-  let (base, digitGrouping) =
+  let {locale, base, digitGrouping} =
     switch (format) {
-    | Some(format) => (format.base, format.digitGrouping)
-    | _ => (10, false)
+    | Some(format) => format
+    | None => defaultFormat
     };
-  Formatting_Number.formatInteger(~base, ~digitGrouping, Decimal.ofInt(v));
+  Formatting_Number.formatInteger(
+    ~locale,
+    ~base,
+    ~digitGrouping,
+    Decimal.ofInt(v),
+  );
 };
 
 let toString = (~format, a) => {
