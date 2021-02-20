@@ -39,7 +39,7 @@ module MmlPrettifier = {
   let lastElementType = x => x.lastElementType;
 
   let%private flattenDigits = (v, ~numbersRev) => {
-    let separator =
+    let groupingSeparator =
       switch (v.locale) {
       | English => "<mn>,</mn>"
       | European => "<mn>.</mn>"
@@ -47,7 +47,7 @@ module MmlPrettifier = {
     let rec iter = (~numbersRev) =>
       switch (numbersRev) {
       | [c, b, a, ...tail] when tail != [] =>
-        iter(~numbersRev=tail) ++ separator ++ a ++ b ++ c
+        iter(~numbersRev=tail) ++ groupingSeparator ++ a ++ b ++ c
       | [number, ...tail] => iter(~numbersRev=tail) ++ number
       | [] => v.body
       };
@@ -109,11 +109,12 @@ module MmlPrettifier = {
     let digitGroupingState =
       v.digitGroupingState == GroupingDisabled
         ? GroupingDisabled : SkipGrouping;
-    let element =
+    let decimalSeparator =
       switch (v.locale) {
-      | English => createElementWithRange(range, "mn", ".")
-      | European => createElementWithRange(range, "mn", ",")
+      | English => "."
+      | European => ","
       };
+    let element = createElementWithRange(range, "mn", decimalSeparator);
     appendWith(~digitGroupingState, v, element);
   };
 
