@@ -11,8 +11,12 @@ test("unsigned integers", (.) => {
 });
 
 test("integers", (.) => {
+  expect(encodeInt(1)->read(readInt))->toEqual(Some(1));
+  expect(encodeInt(-1)->read(readInt))->toEqual(Some(-1));
   expect(encodeInt(5)->read(readInt))->toEqual(Some(5));
   expect(encodeInt(-5)->read(readInt))->toEqual(Some(-5));
+
+  expect(encodeInt(1074000000)->read(readInt))->toEqual(Some(1074000000));
 });
 
 test("strings", (.) => {

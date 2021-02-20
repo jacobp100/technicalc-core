@@ -59,6 +59,7 @@ let%private formatReal = (re, format): string => {
   switch (re, format) {
   | (Real.Rational(n, 1, c), Some({style: Natural(_)})) =>
     let minus = n < 0 ? formatOperator("-", format) : "";
+    // FIXME - this isn't safe - use Decimal instead
     let n = IntUtil.abs(n);
     let constantMultiple =
       formatConstantMultiple(~formatAsRow=false, n, c, format);

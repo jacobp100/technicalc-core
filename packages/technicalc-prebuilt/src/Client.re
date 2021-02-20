@@ -71,6 +71,16 @@ let%private formatDecimalMaxMagnitude = f =>
   | None => defaultFormat.decimalMaxMagnitude
   };
 
+module ElementsMigration = {
+  let decode = Client_Migration.TechniCalcEditor.Encoding.decode;
+};
+
+module ValueMigration = {
+  let decode = encoded =>
+    Client_Migration.TechniCalcCalculator.Value_Encoding.decode(encoded)
+    ->Belt.Option.getWithDefault(TechniCalcCalculator.Value_Base.nan);
+};
+
 module Elements = {
   open TechniCalcEditor;
 
@@ -188,7 +198,11 @@ module Value = {
     };
 
   let encode = Value_Encoding.encode;
-  let decode = Value_Encoding.decode;
+  let decode = encoded =>
+    switch (Value_Encoding.decode(encoded)) {
+    | Some(value) => value
+    | None => Value_Base.nan
+    };
 
   let isNaN = Value_Base.isNaN;
 

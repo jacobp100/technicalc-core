@@ -42,15 +42,18 @@ let%private charToIndex = (character: int) => {
   };
 };
 
-let encodeUint = value => {
-  assert(value >= 0);
+let%private uintBase = 5;
+let%private uintBit = 1 lsl uintBase;
+let%private uintMask = uintBit - 1;
 
+let encodeUint = value => {
+  // Handles negative numbers too - it's just not optimised for them
   let rec iter = (~current="", ~flag=false, value) => {
-    let power = value / 32;
+    let power = value lsr uintBase;
     let char =
       StringUtil.stringCharAtUnsafe(
         characters,
-        value mod 32 + (flag ? 32 : 0),
+        value land uintMask lor (flag ? uintBit : 0),
       );
     let current = char ++ current;
     if (power == 0) {
@@ -67,11 +70,14 @@ let readUint = ({string, index} as reader): option(int) => {
     if (index < String.length(string)) {
       let value = StringUtil.charAtUnsafe(string, index)->charToIndex;
 
-      if (value >= 32) {
-        iter(~accum=(accum + value mod 32) * 32, index + 1);
+      if (value land lnot(uintMask) != 0) {
+        iter(
+          ~accum=(accum lor (value land uintMask)) lsl uintBase,
+          index + 1,
+        );
       } else {
         reader.index = Some(index + 1);
-        Some(accum + value);
+        Some(accum lor value);
       };
     } else {
       readInvalid(reader);
@@ -84,13 +90,14 @@ let readUint = ({string, index} as reader): option(int) => {
 };
 
 let encodeInt = value => {
-  let value = IntUtil.abs(value) lsl 1 lor (value < 0 ? 1 : 0);
+  let value =
+    value land 1 lsl 31 != 0 ? lnot(value) lsl 1 lor 1 : value lsl 1;
   encodeUint(value);
 };
 
 let readInt = reader =>
   switch (readUint(reader)) {
-  | Some(value) => Some(value lsr 1 * (value land 1 !== 0 ? (-1) : 1))
+  | Some(value) => Some(value land 1 != 0 ? lnot(value lsr 1) : value lsr 1)
   | None => None
   };
 

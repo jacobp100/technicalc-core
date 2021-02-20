@@ -45,66 +45,28 @@ let%private encodeElement =
     | element => Encoding_Element.toUint(element)->encodeUint
     };
 
-// Required to handle legacy LabelS encoding
-let%private removeMeWrapInArray = (x: option(AST.t)): option(array(AST.t)) =>
-  switch (x) {
-  | Some(x) => Some([|x|])
-  | None => None
-  };
-
-let%private removeMeConcatArray =
-            (x: option(array(array(AST.t)))): option(array(AST.t)) =>
-  switch (x) {
-  | Some(flattenMe) => Some(Belt.Array.concatMany(flattenMe))
-  | None => None
-  };
-
 let%private readElement =
   (. reader) =>
     switch (readUint(reader)) {
     // | Some(256) => readUnitConversion(reader)
     | Some(256) => None
-    | Some(257) => readCustomAtom(reader)->removeMeWrapInArray
-    | Some(258) =>
-      // Was LabelS - to be removed at a later date
+    | Some(257) => readCustomAtom(reader)
+    | Some(261) =>
+      switch (readString(reader), readString(reader)) {
+      | (Some(id), Some(name)) => Some(VariableS({id, name}))
+      | _ => None
+      }
+    | Some(260) =>
       switch (readString(reader)) {
       | Some(placeholderMml) =>
-        Some([|
-          CaptureGroupStart({placeholderMml: placeholderMml}),
-          CaptureGroupEndS,
-        |])
+        Some(CaptureGroupStart({placeholderMml: placeholderMml}))
       | None => None
       }
-    // Legacy encoding - to be removed at a later date
-    | Some(259) =>
-      removeMeWrapInArray(
-        switch (readString(reader)) {
-        | Some("x") => Some(IteratorXS)
-        | Some("Ans") => Some(VariableS({id: "Ans", name: "Ans"}))
-        | _ => None
-        },
-      )
-    | Some(261) =>
-      removeMeWrapInArray(
-        switch (readString(reader), readString(reader)) {
-        | (Some(id), Some(name)) => Some(VariableS({id, name}))
-        | _ => None
-        },
-      )
-    | Some(260) =>
-      removeMeWrapInArray(
-        switch (readString(reader)) {
-        | Some(placeholderMml) =>
-          Some(CaptureGroupStart({placeholderMml: placeholderMml}))
-        | None => None
-        },
-      )
-    | Some(value) => Encoding_Element.ofUint(value)->removeMeWrapInArray
+    | Some(value) => Encoding_Element.ofUint(value)
     | None => None
     };
 
 let encodeElements = (input: array(AST.t)) =>
   encodeArray(input, encodeElement);
 
-let readElements = reader =>
-  readArray(reader, readElement)->removeMeConcatArray;
+let readElements = reader => readArray(reader, readElement);

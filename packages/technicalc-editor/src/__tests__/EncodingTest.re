@@ -29,24 +29,3 @@ test("encodes and decodes", (.) => {
 
   expect(value)->toEqual(decoded);
 });
-
-// Remove this at a later date
-test("decodes legacy label element", (.) => {
-  let labelIdentifier = TechniCalcCalculator.Encoding.encodeUint(258);
-  let dummyEncoding =
-    Encoding.encode([|CaptureGroupStart({placeholderMml: "test"})|]);
-  let encoded =
-    Js.String.slice(~from=0, ~to_=1, dummyEncoding)
-    ++ labelIdentifier
-    ++ Js.String.sliceToEnd(
-         ~from=1 + Js.String.length(labelIdentifier),
-         dummyEncoding,
-       );
-  let decoded = Encoding.decode(encoded)->Belt.Option.getExn;
-
-  expect(decoded)
-  ->toEqual([|
-      CaptureGroupStart({placeholderMml: "test"}),
-      CaptureGroupEndS,
-    |]);
-});
