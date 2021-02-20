@@ -30,6 +30,7 @@ let read = (string, decoder) => {
 /* Character set from URL-safe base64 variant */
 let%private characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
 
+[@inline]
 let%private charToIndex = (character: int) => {
   let character: char = Obj.magic(character);
   switch (character) {
