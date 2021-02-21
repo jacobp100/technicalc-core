@@ -100,6 +100,14 @@ let%private celsiusFromKelvin = value => Decimal.(value - ofFloat(273.15));
 let%private fahrenheitFromKelvin = value =>
   Decimal.((value - ofFloat(273.15)) * ofFloat(1.8) + ofFloat(32.));
 
+let%private unitPartValue = (~unitPowerMultiplier=1, {prefix, unit, power}) => {
+  let nextPower = power * unitPowerMultiplier;
+  Decimal.(
+    (ofFloat(prefixValue(prefix)) * ofFloat(unitLinearValueExn(unit)))
+    ** ofInt(nextPower)
+  );
+};
+
 let%private transformUnits =
             (
               ~transformCelsius,
@@ -108,37 +116,22 @@ let%private transformUnits =
               value: Decimal.t,
               units: array(unitPart),
             ) => {
-  let handleLinearUnit = (value, {prefix, unit, power}) =>
-    switch (unit) {
-    | Celsius
-    | Fahrenheit => Decimal.nan
-    | linearUnit =>
-      let nextPower = power * unitPowerMultiplier;
-      Decimal.(
-        value
-        * ofFloat(prefixValue(prefix) *. unitLinearValueExn(linearUnit))
-        ** ofInt(nextPower)
-      );
-    };
+  let handleLinearUnit =
+    (. value, unitPart) =>
+      switch (unitPart.unit) {
+      | Celsius
+      | Fahrenheit => Decimal.nan
+      | _ => Decimal.(value * unitPartValue(~unitPowerMultiplier, unitPart))
+      };
 
   switch (units) {
   | [|{prefix, unit: Celsius, power: 1}|] =>
     transformCelsius(Decimal.(prefixValue(prefix)->ofFloat * value))
   | [|{prefix, unit: Fahrenheit, power: 1}|] =>
     transformFahrenheit(Decimal.(prefixValue(prefix)->ofFloat * value))
-  | _ => Belt.Array.reduce(units, value, handleLinearUnit)
+  | _ => Belt.Array.reduceU(units, value, handleLinearUnit)
   };
 };
-
-let fromSi = (value: Value.t, units) =>
-  transformUnits(
-    ~transformCelsius=celsiusFromKelvin,
-    ~transformFahrenheit=fahrenheitFromKelvin,
-    ~unitPowerMultiplier=-1,
-    Value.toDecimal(value),
-    units,
-  )
-  ->Value.ofDecimal;
 
 let toSi = (value: Value.t, units) =>
   transformUnits(
@@ -150,9 +143,71 @@ let toSi = (value: Value.t, units) =>
   )
   ->Value.ofDecimal;
 
+let fromSi = (value: Value.t, units) =>
+  transformUnits(
+    ~transformCelsius=celsiusFromKelvin,
+    ~transformFahrenheit=fahrenheitFromKelvin,
+    ~unitPowerMultiplier=-1,
+    Value.toDecimal(value),
+    units,
+  )
+  ->Value.ofDecimal;
+
 let convert = (value: Value.t, ~fromUnits, ~toUnits) =>
-  if (Unit_Dimensions.unitsCompatible(fromUnits, toUnits)) {
+  if (Units_ConvertChecks.unitsCompatible(~fromUnits, ~toUnits)) {
     value->toSi(fromUnits)->fromSi(toUnits);
   } else {
     `N;
   };
+
+let convertComposite =
+    (values: array((Value.t, unitPart)), ~toUnits: array(unitPart)) => {
+  let fromUnits = Belt.Array.mapU(values, (. (_, unitPart)) => unitPart);
+
+  if (Units_ConvertChecks.compositeUnitsCompatible(~fromUnits, ~toUnits)) {
+    open Decimal;
+    let valueSi =
+      Belt.Array.reduceU(values, zero, (. accum, (value, unitPart)) =>
+        accum
+        + Value.toDecimal(value)
+        * unitPartValue(~unitPowerMultiplier=1, unitPart)
+      );
+    let valueSiAbs = abs(valueSi);
+    let negative = lt(valueSiAbs, zero);
+    let toUnits =
+      Belt.Array.copy(toUnits)
+      ->ArrayUtil.sortInPlace((a, b) => {
+          cmp(unitPartValue(b), unitPartValue(a))
+        });
+    let remainderSi = ref(valueSiAbs);
+    let lastIndex = Pervasives.(Belt.Array.length(toUnits) - 1);
+    let output =
+      Belt.Array.mapWithIndexU(
+        toUnits,
+        (. index, unitPart) => {
+          let value =
+            remainderSi^ * unitPartValue(~unitPowerMultiplier=-1, unitPart);
+
+          let value =
+            if (Pervasives.(index == lastIndex)) {
+              value;
+            } else {
+              let valueFloor = floor(value);
+              let remainder = value - valueFloor;
+              remainderSi :=
+                remainder * unitPartValue(~unitPowerMultiplier=1, unitPart);
+              valueFloor;
+            };
+          let value = negative ? Decimal.neg(value) : value;
+
+          switch (toFloat(value)->FloatUtil.asInt) {
+          | Some(int) => Value.ofInt(int)
+          | None => Value.ofDecimal(value)
+          };
+        },
+      );
+    Some(output);
+  } else {
+    None;
+  };
+};

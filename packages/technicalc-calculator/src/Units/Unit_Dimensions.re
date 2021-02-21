@@ -92,22 +92,39 @@ let ofUnit = (v: unitType) =>
   | Fahrenheit => temperature
   };
 
+let ofUnitPart = ({unit, power}: unitPart) => {
+  let dimensions = ofUnit(unit);
+  {
+    length: dimensions.length * power,
+    time: dimensions.time * power,
+    mass: dimensions.mass * power,
+    memory: dimensions.memory * power,
+    temperature: dimensions.temperature * power,
+  };
+};
+
 let ofUnitParts = (units: array(unitPart)) =>
   Belt.Array.reduceU(
     units,
     empty,
-    (. comdinedDimensions, {unit, power}) => {
-      let dimensions = ofUnit(unit);
+    (. comdinedDimensions, unitPart) => {
+      let dimensions = ofUnitPart(unitPart);
       {
-        length: comdinedDimensions.length + dimensions.length * power,
-        time: comdinedDimensions.time + dimensions.time * power,
-        mass: comdinedDimensions.mass + dimensions.mass * power,
-        memory: comdinedDimensions.memory + dimensions.memory * power,
-        temperature:
-          comdinedDimensions.temperature + dimensions.temperature * power,
+        length: comdinedDimensions.length + dimensions.length,
+        time: comdinedDimensions.time + dimensions.time,
+        mass: comdinedDimensions.mass + dimensions.mass,
+        memory: comdinedDimensions.memory + dimensions.memory,
+        temperature: comdinedDimensions.temperature + dimensions.temperature,
       };
     },
   );
+
+let size = (a: t) =>
+  (a.length !== 0 ? 1 : 0)
+  + (a.time !== 0 ? 1 : 0)
+  + (a.mass !== 0 ? 1 : 0)
+  + (a.memory !== 0 ? 1 : 0)
+  + (a.temperature !== 0 ? 1 : 0);
 
 let equal = (a: t, b: t) =>
   a.length == b.length
@@ -115,6 +132,3 @@ let equal = (a: t, b: t) =>
   && a.mass == b.mass
   && a.memory == b.memory
   && a.temperature == b.temperature;
-
-let unitsCompatible = (a: array(unitPart), b: array(unitPart)) =>
-  equal(ofUnitParts(a), ofUnitParts(b));

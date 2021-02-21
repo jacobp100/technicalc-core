@@ -35,7 +35,7 @@ let ofFloat = (v): t =>
     let magnitude = 1.e6;
     let intMaxF = Belt.Float.fromInt(IntUtil.maxInt);
     let numeratorF = v *. magnitude;
-    switch (FloatUtil.intValue(numeratorF), FloatUtil.intValue(magnitude)) {
+    switch (FloatUtil.asInt(numeratorF), FloatUtil.asInt(magnitude)) {
     | (Some(numerator), Some(denominator))
         when FloatUtil.abs(numeratorF) < intMaxF =>
       `R(Real.ofRational(numerator, denominator, Unit))->normalize

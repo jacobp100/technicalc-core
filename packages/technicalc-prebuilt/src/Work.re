@@ -9,6 +9,10 @@ type work =
       fromUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
       toUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
     })
+  | ConvertUnitsComposite({
+      values: array((node, TechniCalcCalculator.Unit_Types.unitPart)),
+      toUnits: array(TechniCalcCalculator.Unit_Types.unitPart),
+    })
   | SolveRoot({
       lhs: node,
       rhs: node,

@@ -20,7 +20,7 @@ let rec pow = (a: t, b: t): t =>
   | (`R(_) | `I(_) | `C(_), `Z) => one
   | (`Z, `Z) => `N
   | (`R(Rational(n, d, Unit)), `R(Rational(1, 2, Unit))) when isSquare(d) =>
-    let denSqrt = Belt.Float.fromInt(d)->sqrt->FloatUtil.intValueExn;
+    let denSqrt = Belt.Float.fromInt(d)->sqrt->FloatUtil.asIntExn;
     let r = Real.ofRational(1, denSqrt, Sqrt(IntUtil.abs(n)));
     if (n >= 0) {
       ofReal(r);

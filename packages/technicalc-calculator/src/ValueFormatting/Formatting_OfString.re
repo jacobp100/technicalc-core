@@ -217,8 +217,8 @@ let%private partialParseReal = (~base, tokens) => {
   | Some((num, den, constant, rest)) =>
     let value =
       switch (
-        Decimal.toFloat(num)->FloatUtil.intValue,
-        Decimal.toFloat(den)->FloatUtil.intValue,
+        Decimal.toFloat(num)->FloatUtil.asInt,
+        Decimal.toFloat(den)->FloatUtil.asInt,
       ) {
       | (Some(num), Some(den)) => Real.ofRational(num, den, constant)
       | _ =>

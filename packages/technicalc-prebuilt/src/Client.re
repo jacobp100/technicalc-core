@@ -229,6 +229,8 @@ module Work = {
   let calculate = (body): Work.work => Calculate(body);
   let convertUnits = (body, fromUnits, toUnits): Work.work =>
     ConvertUnits({body, fromUnits, toUnits});
+  let convertUnitsComposite = (values, toUnits): Work.work =>
+    ConvertUnitsComposite({values, toUnits});
   let solveRoot = (lhs, rhs, initialGuess): Work.work =>
     SolveRoot({lhs, rhs, initialGuess});
   let quadratic = (a, b, c): Work.work => Quadratic(a, b, c);
@@ -266,7 +268,8 @@ module Units = {
   //     TechniCalcEditor.Encoding_Units.readUnitParts,
   //   );
 
-  let unitsCompatible = TechniCalcCalculator.Unit_Dimensions.unitsCompatible;
+  let unitsCompatible = TechniCalcCalculator.Units_ConvertChecks.unitsCompatible;
+  let compositeUnitsCompatible = TechniCalcCalculator.Units_ConvertChecks.compositeUnitsCompatible;
 
   let toMml = TechniCalcEditor.Mml_Units.toMml;
 

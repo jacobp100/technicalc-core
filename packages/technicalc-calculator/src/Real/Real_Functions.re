@@ -2,7 +2,7 @@ open Real_Types;
 open Real_Base;
 
 let%private ofDecimalInt = f =>
-  switch (Decimal.toFloat(f)->FloatUtil.intValue) {
+  switch (Decimal.toFloat(f)->FloatUtil.asInt) {
   | Some(intVal) => ofRational(intVal, 1, Unit)
   | None => ofDecimal(f)
   };

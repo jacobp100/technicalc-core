@@ -2,7 +2,7 @@ open Decimal;
 
 let magnitude = f =>
   if (f != zero) {
-    abs(f)->log10->floor->toFloat->FloatUtil.intValueExn;
+    abs(f)->log10->floor->toFloat->FloatUtil.asIntExn;
   } else {
     0;
   };

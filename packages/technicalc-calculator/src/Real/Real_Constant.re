@@ -25,7 +25,7 @@ let%private simplifySqrt = ac =>
     let sqrtArg = ref(ac);
     let multiplier = ref(1);
 
-    let limit = Belt.Float.fromInt(ac)->sqrt->ceil->FloatUtil.intValueExn;
+    let limit = Belt.Float.fromInt(ac)->sqrt->ceil->FloatUtil.asIntExn;
     for (currentSqrtValue in 2 to limit) {
       let factor = currentSqrtValue * currentSqrtValue;
 

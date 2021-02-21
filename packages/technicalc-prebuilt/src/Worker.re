@@ -34,6 +34,16 @@ let make = self => {
         eval(~config, ~context, body)
         ->TechniCalcCalculator.Units.convert(~fromUnits, ~toUnits);
       [|res|];
+    | ConvertUnitsComposite({values, toUnits}) =>
+      let res =
+        Belt.Array.mapU(values, (. (body, unitPart)) => {
+          (eval(~config, ~context, body), unitPart)
+        })
+        ->TechniCalcCalculator.Units.convertComposite(_, ~toUnits);
+      switch (res) {
+      | Some(res) => res
+      | None => Belt.Array.make(Belt.Array.length(values), `N)
+      };
     | SolveRoot({lhs, rhs, initialGuess}) =>
       let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs);
       let res = solveRoot(~config, ~context, body, initialGuess);
