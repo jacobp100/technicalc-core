@@ -271,6 +271,7 @@ module Units = {
   let unitsCompatible = TechniCalcCalculator.Units_ConvertChecks.unitsCompatible;
   let compositeUnitsCompatible = TechniCalcCalculator.Units_ConvertChecks.compositeUnitsCompatible;
 
+  let unitPartMml = TechniCalcEditor.Mml_Units.unitPartMml;
   let toMml = TechniCalcEditor.Mml_Units.toMml;
 
   let prefixes = Units_Util.prefixes;

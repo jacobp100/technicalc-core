@@ -105,7 +105,7 @@ let%private prefixUnitMml = (prefix: prefix, unit: unitType) =>
     ++ "</mi>"
   };
 
-let%private unitPowerMml =
+let unitPartMml =
   (. {prefix, unit, power}: unitPart) =>
     switch (power) {
     | 1 => prefixUnitMml(prefix, unit)
@@ -115,5 +115,5 @@ let%private unitPowerMml =
     };
 
 let toMml = (units: array(unitPart)) =>
-  Belt.Array.mapU(units, unitPowerMml)
+  Belt.Array.mapU(units, unitPartMml)
   ->StringUtil.joinWith("<mspace width=\"0.1em\" />");

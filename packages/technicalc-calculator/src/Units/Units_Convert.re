@@ -100,8 +100,8 @@ let%private celsiusFromKelvin = value => Decimal.(value - ofFloat(273.15));
 let%private fahrenheitFromKelvin = value =>
   Decimal.((value - ofFloat(273.15)) * ofFloat(1.8) + ofFloat(32.));
 
-let%private unitPartValue = (~unitPowerMultiplier=1, {prefix, unit, power}) => {
-  let nextPower = power * unitPowerMultiplier;
+let%private unitPartValue = (~powerMultiplier=1, {prefix, unit, power}) => {
+  let nextPower = power * powerMultiplier;
   Decimal.(
     (ofFloat(prefixValue(prefix)) * ofFloat(unitLinearValueExn(unit)))
     ** ofInt(nextPower)
@@ -112,7 +112,7 @@ let%private transformUnits =
             (
               ~transformCelsius,
               ~transformFahrenheit,
-              ~unitPowerMultiplier,
+              ~powerMultiplier,
               value: Decimal.t,
               units: array(unitPart),
             ) => {
@@ -121,7 +121,7 @@ let%private transformUnits =
       switch (unitPart.unit) {
       | Celsius
       | Fahrenheit => Decimal.nan
-      | _ => Decimal.(value * unitPartValue(~unitPowerMultiplier, unitPart))
+      | _ => Decimal.(value * unitPartValue(~powerMultiplier, unitPart))
       };
 
   switch (units) {
@@ -137,7 +137,7 @@ let toSi = (value: Value.t, units) =>
   transformUnits(
     ~transformCelsius=celsiusToKelvin,
     ~transformFahrenheit=fahrenheitToKelvin,
-    ~unitPowerMultiplier=1,
+    ~powerMultiplier=1,
     Value.toDecimal(value),
     units,
   )
@@ -147,7 +147,7 @@ let fromSi = (value: Value.t, units) =>
   transformUnits(
     ~transformCelsius=celsiusFromKelvin,
     ~transformFahrenheit=fahrenheitFromKelvin,
-    ~unitPowerMultiplier=-1,
+    ~powerMultiplier=-1,
     Value.toDecimal(value),
     units,
   )
@@ -170,7 +170,7 @@ let convertComposite =
       Belt.Array.reduceU(values, zero, (. accum, (value, unitPart)) =>
         accum
         + Value.toDecimal(value)
-        * unitPartValue(~unitPowerMultiplier=1, unitPart)
+        * unitPartValue(~powerMultiplier=1, unitPart)
       );
     let valueSiAbs = abs(valueSi);
     let negative = lt(valueSiAbs, zero);
@@ -186,7 +186,7 @@ let convertComposite =
         toUnits,
         (. index, unitPart) => {
           let value =
-            remainderSi^ * unitPartValue(~unitPowerMultiplier=-1, unitPart);
+            remainderSi^ * unitPartValue(~powerMultiplier=-1, unitPart);
 
           let value =
             if (Pervasives.(index == lastIndex)) {
@@ -195,7 +195,7 @@ let convertComposite =
               let valueFloor = floor(value);
               let remainder = value - valueFloor;
               remainderSi :=
-                remainder * unitPartValue(~unitPowerMultiplier=1, unitPart);
+                remainder * unitPartValue(~powerMultiplier=1, unitPart);
               valueFloor;
             };
           let value = negative ? Decimal.neg(value) : value;

@@ -123,8 +123,8 @@ let json = [|
         {units: [|{prefix: Unit, unit: Meter, power: 2}|], primary: true},
       |],
       [|
-        {units: [|{prefix: Unit, unit: Inch, power: 2}|], primary: true},
         {units: [|{prefix: Unit, unit: Foot, power: 2}|], primary: true},
+        {units: [|{prefix: Unit, unit: Inch, power: 2}|], primary: true},
       |],
       [|{units: [|{prefix: Unit, unit: Acre, power: 1}|], primary: true}|],
       [|
