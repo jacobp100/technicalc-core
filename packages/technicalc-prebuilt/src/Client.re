@@ -177,6 +177,12 @@ module Keys = {
     |]);
 
   let equation = (~elements) => Keys.Many(elements);
+
+  let elements = key =>
+    switch (key) {
+    | Keys.One(element) => [|element|]
+    | Keys.Many(elements) => elements
+    };
 };
 
 module Value = {

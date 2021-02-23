@@ -1,5 +1,10 @@
 open TechniCalcCalculator.Encoding;
 
+let%private elementToUint = (element: AST.t): int =>
+  Belt.Array.getExn(Encoding_ElementMap_Eval.mapping, Obj.magic(element));
+let%private elementOfUint = (index: int): option(AST.t) =>
+  Belt.Array.get(Encoding_ElementMap_Eval.reverseMapping, index);
+
 // let%private encodeUnitConversion = (~fromUnits, ~toUnits) =>
 //   Encoding_Units.encodeUnitParts(fromUnits)
 //   ++ Encoding_Units.encodeUnitParts(toUnits);
@@ -42,7 +47,7 @@ let%private encodeElement =
       encodeUint(261) ++ encodeString(id) ++ encodeString(name)
     | CaptureGroupStart({placeholderMml}) =>
       encodeUint(260) ++ encodeString(placeholderMml)
-    | element => Encoding_Element.toUint(element)->encodeUint
+    | element => elementToUint(element)->encodeUint
     };
 
 let%private readElement =
@@ -62,7 +67,7 @@ let%private readElement =
         Some(CaptureGroupStart({placeholderMml: placeholderMml}))
       | None => None
       }
-    | Some(value) => Encoding_Element.ofUint(value)
+    | Some(value) => elementOfUint(value)
     | None => None
     };
 
