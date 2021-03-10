@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "bsb -clean-world",
     "build-packages": "bsb -make-world",
-    "watch-packages": "watchexec -w packages -i lib -e re,rei yarn build-packages",
+    "watch-packages": "watchexec -w packages -i lib -e res,resi yarn build-packages",
     "build-bundles": "yarn workspace technicalc-prebuilt build",
     "watch-bundles": "yarn workspace technicalc-prebuilt watch-bundles",
     "build": "yarn build-packages && yarn build-bundles",

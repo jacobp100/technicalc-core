@@ -1,3 +1,0 @@
-type locale =
-  | English
-  | European;
