@@ -19,8 +19,11 @@ open Value_Base
  If we experience a sign change when doing NR, we switch to bisection. For
  functions like sin, it's pretty much impossible to not get a root change.
 
+ Interval bisection can fail if there is a discontinuity between the points the
+ sign change occurred on. In this case, we revert back to NR/Steffensen's.
+
  One optimisation we do is we record both the x and f(x) of the previous
- iteration. Should
+ iteration.
  */
 
 type previous = {

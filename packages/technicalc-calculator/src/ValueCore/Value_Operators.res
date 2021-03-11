@@ -1,4 +1,4 @@
-let \"=" = Value_Base.equal
+let \"=" = Value_Base.eq
 let \"~-" = Value_Arithmetic.neg
 let \"+" = Value_Arithmetic.add
 let \"-" = Value_Arithmetic.sub

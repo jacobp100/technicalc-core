@@ -1,5 +1,5 @@
 open Jest
-open BracketUtil
+open BracketMetadata
 
 test("returns none when there's no ranges", (. ()) => {
   expect(bracketRanges([OpenBracket]))->toEqual(None)
@@ -9,7 +9,7 @@ test("returns none when there's no ranges", (. ()) => {
 test("finds range in brackts", (. ()) => {
   let ranges = bracketRanges([N1_S, OpenBracket, N2_S, N3_S, N4_S, CloseBracketS, N5_S])
 
-  let topLevelRange = {start: 1, end_: 6, level: 0}
+  let topLevelRange = {start: 1, end: 6, level: 0}
   expect(Belt.Option.getExn(ranges))->toEqual([topLevelRange])
 
   expect(bracketRange(ranges, 0))->toEqual(None)
@@ -37,8 +37,8 @@ test("finds range in nested brackts", (. ()) => {
     N7_S,
   ])
 
-  let topLevelRange = {start: 1, end_: 10, level: 0}
-  let nestedRange = {start: 3, end_: 8, level: 1}
+  let topLevelRange = {start: 1, end: 10, level: 0}
+  let nestedRange = {start: 3, end: 8, level: 1}
   expect(Belt.Option.getExn(ranges))->toEqual([nestedRange, topLevelRange])
 
   expect(bracketRange(ranges, 0))->toEqual(None)
@@ -58,8 +58,8 @@ test("finds range in nested brackts", (. ()) => {
 test("works with brackets in function arguments", (. ()) => {
   let ranges = bracketRanges([OpenBracket, Abs1S, OpenBracket, CloseBracketS, Arg, CloseBracketS])
 
-  let topLevelRange = {start: 0, end_: 6, level: 0}
-  let innerRange = {start: 2, end_: 4, level: 0}
+  let topLevelRange = {start: 0, end: 6, level: 0}
+  let innerRange = {start: 2, end: 4, level: 0}
   expect(Belt.Option.getExn(ranges))->toEqual([innerRange, topLevelRange])
 
   expect(bracketRange(ranges, 0))->toEqual(Some(topLevelRange))
@@ -74,7 +74,7 @@ test("works with brackets in function arguments", (. ()) => {
 test("works with unmatched brackets in function arguments", (. ()) => {
   let ranges = bracketRanges([OpenBracket, Abs1S, OpenBracket, Arg, CloseBracketS])
 
-  let topLevelRange = {start: 0, end_: 5, level: 0}
+  let topLevelRange = {start: 0, end: 5, level: 0}
   expect(Belt.Option.getExn(ranges))->toEqual([topLevelRange])
 
   expect(bracketRange(ranges, 0))->toEqual(Some(topLevelRange))
@@ -95,9 +95,9 @@ test("works with multiple top-level bracket pairs", (. ()) => {
     CloseBracketS,
   ])
 
-  let topLevelRange1 = {start: 0, end_: 2, level: 0}
-  let topLevelRange2 = {start: 2, end_: 4, level: 0}
-  let topLevelRange3 = {start: 4, end_: 6, level: 0}
+  let topLevelRange1 = {start: 0, end: 2, level: 0}
+  let topLevelRange2 = {start: 2, end: 4, level: 0}
+  let topLevelRange3 = {start: 4, end: 6, level: 0}
   expect(Belt.Option.getExn(ranges))->toEqual([topLevelRange1, topLevelRange2, topLevelRange3])
 
   expect(bracketRange(ranges, 0))->toEqual(Some(topLevelRange1))
@@ -123,10 +123,10 @@ test("works with multiple top-level bracket pairs with function arguments", (. (
     CloseBracketS,
   ])
 
-  let topLevelRange1 = {start: 0, end_: 2, level: 0}
-  let topLevelRange2 = {start: 2, end_: 8, level: 0}
-  let innerRange = {start: 4, end_: 6, level: 0}
-  let topLevelRange3 = {start: 8, end_: 10, level: 0}
+  let topLevelRange1 = {start: 0, end: 2, level: 0}
+  let topLevelRange2 = {start: 2, end: 8, level: 0}
+  let innerRange = {start: 4, end: 6, level: 0}
+  let topLevelRange3 = {start: 8, end: 10, level: 0}
   expect(Belt.Option.getExn(ranges))->toEqual([
     topLevelRange1,
     innerRange,

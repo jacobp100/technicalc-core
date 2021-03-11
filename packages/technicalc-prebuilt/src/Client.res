@@ -130,19 +130,19 @@ module Elements = {
     | Error(i) => (Some(i), None)
     }
 
-  let bracketRanges = BracketUtil.bracketRanges
-  let bracketRange = BracketUtil.bracketRange
+  let bracketRanges = BracketMetadata.bracketRanges
+  let bracketRange = BracketMetadata.bracketRange
 
-  let populatedCaptureGroups = CaptureGroupUtil.populatedCaptureGroups
-  let emptyCaptureGroups = CaptureGroupUtil.emptyCaptureGroups
+  let populatedCaptureGroups = CaptureGroupMetadata.populatedCaptureGroups
+  let emptyCaptureGroups = CaptureGroupMetadata.emptyCaptureGroups
 
-  let getDependencies = DependencyUtil.getDependencies
+  let getDependencies = DependencyMetadata.getDependencies
 
-  let inputSettingsMode = InputConfigUtil.inputSettingsMode
+  let inputSettingsMode = InputConfigMetadata.inputSettingsMode
 
-  let insertRanges = InsertUtil.insertRanges
-  let canInsertTable = InsertUtil.canInsertTable
-  let canInsertIteration = InsertUtil.canInsertIteration
+  let insertRanges = InsertMetadata.insertRanges
+  let canInsertTable = InsertMetadata.canInsertTable
+  let canInsertIteration = InsertMetadata.canInsertIteration
 }
 
 module Editor = {

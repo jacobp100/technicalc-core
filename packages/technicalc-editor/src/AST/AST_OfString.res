@@ -22,24 +22,12 @@ open AST_Types
     | '7' => N7_S
     | '8' => N8_S
     | '9' => N9_S
-    | 'a'
-    | 'A' =>
-      NA_S
-    | 'b'
-    | 'B' =>
-      NB_S
-    | 'c'
-    | 'C' =>
-      NC_S
-    | 'd'
-    | 'D' =>
-      ND_S
-    | 'e'
-    | 'E' =>
-      NE_S
-    | 'f'
-    | 'F' =>
-      NF_S
+    | 'A' | 'a' => NA_S
+    | 'B' | 'b' => NB_S
+    | 'C' | 'c' => NC_S
+    | 'D' | 'd' => ND_S
+    | 'E' | 'e' => NE_S
+    | 'F' | 'f' => NF_S
     | _ => assert false
     }
 )

@@ -1,22 +1,22 @@
-let pi = j`π`
-let sqrt = j`√`
-let divide = j`÷`
-let magnitude = j`×10`
+let pi = `π`
+let sqrt = `√`
+let divide = `÷`
+let magnitude = `×10`
 
 let formatSuperscriptNumbers = str =>
   Belt.Array.makeByU(String.length(str), (. i) =>
     switch StringUtil.stringCharAtUnsafe(str, i) {
-    | "-" => j`⁻`
-    | "0" => j`⁰`
-    | "1" => j`¹`
-    | "2" => j`²`
-    | "3" => j`³`
-    | "4" => j`⁴`
-    | "5" => j`⁵`
-    | "6" => j`⁶`
-    | "7" => j`⁷`
-    | "8" => j`⁸`
-    | "9" => j`⁹`
+    | "-" => `⁻`
+    | "0" => `⁰`
+    | "1" => `¹`
+    | "2" => `²`
+    | "3" => `³`
+    | "4" => `⁴`
+    | "5" => `⁵`
+    | "6" => `⁶`
+    | "7" => `⁷`
+    | "8" => `⁸`
+    | "9" => `⁹`
     | x => x
     }
   )->StringUtil.join

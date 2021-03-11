@@ -12,11 +12,9 @@ let isNaN = a =>
   | _ => false
   }
 
-let equal = (a, b) =>
+let eq = (a, b) =>
   switch (a, b) {
-  | (Rational(an, ad, ac), Rational(bn, bd, bc)) =>
-    an == bn && (ad == bd && Real_Constant.equal(ac, bc))
-
+  | (Rational(an, ad, ac), Rational(bn, bd, bc)) => an == bn && ad == bd && Real_Constant.eq(ac, bc)
   | (Decimal(af), Decimal(bf)) => Decimal.eq(af, bf)
   | _ => false
   }
@@ -48,10 +46,7 @@ let ofRational = (n, d, c) =>
     | None => Rational(n, d, c)
     | Zero => Rational(0, 1, Unit)
     | Factor(n', c) =>
-      switch {
-        open SafeInt
-        (ofInt(n) * ofInt(n'))->toInt
-      } {
+      switch SafeInt.mulInt(n, n') {
       | Some(n) => Rational(n, d, c)
       | None => Decimal(ratDecimal(d, d, c))
       }

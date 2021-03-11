@@ -16,12 +16,12 @@ let nan: t = #N
 
 let isNaN = (x: t) => x == #N
 
-let equal = (a: t, b: t): bool =>
+let eq = (a: t, b: t): bool =>
   switch (a, b) {
-  | (#...Scalar.t as aS, #...Scalar.t as bS) => Scalar.equal(aS, bS)
-  | (#P(aP), #P(bP)) => Scalar.equal(aP, bP)
-  | (#V(aV), #V(bV)) => Vector.equal(aV, bV)
-  | (#M(aM), #M(bM)) => Matrix.equal(aM, bM)
+  | (#...Scalar.t as aS, #...Scalar.t as bS) => Scalar.eq(aS, bS)
+  | (#P(aP), #P(bP)) => Scalar.eq(aP, bP)
+  | (#V(aV), #V(bV)) => Vector.eq(aV, bV)
+  | (#M(aM), #M(bM)) => Matrix.eq(aM, bM)
   | _ => false
   }
 

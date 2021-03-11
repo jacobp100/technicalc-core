@@ -3,8 +3,8 @@ open Vector_Types
 let empty: t = []
 let isEmpty = (x: t) => Belt.Array.length(x) == 0
 
-let equal = (a: t, b: t) =>
-  Belt.Array.length(a) == Belt.Array.length(b) && Belt.Array.every2(a, b, Scalar.equal)
+let eq = (a: t, b: t) =>
+  Belt.Array.length(a) == Belt.Array.length(b) && Belt.Array.every2(a, b, Scalar.eq)
 
 let size: t => int = Belt.Array.length
 let makeByU: (int, (. int) => Scalar.t) => t = Belt.Array.makeByU

@@ -6,10 +6,7 @@ let var2 = (x0, y0, c0, x1, y1, c1) => {
 }
 
 let var3 = (x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2) => {
-  /*
-   https://www.wolframalpha.com/input/?i=inverse(%7B%7Ba,b,c%7D,%7Bd,e,f%7D,%7Bg,h,i%7D%7D)+*+%7B%7Bj%7D,%7Bk%7D,%7Bl%7D%7D
-   Literally the worst formatting
- */
+  // https://www.wolframalpha.com/input/?i=inverse(%7B%7Ba,b,c%7D,%7Bd,e,f%7D,%7Bg,h,i%7D%7D)+*+%7B%7Bj%7D,%7Bk%7D,%7Bl%7D%7D
   let denom =
     -z0 * y1 * x2 + y0 * z1 * x2 + z0 * x1 * y2 - x0 * z1 * y2 - y0 * x1 * z2 + x0 * y1 * z2
   let p1 = (y1 * z2 - z1 * y2) * c0 + (z0 * y2 - y0 * z2) * c1 + (y0 * z1 - z0 * y1) * c2

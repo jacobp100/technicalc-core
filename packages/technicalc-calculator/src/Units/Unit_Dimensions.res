@@ -121,7 +121,7 @@ let size = (a: t) =>
   (a.mass !== 0 ? 1 : 0) +
   (a.memory !== 0 ? 1 : 0) + (a.temperature !== 0 ? 1 : 0)
 
-let equal = (a: t, b: t) =>
+let eq = (a: t, b: t) =>
   a.length == b.length &&
     (a.time == b.time &&
     (a.mass == b.mass && (a.memory == b.memory && a.temperature == b.temperature)))

@@ -2,7 +2,7 @@ open Unit_Types
 open Unit_Dimensions
 
 let unitsCompatible = (~fromUnits, ~toUnits) => {
-  equal(ofUnitParts(fromUnits), ofUnitParts(toUnits))
+  eq(ofUnitParts(fromUnits), ofUnitParts(toUnits))
 }
 
 let compositeUnitsCompatible = (~fromUnits, ~toUnits) =>
@@ -10,7 +10,7 @@ let compositeUnitsCompatible = (~fromUnits, ~toUnits) =>
   | Some(unitPart) =>
     let baseDimensions = ofUnitPart(unitPart)
     let unitPartValid = (. unitPart) =>
-      unitPart.power == 1 && equal(ofUnitPart(unitPart), baseDimensions)
+      unitPart.power == 1 && eq(ofUnitPart(unitPart), baseDimensions)
 
     baseDimensions.temperature == 0 &&
       (size(baseDimensions) == 1 &&

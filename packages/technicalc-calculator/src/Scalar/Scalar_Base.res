@@ -65,13 +65,13 @@ let toFloat = (a: t): float =>
   | _ => Pervasives.nan
   }
 
-let equal = (a: t, b: t): bool =>
+let eq = (a: t, b: t): bool =>
   switch (a, b) {
   | (#Z, #Z) => true
   | (#R(a), #R(b))
   | (#I(a), #I(b)) =>
-    Real.equal(a, b)
-  | (#C(aRe, aIm), #C(bRe, bIm)) => Real.equal(aRe, bRe) && Real.equal(aIm, bIm)
+    Real.eq(a, b)
+  | (#C(aRe, aIm), #C(bRe, bIm)) => Real.eq(aRe, bRe) && Real.eq(aIm, bIm)
   | _ => false
   }
 

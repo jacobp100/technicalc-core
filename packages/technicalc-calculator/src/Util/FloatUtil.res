@@ -1,7 +1,5 @@
 @scope("Math") @val external abs: float => float = "abs"
 
-let test = abs(5.3)
-
 // Checks int boundaries too
 let isInt = f => f->Belt.Int.fromFloat->Belt.Float.fromInt == f
 

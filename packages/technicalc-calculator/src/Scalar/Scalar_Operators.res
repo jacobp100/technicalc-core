@@ -1,4 +1,4 @@
-let \"=" = Scalar_Base.equal
+let \"=" = Scalar_Base.eq
 let \"~-" = Scalar_Arithmetic.neg
 let \"+" = Scalar_Arithmetic.add
 let \"-" = Scalar_Arithmetic.sub

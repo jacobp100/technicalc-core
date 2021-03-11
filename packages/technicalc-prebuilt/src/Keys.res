@@ -4,8 +4,6 @@ type key =
   | One(t)
   | Many(array<t>)
 
-%%private(let ans = VariableS({id: "Ans", name: "Ans"}))
-
 let keys = {
   "0": One(N0_S),
   "1": One(N1_S),
@@ -68,7 +66,7 @@ let keys = {
   "x": One(IteratorXS),
   "pi": One(ConstPiS),
   "e": One(ConstES),
-  "ans": One(ans),
+  "ans": One(VariableS({id: "Ans", name: "Ans"})),
   "re": One(Re),
   "im": One(Im),
   "conj": One(Conj),

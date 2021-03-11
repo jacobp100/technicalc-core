@@ -4,10 +4,10 @@ let isEmpty = (a: t) => a.numRows == 0
 
 let empty: t = {numRows: 0, numColumns: 0, elements: []}
 
-let equal = (a: t, b: t) =>
+let eq = (a: t, b: t) =>
   a.numRows == b.numRows &&
     (a.numColumns == b.numColumns &&
-    Belt.Array.every2(a.elements, b.elements, Scalar.equal))
+    Belt.Array.every2(a.elements, b.elements, Scalar.eq))
 
 let make = (numRows, numColumns, elements) =>
   numRows * numColumns == Belt.Array.length(elements)

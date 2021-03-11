@@ -25,9 +25,6 @@ let toString = (~format=?, ~inline=false, a: Value_Types.t): string => {
   | Some({mode: String | Unicode | Tex}) => body
   | Some({mode: MathML}) =>
     let display = inline ? "inline" : "block"
-    "<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"" ++
-    display ++
-    "\">" ++
-    body ++ "</math>"
+    `<math xmlns="http://www.w3.org/1998/Math/MathML" display="${display}">${body}</math>`
   }
 }

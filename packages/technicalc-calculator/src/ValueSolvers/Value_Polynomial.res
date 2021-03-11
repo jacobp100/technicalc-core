@@ -1,5 +1,4 @@
 open Value_Core
-let \"**." = Pervasives.\"**"
 
 let (_1, _2, _3, _6, _4, _9, _27) = (
   ofInt(1),

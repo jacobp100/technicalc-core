@@ -33,9 +33,9 @@ let toString = (~format, a) => {
   | (Some(Tex), Exp(v)) => `e^{${f(format, v)}}`
   | (Some(Tex), Sqrt(v)) => `${"\\"}sqrt{${f(format, v)}}`
   | (Some(MathML), Pi(1)) => "<mi>&#960;</mi>"
-  | (Some(MathML), Pi(v)) => "<msup><mi>&#960;</mi><mn>" ++ f(format, v) ++ "</mn></msup>"
+  | (Some(MathML), Pi(v)) => `<msup><mi>&#960;</mi><mn>${f(format, v)}</mn></msup>`
   | (Some(MathML), Exp(1)) => "<mi>e</mi>"
-  | (Some(MathML), Exp(v)) => "<msup><mi>e</mi><mn>" ++ f(format, v) ++ "</mn></msup>"
-  | (Some(MathML), Sqrt(v)) => "<msqrt><mn>" ++ f(format, v) ++ "</mn></msqrt>"
+  | (Some(MathML), Exp(v)) => `<msup><mi>e</mi><mn>${f(format, v)}</mn></msup>`
+  | (Some(MathML), Sqrt(v)) => `<msqrt><mn>${f(format, v)}</mn></msqrt>`
   }
 }

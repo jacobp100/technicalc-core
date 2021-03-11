@@ -6,7 +6,7 @@ let \"+" = add
 let \"-" = sub
 let \"*" = mul
 let \"/" = div
-let \"=" = equal
+let \"=" = eq
 let \"<>" = (a, b) => !(a == b)
 let \">" = gt
 let \">=" = gte

@@ -2,8 +2,7 @@ open AST_Types
 
 type bracketRange = {
   start: int,
-  @as("end")
-  end_: int,
+  end: int,
   level: int,
 }
 
@@ -14,9 +13,9 @@ type bracketRange = {
       | (Some(Arg) | None, _) => (ranges, i)
       | (Some(OpenBracket), _) => iter(~ranges, ~stack=list{i, ...stack}, i + 1)
       | (Some(CloseBracketS), list{start, ...stack}) =>
-        let end_ = i + 1
+        let end = i + 1
         let level = Belt.List.length(stack)
-        let range = {start: start, end_: end_, level: level}
+        let range = {start: start, end: end, level: level}
         iter(~ranges=list{range, ...ranges}, ~stack, i + 1)
       | (Some(element), _) =>
         let argCount = argCountExn(element)
@@ -45,6 +44,6 @@ let bracketRanges = (ast: array<t>) =>
 
 let bracketRange = (ranges, index) =>
   switch ranges {
-  | Some(ranges) => Belt.Array.getByU(ranges, (. {start, end_}) => start <= index && end_ >= index)
+  | Some(ranges) => Belt.Array.getByU(ranges, (. {start, end}) => start <= index && end >= index)
   | None => None
   }

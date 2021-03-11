@@ -56,7 +56,7 @@ let abs = a =>
 
 let add = (a, b) => {
   let rat = switch (a, b) {
-  | (Rational(an, ad, c), Rational(bn, bd, bc)) if Real_Constant.equal(c, bc) =>
+  | (Rational(an, ad, c), Rational(bn, bd, bc)) if Real_Constant.eq(c, bc) =>
     open SafeInt
     let ad = ofInt(ad)
     let bd = ofInt(bd)
@@ -73,7 +73,7 @@ let add = (a, b) => {
 
 let sub = (a, b) => {
   let rat = switch (a, b) {
-  | (Rational(an, ad, c), Rational(bn, bd, bc)) if Real_Constant.equal(c, bc) =>
+  | (Rational(an, ad, c), Rational(bn, bd, bc)) if Real_Constant.eq(c, bc) =>
     open SafeInt
     let ad = ofInt(ad)
     let bd = ofInt(bd)
@@ -137,7 +137,7 @@ let mul = (a, b) => {
 let div = (a, b) => {
   let rat = switch (a, b) {
   | (_, Rational(0, _, _)) => Some(nan)
-  | (Rational(an, ad, ac), Rational(bn, bd, bc)) if Real_Constant.equal(ac, bc) =>
+  | (Rational(an, ad, ac), Rational(bn, bd, bc)) if Real_Constant.eq(ac, bc) =>
     divRat(an, ad, bn, bd, Unit)
   | (Rational(an, ad, c), Rational(bn, bd, Unit)) => divRat(an, ad, bn, bd, c)
   | (Rational(an, ad, Pi(aExp)), Rational(bn, bd, Pi(bExp))) =>

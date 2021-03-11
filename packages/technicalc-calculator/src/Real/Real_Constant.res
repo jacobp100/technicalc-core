@@ -64,7 +64,7 @@ let simplify = a =>
   | _ => None
   }
 
-let equal = (a, b) =>
+let eq = (a, b) =>
   switch (a, b) {
   | (Unit, Unit) => true
   | (Pi(a), Pi(b))
@@ -74,4 +74,4 @@ let equal = (a, b) =>
   | _ => false
   }
 
-let \"=" = equal
+let \"=" = eq

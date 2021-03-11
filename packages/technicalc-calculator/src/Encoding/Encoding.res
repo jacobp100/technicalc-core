@@ -90,13 +90,13 @@ let readUint = ({string, index} as reader): option<int> => {
 }
 
 let encodeInt = value => {
-  let value = land(value, lsl(1, 31)) != 0 ? lor(lsl(lnot(value), 1), 1) : lsl(value, 1)
+  let value = value < 0 ? lnot(value)->lsl(1)->lor(1) : lsl(value, 1)
   encodeUint(value)
 }
 
 let readInt = reader =>
   switch readUint(reader) {
-  | Some(value) => Some(land(value, 1) != 0 ? lnot(lsr(value, 1)) : lsr(value, 1))
+  | Some(value) => Some(land(value, 1) != 0 ? lsr(value, 1)->lnot : lsr(value, 1))
   | None => None
   }
 

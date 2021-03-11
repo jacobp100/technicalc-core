@@ -2,7 +2,7 @@ open Value_Types
 open Value_Base
 
 let arg = (re, im) =>
-  if !Real.equal(re, Real.zero) {
+  if !Real.eq(re, Real.zero) {
     let reF = Real.toDecimal(re)
     let imF = Real.toDecimal(im)
     Real.Decimal(Decimal.atan2(imF, reF))
