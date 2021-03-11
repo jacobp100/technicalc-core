@@ -28,6 +28,15 @@ const evalPlugin = {
   },
 };
 
+const decimalJsLightPlugin = {
+  name: "decimalJsLightPlugin",
+  setup(build) {
+    build.onResolve({ filter: /decimal\.js$/ }, () => {
+      return { path: require.resolve("decimal.js-light") };
+    });
+  },
+};
+
 const minifyDecimalJsPlugin = {
   name: "minifyDecimalJsPlugin",
   setup(build) {
@@ -131,7 +140,7 @@ build({
   outfile: new URL("client.js", dist),
   format: "umd",
   globalName: "Client",
-  plugins: [minifyDecimalJsPlugin, evalPlugin],
+  plugins: [decimalJsLightPlugin, minifyDecimalJsPlugin, evalPlugin],
 });
 build({
   entryPoints: [new URL("src/Worker.mjs", import.meta.url).pathname],
