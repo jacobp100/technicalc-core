@@ -238,7 +238,7 @@ let argEndIndex = (ast: array<t>, index) => {
 }
 
 type normalizationState =
-  | Ok
+  | Normalised
   | GenericError
   | TooFewArgsError(int)
 
@@ -248,14 +248,14 @@ type normalizationState =
     | (0, Some(Arg)) => GenericError
     | (_, Some(Arg)) => normalizationState(ast, remaining - 1, i + 1)
     | (_, Some(v)) => normalizationState(ast, remaining + argCountExn(v), i + 1)
-    | (0, None) => Ok
+    | (0, None) => Normalised
     | (_, None) => TooFewArgsError(remaining)
     }
 )
 
 let normalize = (ast: array<t>) =>
   switch normalizationState(ast, 0, 0) {
-  | Ok => ast
+  | Normalised => ast
   | GenericError =>
     let remaining = ref(0)
     let ast = Belt.Array.keepU(ast, (. element) => {

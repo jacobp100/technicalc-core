@@ -12,7 +12,7 @@ type openBracket = {
   startElementIndex: int,
   endElementIndex: int,
   fn: option<funcitionLike>,
-  i: int,
+  i': int,
 }
 
 // Rather than %%private everything (which currently has syntax), just wrap in a block
@@ -196,7 +196,7 @@ let parse = {
   let handleBrackets = elements => {
     let rec iter = (elements, openBracketStack, elementIndex) =>
       switch Belt.Array.get(elements, elementIndex) {
-      | Some(Unresolved(OpenBracket, i, _)) =>
+      | Some(Unresolved(OpenBracket, _, i')) =>
         let fnIndex = elementIndex - 1
         let fn = switch Belt.Array.get(elements, fnIndex) {
         | Some(UnresolvedFunction(fn, _, _)) => Some(fn)
@@ -208,7 +208,7 @@ let parse = {
           startElementIndex: startElementIndex,
           endElementIndex: endElementIndex,
           fn: fn,
-          i: i,
+          i': i',
         }
         iter(elements, list{openBracket, ...openBracketStack}, endElementIndex)
       | Some(Unresolved(CloseBracket(superscript), _, i')) =>
@@ -243,7 +243,7 @@ let parse = {
       | None =>
         switch openBracketStack {
         | list{} => next(elements)
-        | list{{i}, ..._} => Error(i)
+        | list{{i'}, ..._} => Error(i')
         }
       }
     iter(elements, list{}, 0)

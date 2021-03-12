@@ -1,54 +1,107 @@
 open Jest
 open AST_Types
 
-let parseEval = v =>
+let parse = v =>
   switch Value.parse(v) {
   | Ok(v) =>
-    open TechniCalcCalculator.AST
-    eval(~config=defaultConfig, ~context=emptyContext, v)->Some
-  | _ => None
+    TechniCalcCalculator.Value.toString({
+      open TechniCalcCalculator.AST
+      eval(~config=defaultConfig, ~context=emptyContext, v)
+    })->Ok
+  | Error(i) => Error(i)
   }
 
-let ofString = x => TechniCalcCalculator.Value.ofString(x)->Belt.Option.getExn
-
 test("parses with bodmas", (. ()) => {
-  parseEval([N1_S, Sub, N2_S, Add, N3_S])->expect->toEqual(Some(ofString("2")))
+  parse([N1_S, Sub, N2_S, Add, N3_S])->expect->toEqual(Ok("2"))
 
-  parseEval([N4_S, Div, N2_S, Mul, N3_S])->expect->toEqual(Some(ofString("6")))
+  parse([N4_S, Div, N2_S, Mul, N3_S])->expect->toEqual(Ok("6"))
 })
 
 test("parses unary operators", (. ()) => {
-  parseEval([Sub, N2_S])->expect->toEqual(Some(ofString("-2")))
+  parse([Sub, N2_S])->expect->toEqual(Ok("-2"))
 
-  parseEval([Sub, Sub, Sub, N2_S])->expect->toEqual(Some(ofString("-2")))
+  parse([Sub, Sub, Sub, N2_S])->expect->toEqual(Ok("-2"))
 
-  parseEval([N1_S, Sub, Sub, Sub, N2_S])->expect->toEqual(Some(ofString("-1")))
+  parse([N1_S, Sub, Sub, Sub, N2_S])->expect->toEqual(Ok("-1"))
 })
 
 test("parses brackets", (. ()) => {
-  parseEval([N2_S, Mul, OpenBracket, N3_S, Add, N4_S, CloseBracketS, Mul, N2_S])
+  parse([N2_S, Mul, OpenBracket, N3_S, Add, N4_S, CloseBracketS, Mul, N2_S])
   ->expect
-  ->toEqual(Some(ofString("28")))
+  ->toEqual(Ok("28"))
+
+  parse([
+    N2_S,
+    Mul,
+    OpenBracket,
+    N3_S,
+    Mul,
+    OpenBracket,
+    N4_S,
+    Add,
+    N4_S,
+    CloseBracketS,
+    Mul,
+    N3_S,
+    CloseBracketS,
+    Mul,
+    N2_S,
+  ])
+  ->expect
+  ->toEqual(Ok("288"))
+
+  parse([
+    N2_S,
+    Mul,
+    OpenBracket,
+    OpenBracket,
+    N4_S,
+    Add,
+    N4_S,
+    CloseBracketS,
+    Sub,
+    OpenBracket,
+    N3_S,
+    Add,
+    N3_S,
+    CloseBracketS,
+    CloseBracketS,
+    Mul,
+    N2_S,
+  ])
+  ->expect
+  ->toEqual(Ok("8"))
 })
 
 test("parses brackets with powers", (. ()) => {
-  parseEval([OpenBracket, N1_S, Add, N2_S, CloseBracketS, Superscript1, N2_S, Arg])
+  parse([OpenBracket, N1_S, Add, N2_S, CloseBracketS, Superscript1, N2_S, Arg])
   ->expect
-  ->toEqual(Some(ofString("9")))
+  ->toEqual(Ok("9"))
 })
 
 test("parses functions", (. ()) => {
-  parseEval([CosS, N0_S])->expect->toEqual(Some(ofString("1")))
+  parse([CosS, N0_S])->expect->toEqual(Ok("1"))
 
-  parseEval([CosS, OpenBracket, N0_S, CloseBracketS])->expect->toEqual(Some(ofString("1")))
+  parse([CosS, OpenBracket, N0_S, CloseBracketS])->expect->toEqual(Ok("1"))
 })
 
 test("parses iteration operators", (. ()) => {
-  parseEval([Sum2, N0_S, Arg, N3_S, Arg, IteratorXS, Add, N1_S])
-  ->expect
-  ->toEqual(Some(ofString("7")))
+  parse([Sum2, N0_S, Arg, N3_S, Arg, IteratorXS, Add, N1_S])->expect->toEqual(Ok("7"))
 
-  parseEval([Sum2, N0_S, Arg, N3_S, Arg, OpenBracket, IteratorXS, Add, N1_S, CloseBracketS])
+  parse([Sum2, N0_S, Arg, N3_S, Arg, OpenBracket, IteratorXS, Add, N1_S, CloseBracketS])
   ->expect
-  ->toEqual(Some(ofString("10")))
+  ->toEqual(Ok("10"))
+})
+
+test("parses postfixes", (. ()) => {
+  parse([N3_S, Factorial])->expect->toEqual(Ok("6"))
+})
+
+test("selects invalid operators", (. ()) => {
+  parse([N1_S, Mul])->expect->toEqual(Error(2))
+})
+
+test("selects extraneous bracket elements", (. ()) => {
+  parse([N1_S, OpenBracket, N2_S, N3_S])->expect->toEqual(Error(2))
+  parse([N1_S, N2_S, CloseBracketS, N3_S])->expect->toEqual(Error(3))
 })
