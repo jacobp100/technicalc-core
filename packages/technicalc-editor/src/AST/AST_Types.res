@@ -258,7 +258,7 @@ let normalize = (ast: array<t>) =>
   | Ok => ast
   | GenericError =>
     let remaining = ref(0)
-    let ast = Belt.Array.keep(ast, element => {
+    let ast = Belt.Array.keepU(ast, (. element) => {
       if element != Arg {
         remaining := remaining.contents + argCountExn(element)
         true

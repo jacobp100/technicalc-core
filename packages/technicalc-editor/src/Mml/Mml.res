@@ -85,13 +85,13 @@ let map = (accum, range) => Mml_Accum.toString(accum, range)
 %%private(
   let table = (~numRows, ~numColumns, elements, superscript, range) => {
     let inner =
-      Belt.Array.makeBy(numRows, row =>
-        Belt.Array.makeBy(numColumns, column =>
+      Belt.Array.makeByU(numRows, (. row) => {
+        Belt.Array.makeByU(numColumns, (. column) => {
           createElement("mtd", elements->Belt.Array.getUnsafe(row * numColumns + column))
-        )
+        })
         ->StringUtil.join
         ->createElement("mtr", _)
-      )
+      })
       ->StringUtil.join
       ->createElement("mtable", _)
     let body = createElement("mo", "[") ++ inner ++ createElement("mo", "]")

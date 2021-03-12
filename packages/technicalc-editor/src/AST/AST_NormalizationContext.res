@@ -19,19 +19,28 @@ let classify = element =>
   }
 
 %%private(
+  @inline
+  let tailOrEmpty = l =>
+    switch l {
+    | list{_, ...tail} => tail
+    | list{} => list{}
+    }
+)
+
+%%private(
   let validityStackReducer = prependValidityStack => {
-    let reducerFn = ((range, validityStack), element, i) => {
+    let reducerFn = (. (range, validityStack), element, i) => {
       let range = switch validityStack {
       | list{false, ..._} => Ranges.addSequentialIndex(range, i)
       | _ => range
       }
       let validityStack = switch element {
-      | AST_Types.Arg => Belt.List.tail(validityStack)->Belt.Option.getWithDefault(validityStack)
+      | AST_Types.Arg => tailOrEmpty(validityStack)
       | e => prependValidityStack(. validityStack, e)
       }
       (range, validityStack)
     }
-    ast => Belt.Array.reduceWithIndex(ast, (Ranges.empty, list{}), reducerFn)->fst
+    ast => Belt.Array.reduceWithIndexU(ast, (Ranges.empty, list{}), reducerFn)->fst
   }
 )
 

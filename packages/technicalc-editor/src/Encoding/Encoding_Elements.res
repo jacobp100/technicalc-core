@@ -23,9 +23,7 @@ open TechniCalcCalculator.Encoding
 //   | _ => None
 //   };
 
-%%private(
-  let encodeCustomAtom = (~mml, ~value) => encodeString(mml) ++ value
-)
+%%private(let encodeCustomAtom = (~mml, ~value) => encodeString(mml) ++ value)
 
 %%private(
   let readCustomAtom = reader =>
@@ -38,7 +36,7 @@ open TechniCalcCalculator.Encoding
 )
 
 %%private(
-  let encodeElement = (. element: AST.t) =>
+  let encodeElement = (element: AST.t) =>
     switch element {
     | UnitConversion(_) => ""
     | CustomAtomS({mml, value}) => encodeUint(257) ++ encodeCustomAtom(~mml, ~value)
@@ -49,7 +47,7 @@ open TechniCalcCalculator.Encoding
 )
 
 %%private(
-  let readElement = (. reader) =>
+  let readElement = reader =>
     switch readUint(reader) {
     | Some(256) => None
     | Some(257) => readCustomAtom(reader)

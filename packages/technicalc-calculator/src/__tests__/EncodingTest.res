@@ -47,7 +47,7 @@ test("string optimisation for numbers", (. ()) => {
 
 test("arrays", (. ()) => {
   let array = [1, 2, 3]
-  let encoded = encodeArray(array, (. value) => encodeUint(value))
-  let decoded = read(encoded, reader => readArray(reader, (. reader) => readUint(reader)))
+  let encoded = encodeArray(array, encodeUint)
+  let decoded = read(encoded, reader => readArray(reader, readUint))
   expect(decoded)->toEqual(Some(array))
 })

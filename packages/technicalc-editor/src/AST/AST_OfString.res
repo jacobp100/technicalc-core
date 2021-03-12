@@ -115,9 +115,9 @@ open AST_Types
 )
 
 let ofString = (input: string) => {
-  let input = Belt.List.makeByU(String.length(input), (. i): char =>
+  let input = Belt.List.makeByU(String.length(input), (. i): char => {
     Obj.magic(StringUtil.charAtUnsafe(input, i))
-  )
+  })
 
   let elements = iter(input)->Belt.List.toArray->ArrayUtil.reverseInPlace
   normalize(elements)

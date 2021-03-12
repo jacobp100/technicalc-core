@@ -1,4 +1,5 @@
 %%private(
+  @inline
   let addDependency = (dependency: string, dependencies) => {
     let contained = Belt.List.someU(dependencies, (. x) => x == dependency)
     contained ? dependencies : list{dependency, ...dependencies}

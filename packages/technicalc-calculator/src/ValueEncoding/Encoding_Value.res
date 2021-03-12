@@ -62,7 +62,7 @@ open Encoding
 )
 
 %%private(
-  let encodeScalar = (. scalar: Scalar_Types.t) =>
+  let encodeScalar = (scalar: Scalar_Types.t) =>
     switch scalar {
     | #Z => encodeUint(0)
     | #R(re) => encodeUint(1) ++ encodeReal(re)
@@ -72,7 +72,7 @@ open Encoding
 )
 
 %%private(
-  let readScalar = (. reader) =>
+  let readScalar = reader =>
     switch readUint(reader) {
     | Some(0) => Some(Scalar_Base.zero)
     | Some(1) =>
@@ -96,21 +96,21 @@ open Encoding
 
 let encodeValue = (value: Value_Types.t) =>
   switch value {
-  | #...Scalar.t as scalar => encodeUint(0) ++ encodeScalar(. scalar)
+  | #...Scalar.t as scalar => encodeUint(0) ++ encodeScalar(scalar)
   | #V(elements) => encodeUint(1) ++ encodeArray(elements, encodeScalar)
   | #M({numRows, numColumns, elements}) =>
     encodeUint(2) ++
     encodeUint(numRows) ++
     encodeUint(numColumns) ++
     encodeArray(elements, encodeScalar)
-  | #P(scalar) => encodeUint(3) ++ encodeScalar(. scalar)
+  | #P(scalar) => encodeUint(3) ++ encodeScalar(scalar)
   | #N => encodeUint(4)
   }
 
 let readValue = (reader): option<Value_Types.t> =>
   switch readUint(reader) {
   | Some(0) =>
-    switch readScalar(. reader) {
+    switch readScalar(reader) {
     | Some(scalar) => Some(Value_Base.ofScalar(scalar))
     | None => None
     }
@@ -127,7 +127,7 @@ let readValue = (reader): option<Value_Types.t> =>
     | _ => None
     }
   | Some(3) =>
-    switch readScalar(. reader) {
+    switch readScalar(reader) {
     | Some(scalar) => Some(Value_Base.ofPercent(scalar))
     | None => None
     }

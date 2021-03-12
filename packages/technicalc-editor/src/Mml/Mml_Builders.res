@@ -4,8 +4,8 @@ let createElement = (~attributes=list{}, element, body) => {
   | attributes =>
     let attributes =
       attributes
-      ->Belt.List.mapU((. (p, v)) => `${p}="${v}"`)
       ->Belt.List.toArray
+      ->Belt.Array.mapU((. (p, v)) => `${p}="${v}"`)
       ->StringUtil.joinWith(" ")
 
     element ++ " " ++ attributes

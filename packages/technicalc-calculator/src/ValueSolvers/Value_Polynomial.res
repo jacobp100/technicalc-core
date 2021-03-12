@@ -40,7 +40,7 @@ let quadratic = (a, b, c) => {
     let cf = toDecimal(c)->Decimal.toFloat
     let df = toDecimal(d)->Decimal.toFloat
 
-    values->Belt.Array.reduce(None, (current, value) =>
+    values->Belt.Array.reduceU(None, (. current, value) => {
       switch current {
       | None =>
         let x0f = Raphson.cubic(af, bf, cf, df, value)
@@ -54,7 +54,7 @@ let quadratic = (a, b, c) => {
         }
       | v => v
       }
-    )
+    })
   }
 )
 

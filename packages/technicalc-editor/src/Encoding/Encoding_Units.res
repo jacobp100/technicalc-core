@@ -20,12 +20,12 @@ open TechniCalcCalculator.Unit_Types
 )
 
 %%private(
-  let encodeUnitPart = (. {prefix, unit, power}: unitPart) =>
+  let encodeUnitPart = ({prefix, unit, power}: unitPart) =>
     prefixToUint(prefix)->encodeUint ++ unitToUint(unit)->encodeUint ++ encodeInt(power)
 )
 
 %%private(
-  let readUnitPower = (. reader): option<TechniCalcCalculator.Unit_Types.unitPart> =>
+  let readUnitPower = (reader): option<TechniCalcCalculator.Unit_Types.unitPart> =>
     switch (readUint(reader), readUint(reader), readInt(reader)) {
     | (Some(prefix), Some(unit), Some(power)) =>
       switch (prefixOfUint(prefix), unitOfUint(unit)) {

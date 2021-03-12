@@ -258,9 +258,9 @@ let insertArray = (
 ) => {
   let elements = AST.normalize(elements)
 
-  let valid = Belt.Array.every(insertedElements, element =>
+  let valid = Belt.Array.everyU(insertedElements, (. element) => {
     AST_NormalizationContext.elementIsValid(elements, element, index)
-  )
+  })
   if valid {
     let elements = ArrayUtil.insertArray(elements, insertedElements, index)
 

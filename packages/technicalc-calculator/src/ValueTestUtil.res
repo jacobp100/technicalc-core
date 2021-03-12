@@ -16,7 +16,7 @@ let percentOfFloat = float => Scalar.ofFloat(float)->Value.ofPercent
 let resolve = a => AST_Evaluation.eval(a)
 let resolveWithContext = (jsContext, a) => {
   let context =
-    Js.Dict.entries(jsContext)->Belt.Array.reduce(AST_Context.empty, (accum, (key, value)) =>
+    Js.Dict.entries(jsContext)->Belt.Array.reduceU(AST_Context.empty, (. accum, (key, value)) =>
       AST_Context.set(accum, key, value)
     )
   AST_Evaluation.eval(~context, a)

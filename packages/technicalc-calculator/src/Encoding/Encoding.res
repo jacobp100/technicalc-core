@@ -101,7 +101,7 @@ let readInt = reader =>
   }
 
 let encodeArray = (array, encoder) =>
-  encodeUint(Belt.Array.length(array)) ++ Belt.Array.mapU(array, encoder)->StringUtil.join
+  encodeUint(Belt.Array.length(array)) ++ Belt.Array.map(array, encoder)->StringUtil.join
 
 let readArray = (reader, decoder) =>
   switch readUint(reader) {
@@ -110,7 +110,7 @@ let readArray = (reader, decoder) =>
 
     let rec iter = i =>
       if i < length {
-        switch decoder(. reader) {
+        switch decoder(reader) {
         | Some(value) =>
           Belt.Array.setExn(out, i, value)
           iter(i + 1)
@@ -138,14 +138,14 @@ type stringOptimisation =
 
 let encodeString = (~optimizeFor=Text, string) => {
   let charXor = charXor(optimizeFor)
-  Belt.Array.makeByU(String.length(string), (. i) =>
+  Belt.Array.makeByU(String.length(string), (. i) => {
     lxor(StringUtil.charAtUnsafe(string, i), charXor)
-  )->encodeArray((. value) => encodeUint(value))
+  })->encodeArray(encodeUint)
 }
 
 let readString = (~optimizeFor=Text, reader) => {
   let charXor = charXor(optimizeFor)
-  let readChar = (. reader) =>
+  let readChar = reader =>
     switch readUint(reader) {
     | Some(char) => Some(StringUtil.ofChar(lxor(char, charXor)))
     | None => readInvalid(reader)

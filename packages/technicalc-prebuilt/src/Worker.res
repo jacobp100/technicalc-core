@@ -14,7 +14,7 @@ let make = self => {
   open TechniCalcCalculator.AST
 
   let decodeContext = context =>
-    Belt.Array.reduce(context, TechniCalcCalculator.AST_Context.empty, (accum, (key, value)) => {
+    Belt.Array.reduceU(context, TechniCalcCalculator.AST_Context.empty, (. accum, (key, value)) => {
       open TechniCalcCalculator
       Value_Encoding.decode(value)
       ->Belt.Option.getWithDefault(Value_Base.nan)

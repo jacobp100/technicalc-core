@@ -7,9 +7,9 @@ type populatedCaptureGroup = {
 
 %%private(
   let contains = (captureGroups, ~placeholderMml, ~elements) =>
-    Belt.List.someU(captureGroups, (. x) =>
+    Belt.List.someU(captureGroups, (. x) => {
       placeholderMml == x.placeholderMml && Belt.Array.eqU(elements, x.elements, elementsEqU)
-    )
+    })
 )
 
 let populatedCaptureGroups = (elements: array<AST.t>): array<populatedCaptureGroup> => {
