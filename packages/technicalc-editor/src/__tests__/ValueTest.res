@@ -4,10 +4,8 @@ open AST_Types
 let parseEval = v =>
   switch Value.parse(v) {
   | Ok(v) =>
-    {
-      open TechniCalcCalculator.AST
-      eval(~config=defaultConfig, ~context=emptyContext, v)
-    }->Some
+    open TechniCalcCalculator.AST
+    eval(~config=defaultConfig, ~context=emptyContext, v)->Some
   | _ => None
   }
 
@@ -27,11 +25,17 @@ test("parses unary operators", (. ()) => {
   parseEval([N1_S, Sub, Sub, Sub, N2_S])->expect->toEqual(Some(ofString("-1")))
 })
 
-test("parses brackets", (. ()) =>
+test("parses brackets", (. ()) => {
   parseEval([N2_S, Mul, OpenBracket, N3_S, Add, N4_S, CloseBracketS, Mul, N2_S])
   ->expect
   ->toEqual(Some(ofString("28")))
-)
+})
+
+test("parses brackets with powers", (. ()) => {
+  parseEval([OpenBracket, N1_S, Add, N2_S, CloseBracketS, Superscript1, N2_S, Arg])
+  ->expect
+  ->toEqual(Some(ofString("9")))
+})
 
 test("parses functions", (. ()) => {
   parseEval([CosS, N0_S])->expect->toEqual(Some(ofString("1")))

@@ -3,10 +3,8 @@ open Jest
 let parseEval = v =>
   switch Value.parse(v) {
   | Ok(v) =>
-    {
-      open TechniCalcCalculator.AST
-      eval(~config=defaultConfig, ~context=emptyContext, v)
-    }->Some
+    open TechniCalcCalculator.AST
+    eval(~config=defaultConfig, ~context=emptyContext, v)->Some
   | _ => None
   }
 

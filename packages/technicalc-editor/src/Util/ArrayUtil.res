@@ -1,8 +1,8 @@
-let foldMake = (n, initialValue, fn) => {
+let foldMakeU = (n, initialValue, fn) => {
   let nextArr = Belt.Array.makeUninitializedUnsafe(n)
   let accum = ref(initialValue)
   for i in 0 to n - 1 {
-    let (nextAccum, element) = fn(accum.contents, i)
+    let (nextAccum, element) = fn(. accum.contents, i)
     Belt.Array.setExn(nextArr, i, element)
     accum := nextAccum
   }

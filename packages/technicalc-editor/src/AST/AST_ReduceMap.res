@@ -374,7 +374,7 @@ let reduceMap = (
   }
   and vectorS = (i, ~numElements) => {
     let i' = i + 1
-    let (i', elements) = ArrayUtil.foldMake(numElements, i', (s, _) => {
+    let (i', elements) = ArrayUtil.foldMakeU(numElements, i', (. s, _) => {
       let (element, index) = readArg(s)
       (index, element)
     })
@@ -383,7 +383,7 @@ let reduceMap = (
   }
   and tableS = (i, ~numRows, ~numColumns) => {
     let i' = i + 1
-    let (i', elements) = ArrayUtil.foldMake(numRows * numColumns, i', (s, _) => {
+    let (i', elements) = ArrayUtil.foldMakeU(numRows * numColumns, i', (. s, _) => {
       let (element, index) = readArg(s)
       (index, element)
     })
