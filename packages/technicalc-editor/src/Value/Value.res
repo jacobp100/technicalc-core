@@ -1,28 +1,30 @@
 open AST
 open Value_Builders
 
+type accum = list<TechniCalcEditor.Value_Types.partialNode>
+
 let parse = (elements: array<t>) => {
   let error = ref(None)
 
-  let reduce = (accum, element, (i, i')) =>
+  let reduce = (elementsRev: accum, element, (i, i')) =>
     if error.contents == None {
       switch element {
       | Placeholder(_)
       | CaptureGroupPlaceholder(_) =>
         error := Some(i)
-        MutableListBuilder.empty
-      | _ =>
-        let value = Value_Element.map(element, i, i')
-        MutableListBuilder.append(accum, value)
+        list{}
+      | _ => list{Value_Element.map(element, i, i'), ...elementsRev}
       }
     } else {
-      MutableListBuilder.empty
+      list{}
     }
 
-  let map = (accum, (i, _)): TechniCalcCalculator.AST_Types.t =>
+  let map = (elementsRev: accum, (i, _)): TechniCalcCalculator.AST_Types.t =>
     if error.contents == None {
-      let elements = MutableListBuilder.toList(accum)
-      switch Value_Row.next(elements) {
+      let elements = Belt.List.toArray(elementsRev)
+      Belt.Array.reverseInPlace(elements)
+
+      switch Value_Row.parse(elements) {
       | Ok(root) => root
       | Error(i) =>
         error := Some(i)
@@ -35,7 +37,7 @@ let parse = (elements: array<t>) => {
       NaN
     }
 
-  let root = reduceMap(elements, ~reduce, ~map, ~initial=MutableListBuilder.empty)
+  let root = reduceMap(elements, ~reduce, ~map, ~initial=list{})
 
   switch error.contents {
   | Some(i) => Error(i)

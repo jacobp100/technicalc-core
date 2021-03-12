@@ -7,29 +7,29 @@ type bracketRange = {
 }
 
 %%private(
-  let rec prependBracketRanges = (ast: array<t>, ranges, index) => {
-    let rec iter = (~ranges, ~stack, i) =>
+  let rec prependBracketRanges = (ast: array<t>, rangesRev, index) => {
+    let rec iter = (~rangesRev, ~stack, i) =>
       switch (Belt.Array.get(ast, i), stack) {
-      | (Some(Arg) | None, _) => (ranges, i)
-      | (Some(OpenBracket), _) => iter(~ranges, ~stack=list{i, ...stack}, i + 1)
+      | (Some(Arg) | None, _) => (rangesRev, i)
+      | (Some(OpenBracket), _) => iter(~rangesRev, ~stack=list{i, ...stack}, i + 1)
       | (Some(CloseBracketS), list{start, ...stack}) =>
         let end = i + 1
         let level = Belt.List.length(stack)
         let range = {start: start, end: end, level: level}
-        iter(~ranges=list{range, ...ranges}, ~stack, i + 1)
+        iter(~rangesRev=list{range, ...rangesRev}, ~stack, i + 1)
       | (Some(element), _) =>
         let argCount = argCountExn(element)
-        let (ranges, i) = iterArgs(~argCount, ast, ranges, i)
-        iter(~ranges, ~stack, i + 1)
+        let (rangesRev, i) = iterArgs(~argCount, ast, rangesRev, i)
+        iter(~rangesRev, ~stack, i + 1)
       }
-    iter(~ranges, ~stack=list{}, index)
+    iter(~rangesRev, ~stack=list{}, index)
   }
-  and iterArgs = (~argCount, ast, ranges, i) =>
+  and iterArgs = (~argCount, ast, rangesRev, i) =>
     if argCount > 0 {
-      let (ranges, i) = prependBracketRanges(ast, ranges, i + 1)
-      iterArgs(~argCount=argCount - 1, ast, ranges, i)
+      let (rangesRev, i) = prependBracketRanges(ast, rangesRev, i + 1)
+      iterArgs(~argCount=argCount - 1, ast, rangesRev, i)
     } else {
-      (ranges, i)
+      (rangesRev, i)
     }
 )
 

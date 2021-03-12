@@ -228,9 +228,8 @@ module BracketGroups = {
         MmlPrettifier.concat,
       )
     | list{} =>
-      let attributes = invalidAttributes
       createElementWithRange(
-        ~attributes,
+        ~attributes=invalidAttributes,
         ~superscript?,
         range,
         "mo",

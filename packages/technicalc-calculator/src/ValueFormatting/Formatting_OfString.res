@@ -245,7 +245,7 @@ type token =
 type rec astConstructor =
   | Scalar(Scalar.t)
   | Percent(Scalar.t)
-  | Row(list<astConstructor>)
+  | Row(array<astConstructor>)
 
 %%private(
   let parseValue = (~base, tokens) => {
@@ -268,7 +268,10 @@ type rec astConstructor =
         }
         switch elementsRev {
         | Some(list{scalar}) => Some((scalar, rest))
-        | Some(elementsRev) => Some((Row(Belt.List.reverse(elementsRev)), rest))
+        | Some(elementsRev) =>
+          let elements = Belt.List.toArray(elementsRev)
+          Belt.Array.reverseInPlace(elements)
+          Some((Row(elements), rest))
         | None => None
         }
       | list{Comma, ...rest} if level == 0 =>
@@ -299,19 +302,19 @@ type rec astConstructor =
 
     switch ast {
     | Some(Scalar(scalar)) => Some(Value_Base.ofScalar(scalar))
-    | Some(Row(list{Scalar(a), Scalar(b)}))
-    | Some(Row(list{Row(list{Scalar(a)}), Row(list{Scalar(b)})})) =>
+    | Some(Row([Scalar(a), Scalar(b)]))
+    | Some(Row([Row([Scalar(a)]), Row([Scalar(b)])])) =>
       Some(Value_Base.ofVector([a, b]))
-    | Some(Row(list{Scalar(a), Scalar(b), Scalar(c)}))
-    | Some(Row(list{Row(list{Scalar(a)}), Row(list{Scalar(b)}), Row(list{Scalar(c)})})) =>
+    | Some(Row([Scalar(a), Scalar(b), Scalar(c)]))
+    | Some(Row([Row([Scalar(a)]), Row([Scalar(b)]), Row([Scalar(c)])])) =>
       Some(Value_Base.ofVector([a, b, c]))
-    | Some(Row(list{Row(list{Scalar(a), Scalar(b)}), Row(list{Scalar(c), Scalar(d)})})) =>
+    | Some(Row([Row([Scalar(a), Scalar(b)]), Row([Scalar(c), Scalar(d)])])) =>
       Matrix.make(2, 2, [a, b, c, d])->Value_Base.ofMatrix->Some
-    | Some(Row(list{
-        Row(list{Scalar(a), Scalar(b), Scalar(c)}),
-        Row(list{Scalar(d), Scalar(e), Scalar(f)}),
-        Row(list{Scalar(g), Scalar(h), Scalar(i)}),
-      })) =>
+    | Some(Row([
+        Row([Scalar(a), Scalar(b), Scalar(c)]),
+        Row([Scalar(d), Scalar(e), Scalar(f)]),
+        Row([Scalar(g), Scalar(h), Scalar(i)]),
+      ])) =>
       Matrix.make(3, 3, [a, b, c, d, e, f, g, h, i])->Value_Base.ofMatrix->Some
     | _ => None
     }

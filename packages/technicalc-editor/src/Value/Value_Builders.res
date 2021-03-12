@@ -32,7 +32,7 @@ let handleGenericFunction = (arg, fn) =>
   | Gamma => Gamma(arg)
   }
 
-let handleFunction = (body, fn) =>
+let handleFunction = (fn, body) =>
   switch fn {
   | Value_Types.GenericFunction({func, resultSuperscript}) =>
     let value = handleGenericFunction(body, func)

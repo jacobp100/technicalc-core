@@ -10,7 +10,6 @@
   "license": "MIT",
   "devDependencies": {
     "bs-platform": "^9.0.1",
-    "decimal.js-light": "^2.5.1",
     "esbuild": "^0.8.49",
     "mathjax-full": "3.0.1",
     "node-fetch": "^2.6.1",

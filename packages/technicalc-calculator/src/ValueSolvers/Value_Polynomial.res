@@ -33,14 +33,14 @@ let quadratic = (a, b, c) => {
 
     let midpoint = (m0 +. m1) /. 2.
     let range = FloatUtil.abs(m0 -. m1)
-    let values = list{midpoint, midpoint -. range, midpoint +. range}
+    let values = [midpoint, midpoint -. range, midpoint +. range]
 
     let af = toDecimal(a)->Decimal.toFloat
     let bf = toDecimal(b)->Decimal.toFloat
     let cf = toDecimal(c)->Decimal.toFloat
     let df = toDecimal(d)->Decimal.toFloat
 
-    values->Belt.List.reduce(None, (current, value) =>
+    values->Belt.Array.reduce(None, (current, value) =>
       switch current {
       | None =>
         let x0f = Raphson.cubic(af, bf, cf, df, value)
