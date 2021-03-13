@@ -30,13 +30,13 @@ let parse = {
 
   let parseRest = elements => {
     let rec iter = (current, elementIndex) =>
-      switch (current, Belt.Array.get(elements, elementIndex)) {
+      switch (current, ArraySlice.get(elements, elementIndex)) {
       | (_, Some(Resolved(next))) =>
         let value = switch current {
         | Some(a) => Node.Mul(a, next)
         | None => next
         }
-        let (value, elementIndex) = switch Belt.Array.get(elements, elementIndex + 1) {
+        let (value, elementIndex) = switch ArraySlice.get(elements, elementIndex + 1) {
         | Some(Unresolved(Angle(angle), _, _)) => (applyAngle(value, angle), elementIndex + 1)
         | _ => (value, elementIndex)
         }
@@ -51,17 +51,20 @@ let parse = {
   let next = parseRest
 
   let parsePostfixes = elements =>
-    switch Belt.Array.get(elements, 0) {
+    switch ArraySlice.get(elements, 0) {
     | Some(Resolved(initialAccum)) =>
       let rec iter = (accum: TechniCalcEditor.Value_Types.node, elementIndex) => {
-        switch Belt.Array.get(elements, elementIndex) {
+        switch ArraySlice.get(elements, elementIndex) {
         | Some(Unresolved(UnitConversion({fromUnits, toUnits}), _, _)) =>
           iter(Convert({body: accum, fromUnits: fromUnits, toUnits: toUnits}), elementIndex + 1)
         | Some(Unresolved(Factorial, _, _)) => iter(Factorial(accum), elementIndex + 1)
         | Some(Unresolved(Conj, _, _)) => iter(Conj(accum), elementIndex + 1)
         | _ =>
-          let nextElements = Belt.Array.sliceToEnd(elements, elementIndex)
-          let nextElements = Belt.Array.concat([Resolved(accum)], nextElements)
+          let nextElements =
+            ArraySlice.sliceToEnd(elements, elementIndex)
+            ->ArraySlice.toArray
+            ->Belt.Array.concat([Resolved(accum)], _)
+            ->ArraySlice.ofArray
           next(nextElements)
         }
       }
@@ -77,16 +80,17 @@ let parse = {
       | (Some(number), None) => Some(Resolved(number))
       | _ => None
       }
-      let nextElements = Belt.Array.sliceToEnd(elements, elementIndex)
+      let nextElements = ArraySlice.sliceToEnd(elements, elementIndex)
       let nextElements = switch prependNode {
-      | Some(prependNode) => Belt.Array.concat([prependNode], nextElements)
+      | Some(prependNode) =>
+        ArraySlice.toArray(nextElements)->Belt.Array.concat([prependNode], _)->ArraySlice.ofArray
       | None => nextElements
       }
       next(nextElements)
     }
 
-    let rec iter = (numberState, angleState: angleState, elementIndex) => {
-      let element = Belt.Array.get(elements, elementIndex)
+    let rec iter = (numberState, angleState, elementIndex) => {
+      let element = ArraySlice.get(elements, elementIndex)
 
       switch element {
       | Some(Unresolved(Angle(angle), i, _)) =>
@@ -94,7 +98,7 @@ let parse = {
         | Some(number) => Some(applyAngle(number, angle))
         | None => None
         }
-        switch (number, angleState, angle) {
+        switch (number, (angleState: angleState), angle) {
         | (Some(number), None, _) =>
           iter(Value_NumberParser.empty, Some((number, angle)), elementIndex + 1)
         | (Some(number), Some((angleAccum, Degree)), ArcMinute | ArcSecond)
@@ -119,9 +123,9 @@ let parse = {
   let next = parseNumbers
 
   let rec parseUnary = elements =>
-    switch Belt.Array.get(elements, 0) {
+    switch ArraySlice.get(elements, 0) {
     | Some(Unresolved(Operator((Add | Sub) as op), _, i')) =>
-      let rest = Belt.Array.sliceToEnd(elements, 1)
+      let rest = ArraySlice.sliceToEnd(elements, 1)
       switch parseUnary(rest) {
       | Ok(root) =>
         let root = op == Sub ? Node.Neg(root) : root
@@ -135,14 +139,17 @@ let parse = {
 
   let rec parseParenFreeFunctions = elements => {
     let rec iter = elementIndex =>
-      switch Belt.Array.get(elements, elementIndex) {
+      switch ArraySlice.get(elements, elementIndex) {
       | Some(UnresolvedFunction(fn, _, i')) =>
-        let after = Belt.Array.sliceToEnd(elements, elementIndex + 1)
+        let after = ArraySlice.sliceToEnd(elements, elementIndex + 1)
         switch parseParenFreeFunctions(after) {
         | Ok(arg) =>
-          let before = Belt.Array.slice(elements, ~offset=0, ~len=elementIndex)
-          let beforeWithResolvedFn = Belt.Array.concat(before, [Resolved(handleFunction(fn, arg))])
-          next(beforeWithResolvedFn)
+          let before =
+            ArraySlice.slice(elements, ~offset=0, ~len=elementIndex)
+            ->ArraySlice.toArray
+            ->Belt.Array.concat(_, [Resolved(handleFunction(fn, arg))])
+            ->ArraySlice.ofArray
+          next(before)
         | Error(_) as e => e
         | UnknownError => Error(i')
         }
@@ -157,8 +164,8 @@ let parse = {
     let next' = current =>
       switch current {
       | Some((elementIndex, op, i')) =>
-        let before = Belt.Array.slice(elements, ~offset=0, ~len=elementIndex)
-        let after = Belt.Array.sliceToEnd(elements, elementIndex + 1)
+        let before = ArraySlice.slice(elements, ~offset=0, ~len=elementIndex)
+        let after = ArraySlice.sliceToEnd(elements, elementIndex + 1)
         switch (binaryOperatorParser(~operatorHandled, ~next, before), next(after)) {
         | (Ok(before), Ok(after)) => Ok(handleOp(op, before, after))
         | (Error(_) as e, _)
@@ -171,7 +178,7 @@ let parse = {
       }
 
     let rec iter = (~unaryPosition, current, elementIndex) =>
-      switch Belt.Array.get(elements, elementIndex) {
+      switch ArraySlice.get(elements, elementIndex) {
       | Some(Unresolved(Operator(op), _, i')) =>
         let nextAccum =
           !unaryPosition && operatorHandled(. op) ? Some((elementIndex, op, i')) : current
@@ -195,10 +202,10 @@ let parse = {
 
   let handleBrackets = elements => {
     let rec iter = (elements, openBracketStack, elementIndex) =>
-      switch Belt.Array.get(elements, elementIndex) {
+      switch ArraySlice.get(elements, elementIndex) {
       | Some(Unresolved(OpenBracket, _, i')) =>
         let fnIndex = elementIndex - 1
-        let fn = switch Belt.Array.get(elements, fnIndex) {
+        let fn = switch ArraySlice.get(elements, fnIndex) {
         | Some(UnresolvedFunction(fn, _, _)) => Some(fn)
         | _ => None
         }
@@ -214,7 +221,7 @@ let parse = {
       | Some(Unresolved(CloseBracket(superscript), _, i')) =>
         switch openBracketStack {
         | list{{startElementIndex, endElementIndex, fn}, ...openBracketStack} =>
-          let innerElements = Belt.Array.slice(
+          let innerElements = ArraySlice.slice(
             elements,
             ~offset=endElementIndex,
             ~len=elementIndex - endElementIndex,
@@ -228,11 +235,10 @@ let parse = {
               }
               ->withSuperscript(_, superscript)
               ->Resolved
-            let nextElements = Belt.Array.concatMany([
-              Belt.Array.slice(elements, ~offset=0, ~len=startElementIndex),
-              [node],
-              Belt.Array.sliceToEnd(elements, elementIndex + 1),
-            ])
+            let before =
+              ArraySlice.slice(elements, ~offset=0, ~len=startElementIndex)->ArraySlice.toArray
+            let after = ArraySlice.sliceToEnd(elements, elementIndex + 1)->ArraySlice.toArray
+            let nextElements = Belt.Array.concatMany([before, [node], after])->ArraySlice.ofArray
             iter(nextElements, openBracketStack, startElementIndex + 1)
           | Error(_) as e => e
           | UnknownError => Error(i')
@@ -250,5 +256,5 @@ let parse = {
   }
   let next = handleBrackets
 
-  next
+  elements => next(ArraySlice.ofArray(elements))
 }
