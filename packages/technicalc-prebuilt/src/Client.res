@@ -85,17 +85,6 @@ let emptyFormat = {
     }
 )
 
-module ElementsMigration = {
-  let decode = Client_Migration.TechniCalcEditor.Encoding.decode
-}
-
-module ValueMigration = {
-  let decode = encoded =>
-    Client_Migration.TechniCalcCalculator.Value_Encoding.decode(
-      encoded,
-    )->Belt.Option.getWithDefault(TechniCalcCalculator.Value_Base.nan)
-}
-
 module Elements = {
   open TechniCalcEditor
 
