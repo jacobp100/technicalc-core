@@ -1,28 +1,30 @@
-type t<'a> = {
-  array: array<'a>,
-  offset: int,
-  len: int,
+type slice<'a> = {
+  @as("a") array: array<'a>,
+  @as("o") offset: int,
+  @as("l") len: int,
 }
 
-let ofArray = array => Some({
+type t<'a> = option<slice<'a>>
+
+let ofArray = (array: array<'a>): t<'a> => Some({
   array: array,
   offset: 0,
   len: Belt.Array.length(array),
 })
 
-let toArray = x =>
+let toArray = (x: t<'a>): array<'a> =>
   switch x {
   | Some({array, len, offset}) => Belt.Array.slice(array, ~len, ~offset)
   | None => []
   }
 
-let get = (x, index) =>
+let get = (x: t<'a>, index: int): option<'a> =>
   switch x {
   | Some(x) if index >= 0 && index < x.len => Some(Belt.Array.getUnsafe(x.array, x.offset + index))
   | _ => None
   }
 
-let slice = (x, ~offset, ~len) =>
+let slice = (x: t<'a>, ~offset: int, ~len: int): t<'a> =>
   switch x {
   | Some(x) =>
     let start = x.offset + (offset >= 0 ? offset : x.len + offset)
@@ -37,7 +39,7 @@ let slice = (x, ~offset, ~len) =>
   | None => None
   }
 
-let sliceToEnd = (x, offset) =>
+let sliceToEnd = (x: t<'a>, offset: int): t<'a> =>
   switch x {
   | Some(x) =>
     let start = x.offset + (offset >= 0 ? offset : x.len + offset)

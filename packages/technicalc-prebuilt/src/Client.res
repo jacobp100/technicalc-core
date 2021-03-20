@@ -210,6 +210,7 @@ module Value = {
     | None => Value_Base.nan
     }
 
+  let nan = Value_Base.nan
   let isNaN = Value_Base.isNaN
 
   let toString = x => Value_Formatting.toString(x)

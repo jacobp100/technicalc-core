@@ -28,50 +28,46 @@ let parse = {
     | Gradian => OfGrad(value)
     }
 
-  let parseRest = elements => {
+  let rec applyPostfixes = (elements, accum: TechniCalcEditor.Value_Types.node, elementIndex) => {
+    let nextElement = ArraySlice.get(elements, elementIndex + 1)
+    let nextAccum: option<TechniCalcEditor.Value_Types.node> = switch nextElement {
+    | Some(Unresolved(UnitConversion({fromUnits, toUnits}), _, _)) =>
+      Some(Convert({body: accum, fromUnits: fromUnits, toUnits: toUnits}))
+    | Some(Unresolved(Factorial, _, _)) => Some(Factorial(accum))
+    | Some(Unresolved(Conj, _, _)) => Some(Conj(accum))
+    | Some(Unresolved(Percent, _, _)) => Some(Percent(accum))
+    | _ => None
+    }
+    switch nextAccum {
+    | Some(nextAccum) => applyPostfixes(elements, nextAccum, elementIndex + 1)
+    | None => (accum, elementIndex)
+    }
+  }
+
+  let parsePostfixesAndRest = elements => {
     let rec iter = (current, elementIndex) =>
-      switch (current, ArraySlice.get(elements, elementIndex)) {
-      | (_, Some(Resolved(next))) =>
+      switch ArraySlice.get(elements, elementIndex) {
+      | Some(Resolved(value)) =>
+        let (value, elementIndex) = applyPostfixes(elements, value, elementIndex)
         let value = switch current {
-        | Some(a) => Node.Mul(a, next)
-        | None => next
+        | Some(a) => Node.Mul(a, value)
+        | None => value
         }
         let (value, elementIndex) = switch ArraySlice.get(elements, elementIndex + 1) {
         | Some(Unresolved(Angle(angle), _, _)) => (applyAngle(value, angle), elementIndex + 1)
         | _ => (value, elementIndex)
         }
         iter(Some(value), elementIndex + 1)
-      | (Some(a), Some(Unresolved(Percent, _, _))) => Ok(Percent(a))
-      | (_, Some(UnresolvedFunction(_, _, i') | Unresolved(_, _, i'))) => Error(i')
-      | (Some(v), None) => Ok(v)
-      | (None, None) => UnknownError
+      | Some(UnresolvedFunction(_, _, i') | Unresolved(_, _, i')) => Error(i')
+      | None =>
+        switch current {
+        | Some(v) => Ok(v)
+        | None => UnknownError
+        }
       }
     iter(None, 0)
   }
-  let next = parseRest
-
-  let parsePostfixes = elements =>
-    switch ArraySlice.get(elements, 0) {
-    | Some(Resolved(initialAccum)) =>
-      let rec iter = (accum: TechniCalcEditor.Value_Types.node, elementIndex) => {
-        switch ArraySlice.get(elements, elementIndex) {
-        | Some(Unresolved(UnitConversion({fromUnits, toUnits}), _, _)) =>
-          iter(Convert({body: accum, fromUnits: fromUnits, toUnits: toUnits}), elementIndex + 1)
-        | Some(Unresolved(Factorial, _, _)) => iter(Factorial(accum), elementIndex + 1)
-        | Some(Unresolved(Conj, _, _)) => iter(Conj(accum), elementIndex + 1)
-        | _ =>
-          let nextElements =
-            ArraySlice.sliceToEnd(elements, elementIndex)
-            ->ArraySlice.toArray
-            ->Belt.Array.concat([Resolved(accum)], _)
-            ->ArraySlice.ofArray
-          next(nextElements)
-        }
-      }
-      iter(initialAccum, 1)
-    | _ => next(elements)
-    }
-  let next = parsePostfixes
+  let next = parsePostfixesAndRest
 
   let parseNumbers = elements => {
     let next' = (numberState, angleState: angleState, elementIndex) => {
