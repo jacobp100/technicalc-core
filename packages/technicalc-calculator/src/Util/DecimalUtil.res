@@ -2,9 +2,9 @@ open Decimal
 
 let magnitude = f =>
   if f != zero {
-    abs(f)->log10->floor->toFloat->FloatUtil.asIntExn
+    abs(f)->log10->floor
   } else {
-    0
+    zero
   }
 
 type bounds =

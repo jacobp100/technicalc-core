@@ -77,14 +77,21 @@ test("formats engineering notation", (. ()) => {
   expect(stringOfFloat(-100., format))->toBe("-100.000000000000e0")
   expect(stringOfFloat(-1000., format))->toBe("-1.000000000000e3")
 
+  expect(stringOfFloat(0.00005, format))->toBe("50.000000000000e-6")
   expect(stringOfFloat(0.0005, format))->toBe("500.000000000000e-6")
   expect(stringOfFloat(0.005, format))->toBe("5.000000000000e-3")
   expect(stringOfFloat(0.05, format))->toBe("50.000000000000e-3")
   expect(stringOfFloat(0.5, format))->toBe("500.000000000000e-3")
+  expect(stringOfFloat(-0.00005, format))->toBe("-50.000000000000e-6")
   expect(stringOfFloat(-0.0005, format))->toBe("-500.000000000000e-6")
   expect(stringOfFloat(-0.005, format))->toBe("-5.000000000000e-3")
   expect(stringOfFloat(-0.05, format))->toBe("-50.000000000000e-3")
   expect(stringOfFloat(-0.5, format))->toBe("-500.000000000000e-3")
+})
+
+test("formats numbers where the exponent is larger than a 32 bit integer", (. ()) => {
+  let value = ofInt(1000)->pow(ofInt(1000))->pow(ofInt(1000))->pow(ofInt(1000))
+  expect(toString(~format=defaultFormat, value))->toBe("1e3000000000")
 })
 
 test("formats other bases", (. ()) => {

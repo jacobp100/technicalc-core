@@ -160,9 +160,9 @@ let formatExponential = (
     ~maxDecimalPlaces,
     {
       open Decimal
-      num / ofInt(10) ** ofInt(exponent)
+      num / ofInt(10) ** exponent
     },
   )
-  let exponentPart = Belt.Int.toString(exponent)
+  let exponentPart = Decimal.toString(exponent)
   (decimalPart, exponentPart)
 }

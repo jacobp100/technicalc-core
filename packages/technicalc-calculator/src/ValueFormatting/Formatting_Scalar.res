@@ -106,9 +106,11 @@ open Formatting_Util
     | (_, Some({style: Natural(_) | Decimal} as format')) =>
       let {decimalMinMagnitude, decimalMaxMagnitude, precision} = format'
       let f = Real.toDecimal(re)
-      let valueMagnitude = DecimalUtil.magnitude(f)
-      let insideMagnitudeThreshold =
-        valueMagnitude >= decimalMinMagnitude && valueMagnitude <= decimalMaxMagnitude
+      let magnitude = DecimalUtil.magnitude(f)
+      let insideMagnitudeThreshold = {
+        open Decimal
+        magnitude >= ofInt(decimalMinMagnitude) && magnitude <= ofInt(decimalMaxMagnitude)
+      }
 
       if insideMagnitudeThreshold {
         Formatting_Number.formatDecimal(
@@ -122,7 +124,7 @@ open Formatting_Util
         Formatting_Number.formatExponential(
           ~locale,
           ~base,
-          ~exponent=DecimalUtil.magnitude(f),
+          ~exponent=magnitude,
           ~maxDecimalPlaces=precision,
           f,
         )->formatExponential(format)
@@ -131,11 +133,11 @@ open Formatting_Util
       let f = Real.toDecimal(re)
       let magnitude = DecimalUtil.magnitude(f)
 
-      let exponent = if magnitude >= 0 {
-        magnitude / 3 * 3
-      } else {
-        -((-magnitude + 2) / 3 * 3)
+      let exponent = {
+        open Decimal
+        floor(magnitude / ofInt(3)) * ofInt(3)
       }
+
       Formatting_Number.formatExponential(
         ~locale,
         ~base,
