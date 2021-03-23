@@ -75,7 +75,7 @@ type rec t =
   | Max(t, t)
   | Gcd(t, t)
   | Lcm(t, t)
-  | IteratorX
+  | X
   | Differential({at: t, body: t})
   | Integral({from: t, to_: t, body: t})
   | Sum({from: t, to_: t, body: t})

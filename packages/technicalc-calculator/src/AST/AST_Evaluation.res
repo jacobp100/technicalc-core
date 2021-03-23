@@ -97,7 +97,7 @@ let rec eval = (~config, ~context, ~x, node: t): Value.t =>
   | Max(a, b) => Value.max(eval(~config, ~context, ~x, a), eval(~config, ~context, ~x, b))
   | Gcd(a, b) => Value.gcd(eval(~config, ~context, ~x, a), eval(~config, ~context, ~x, b))
   | Lcm(a, b) => Value.lcm(eval(~config, ~context, ~x, a), eval(~config, ~context, ~x, b))
-  | IteratorX => x
+  | X => x
   | Differential({at, body}) =>
     Value.derivative(createEvalCb(~config, ~context, body), eval(~config, ~context, ~x, at))
   | Integral({from, to_, body}) =>
@@ -121,7 +121,10 @@ let rec eval = (~config, ~context, ~x, node: t): Value.t =>
   | Convert({body, fromUnits, toUnits}) =>
     Units.convert(eval(~config, ~context, ~x, body), ~fromUnits, ~toUnits)
   }
-and createEvalCb = (~config, ~context, body, x) => eval(~config, ~context, ~x, body)
+and createEvalCb = (~config, ~context, body) => {
+  let fn = x => eval(~config, ~context, ~x, body)
+  fn
+}
 and evalScalar = (~config, ~context, ~x, body): Scalar.t =>
   switch eval(~config, ~context, ~x, body) {
   | #...Scalar.t as s => s
@@ -131,14 +134,7 @@ and evalScalar = (~config, ~context, ~x, body): Scalar.t =>
 let eval = (~context, ~config, v) => eval(~config, ~context, ~x=Value.nan, v)
 
 let solveRoot = (~config, ~context, body, initial) => {
-  let fn = value => {
-    let context = {
-      open AST_Context
-      set(empty, "x", value)
-    }
-    eval(~config, ~context, body)
-  }
-
+  let fn = createEvalCb(~config, ~context, body)
   let initial = eval(~config, ~context, initial)
   initial != #N ? Value.solveRoot(fn, initial) : #N
 }

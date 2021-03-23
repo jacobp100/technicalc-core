@@ -41,8 +41,7 @@ let make = self => {
       | Some(res) => res
       | None => Belt.Array.make(Belt.Array.length(values), #N)
       }
-    | SolveRoot({lhs, rhs, initialGuess}) =>
-      let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs)
+    | SolveRoot({body, initialGuess}) =>
       let res = solveRoot(~config, ~context, body, initialGuess)
       [res]
     | Quadratic(a, b, c) =>

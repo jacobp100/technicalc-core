@@ -13,7 +13,7 @@ type work =
       values: array<(node, TechniCalcCalculator.Unit_Types.unitPart)>,
       toUnits: array<TechniCalcCalculator.Unit_Types.unitPart>,
     })
-  | SolveRoot({lhs: node, rhs: node, initialGuess: node})
+  | SolveRoot({body: node, initialGuess: node})
   | Quadratic(node, node, node)
   | Cubic(node, node, node, node)
   | Var2(node, node, node, node, node, node)

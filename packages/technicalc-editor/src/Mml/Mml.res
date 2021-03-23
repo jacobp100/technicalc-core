@@ -132,7 +132,7 @@ let reduce = (accum, stateElement: foldState<string>, range) =>
     createElementWithRange(range, "msup", body ++ value)->Mml_Accum.append(accum, _)
   | Variable({name, superscript}) =>
     createElementWithRange(~superscript?, range, "mi", name)->Mml_Accum.append(accum, _)
-  | IteratorX(superscript) =>
+  | X(superscript) =>
     createElementWithRange(~superscript?, range, "mi", "x")->Mml_Accum.append(accum, _)
   | ConstPi(superscript) =>
     createElementWithRange(~superscript?, range, "mi", "&#x03C0;")->Mml_Accum.append(accum, _)

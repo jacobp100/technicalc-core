@@ -67,7 +67,7 @@ type foldState<'a> =
   | Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | ImaginaryUnit(option<superscript<'a>>)
   | Integral({from: 'a, to_: 'a, body: 'a})
-  | IteratorX(option<superscript<'a>>)
+  | X(option<superscript<'a>>)
   | Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Magnitude({value: 'a})
   | MFrac({integer: 'a, num: 'a, den: 'a, superscript: option<superscript<'a>>})
@@ -223,7 +223,7 @@ let reduceMap = (
     | IteratorXS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(IteratorX(superscript), i, i')
+      Node(X(superscript), i, i')
     | RandS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')

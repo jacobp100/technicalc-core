@@ -243,11 +243,10 @@ module Work = {
     values: values,
     toUnits: toUnits,
   })
-  let solveRoot = (lhs, rhs, initialGuess): Work.work => SolveRoot({
-    lhs: lhs,
-    rhs: rhs,
-    initialGuess: initialGuess,
-  })
+  let solveRoot = (lhs, rhs, initialGuess): Work.work => {
+    let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs)
+    SolveRoot({body: body, initialGuess: initialGuess})
+  }
   let quadratic = (a, b, c): Work.work => Quadratic(a, b, c)
   let cubic = (a, b, c, d): Work.work => Cubic(a, b, c, d)
   let var2 = (x0, y0, c0, x1, y1, c1): Work.work => Var2(x0, y0, c0, x1, y1, c1)
