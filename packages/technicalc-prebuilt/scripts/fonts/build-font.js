@@ -1,6 +1,7 @@
 import { Font, Glyph, Path } from "opentype.js";
 
-const pathRegexp = /([A-Z])\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*/gi;
+const pathRegexp =
+  /([A-Z])\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*,?\s*(-?[\d.]*)\s*/gi;
 
 const pathDataToPath = (pathData) => {
   const path = new Path();

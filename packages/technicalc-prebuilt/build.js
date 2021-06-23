@@ -1,4 +1,4 @@
-import { promises as fs } from "node:fs";
+import { promises as fs, mkdirSync } from "node:fs";
 import path from "node:path";
 import util from "node:util";
 import childProcess from "node:child_process";
@@ -10,6 +10,8 @@ const dist = new URL("../../dist/", import.meta.url);
 const stubsDir = new URL("stubs/", import.meta.url);
 
 const require = createRequire(import.meta.url);
+
+mkdirSync(dist);
 
 const evalPlugin = {
   name: "evalPlugin",

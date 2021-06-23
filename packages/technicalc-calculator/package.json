@@ -9,10 +9,10 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^9.0.1",
+    "bs-platform": "^9.0.2",
     "cartesian": "^1.0.1",
-    "lodash": "^4.17.13",
-    "mathjs": "^9.2.0"
+    "lodash": "^4.17.21",
+    "mathjs": "^9.4.2"
   },
   "dependencies": {
     "decimal.js": "^10.2.0"
