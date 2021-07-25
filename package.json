@@ -6,8 +6,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "clean": "bsb -clean-world",
-    "build-packages": "bsb -make-world",
+    "clean": "rescript clean",
+    "build-packages": "rescript build",
     "watch-packages": "watchexec -w packages -i lib -e res,resi yarn build-packages",
     "build-bundles": "yarn workspace technicalc-prebuilt build",
     "watch-bundles": "yarn workspace technicalc-prebuilt watch-bundles",
@@ -19,7 +19,7 @@
     "packages/*"
   ],
   "devDependencies": {
-    "bs-platform": "^9.0.2",
+    "rescript": "^9.1.4",
     "eslint": "^7.29.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",

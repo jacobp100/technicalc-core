@@ -11,7 +11,11 @@ const stubsDir = new URL("stubs/", import.meta.url);
 
 const require = createRequire(import.meta.url);
 
-mkdirSync(dist);
+try {
+  mkdirSync(dist);
+} catch {
+  // Directory already exists
+}
 
 const evalPlugin = {
   name: "evalPlugin",

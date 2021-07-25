@@ -9,7 +9,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^9.0.2",
+    "rescript": "^9.1.4",
     "esbuild": "^0.12.9",
     "mathjax-full": "3.0.1",
     "node-fetch": "^2.6.1",
