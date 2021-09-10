@@ -6,12 +6,12 @@ external ofMatrixUnsafe: matrix => t = "%identity"
 external ofVectorUnsafe: vector => t = "%identity"
 
 let zero: t = #Z
-let one: t = #R(Rational(1, 1, Unit))
-let minusOne: t = #R(Rational(-1, 1, Unit))
-let i: t = #I(Rational(1, 1, Unit))
-let minusI: t = #I(Rational(-1, 1, Unit))
-let pi: t = #R(Rational(1, 1, Pi(1)))
-let e: t = #R(Rational(1, 1, Exp(1)))
+let one: t = ofScalarUnsafe(Scalar.one)
+let minusOne: t = ofScalarUnsafe(Scalar.minusOne)
+let i: t = ofScalarUnsafe(Scalar.i)
+let minusI: t = ofScalarUnsafe(Scalar.minusI)
+let pi: t = ofScalarUnsafe(Scalar.pi)
+let e: t = ofScalarUnsafe(Scalar.e)
 let nan: t = #N
 
 let isNaN = (x: t) => x == #N

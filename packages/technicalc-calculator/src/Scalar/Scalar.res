@@ -3,3 +3,5 @@ include Scalar_Base
 include Scalar_Arithmetic
 include Scalar_Functions
 include Scalar_Operators
+include Scalar_Exponentiation
+include Scalar_Powers

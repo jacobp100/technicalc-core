@@ -191,7 +191,7 @@ let convertComposite = (values: array<(Value.t, unitPart)>, ~toUnits: array<unit
       accum + Value.toDecimal(value) * unitPartValue(~powerMultiplier=1, unitPart)
     })
     let valueSiAbs = Decimal.abs(valueSi)
-    let negative = Decimal.lt(valueSiAbs, Decimal.zero)
+    let negative = Decimal.lt(valueSi, Decimal.zero)
     let toUnits = Belt.Array.copy(toUnits)->ArrayUtil.sortInPlace((a, b) => {
       Decimal.cmp(unitPartValue(b), unitPartValue(a))
     })

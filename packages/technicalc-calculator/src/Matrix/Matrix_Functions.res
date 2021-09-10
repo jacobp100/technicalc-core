@@ -18,11 +18,11 @@ let pow = (m: t, i: int): t =>
 let determinant = (m: t): Scalar.t =>
   switch m.elements {
   | [a, b, c, d] =>
-    open Scalar
+    open Scalar_Operators
     a * d - b * c
   | [a, b, c, d, e, f, g, h, i] =>
     /* https://www.wolframalpha.com/input/?i=det(%7B%7Ba,b,c%7D,%7Bd,e,f%7D,%7Bg,h,i%7D%7D) */
-    open Scalar
+    open Scalar_Operators
     a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g
   | _ => Scalar.nan
   }
@@ -30,13 +30,13 @@ let determinant = (m: t): Scalar.t =>
 let inverse = (m: t): t =>
   switch m.elements {
   | [a, b, c, d] =>
-    open Scalar
+    open Scalar_Operators
     let factor = a * d - b * c
     let elements = [d / factor, -b / factor, -c / factor, a / factor]
     {...m, elements: elements}
   | [a, b, c, d, e, f, g, h, i] =>
     /* https://www.wolframalpha.com/input/?i=%7B%7Ba,b,c%7D,%7Bd,e,f%7D,%7Bg,h,i%7D%7D%5E-1 */
-    open Scalar
+    open Scalar_Operators
     let factor = a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g
     let elements = [
       (e * i - f * h) / factor,

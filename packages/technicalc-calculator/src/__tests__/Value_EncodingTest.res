@@ -1,10 +1,29 @@
 open Jest
 open Value
 
+test("zero", (. ()) => {
+  let value = zero
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
+})
+
 test("real rational", (. ()) => {
   let value = ofInt(1)
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
+})
+
+test("real with constants", (. ()) => {
+  let valueOfConstant = c => Value.ofReal(Real.ofRational(1, 1, c))
+
+  let pi = valueOfConstant(Pi(1))
+  expect(encode(pi)->decode)->toEqual(Some(pi))
+
+  let e = valueOfConstant(Exp(1))
+  expect(encode(e)->decode)->toEqual(Some(e))
+
+  let sqrt2 = valueOfConstant(Sqrt(2))
+  expect(encode(sqrt2)->decode)->toEqual(Some(sqrt2))
 })
 
 test("negative rational", (. ()) => {

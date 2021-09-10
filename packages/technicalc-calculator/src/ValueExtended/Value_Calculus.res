@@ -1,6 +1,6 @@
 open Value_Core
 
-let derivative = (f, x) => {
+let differentiate = (f, x) => {
   let h = ofFloat(1e-4)
   let _2h = h * ofInt(2)
   let _8 = ofInt(8)

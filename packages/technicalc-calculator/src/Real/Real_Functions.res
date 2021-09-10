@@ -1,6 +1,24 @@
 open Real_Types
 open Real_Base
 
+let sqrt = a => {
+  let value = switch a {
+  | Rational(n, d, Unit) =>
+    switch SafeInt.mulInt(n, d) {
+    | Some(nd) => ofRational(1, d, Sqrt(nd))->Some
+    | None => None
+    }
+  | Rational(_)
+  | Decimal(_) =>
+    None
+  }
+
+  switch value {
+  | Some(value) => value
+  | None => toDecimal(a)->Decimal.sqrt->ofDecimal
+  }
+}
+
 %%private(
   let ofDecimalInt = f =>
     switch Decimal.toFloat(f)->FloatUtil.asInt {

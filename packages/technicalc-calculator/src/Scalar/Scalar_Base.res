@@ -1,8 +1,12 @@
 open Scalar_Types
 
+let zero: t = #R(Real.zero)
 let one: t = #R(Real.one)
 let minusOne: t = #R(Real.minusOne)
-let zero: t = #R(Real.zero)
+let i: t = #I(Real.one)
+let minusI: t = #I(Real.minusOne)
+let pi: t = #R(Real.pi)
+let e: t = #R(Real.e)
 let nan: t = #R(Real.nan)
 
 let normalize = (v: t): t =>
@@ -26,6 +30,17 @@ let isNaN = (a: t) =>
   | #I(v) =>
     Real.isNaN(v)
   | #C(re, im) => Real.isNaN(re) || Real.isNaN(im)
+  }
+
+let ofReal = (a: Real.t): t => normalize(#R(a))
+let ofImag = (a: Real.t): t => normalize(#I(a))
+let ofComplex = (re: Real.t, im: Real.t): t => normalize(#C(re, im))
+
+let ofInt = (v): t =>
+  if v == 0 {
+    #Z
+  } else {
+    #R(Real.ofInt(v))
   }
 
 let ofFloat = (v): t =>

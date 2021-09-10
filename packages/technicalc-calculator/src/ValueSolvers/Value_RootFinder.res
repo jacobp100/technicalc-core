@@ -75,7 +75,7 @@ type iterationMode =
         if FloatUtil.abs(fx -. fxPrev) < optimiseGradientLimit &&
           FloatUtil.abs(x -. xPrev) < optimiseGradientLimit =>
         Gradient((fx -. fxPrev) /. (x -. xPrev))
-      | _ => Gradient(Value_Calculus.derivative(f, xReal)->toDecimal->Decimal.toFloat)
+      | _ => Gradient(Value_Calculus.differentiate(f, xReal)->toDecimal->Decimal.toFloat)
       }
 
       switch op {
@@ -112,7 +112,7 @@ type iterationMode =
 %%private(
   let newtonPrecise = (f, x) => {
     let fx = f(x)
-    let f'x = Value_Calculus.derivative(f, x)
+    let f'x = Value_Calculus.differentiate(f, x)
     let (xPrev, fxPrev) = (x, fx)
     let x = {
       open Value_Core

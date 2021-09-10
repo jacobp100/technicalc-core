@@ -1,5 +1,22 @@
 open Scalar_Types
 open Scalar_Base
+open Scalar_Operators
+open Scalar_Exponentiation
+
+%%private(let two = ofInt(2))
+
+let sqrt = (a: t) =>
+  switch a {
+  | #Z => #Z
+  | #R(re) =>
+    open Real
+    if gte(re, zero) {
+      sqrt(re)->ofReal
+    } else {
+      abs(re)->sqrt->ofImag
+    }
+  | _ => exp(log(a) / two)
+  }
 
 let abs = map(_, Real.abs)
 let round = map(_, Real.round)

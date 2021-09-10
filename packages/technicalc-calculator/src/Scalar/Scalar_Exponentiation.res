@@ -1,18 +1,21 @@
-open Value_Types
-open Value_Base
+open Scalar_Types
+open Scalar_Base
+open Scalar_Arithmetic
 
-let arg = (re, im) =>
-  if !Real.eq(re, Real.zero) {
-    let reF = Real.toDecimal(re)
-    let imF = Real.toDecimal(im)
-    Real.Decimal(Decimal.atan2(imF, reF))
-  } else if Real.gt(im, Real.zero) {
-    Real.ofRational(1, 2, Pi(1))
-  } else if Real.lt(im, Real.zero) {
-    Real.ofRational(-1, 2, Pi(1))
-  } else {
-    Real.nan
-  }
+%%private(
+  let arg = (re, im) =>
+    if !Real.eq(re, Real.zero) {
+      let reF = Real.toDecimal(re)
+      let imF = Real.toDecimal(im)
+      Real.Decimal(Decimal.atan2(imF, reF))
+    } else if Real.gt(im, Real.zero) {
+      Real.ofRational(1, 2, Pi(1))
+    } else if Real.lt(im, Real.zero) {
+      Real.ofRational(-1, 2, Pi(1))
+    } else {
+      Real.nan
+    }
+)
 
 let expReal = re =>
   switch re {
@@ -21,7 +24,7 @@ let expReal = re =>
   | _ => Decimal(Real.toDecimal(re)->Decimal.exp)
   }
 
-let rec exp = (a: t): t =>
+let exp = (a: t): t =>
   switch a {
   | #Z => one
   | #R(re) => ofReal(expReal(re))
@@ -34,30 +37,27 @@ let rec exp = (a: t): t =>
     let re = Real_Trig.cos(im)->Real.mul(exp)
     let im = Real_Trig.sin(im)->Real.mul(exp)
     ofComplex(re, im)
-  | #P(p) => exp(Value_Util.percentToNumerical(p))
-  | #V(_)
-  | #M(_)
-  | #N =>
-    #N
   }
 
-let logReal = q =>
-  switch q {
-  | Real.Rational(1, 1, Exp(reExp)) => Real.ofRational(reExp, 1, Unit)
-  | _ =>
-    let f = Real.toDecimal(q)
-    if Decimal.gt(f, Decimal.zero) {
-      Decimal(Decimal.ln(f))
-    } else {
-      assert false
+%%private(
+  let logReal = q =>
+    switch q {
+    | Real.Rational(1, 1, Exp(reExp)) => Real.ofRational(reExp, 1, Unit)
+    | _ =>
+      let f = Real.toDecimal(q)
+      if Decimal.gt(f, Decimal.zero) {
+        Decimal(Decimal.ln(f))
+      } else {
+        assert false
+      }
     }
-  }
+)
 
-let rec log = (a: t): t =>
+let log = (a: t): t =>
   switch a {
-  | #Z => #N
+  | #Z => nan
   | #R(gtZero) if Real.gt(gtZero, Real.zero) => ofReal(logReal(gtZero))
-  | #R(Rational(-1, 1, Unit)) => Value_Arithmetic.mul(pi, i)
+  | #R(Rational(-1, 1, Unit)) => mul(pi, i)
   | (#R(_) | #I(_) | #C(_)) as vV =>
     let re = switch vV {
     | #R(re) => Real.mul(re, re)
@@ -74,9 +74,4 @@ let rec log = (a: t): t =>
     | #C(re, im) => arg(re, im)
     }
     ofComplex(re, im)
-  | #P(p) => log(Value_Util.percentToNumerical(p))
-  | #V(_)
-  | #M(_)
-  | #N =>
-    #N
   }

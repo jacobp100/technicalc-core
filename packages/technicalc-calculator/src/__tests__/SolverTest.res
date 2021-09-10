@@ -75,7 +75,43 @@ test("solves 6x^3 - 5x^2 - 17x + 6", (. ()) => {
   expect(Value.toFloat(value)->truncateTo(~dp, _))->toBe(2.)
 })
 
-test("possible solver bug report", (. ()) => {
+test("solves system of 2 equations", (. ()) => {
+  open Value
+  expect(var2(ofInt(2), ofInt(3), ofInt(4), ofInt(5), ofInt(6), ofInt(7)))->toEqual((
+    ofInt(-1),
+    ofInt(2),
+  ))
+})
+
+test("solves system of 2 equations", (. ()) => {
+  open Value
+  expect(var2(ofInt(2), ofInt(3), ofInt(4), ofInt(5), ofInt(6), ofInt(7)))->toEqual((
+    ofInt(-1),
+    ofInt(2),
+  ))
+})
+
+test("solves system of 3 equations", (. ()) => {
+  open Value
+  expect(
+    var3(
+      ofInt(3),
+      ofInt(2),
+      ofInt(-1),
+      ofInt(6),
+      ofInt(-2),
+      ofInt(2),
+      ofInt(1),
+      ofInt(3),
+      ofInt(1),
+      ofInt(1),
+      ofInt(1),
+      ofInt(4),
+    ),
+  )->toEqual((ofInt(1), ofInt(2), ofInt(1)))
+})
+
+test("solver bug report", (. ()) => {
   open AST
   let x = X
   let ofFloat = a => OfFloat(a)

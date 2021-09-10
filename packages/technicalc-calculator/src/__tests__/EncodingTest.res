@@ -14,10 +14,10 @@ test("unsigned integers", (. ()) => {
 })
 
 test("integers", (. ()) => {
-  expect(encodeInt(1)->read(readInt))->toEqual(Some(1))
-  expect(encodeInt(-1)->read(readInt))->toEqual(Some(-1))
-  expect(encodeInt(5)->read(readInt))->toEqual(Some(5))
-  expect(encodeInt(-5)->read(readInt))->toEqual(Some(-5))
+  for value in 0 to 4096 {
+    expect(encodeInt(value)->read(readInt))->toEqual(Some(value))
+    expect(encodeInt(-value)->read(readInt))->toEqual(Some(-value))
+  }
 
   expect(encodeInt(1074000000)->read(readInt))->toEqual(Some(1074000000))
 })
@@ -50,4 +50,39 @@ test("arrays", (. ()) => {
   let encoded = encodeArray(array, encodeUint)
   let decoded = read(encoded, reader => readArray(reader, readUint))
   expect(decoded)->toEqual(Some(array))
+})
+
+test("invalid encodings", (. ()) => {
+  expect(read("ueaueoueoa", readUint))->toBe(None)
+  expect(read("ueaueoueoa", readInt))->toBe(None)
+  expect(read("ueaueoueoa", readString(~optimizeFor=Text, _)))->toBe(None)
+  expect(read("ueaueoueoa", readString(~optimizeFor=Numbers, _)))->toBe(None)
+  expect(read("ueaueoueoa", readArray(_, readUint)))->toBe(None)
+  expect(read("ueaueoueoa", readArray(_, readString(~optimizeFor=Text, _))))->toBe(None)
+
+  expect(read("", readUint))->toBe(None)
+  expect(read("", readInt))->toBe(None)
+  expect(read("", readString(~optimizeFor=Text, _)))->toBe(None)
+  expect(read("", readString(~optimizeFor=Numbers, _)))->toBe(None)
+  expect(read("", readArray(_, readUint)))->toBe(None)
+  expect(read("", readArray(_, readString(~optimizeFor=Text, _))))->toBe(None)
+
+  // This is just to get 100% code coverage for this file
+  expect((. ()) => ignore(read("@", readUint)))->toThrow()
+  expect((. ()) => ignore(read("!", readUint)))->toThrow()
+  expect((. ()) => ignore(read("~", readUint)))->toThrow()
+  expect((. ()) => ignore(read("[", readUint)))->toThrow()
+})
+
+test("multiple reads on invalidated reader", (. ()) => {
+  let _ = read("ueoaueo", reader => {
+    let pass = switch (readString(reader), readUint(reader)) {
+    | (None, None) => true
+    | _ => false
+    }
+
+    expect(pass)->toBe(true)
+
+    None
+  })
 })

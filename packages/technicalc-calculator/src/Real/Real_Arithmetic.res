@@ -30,6 +30,11 @@ open Real_Util
       | Some(exp) => ofRational(d, n, Exp(exp))
       | _ => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
       }
+    | Rational(n, d, Sqrt(sqrt) as c) =>
+      switch SafeInt.mulInt(n, sqrt) {
+      | Some(n) => ofRational(d, n, Sqrt(sqrt))
+      | None => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
+      }
     | _ => ofDecimal(toDecimal(a)->Decimal.inv)
     }
 )
@@ -137,6 +142,7 @@ let mul = (a, b) => {
 let div = (a, b) => {
   let rat = switch (a, b) {
   | (_, Rational(0, _, _)) => Some(nan)
+  | (Rational(1, 1, Unit), _) => Some(inv(b))
   | (Rational(an, ad, ac), Rational(bn, bd, bc)) if Real_Constant.eq(ac, bc) =>
     divRat(an, ad, bn, bd, Unit)
   | (Rational(an, ad, c), Rational(bn, bd, Unit)) => divRat(an, ad, bn, bd, c)
@@ -151,11 +157,9 @@ let div = (a, b) => {
     | _ => None
     }
   | (Rational(an, ad, Sqrt(aSqrt)), Rational(bn, bd, Sqrt(bSqrt)))
-    if aSqrt > bSqrt && mod(aSqrt, bSqrt) == 0 =>
-    switch SafeInt.divInt(aSqrt, bSqrt) {
-    | Some(sqrt) => divRat(an, ad, bn, bd, Sqrt(sqrt))
-    | _ => None
-    }
+    if aSqrt > bSqrt && bSqrt != 0 && mod(aSqrt, bSqrt) == 0 =>
+    // Can skip safety check here because we know bSqrt is not 0
+    divRat(an, ad, bn, bd, Sqrt(aSqrt / bSqrt))
   | _ => None
   }
   switch rat {
@@ -164,22 +168,43 @@ let div = (a, b) => {
   }
 }
 
+%%private(
+  let powRatWithConstant = (~absB, n, d, c) => {
+    open SafeInt
+    let n = (ofInt(n) ** ofInt(absB))->toInt
+    let d = (ofInt(d) ** ofInt(absB))->toInt
+    switch (n, d) {
+    | (Some(n), Some(d)) => Some(ofRational(n, d, c))
+    | _ => None
+    }
+  }
+)
+
 let powInt = (a, b) => {
   let powAbsB = switch (a, IntUtil.abs(b)) {
-  | (Rational(0, 0, Unit), 0) => Some(nan)
+  | (Rational(0, _, Unit), 0) => Some(nan)
   | (Rational(_), 0) => Some(ofInt(1))
   | (_, 1) => Some(a)
   | (_, 2) => Some(mul(a, a))
-  | (Rational(n, d, Unit), b) =>
-    open SafeInt
-    let n = (ofInt(n) ** ofInt(b))->toInt
-    let d = (ofInt(d) ** ofInt(b))->toInt
-    switch (n, d) {
-    | (Some(n), Some(d)) => Some(ofRational(n, d, Unit))
+  | (Rational(n, d, Unit), absB) => powRatWithConstant(~absB, n, d, Unit)
+  | (Rational(n, d, Pi(aExp)), absB) =>
+    switch SafeInt.mulInt(aExp, absB) {
+    | Some(exp) => powRatWithConstant(~absB, n, d, Pi(exp))
+    | _ => None
+    }
+  | (Rational(n, d, Exp(aExp)), absB) =>
+    switch SafeInt.mulInt(aExp, absB) {
+    | Some(exp) => powRatWithConstant(~absB, n, d, Exp(exp))
+    | _ => None
+    }
+  | (Rational(n, d, Sqrt(aSqrt)), absB) =>
+    switch SafeInt.powInt(aSqrt, absB) {
+    | Some(aSqrt) => powRatWithConstant(~absB, n, d, Sqrt(aSqrt))
     | _ => None
     }
   | _ => None
   }
+
   switch powAbsB {
   | Some(value) => b >= 0 ? value : inv(value)
   | None =>

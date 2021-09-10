@@ -15,6 +15,6 @@ let asIntExn = f => {
 // Only used in one place, don't bother inlining stuff for perf here
 let toInt = f => floor(f)->asInt
 
-let isFinite = Js.Float.isFinite
+@scope("Number") @val external isFinite: float => bool = "isFinite"
 
-let random = Js.Math.random
+@scope("Math") @val external random: unit => float = "random"

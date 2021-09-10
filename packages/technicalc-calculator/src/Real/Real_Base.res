@@ -5,6 +5,9 @@ let one = Rational(1, 1, Unit)
 let minusOne = Rational(-1, 1, Unit)
 let zero = Rational(0, 1, Unit)
 let nan = Rational(1, 0, Unit)
+let pi = Rational(1, 1, Pi(1))
+let e = Rational(1, 1, Exp(1))
+
 let isNaN = a =>
   switch a {
   | Rational(_, 0, _) => true
@@ -22,6 +25,7 @@ let eq = (a, b) =>
 let normalize = a =>
   switch a {
   | Decimal(f) if Decimal.eq(f, Decimal.zero) => zero
+  | Decimal(f) if !Decimal.isFinite(f) => nan
   | _ => a
   }
 

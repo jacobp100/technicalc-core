@@ -1,13 +1,18 @@
 import _ from "lodash";
 import * as mathjs from "mathjs/lib/esm";
+import * as TechniCalc from "../Value";
 import { Value, toMatchJsValue } from "../__test-util__/index";
 import cartesian from "../__test-util__/cartesian";
-import * as TechniCalc from "../Value";
 
 expect.extend({ toMatchJsValue });
 
-const baseValues = [..._.range(-2, 2 + 0.1, 0.1), ..._.range(2, 6 + 0.5, 0.5)];
-const values = cartesian([baseValues, baseValues]).map(([re, im]) =>
+const baseValues = [
+  ..._.range(-2, 2 + 0.1, 0.1),
+  ..._.range(2, 6 + 0.5, 0.5),
+].map((x) => Math.round(x * 10) / 10);
+
+const realValues = baseValues.map((re) => Value.float(re));
+const complexValues = cartesian([baseValues, baseValues]).map(([re, im]) =>
   Value.complex(re, im)
 );
 
@@ -18,8 +23,17 @@ const correctAnswers = new Map([
   ],
 ]);
 
-test("factorial", () => {
-  values.forEach((v) => {
+test("factorial real", () => {
+  realValues.forEach((v) => {
+    const { techniCalcValue, jsValue } = v;
+    const actual = TechniCalc.factorial(techniCalcValue);
+    const expected = mathjs.gamma(mathjs.complex(jsValue + 1));
+    expect(actual).toMatchJsValue(expected, () => `(${v})!`);
+  });
+});
+
+test("factorial complex", () => {
+  complexValues.forEach((v) => {
     const { title, techniCalcValue, jsValue } = v;
     const actual = TechniCalc.factorial(techniCalcValue);
     const expected =

@@ -129,8 +129,8 @@ type skipMode =
     | NCR2
     | NPR2
     | Frac2S
-    | Gcd2S
-    | Lcm2S
+    | GCD2S
+    | LCM2S
     | Max2S
     | Min2S
     | NRoot2S

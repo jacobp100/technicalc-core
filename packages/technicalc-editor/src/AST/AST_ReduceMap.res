@@ -303,12 +303,12 @@ let reduceMap = (
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
       Node(Max({a: a, b: b, superscript: superscript}), i, i')
-    | Gcd2S =>
+    | GCD2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
       Node(Gcd({a: a, b: b, superscript: superscript}), i, i')
-    | Lcm2S =>
+    | LCM2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')

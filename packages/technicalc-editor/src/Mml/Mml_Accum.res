@@ -125,13 +125,6 @@ module MmlPrettifier = {
     appendWith(~digitGroupingState, v, element)
   }
 
-  let appendWhitespace = (v, element) =>
-    switch v.lastElementType {
-    | NoElement
-    | OperatorOrFunction => v
-    | Other => append(v, element)
-    }
-
   let concat = (a, b) => {
     locale: a.locale,
     body: toString(a) ++ toString(b),
@@ -278,8 +271,6 @@ let appendDecimalSeparator = (body, element) =>
   BracketGroups.transformCurrentGroupWithArg(body, element, MmlPrettifier.appendDecimalSeparator)
 let appendBasePrefix = (body, element) =>
   BracketGroups.transformCurrentGroupWithArg(body, element, MmlPrettifier.appendBasePrefix)
-let appendWhitespace = (body, width) =>
-  BracketGroups.transformCurrentGroupWithArg(body, width, MmlPrettifier.appendWhitespace)
 let appendOpenBracket = BracketGroups.appendOpenBracket
 let appendCloseBracket = BracketGroups.appendCloseBracket
 let toString = BracketGroups.toString

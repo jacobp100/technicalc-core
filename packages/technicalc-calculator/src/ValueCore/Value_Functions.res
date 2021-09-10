@@ -9,10 +9,11 @@ let dot = (a: t, b: t): t =>
 
 let abs = (a: t): t =>
   switch a {
+  | #Z => zero // Optimisation to avoid extra function calls
   | #...Scalar.t as t => Scalar.abs(t)->ofScalar
   | #P(p) => Scalar.abs(p)->ofPercent
   | #M(m) => Matrix.determinant(m)->ofScalar
-  | #V(v) => Vector.magnitudeSquared(v)->ofScalar->Value_Powers.sqrt
+  | #V(v) => Vector.magnitudeSquared(v)->Scalar.sqrt->ofScalar
   | #N => #N
   }
 
@@ -26,6 +27,10 @@ let abs = (a: t): t =>
     | #N => #N
     }
 )
+
+let sqrt = a => mapScalar(a, Scalar.sqrt)
+let log = a => mapScalar(a, Scalar.log)
+let exp = a => mapScalar(a, Scalar.exp)
 
 let round = a => mapScalar(a, Scalar.round)
 let floor = a => mapScalar(a, Scalar.floor)

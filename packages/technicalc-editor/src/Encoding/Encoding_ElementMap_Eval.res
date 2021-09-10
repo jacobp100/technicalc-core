@@ -51,13 +51,13 @@
     | Factorial => 44
     | Floor1S => 45
     | Gamma => 46
-    | Gcd2S => 47
+    | GCD2S => 47
     | GradianUnit => 48
     | Hex => 49
     | Im => 50
     | ImaginaryUnitS => 51
     | Integral3 => 52
-    | Lcm2S => 53
+    | LCM2S => 53
     | Matrix4S => 54
     | Matrix9S => 55
     | Max2S => 56

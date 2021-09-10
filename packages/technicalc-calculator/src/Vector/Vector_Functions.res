@@ -14,7 +14,7 @@ let dot = (a: t, b: t): Scalar.t =>
     let out = ref(Scalar.zero)
 
     for i in 0 to Belt.Array.length(a) - 1 {
-      open Scalar
+      open Scalar_Operators
       out := out.contents + Belt.Array.getUnsafe(a, i) * Belt.Array.getUnsafe(b, i)
     }
 

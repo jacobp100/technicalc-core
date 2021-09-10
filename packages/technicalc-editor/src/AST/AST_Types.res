@@ -92,8 +92,8 @@ type t =
   | Sum2
   /* Atom2S */
   | Frac2S
-  | Gcd2S
-  | Lcm2S
+  | GCD2S
+  | LCM2S
   | Max2S
   | Min2S
   | NRoot2S
@@ -205,8 +205,8 @@ let argCountExn = (arg: t) =>
   | Product2
   | Sum2
   | Frac2S
-  | Gcd2S
-  | Lcm2S
+  | GCD2S
+  | LCM2S
   | Max2S
   | Min2S
   | NRoot2S
