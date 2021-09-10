@@ -1,3 +1,5 @@
+@scope("Object") @val external jsDictEntries: Js.Dict.t<'t> => array<(string, 't)> = "entries"
+
 type config = {angleMode: option<string>}
 
 type format = {
@@ -132,6 +134,8 @@ module Elements = {
   let insertRanges = InsertMetadata.insertRanges
   let canInsertTable = InsertMetadata.canInsertTable
   let canInsertIteration = InsertMetadata.canInsertIteration
+
+  let renameVariables = RenameVariables.renameVariables
 }
 
 module Editor = {
@@ -275,7 +279,7 @@ module Work = {
     },
     context: switch context {
     | Some(context) =>
-      Js.Dict.entries(context)->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
+      jsDictEntries(context)->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
     | None => []
     },
     work: work,
