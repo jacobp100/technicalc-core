@@ -189,6 +189,10 @@ test("div with constants on lhs", (. ()) => {
   expect(Rational(1, 3, Sqrt(2)) / Rational(2, 3, Unit))->toEqual(Rational(1, 2, Sqrt(2)))
 })
 
+test("div with constants on rhs", (. ()) => {
+  expect(Rational(2, 1, Unit) / Rational(1, 1, Sqrt(2)))->toEqual(Rational(1, 1, Sqrt(2)))
+})
+
 test("div with matching constants", (. ()) => {
   expect(Rational(1, 3, Pi(1)) / Rational(2, 3, Pi(1)))->toEqual(Rational(1, 2, Unit))
   expect(Rational(1, 3, Exp(1)) / Rational(2, 3, Exp(1)))->toEqual(Rational(1, 2, Unit))

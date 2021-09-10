@@ -58,6 +58,7 @@ type skipMode =
     | Im
     | Log
     | Mul
+    | RadianFunction
     | Re
     | Sub
     | CosecS
@@ -73,9 +74,10 @@ type skipMode =
     | Differential2
     | Product2
     | Sum2
-    | RadianFunction
+    | Frac2S
     | Vector2S
     | Integral3
+    | MFrac3S
     | Vector3S
     | Matrix4S
     | Matrix9S =>
@@ -128,14 +130,12 @@ type skipMode =
     | Sqrt1S
     | NCR2
     | NPR2
-    | Frac2S
     | GCD2S
     | LCM2S
     | Max2S
     | Min2S
     | NRoot2S
-    | RandInt2S
-    | MFrac3S =>
+    | RandInt2S =>
       Movable
     }
 )

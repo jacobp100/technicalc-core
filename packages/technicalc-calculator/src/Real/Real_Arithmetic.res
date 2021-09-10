@@ -160,6 +160,9 @@ let div = (a, b) => {
     if aSqrt > bSqrt && bSqrt != 0 && mod(aSqrt, bSqrt) == 0 =>
     // Can skip safety check here because we know bSqrt is not 0
     divRat(an, ad, bn, bd, Sqrt(aSqrt / bSqrt))
+  | (Rational(an, ad, Unit), Rational(bn, bd, Sqrt(bSqrt))) =>
+    open SafeInt
+    safeRat(mul(ofInt(an), ofInt(bd)), ofInt(ad) * ofInt(bn) * ofInt(bSqrt), Sqrt(bSqrt))
   | _ => None
   }
   switch rat {
