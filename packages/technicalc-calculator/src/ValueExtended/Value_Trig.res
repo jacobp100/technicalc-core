@@ -3,7 +3,7 @@ open Value_Core
 %%private(
   let mapReal = (x: t, f: Real.t => Real.t) =>
     switch x {
-    | #R(re) => #R(f(re))
+    | #R(re) => ofReal(f(re))
     | _ => x
     }
 )
@@ -32,7 +32,7 @@ type realBounds =
     switch x {
     | #Z => ofDecimal(f(Decimal.zero))
     | #R(re) => Real.toDecimal(re)->f->ofDecimal
-    | _ => #N
+    | _ => nan
     }
 )
 
@@ -47,23 +47,22 @@ let sin = (x: t): t =>
   | #V(_)
   | #M(_)
   | #P(_)
-  | #N =>
-    #N
+  | #N => nan
   }
 
 let cosec = a => div(one, sin(a))
 
 let asin = (a: t): t =>
   switch mapReal(a, Real.mod2Pi) {
-  | #R(Rational(-1, 1, Unit)) => #R(Real.ofRational(-1, 2, Pi(1)))
-  | #R(Rational(-1, 2, Sqrt(3))) => #R(Real.ofRational(-1, 3, Pi(1)))
-  | #R(Rational(-1, 2, Sqrt(2))) => #R(Real.ofRational(-1, 4, Pi(1)))
-  | #R(Rational(-1, 2, Unit)) => #R(Real.ofRational(-1, 6, Pi(1)))
+  | #R(Rational(-1, 1, Unit)) => ofReal(Real.ofRational(-1, 2, Pi(1)))
+  | #R(Rational(-1, 2, Sqrt(3))) => ofReal(Real.ofRational(-1, 3, Pi(1)))
+  | #R(Rational(-1, 2, Sqrt(2))) => ofReal(Real.ofRational(-1, 4, Pi(1)))
+  | #R(Rational(-1, 2, Unit)) => ofReal(Real.ofRational(-1, 6, Pi(1)))
   | #Z => zero
-  | #R(Rational(1, 2, Unit)) => #R(Real.ofRational(1, 6, Pi(1)))
-  | #R(Rational(1, 2, Sqrt(2))) => #R(Real.ofRational(1, 4, Pi(1)))
-  | #R(Rational(1, 2, Sqrt(3))) => #R(Real.ofRational(1, 3, Pi(1)))
-  | #R(Rational(1, 1, Unit)) => #R(Real.ofRational(1, 2, Pi(1)))
+  | #R(Rational(1, 2, Unit)) => ofReal(Real.ofRational(1, 6, Pi(1)))
+  | #R(Rational(1, 2, Sqrt(2))) => ofReal(Real.ofRational(1, 4, Pi(1)))
+  | #R(Rational(1, 2, Sqrt(3))) => ofReal(Real.ofRational(1, 3, Pi(1)))
+  | #R(Rational(1, 1, Unit)) => ofReal(Real.ofRational(1, 2, Pi(1)))
   | #R(_)
   | #I(_)
   | #C(_) =>
@@ -72,13 +71,12 @@ let asin = (a: t): t =>
     | Real(_, Outside)
     | Complex =>
       -i * log(i * a + sqrt(one - a * a))
-    | NaN => #N
+    | NaN => nan
     }
   | #M(_)
   | #V(_)
   | #P(_)
-  | #N =>
-    #N
+  | #N => nan
   }
 
 let sinh = (x: t): t =>
@@ -87,7 +85,7 @@ let sinh = (x: t): t =>
   | #R(re) => Real.toDecimal(re)->Decimal.sinh->ofDecimal
   | #I(im) => i * ofReal(im)->sin
   | #C(_) => (exp(x) - exp(-x)) / ofInt(2)
-  | _ => #N
+  | _ => nan
   }
 
 let asinh = (x: t): t =>
@@ -96,7 +94,7 @@ let asinh = (x: t): t =>
   | #R(re) => Real.toDecimal(re)->Decimal.asinh->ofDecimal
   | #I(im) => i * ofReal(im)->asin
   | #C(_) => log(x + sqrt(x * x + one))
-  | _ => #N
+  | _ => nan
   }
 
 let cos = (x: t): t =>
@@ -110,22 +108,21 @@ let cos = (x: t): t =>
   | #V(_)
   | #M(_)
   | #P(_)
-  | #N =>
-    #N
+  | #N => nan
   }
 
 let sec = a => div(one, cos(a))
 
 let acos = (a: t): t =>
   switch mapReal(a, Real.mod2Pi) {
-  | #R(Rational(-1, 1, Unit)) => #R(Real.ofRational(1, 1, Pi(1)))
-  | #R(Rational(-1, 2, Sqrt(3))) => #R(Real.ofRational(5, 6, Pi(1)))
-  | #R(Rational(-1, 2, Sqrt(2))) => #R(Real.ofRational(3, 4, Pi(1)))
-  | #R(Rational(-1, 2, Unit)) => #R(Real.ofRational(2, 3, Pi(1)))
-  | #Z => #R(Real.ofRational(1, 2, Pi(1)))
-  | #R(Rational(1, 2, Unit)) => #R(Real.ofRational(1, 3, Pi(1)))
-  | #R(Rational(1, 2, Sqrt(2))) => #R(Real.ofRational(1, 4, Pi(1)))
-  | #R(Rational(1, 2, Sqrt(3))) => #R(Real.ofRational(1, 6, Pi(1)))
+  | #R(Rational(-1, 1, Unit)) => ofReal(Real.ofRational(1, 1, Pi(1)))
+  | #R(Rational(-1, 2, Sqrt(3))) => ofReal(Real.ofRational(5, 6, Pi(1)))
+  | #R(Rational(-1, 2, Sqrt(2))) => ofReal(Real.ofRational(3, 4, Pi(1)))
+  | #R(Rational(-1, 2, Unit)) => ofReal(Real.ofRational(2, 3, Pi(1)))
+  | #Z => ofReal(Real.ofRational(1, 2, Pi(1)))
+  | #R(Rational(1, 2, Unit)) => ofReal(Real.ofRational(1, 3, Pi(1)))
+  | #R(Rational(1, 2, Sqrt(2))) => ofReal(Real.ofRational(1, 4, Pi(1)))
+  | #R(Rational(1, 2, Sqrt(3))) => ofReal(Real.ofRational(1, 6, Pi(1)))
   | #R(Rational(1, 1, Unit)) => zero
   | #R(_)
   | #I(_)
@@ -135,13 +132,12 @@ let acos = (a: t): t =>
     | Real(_, Outside)
     | Complex =>
       ofReal(Real.ofRational(1, 2, Pi(1))) - asin(a)
-    | NaN => #N
+    | NaN => nan
     }
   | #M(_)
   | #V(_)
   | #P(_)
-  | #N =>
-    #N
+  | #N => nan
   }
 
 let cosh = (x: t): t =>
@@ -150,7 +146,7 @@ let cosh = (x: t): t =>
   | #R(re) => Real.toDecimal(re)->Decimal.cosh->ofDecimal
   | #I(im) => ofReal(im)->cos
   | #C(_) => (exp(x) + exp(-x)) / ofInt(2)
-  | _ => #N
+  | _ => nan
   }
 
 let acosh = (x: t): t =>
@@ -175,7 +171,7 @@ let acosh = (x: t): t =>
     } else {
       -res * i
     }
-  | NaN => #N
+  | NaN => nan
   }
 
 let tan = (x: t): t =>
@@ -184,11 +180,11 @@ let tan = (x: t): t =>
   | #R(Rational(1 | 2, 1, Pi(1))) => zero
   | #R(Rational(1 | 5, 4, Pi(1))) => one
   | #R(Rational(3 | 7, 4, Pi(1))) => minusOne
-  | #R(Rational(1 | 4, 3, Pi(1))) => #R(Real.ofRational(1, 1, Sqrt(3)))
-  | #R(Rational(2 | 5, 3, Pi(1))) => #R(Real.ofRational(-1, 1, Sqrt(3)))
-  | #R(Rational(1 | 7, 6, Pi(1))) => #R(Real.ofRational(1, 3, Sqrt(3)))
-  | #R(Rational(5 | 11, 6, Pi(1))) => #R(Real.ofRational(-1, 3, Sqrt(3)))
-  | #R(Rational(1 | 3, 2, Pi(1))) => #N
+  | #R(Rational(1 | 4, 3, Pi(1))) => ofReal(Real.ofRational(1, 1, Sqrt(3)))
+  | #R(Rational(2 | 5, 3, Pi(1))) => ofReal(Real.ofRational(-1, 1, Sqrt(3)))
+  | #R(Rational(1 | 7, 6, Pi(1))) => ofReal(Real.ofRational(1, 3, Sqrt(3)))
+  | #R(Rational(5 | 11, 6, Pi(1))) => ofReal(Real.ofRational(-1, 3, Sqrt(3)))
+  | #R(Rational(1 | 3, 2, Pi(1))) => nan
   | #R(_) => mapRealDecimal(x, Decimal.tan)
   | #I(_)
   | #C(_) =>
@@ -199,23 +195,22 @@ let tan = (x: t): t =>
   | #M(_)
   | #V(_)
   | #P(_)
-  | #N =>
-    #N
+  | #N => nan
   }
 
 let cot = a => div(one, tan(a))
 
 let atan = (a: t): t =>
   switch mapReal(a, Real.mod2Pi) {
-  | #R(Rational(-1, 1, Sqrt(3))) => #R(Real.ofRational(-1, 3, Pi(1)))
-  | #R(Rational(-1, 1, Unit)) => #R(Real.ofRational(-1, 4, Pi(1)))
-  | #R(Rational(-1, 3, Sqrt(3))) => #R(Real.ofRational(-1, 6, Pi(1)))
+  | #R(Rational(-1, 1, Sqrt(3))) => ofReal(Real.ofRational(-1, 3, Pi(1)))
+  | #R(Rational(-1, 1, Unit)) => ofReal(Real.ofRational(-1, 4, Pi(1)))
+  | #R(Rational(-1, 3, Sqrt(3))) => ofReal(Real.ofRational(-1, 6, Pi(1)))
   | #Z => zero
-  | #R(Rational(1, 3, Sqrt(3))) => #R(Real.ofRational(1, 6, Pi(1)))
-  | #R(Rational(1, 1, Unit)) => #R(Real.ofRational(1, 4, Pi(1)))
-  | #R(Rational(1, 1, Sqrt(3))) => #R(Real.ofRational(1, 3, Pi(1)))
+  | #R(Rational(1, 3, Sqrt(3))) => ofReal(Real.ofRational(1, 6, Pi(1)))
+  | #R(Rational(1, 1, Unit)) => ofReal(Real.ofRational(1, 4, Pi(1)))
+  | #R(Rational(1, 1, Sqrt(3))) => ofReal(Real.ofRational(1, 3, Pi(1)))
   | #R(_) => mapRealDecimal(a, Decimal.atan)
-  | #I(Rational(1 | -1, 1, Unit)) => #N
+  | #I(Rational(1 | -1, 1, Unit)) => nan
   | (#I(_) | #C(_)) as vV =>
     let (re, im) = switch vV {
     | #I(im) => (Real.zero, im)
@@ -244,8 +239,7 @@ let atan = (a: t): t =>
   | #M(_)
   | #V(_)
   | #P(_)
-  | #N =>
-    #N
+  | #N => nan
   }
 
 let tanh = (x: t): t =>
@@ -257,13 +251,13 @@ let tanh = (x: t): t =>
     let a = exp(x)
     let b = exp(-x)
     (a - b) / (a + b)
-  | _ => #N
+  | _ => nan
   }
 
 let atanh = (x: t): t =>
   switch realBounds(~lower=Decimal.minusOne, ~upper=Decimal.one, x) {
   | Real(f, Inside) => Decimal.atanh(f)->ofDecimal
-  | Real(_, BothBound | LowerBound | UpperBound) => #N
+  | Real(_, BothBound | LowerBound | UpperBound) => nan
   | Real(_, Outside)
   | Complex =>
     switch x {
@@ -272,5 +266,5 @@ let atanh = (x: t): t =>
       let two = ofInt(2)
       log((one + x) / (one - x)) / two
     }
-  | NaN => #N
+  | NaN => nan
   }

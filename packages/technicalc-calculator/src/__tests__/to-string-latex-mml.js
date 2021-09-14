@@ -60,9 +60,9 @@ it.each([
   [ofVector([add(one, i), add(minusOne, i)]), "{1+i,-1+i}"],
   [matrixOfFloats(2, 2, [1, 0.5, -0.5, -1]), "{{1,1/2},{-1/2,-1}}"],
   [nan, "NaN"],
-])("Formats %s to %s", (scilineValue, formatted) => {
-  expect(toString(scilineValue)).toBe(formatted);
-  expect(ofString(formatted)).toEqual(scilineValue);
+])("Formats %s to %s", (technicalcValue, formatted) => {
+  expect(toString(technicalcValue)).toBe(formatted);
+  expect(ofString(formatted)).toEqual(technicalcValue);
 });
 
 it.each(["123", "456", "-123", "-456", "5sqrt(7)", "8exp(8)", "8e14"])(

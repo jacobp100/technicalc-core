@@ -10,7 +10,7 @@ module AST = {
 }
 
 let matrixOfFloats = (numRows, numColumns, elements) =>
-  Belt.Array.map(elements, Scalar.ofFloat)->Matrix.make(numRows, numColumns, _)->Value.ofMatrix
+  Belt.Array.map(elements, Scalar.ofFloat)->Matrix.make(~numRows, ~numColumns, _)->Value.ofMatrix
 let percentOfFloat = float => Scalar.ofFloat(float)->Value.ofPercent
 
 let resolve = a => AST_Evaluation.eval(a)
@@ -100,7 +100,9 @@ let toComplexFloats = (a): (float, float) =>
   }
 
 %%private(
-  let mapMatrix = (a: Value.t, fn: Scalar.t => 'a): array<array<'a>> =>
+  let mapMatrix = (a: Value.t, fn: Scalar.t => 'a): array<array<'a>> => {
+    let fn = x => Scalar.Finite.toScalar(x)->fn
+
     switch a {
     | #V([a, b]) => [[fn(a)], [fn(b)]]
     | #V([a, b, c]) => [[fn(a)], [fn(b)], [fn(c)]]
@@ -112,6 +114,7 @@ let toComplexFloats = (a): (float, float) =>
       ]
     | _ => assert false
     }
+  }
 )
 
 let toFloatsMatrix = mapMatrix(_, Scalar.toFloat)

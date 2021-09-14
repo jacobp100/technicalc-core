@@ -11,20 +11,22 @@ let abs = (a: t): t =>
   switch a {
   | #Z => zero // Optimisation to avoid extra function calls
   | #...Scalar.t as t => Scalar.abs(t)->ofScalar
-  | #P(p) => Scalar.abs(p)->ofPercent
+  | #P(p) =>
+    let p = Scalar.Finite.toScalar(p)
+    Scalar.abs(p)->ofPercent
   | #M(m) => Matrix.determinant(m)->ofScalar
   | #V(v) => Vector.magnitudeSquared(v)->Scalar.sqrt->ofScalar
-  | #N => #N
   }
 
 %%private(
   let mapScalar = (a: t, fn: Scalar.t => Scalar.t): t =>
     switch a {
     | #...Scalar.t as t => fn(t)->ofScalar
-    | #P(p) => fn(p)->ofPercent
+    | #P(p) =>
+      let p = Scalar.Finite.toScalar(p)
+      fn(p)->ofPercent
     | #M(m) => Matrix.map(m, fn)->ofMatrix
     | #V(v) => Vector.map(v, fn)->ofVector
-    | #N => #N
     }
 )
 
@@ -50,7 +52,7 @@ let toGrad = a => mapScalar(a, Scalar.toGrad)
   let map2Scalar = (a: t, b: t, fn: (Scalar.t, Scalar.t) => Scalar.t): t =>
     switch (a, b) {
     | (#...Scalar.t as a, #...Scalar.t as b) => fn(a, b)->ofScalar
-    | _ => #N
+    | _ => nan
     }
 )
 

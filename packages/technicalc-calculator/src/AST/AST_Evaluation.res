@@ -20,7 +20,7 @@ open AST_Types
 
 let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   switch node {
-  | NaN => #N
+  | NaN => Value.nan
   | Zero => Value.zero
   | One => Value.one
   | MinusOne => Value.minusOne
@@ -34,17 +34,15 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   | OfStringBase(base, a) => Value.ofStringBase(base, a)->Belt.Option.getWithDefault(#N)
   | Percent(percent) => evalScalar(~config, ~context, ~x, percent)->Value.ofPercent
   | Vector(elements) =>
-    Belt.Array.mapU(elements, (. element) => {
+    let elements = Belt.Array.mapU(elements, (. element) => {
       evalScalar(~config, ~context, ~x, element)
-    })->Value.ofVector
+    })
+    Vector.make(elements)->Value.ofVector
   | Matrix({numRows, numColumns, elements}) =>
     let elements = Belt.Array.mapU(elements, (. element) => {
       evalScalar(~config, ~context, ~x, element)
     })
-    Value.ofMatrix({
-      open Matrix
-      {numRows: numRows, numColumns: numColumns, elements: elements}
-    })
+    Matrix.make(~numRows, ~numColumns, elements)->Value.ofMatrix
   | OfEncoded(a) => Value.decode(a)->Belt.Option.getWithDefault(#N)
   | Variable(ident) => AST_Context.get(context, ident)->Belt.Option.getWithDefault(#N)
   | Add(a, b) => Value.add(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))

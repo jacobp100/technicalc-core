@@ -68,6 +68,7 @@ open Encoding
     | #R(re) => encodeUint(1) ++ encodeReal(re)
     | #I(im) => encodeUint(2) ++ encodeReal(im)
     | #C(re, im) => encodeUint(3) ++ encodeReal(re) ++ encodeReal(im)
+    | #N => encodeUint(4)
     }
 )
 
@@ -77,34 +78,36 @@ open Encoding
     | Some(0) => Some(Scalar_Base.zero)
     | Some(1) =>
       switch readReal(reader) {
-      | Some(real) => Some(#R(real))
+      | Some(real) => Some(Scalar_Base.ofReal(real))
       | None => None
       }
     | Some(2) =>
       switch readReal(reader) {
-      | Some(imag) => Some(#I(imag))
+      | Some(imag) => Some(Scalar_Base.ofImag(imag))
       | None => None
       }
     | Some(3) =>
       switch (readReal(reader), readReal(reader)) {
-      | (Some(real), Some(imag)) => Some(#C(real, imag))
+      | (Some(real), Some(imag)) => Some(Scalar_Base.ofComplex(real, imag))
       | _ => None
       }
+    | Some(4) => Some(Scalar_Base.nan)
     | _ => None
     }
 )
 
+%%private(let encodeFinite: Scalar.finite => string = Obj.magic(encodeScalar))
+
 let encodeValue = (value: Value_Types.t) =>
   switch value {
   | #...Scalar.t as scalar => encodeUint(0) ++ encodeScalar(scalar)
-  | #V(elements) => encodeUint(1) ++ encodeArray(elements, encodeScalar)
+  | #V(elements) => encodeUint(1) ++ encodeArray(elements, encodeFinite)
   | #M({numRows, numColumns, elements}) =>
     encodeUint(2) ++
     encodeUint(numRows) ++
     encodeUint(numColumns) ++
-    encodeArray(elements, encodeScalar)
-  | #P(scalar) => encodeUint(3) ++ encodeScalar(scalar)
-  | #N => encodeUint(4)
+    encodeArray(elements, encodeFinite)
+  | #P(scalar) => encodeUint(3) ++ encodeFinite(scalar)
   }
 
 let readValue = (reader): option<Value_Types.t> =>
@@ -116,13 +119,13 @@ let readValue = (reader): option<Value_Types.t> =>
     }
   | Some(1) =>
     switch readArray(reader, readScalar) {
-    | Some(elements) => Some(Value_Base.ofVector(elements))
+    | Some(elements) => Some(Vector_Base.make(elements)->Value_Base.ofVector)
     | None => None
     }
   | Some(2) =>
     switch (readUint(reader), readUint(reader), readArray(reader, readScalar)) {
     | (Some(numRows), Some(numColumns), Some(elements)) =>
-      let matrix = Matrix_Base.make(numRows, numColumns, elements)->Value_Base.ofMatrix
+      let matrix = Matrix_Base.make(~numRows, ~numColumns, elements)->Value_Base.ofMatrix
       Some(matrix)
     | _ => None
     }
@@ -131,6 +134,7 @@ let readValue = (reader): option<Value_Types.t> =>
     | Some(scalar) => Some(Value_Base.ofPercent(scalar))
     | None => None
     }
+  // Old encoding
   | Some(4) => Some(Value_Base.nan)
   | _ => None
   }

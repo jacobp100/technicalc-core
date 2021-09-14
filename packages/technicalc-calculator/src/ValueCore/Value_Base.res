@@ -12,14 +12,14 @@ let i: t = ofScalarUnsafe(Scalar.i)
 let minusI: t = ofScalarUnsafe(Scalar.minusI)
 let pi: t = ofScalarUnsafe(Scalar.pi)
 let e: t = ofScalarUnsafe(Scalar.e)
-let nan: t = #N
+let nan: t = ofScalarUnsafe(Scalar.nan)
 
 let isNaN = (x: t) => x == #N
 
 let eq = (a: t, b: t): bool =>
   switch (a, b) {
   | (#...Scalar.t as aS, #...Scalar.t as bS) => Scalar.eq(aS, bS)
-  | (#P(aP), #P(bP)) => Scalar.eq(aP, bP)
+  | (#P(aP), #P(bP)) => Scalar.eq(Scalar.Finite.toScalar(aP), Scalar.Finite.toScalar(bP))
   | (#V(aV), #V(bV)) => Vector.eq(aV, bV)
   | (#M(aM), #M(bM)) => Matrix.eq(aM, bM)
   | _ => false
@@ -27,42 +27,28 @@ let eq = (a: t, b: t): bool =>
 
 let normalize = (a: t): t =>
   switch a {
-  | #Z => #Z
-  | (#R(v) | #I(v)) as scalar => Real.isNaN(v) ? #N : Scalar.normalize(scalar)->ofScalarUnsafe
-  | #C(re, im) as scalar =>
-    Real.isNaN(re) || Real.isNaN(im) ? #N : Scalar.normalize(scalar)->ofScalarUnsafe
-  | #P(p) =>
-    if Scalar.isNaN(p) {
-      #N
-    } else {
-      let normalized = Scalar.normalize(p)
-      normalized === p ? a : #P(Scalar.normalize(p))
-    }
-  | #V(vector) =>
-    Vector.isEmpty(vector) || Vector.some(vector, Scalar.isNaN)
-      ? #N
-      : #V(Vector.map(vector, Scalar.normalize))
-  | #M(matrix) =>
-    Matrix.isEmpty(matrix) || Matrix.some(matrix, Scalar.isNaN)
-      ? #N
-      : #M(Matrix.map(matrix, Scalar.normalize))
-  | #N => #N
+  | #...Scalar.t as s => s
+  | #P(_) as p => p
+  | #V(vector) as v => Vector.isEmpty(vector) ? #N : v
+  | #M(matrix) as m => Matrix.isEmpty(matrix) ? #N : m
   }
 
-let ofScalar = (a: Scalar.t): t => ofScalarUnsafe(a)->normalize
-let ofReal = (a: Real.t): t => normalize(#R(a))
-let ofImag = (a: Real.t): t => normalize(#I(a))
-let ofComplex = (re: Real.t, im: Real.t): t => normalize(#C(re, im))
-let ofPercent = (a: Scalar.t): t => normalize(#P(a))
+// Note - as an optimization, `normalize` is only called when strictly needed
+let ofScalar = (a: Scalar.t): t => ofScalarUnsafe(a)
+let ofReal = (a: Real.t): t => ofScalarUnsafe(Scalar.ofReal(a))
+let ofImag = (a: Real.t): t => ofScalarUnsafe(Scalar.ofImag(a))
+let ofComplex = (re: Real.t, im: Real.t): t => ofScalarUnsafe(Scalar.ofComplex(re, im))
+let ofPercent = (a: Scalar.t): t =>
+  switch Scalar.Finite.ofScalar(a) {
+  | Some(a) => #P(a)
+  | None => nan
+  }
 let ofVector = (a: Vector.t): t => normalize(#V(a))
 let ofMatrix = (a: Matrix.t): t => normalize(#M(a))
 
-let ofDecimal = (a): t => #R(Decimal(a))->normalize
-let ofInt = (a): t => #R(Real.ofInt(a))->normalize
-let ofFloat = (a): t => {
-  let scalar = Scalar.ofFloat(a)
-  Scalar.isNaN(scalar) ? #N : ofScalarUnsafe(scalar)
-}
+let ofDecimal = (a): t => ofScalarUnsafe(Scalar.ofDecimal(a))
+let ofInt = (a): t => ofScalarUnsafe(Scalar.ofInt(a))
+let ofFloat = (a): t => ofScalarUnsafe(Scalar.ofFloat(a))
 
 let toDecimal = (a: t): Decimal.t =>
   switch a {

@@ -6,7 +6,7 @@ open Value_Base
 let rec pow = (a: t, b: t): t =>
   switch (a, b) {
   // Base cases
-  | (#N, _) | (_, #N) => #N
+  | (#N, _) | (_, #N) => nan
 
   // Percentages
   | (#P(aP), #P(bP)) => pow(percentToNumerical(aP), percentToNumerical(bP))
@@ -16,16 +16,14 @@ let rec pow = (a: t, b: t): t =>
   // Vectors
   | (#V(v), #R(Rational(2, 1, Unit))) => Vector.magnitudeSquared(v)->ofScalar
   | (#V(_), _)
-  | (_, #V(_)) =>
-    #N
+  | (_, #V(_)) => nan
 
   // Matrices
   | (#M(m), #R(Rational(-1, 1, Unit))) => Matrix.inverse(m)->ofMatrix
   | (#M(m), #Z) if m.numColumns == m.numRows => Matrix.identity(m.numRows)->ofMatrix
   | (#M(m), #R(Rational(gtZero, 1, Unit))) if gtZero >= 0 => Matrix.pow(m, gtZero)->ofMatrix
   | (#M(_), _)
-  | (_, #M(_)) =>
-    #N
+  | (_, #M(_)) => nan
 
   // Scalars
   | (#...Scalar.t as a, #...Scalar.t as b) => Scalar.pow(a, b)->ofScalar

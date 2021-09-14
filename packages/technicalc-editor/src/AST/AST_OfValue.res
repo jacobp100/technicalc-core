@@ -34,61 +34,54 @@ let ofScalar = (a: TechniCalcCalculator.Scalar.t) =>
   | #I(im) => ofReal(im)
   | #C(re, im) =>
     open TechniCalcCalculator
-    Belt.Array.concatMany([
-      ofReal(re),
-      {
-        open Real
-        lt(im, zero)
-      }
-        ? [Sub]
-        : [],
-      Real.abs(im)->ofReal,
-    ])
+    Belt.Array.concatMany([ofReal(re), Real.lt(im, Real.zero) ? [Sub] : [], Real.abs(im)->ofReal])
+  | #N => [N0_S, Div, N0_S]
   }
+
+%%private(let ofFinite = x => TechniCalcCalculator.Scalar.Finite.toScalar(x)->ofScalar)
 
 let ofValue = (a: TechniCalcCalculator.Value.t) =>
   switch a {
   | #...TechniCalcCalculator.Scalar.t as s => ofScalar(s)
   | #P((#Z | #R(_) | #I(_)) as p) => Belt.Array.concat(ofScalar(p), [Percent])
-  | #P(p) => Belt.Array.concatMany([[OpenBracket], ofScalar(p), [CloseBracketS, Percent]])
-  | #V([a, b]) => Belt.Array.concatMany([[Vector2S], ofScalar(a), [Arg], ofScalar(b), [Arg]])
+  | #P(p) => Belt.Array.concatMany([[OpenBracket], ofFinite(p), [CloseBracketS, Percent]])
+  | #V([a, b]) => Belt.Array.concatMany([[Vector2S], ofFinite(a), [Arg], ofFinite(b), [Arg]])
   | #V([a, b, c]) =>
-    Belt.Array.concatMany([[Vector3S], ofScalar(a), [Arg], ofScalar(b), [Arg], ofScalar(c), [Arg]])
+    Belt.Array.concatMany([[Vector3S], ofFinite(a), [Arg], ofFinite(b), [Arg], ofFinite(c), [Arg]])
   | #M({numRows: 2, numColumns: 2, elements: [a, b, c, d]}) =>
     Belt.Array.concatMany([
       [Matrix4S],
-      ofScalar(a),
+      ofFinite(a),
       [Arg],
-      ofScalar(b),
+      ofFinite(b),
       [Arg],
-      ofScalar(c),
+      ofFinite(c),
       [Arg],
-      ofScalar(d),
+      ofFinite(d),
       [Arg],
     ])
   | #M({numRows: 3, numColumns: 3, elements: [a, b, c, d, e, f, g, h, i]}) =>
     Belt.Array.concatMany([
       [Matrix9S],
-      ofScalar(a),
+      ofFinite(a),
       [Arg],
-      ofScalar(b),
+      ofFinite(b),
       [Arg],
-      ofScalar(c),
+      ofFinite(c),
       [Arg],
-      ofScalar(d),
+      ofFinite(d),
       [Arg],
-      ofScalar(e),
+      ofFinite(e),
       [Arg],
-      ofScalar(f),
+      ofFinite(f),
       [Arg],
-      ofScalar(g),
+      ofFinite(g),
       [Arg],
-      ofScalar(h),
+      ofFinite(h),
       [Arg],
-      ofScalar(i),
+      ofFinite(i),
       [Arg],
     ])
   | #V(_)
   | #M(_) => []
-  | #N => [N0_S, Div, N0_S]
   }

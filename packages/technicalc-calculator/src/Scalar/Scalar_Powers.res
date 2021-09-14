@@ -7,7 +7,7 @@ open Scalar_Exponentiation
 let pow = (a: t, b: t): t =>
   switch (a, b) {
   | (#Z, #Z) => nan
-  | (#Z, #R(_) | #I(_) | #C(_)) => #Z
+  | (#Z, #R(_) | #I(_) | #C(_)) => zero
   | (#R(_) | #I(_) | #C(_), #Z) => one
   | (#R(Rational(1, 1, Exp(1))), _) => exp(b)
   | (_, #R(Rational(1, 2, Unit))) => sqrt(a)
@@ -23,4 +23,5 @@ let pow = (a: t, b: t): t =>
     | _ => raise(Not_found)
     }
   | (#R(_) | #I(_) | #C(_), #R(_) | #I(_) | #C(_)) => mul(log(a), b)->exp
+  | (#N, _) | (_, #N) => nan
   }

@@ -1,7 +1,7 @@
 open Jest
 open Real
 
-let ofDecimalString = s => Decimal(Decimal.ofString(s))
+let ofDecimalString = s => ofDecimal(Decimal.ofString(s))
 
 test("neg", (. ()) => {
   expect(-Rational(1, 1, Unit))->toEqual(Rational(-1, 1, Unit))

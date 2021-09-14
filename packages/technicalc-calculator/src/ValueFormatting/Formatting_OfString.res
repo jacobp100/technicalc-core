@@ -304,18 +304,18 @@ type rec astConstructor =
     | Some(Scalar(scalar)) => Some(Value_Base.ofScalar(scalar))
     | Some(Row([Scalar(a), Scalar(b)]))
     | Some(Row([Row([Scalar(a)]), Row([Scalar(b)])])) =>
-      Some(Value_Base.ofVector([a, b]))
+      Some(Vector.make([a, b])->Value_Base.ofVector)
     | Some(Row([Scalar(a), Scalar(b), Scalar(c)]))
     | Some(Row([Row([Scalar(a)]), Row([Scalar(b)]), Row([Scalar(c)])])) =>
-      Some(Value_Base.ofVector([a, b, c]))
+      Some(Vector.make([a, b, c])->Value_Base.ofVector)
     | Some(Row([Row([Scalar(a), Scalar(b)]), Row([Scalar(c), Scalar(d)])])) =>
-      Matrix.make(2, 2, [a, b, c, d])->Value_Base.ofMatrix->Some
+      Some(Matrix.make(~numRows=2, ~numColumns=2, [a, b, c, d])->Value_Base.ofMatrix)
     | Some(Row([
         Row([Scalar(a), Scalar(b), Scalar(c)]),
         Row([Scalar(d), Scalar(e), Scalar(f)]),
         Row([Scalar(g), Scalar(h), Scalar(i)]),
       ])) =>
-      Matrix.make(3, 3, [a, b, c, d, e, f, g, h, i])->Value_Base.ofMatrix->Some
+      Some(Matrix.make(~numRows=3, ~numColumns=3, [a, b, c, d, e, f, g, h, i])->Value_Base.ofMatrix)
     | _ => None
     }
   }

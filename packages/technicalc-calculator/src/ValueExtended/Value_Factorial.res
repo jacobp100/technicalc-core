@@ -28,7 +28,7 @@ open Value_Core
 
 let gamma = (x: t): t =>
   switch x {
-  | #Z => #N
+  | #Z => nan
   | #R(Rational(1 | 2, 1, Unit)) => ofReal(Real.ofInt(1))
   | #R(Rational(3, 1, Unit)) => ofReal(Real.ofInt(2))
   | #R(Rational(4, 1, Unit)) => ofReal(Real.ofInt(6))
@@ -56,7 +56,7 @@ let gamma = (x: t): t =>
     | #C(re, im) => (Real.toDecimal(re), Real.toDecimal(im))
     }
     let nRe = nRe - half
-    let n = ofComplex(Real.Decimal(nRe), Real.Decimal(nIm))
+    let n = ofComplex(Real.ofDecimal(nRe), Real.ofDecimal(nIm))
     let (xRe, xIm) = p->Belt.Array.reduceWithIndexU((p0, zero), (. (re, im), p, i) => {
       let real = nRe + ofInt(i) + half
       let den = real * real + nIm * nIm
@@ -66,12 +66,12 @@ let gamma = (x: t): t =>
         (nan, im)
       }
     })
-    let x = ofComplex(Real.Decimal(xRe), Real.Decimal(xIm))
+    let x = ofComplex(Real.ofDecimal(xRe), Real.ofDecimal(xIm))
 
     open Value_Core
     let t = n + ofDecimal(g)
     ofDecimal(sqrt2Pi) * t ** n * exp(-t) * x
-  | _ => #N
+  | _ => nan
   }
 
 let factorial = x => (x + one)->gamma

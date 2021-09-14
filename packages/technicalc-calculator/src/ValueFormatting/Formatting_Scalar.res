@@ -176,4 +176,5 @@ let toString = (~format=?, a: Scalar.t): string =>
     formatReal(re, format) ++
     formatOperator(Decimal.lt(Real.toDecimal(im), Decimal.zero) ? "-" : "+", format) ++
     formatImag(Real.abs(im), format)
+  | #N => formatVariable("NaN", format)
   }

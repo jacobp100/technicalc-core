@@ -16,8 +16,8 @@ let toString = (~format=?, ~inline=false, a: Value_Types.t): string => {
     | Some({mode: MathML}) => Formatting_Matrix.formatMathML
     }
     Formatting_Matrix.toString(~format, matrix, tableFormat)
-  | #P(p) => Formatting_Scalar.toString(~format?, p) ++ formatOperator("%", format)
-  | #N => formatVariable("NaN", format)
+  | #P(p) =>
+    Formatting_Scalar.toString(~format?, Scalar.Finite.toScalar(p)) ++ formatOperator("%", format)
   }
 
   switch format {

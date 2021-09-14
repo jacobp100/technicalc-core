@@ -22,8 +22,8 @@ let sin = a =>
   | Rational(5 | 7, 4, Pi(1)) => ofRational(-1, 2, Sqrt(2))
   | Rational(1 | 5, 6, Pi(1)) => ofRational(1, 2, Unit)
   | Rational(7 | 11, 6, Pi(1)) => ofRational(-1, 2, Unit)
-  | Rational(n, d, c) => Decimal(ratDecimal(n, d, c)->Decimal.sin)
-  | Decimal(f) => Decimal(Decimal.sin(f))
+  | Rational(n, d, c) => ofDecimal(ratDecimal(n, d, c)->Decimal.sin)
+  | Decimal(f) => ofDecimal(Decimal.sin(f))
   }
 
 let cos = a =>
@@ -38,6 +38,6 @@ let cos = a =>
   | Rational(3 | 5, 4, Pi(1)) => ofRational(-1, 2, Sqrt(2))
   | Rational(1 | 11, 6, Pi(1)) => ofRational(1, 2, Sqrt(3))
   | Rational(5 | 7, 6, Pi(1)) => ofRational(-1, 2, Sqrt(3))
-  | Rational(n, d, c) => Decimal(ratDecimal(n, d, c)->Decimal.cos)
-  | Decimal(f) => Decimal(Decimal.cos(f))
+  | Rational(n, d, c) => ofDecimal(ratDecimal(n, d, c)->Decimal.cos)
+  | Decimal(f) => ofDecimal(Decimal.cos(f))
   }

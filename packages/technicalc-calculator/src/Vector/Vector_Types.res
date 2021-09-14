@@ -1,1 +1,1 @@
-type t = array<Scalar.t>
+type t = array<Scalar.finite>

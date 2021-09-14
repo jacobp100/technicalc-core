@@ -80,14 +80,14 @@ test("complex decimal", (. ()) => {
 })
 
 test("vector", (. ()) => {
-  let value = ofVector([Scalar.ofFloat(1.), Scalar.ofFloat(2.), Scalar.ofFloat(3.)])
+  let value = Vector.make([Scalar.ofFloat(1.), Scalar.ofFloat(2.), Scalar.ofFloat(3.)])->ofVector
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
 test("matrix", (. ()) => {
   let elements = [Scalar.ofFloat(1.), Scalar.ofFloat(2.), Scalar.ofFloat(3.), Scalar.ofFloat(4.)]
-  let value = Matrix.make(2, 2, elements)->ofMatrix
+  let value = Matrix.make(~numRows=2, ~numColumns=2, elements)->ofMatrix
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })

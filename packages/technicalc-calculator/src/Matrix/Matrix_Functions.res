@@ -1,6 +1,7 @@
 open Matrix_Types
 open Matrix_Base
 open Matrix_Arithmetic
+open Matrix_Util
 
 let neg = (m: t) => map(m, Scalar.neg)
 
@@ -16,7 +17,7 @@ let pow = (m: t, i: int): t =>
   }
 
 let determinant = (m: t): Scalar.t =>
-  switch m.elements {
+  switch scalarElements(m) {
   | [a, b, c, d] =>
     open Scalar_Operators
     a * d - b * c
@@ -27,13 +28,13 @@ let determinant = (m: t): Scalar.t =>
   | _ => Scalar.nan
   }
 
-let inverse = (m: t): t =>
-  switch m.elements {
+let inverse = ({numRows, numColumns} as m: t): t =>
+  switch scalarElements(m) {
   | [a, b, c, d] =>
     open Scalar_Operators
     let factor = a * d - b * c
     let elements = [d / factor, -b / factor, -c / factor, a / factor]
-    {...m, elements: elements}
+    make(~numRows, ~numColumns, elements)
   | [a, b, c, d, e, f, g, h, i] =>
     /* https://www.wolframalpha.com/input/?i=%7B%7Ba,b,c%7D,%7Bd,e,f%7D,%7Bg,h,i%7D%7D%5E-1 */
     open Scalar_Operators
@@ -49,6 +50,6 @@ let inverse = (m: t): t =>
       (b * g - a * h) / factor,
       (a * e - b * d) / factor,
     ]
-    {...m, elements: elements}
+    make(~numRows, ~numColumns, elements)
   | _ => empty
   }

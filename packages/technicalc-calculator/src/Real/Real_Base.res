@@ -24,6 +24,7 @@ let eq = (a, b) =>
 
 let normalize = a =>
   switch a {
+  | Rational(_, 0, _) => nan
   | Decimal(f) if Decimal.eq(f, Decimal.zero) => zero
   | Decimal(f) if !Decimal.isFinite(f) => nan
   | _ => a

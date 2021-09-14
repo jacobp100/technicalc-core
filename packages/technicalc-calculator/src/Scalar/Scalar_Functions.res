@@ -7,7 +7,7 @@ open Scalar_Exponentiation
 
 let sqrt = (a: t) =>
   switch a {
-  | #Z => #Z
+  | #Z => zero
   | #R(re) =>
     open Real
     if gte(re, zero) {
@@ -37,14 +37,15 @@ let conj = (a: t): t =>
   switch a {
   | #Z
   | #R(_) => a
-  | #I(im) => #I(Real.neg(im))
-  | #C(re, im) => #C(re, Real.neg(im))
+  | #I(im) => ofImag(Real.neg(im))
+  | #C(re, im) => ofComplex(re, Real.neg(im))
+  | #N => nan
   }
 
 %%private(
   let map2Real = (a: t, b: t, fn: (Real.t, Real.t) => Real.t): t =>
     switch (a, b) {
-    | (#R(aRe), #R(bRe)) => #R(fn(aRe, bRe))
+    | (#R(aRe), #R(bRe)) => ofReal(fn(aRe, bRe))
     | _ => nan
     }
 )

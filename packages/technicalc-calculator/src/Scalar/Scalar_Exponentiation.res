@@ -7,7 +7,7 @@ open Scalar_Arithmetic
     if !Real.eq(re, Real.zero) {
       let reF = Real.toDecimal(re)
       let imF = Real.toDecimal(im)
-      Real.Decimal(Decimal.atan2(imF, reF))
+      Real.ofDecimal(Decimal.atan2(imF, reF))
     } else if Real.gt(im, Real.zero) {
       Real.ofRational(1, 2, Pi(1))
     } else if Real.lt(im, Real.zero) {
@@ -21,7 +21,7 @@ let expReal = re =>
   switch re {
   | Real.Rational(0, 1, Unit) => Real.one
   | Rational(i, 1, Unit) => Real.ofRational(1, 1, Exp(i))
-  | _ => Decimal(Real.toDecimal(re)->Decimal.exp)
+  | _ => Real.ofDecimal(Real.toDecimal(re)->Decimal.exp)
   }
 
 let exp = (a: t): t =>
@@ -37,6 +37,7 @@ let exp = (a: t): t =>
     let re = Real_Trig.cos(im)->Real.mul(exp)
     let im = Real_Trig.sin(im)->Real.mul(exp)
     ofComplex(re, im)
+  | #N => nan
   }
 
 %%private(
@@ -46,7 +47,7 @@ let exp = (a: t): t =>
     | _ =>
       let f = Real.toDecimal(q)
       if Decimal.gt(f, Decimal.zero) {
-        Decimal(Decimal.ln(f))
+        Real.ofDecimal(Decimal.ln(f))
       } else {
         assert false
       }
@@ -74,4 +75,5 @@ let log = (a: t): t =>
     | #C(re, im) => arg(re, im)
     }
     ofComplex(re, im)
+  | #N => nan
   }
