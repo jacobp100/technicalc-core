@@ -1,5 +1,6 @@
 open Jest
 open Value
+open Formatting
 
 let stringOfFloat = (x, format) => toString(~format, ofFloat(x))
 

@@ -8,11 +8,13 @@
   },
   "suffix": ".mjs",
   "pinned-dependencies": [
+    "url-safe-encoding",
     "technicalc-calculator",
     "technicalc-editor",
     "technicalc-prebuilt"
   ],
   "bs-dependencies": [
+    "url-safe-encoding",
     "technicalc-calculator",
     "technicalc-editor",
     "technicalc-prebuilt"

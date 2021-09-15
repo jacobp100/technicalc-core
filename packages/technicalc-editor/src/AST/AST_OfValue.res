@@ -29,13 +29,13 @@ let ofReal = (a: TechniCalcCalculator.Real.t) =>
 
 let ofScalar = (a: TechniCalcCalculator.Scalar.t) =>
   switch a {
-  | #Z => [N0_S]
-  | #R(re) => ofReal(re)
-  | #I(im) => ofReal(im)
-  | #C(re, im) =>
+  | #Zero => [N0_S]
+  | #Real(re) => ofReal(re)
+  | #Imag(im) => ofReal(im)
+  | #Cmpx(re, im) =>
     open TechniCalcCalculator
     Belt.Array.concatMany([ofReal(re), Real.lt(im, Real.zero) ? [Sub] : [], Real.abs(im)->ofReal])
-  | #N => [N0_S, Div, N0_S]
+  | #NaNN => [N0_S, Div, N0_S]
   }
 
 %%private(let ofFinite = x => TechniCalcCalculator.Scalar.Finite.toScalar(x)->ofScalar)
@@ -43,12 +43,12 @@ let ofScalar = (a: TechniCalcCalculator.Scalar.t) =>
 let ofValue = (a: TechniCalcCalculator.Value.t) =>
   switch a {
   | #...TechniCalcCalculator.Scalar.t as s => ofScalar(s)
-  | #P((#Z | #R(_) | #I(_)) as p) => Belt.Array.concat(ofScalar(p), [Percent])
-  | #P(p) => Belt.Array.concatMany([[OpenBracket], ofFinite(p), [CloseBracketS, Percent]])
-  | #V([a, b]) => Belt.Array.concatMany([[Vector2S], ofFinite(a), [Arg], ofFinite(b), [Arg]])
-  | #V([a, b, c]) =>
+  | #Pcnt((#Zero | #Real(_) | #Imag(_)) as p) => Belt.Array.concat(ofScalar(p), [Percent])
+  | #Pcnt(p) => Belt.Array.concatMany([[OpenBracket], ofFinite(p), [CloseBracketS, Percent]])
+  | #Vect([a, b]) => Belt.Array.concatMany([[Vector2S], ofFinite(a), [Arg], ofFinite(b), [Arg]])
+  | #Vect([a, b, c]) =>
     Belt.Array.concatMany([[Vector3S], ofFinite(a), [Arg], ofFinite(b), [Arg], ofFinite(c), [Arg]])
-  | #M({numRows: 2, numColumns: 2, elements: [a, b, c, d]}) =>
+  | #Matx({numRows: 2, numColumns: 2, elements: [a, b, c, d]}) =>
     Belt.Array.concatMany([
       [Matrix4S],
       ofFinite(a),
@@ -60,7 +60,7 @@ let ofValue = (a: TechniCalcCalculator.Value.t) =>
       ofFinite(d),
       [Arg],
     ])
-  | #M({numRows: 3, numColumns: 3, elements: [a, b, c, d, e, f, g, h, i]}) =>
+  | #Matx({numRows: 3, numColumns: 3, elements: [a, b, c, d, e, f, g, h, i]}) =>
     Belt.Array.concatMany([
       [Matrix9S],
       ofFinite(a),
@@ -82,6 +82,6 @@ let ofValue = (a: TechniCalcCalculator.Value.t) =>
       ofFinite(i),
       [Arg],
     ])
-  | #V(_)
-  | #M(_) => []
+  | #Vect(_)
+  | #Matx(_) => []
   }

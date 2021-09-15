@@ -1,9 +1,8 @@
-import * as TechniCalc from "../Value";
-import * as TechniCalcTest from "../ValueTestUtil";
+import { ofString, ofStringBase } from "../Formatting/Formatting";
+import * as TechniCalcTest from "../__test-util__/ValueTestUtil";
 
 test("parses strings", () => {
-  const convert = (x, opt) =>
-    TechniCalcTest.toString(TechniCalc.ofString(x), opt);
+  const convert = (x, opt) => TechniCalcTest.toString(ofString(x), opt);
 
   expect(convert("1")).toBe("1");
   expect(convert("100")).toBe("100");
@@ -29,7 +28,7 @@ test("parses strings", () => {
 
 test("parses strings in other bases", () => {
   const convert = (x, base, opt) =>
-    TechniCalcTest.toString(TechniCalc.ofStringBase(base, x), opt);
+    TechniCalcTest.toString(ofStringBase(base, x), opt);
 
   expect(convert("1", 16)).toBe("1");
   expect(convert("100", 16)).toBe("256");
@@ -40,10 +39,10 @@ test("parses strings in other bases", () => {
 });
 
 test("converts decimals to fractions", () => {
-  expect(TechniCalcTest.toString(TechniCalc.ofString("0.4"))).toBe("2/5");
+  expect(TechniCalcTest.toString(ofString("0.4"))).toBe("2/5");
 
   expect(
-    TechniCalcTest.toString(TechniCalc.ofString("0.123456789"), {
+    TechniCalcTest.toString(ofString("0.123456789"), {
       style: "decimal",
     })
   ).toBe("0.123456789");

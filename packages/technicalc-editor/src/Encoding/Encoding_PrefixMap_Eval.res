@@ -1,6 +1,6 @@
 open TechniCalcCalculator.Unit_Types
 
-%%private(let makeSureThisIsTheLastIndex = 19)
+%%private(let makeSureThisIsTheLastIndex = 21)
 %%private(
   let toUint = (element: prefix) =>
     switch element {
@@ -23,7 +23,10 @@ open TechniCalcCalculator.Unit_Types
     | Mebi => 16
     | Gibi => 17
     | Tebi => 18
-    | Pebi => makeSureThisIsTheLastIndex
+    | Pebi => 19
+    // Set 2 additions
+    | Exa => 20
+    | Exbi => makeSureThisIsTheLastIndex
     }
 )
 

@@ -1,0 +1,14 @@
+{
+  "name": "url-safe-encoding",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {},
+  "keywords": [
+    "BuckleScript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "rescript": "^9.1.4"
+  }
+}

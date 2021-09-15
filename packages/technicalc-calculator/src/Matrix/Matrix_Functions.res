@@ -1,7 +1,6 @@
 open Matrix_Types
 open Matrix_Base
 open Matrix_Arithmetic
-open Matrix_Util
 
 let neg = (m: t) => map(m, Scalar.neg)
 
@@ -17,7 +16,7 @@ let pow = (m: t, i: int): t =>
   }
 
 let determinant = (m: t): Scalar.t =>
-  switch scalarElements(m) {
+  switch elements(m) {
   | [a, b, c, d] =>
     open Scalar_Operators
     a * d - b * c
@@ -29,7 +28,7 @@ let determinant = (m: t): Scalar.t =>
   }
 
 let inverse = ({numRows, numColumns} as m: t): t =>
-  switch scalarElements(m) {
+  switch elements(m) {
   | [a, b, c, d] =>
     open Scalar_Operators
     let factor = a * d - b * c

@@ -13,22 +13,27 @@ The aim is to not be a symbolic calculator or cas, but to take some concepts fro
 ## Type Scructure
 
 - `Real.t` -> rational number (with optional constant) or decimal.js number (when rational numbers are not possible)
-- `Vector.t` -> `array(Real.t)`
-- `Matrix.t` -> `{ numRows: int, numColumns: int, elements: array(Real.t) }`
-- `Scalar.t` -> `` [ `Zero | `Real(Real.t) | `Imag(Real.t) | `Complex(Real.t, Real.t) ] ``
-- `Value.t` -> `` [ Scalar.t | `Percent(Real.t) | `Matrix(`Matrix.t) | `Vector(Vector.t) | `NaN ] ``
+- `Scalar.Finite.t` -> `[ #Zero | #Real(Real.t) | #Imag(Real.t) | #Complex(Real.t, Real.t) ]`
+- `Scalar.t` -> `[ Scalar.Finite.t | #NaN ]`
+- `Vector.t` -> `array(Scalar.Finite.t)`
+- `Matrix.t` -> `{ numRows: int, numColumns: int, elements: array(Scalar.Finite.t) }`
+- `Value.t` -> `[ Scalar.t | #Percent(Scalar.Finite.t) | #Matrix(#Matrix.t) | #Vector(Vector.t) ]`
 
-Note that all polymorphic variants are represented only using the first character. I.e. `` `Zero `` becomes `` `Z ``. This is because ReScript now represents these as strings, and using a single character improved performance by around 10%. Should the representation change such that the performance gain can be maintained, it should be pretty easy do to a find and replace to revert back.
+Note that all polymorphic variants are represented by 4 letters to make them unifrom in length, which can make large switch statements easier to read.
 
-The scalar type will always simplify to the most compact representation. `Scalar.ofReal(Real.zero)` gives `` `Zero ``. This is relied upon during pattern matching.
+The scalar type will always simplify to the most compact representation. `Scalar.ofReal(Real.zero)` gives `#Zeroro`. Likewise, `Real.t` can represent nans, but `Scalar.t` will coerce these to `#NaN`. The same concept is used for all types, including `Vector.t`, `Matrix.t`, and `Value.t`. This is relied upon during pattern matching.
 
-The same is true for the value type.
+When using `Scalar.Finite.t`, you will be guaranteed any contained `Real.t`s will not be `NaN`.
+
+For the above reasons, it is vital you never create your own values without using the constructor functions. I.e. use `Scalar.ofDecimal(...)` over `#Real(Real.Decimal(...))`.
 
 ---
 
 ### Compiling
 
 To compile, `yarn build`, or `yarn start` to enter watch mode.
+
+For performance reasons, in the production build, all tags in the type structure (aka `#Zeroro` or `#Zero`) are renamed to use integers instead of strings.
 
 ### Testing
 

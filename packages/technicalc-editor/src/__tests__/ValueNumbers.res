@@ -9,7 +9,7 @@ let parseEval = v =>
   }
 
 let ofInt = TechniCalcCalculator.Value.ofInt
-let ofString = x => TechniCalcCalculator.Value.ofString(x)->Belt.Option.getExn
+let ofString = x => TechniCalcCalculator.Formatting.ofString(x)->Belt.Option.getExn
 
 test("parses numbers", (. ()) => {
   parseEval([N1_S, N2_S, N3_S])->expect->toEqual(Some(ofString("123")))

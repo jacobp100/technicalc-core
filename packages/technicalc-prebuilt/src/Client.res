@@ -32,7 +32,7 @@ let emptyFormat = {
   @inline
   let formatStyle = f =>
     switch f.style {
-    | Some("decimal") => TechniCalcCalculator.Value_Formatting.Decimal
+    | Some("decimal") => TechniCalcCalculator.Formatting.Decimal
     | Some("engineering") => Engineering
     | Some("natural-mixed") => Natural({mixedFractions: true})
     | _ => defaultFormat.style
@@ -42,7 +42,7 @@ let emptyFormat = {
   @inline
   let formatLocale = f =>
     switch f.locale {
-    | Some("european") => TechniCalcCalculator.Value_Formatting.European
+    | Some("european") => TechniCalcCalculator.Formatting.European
     | _ => defaultFormat.locale
     }
 )
@@ -170,7 +170,7 @@ module Keys = {
   let customAtom = (~value, ~mml) =>
     AST.CustomAtomS({
       mml: mml,
-      value: TechniCalcCalculator.Value_Encoding.encode(value),
+      value: TechniCalcCalculator.Encoding.encode(value),
     })->Keys.One
 
   let label = (~placeholderMml) => Keys.Many([
@@ -193,7 +193,7 @@ module Value = {
   %%private(
     let getFormat = (~mode, maybeFormat: option<format>) =>
       switch maybeFormat {
-      | None => {...Value_Formatting.defaultFormat, mode: mode}
+      | None => {...Formatting.defaultFormat, mode: mode}
       | Some(format) => {
           mode: mode,
           style: formatStyle(format),
@@ -207,9 +207,9 @@ module Value = {
       }
   )
 
-  let encode = Value_Encoding.encode
+  let encode = Encoding.encode
   let decode = encoded =>
-    switch Value_Encoding.decode(encoded) {
+    switch Encoding.decode(encoded) {
     | Some(value) => value
     | None => Value_Base.nan
     }
@@ -217,22 +217,22 @@ module Value = {
   let nan = Value_Base.nan
   let isNaN = Value_Base.isNaN
 
-  let toString = x => Value_Formatting.toString(x)
+  let toString = x => Formatting.toString(x)
   let ofString = x =>
-    switch Value_Formatting.ofString(x) {
+    switch Formatting.ofString(x) {
     | Some(value) => value
     | None => Value_Base.nan
     }
 
   let toUnicode = (x, maybeFormat) => {
     let format = getFormat(~mode=Unicode, maybeFormat)
-    Value_Formatting.toString(~format, x)
+    Formatting.toString(~format, x)
   }
 
   let toMml = (x, maybeFormat, maybeInline) => {
     let format = getFormat(~mode=MathML, maybeFormat)
     let inline = Belt.Option.getWithDefault(maybeInline, false)
-    Value_Formatting.toString(~format, ~inline, x)
+    Formatting.toString(~format, ~inline, x)
   }
 }
 

@@ -1,5 +1,5 @@
 import * as mathjs from "mathjs/lib/esm";
-import * as TechniCalc from "../Value";
+import * as TechniCalc from "../Value/Value";
 import { toMatchJsValue } from "../__test-util__/index";
 import { complexValues } from "../__test-util__/math-js";
 import cartesian from "../__test-util__/cartesian";

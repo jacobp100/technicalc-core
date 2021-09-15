@@ -77,6 +77,7 @@ test("solves 6x^3 - 5x^2 - 17x + 6", (. ()) => {
 
 test("solves system of 2 equations", (. ()) => {
   open Value
+  open Solvers
   expect(var2(ofInt(2), ofInt(3), ofInt(4), ofInt(5), ofInt(6), ofInt(7)))->toEqual((
     ofInt(-1),
     ofInt(2),
@@ -85,6 +86,7 @@ test("solves system of 2 equations", (. ()) => {
 
 test("solves system of 2 equations", (. ()) => {
   open Value
+  open Solvers
   expect(var2(ofInt(2), ofInt(3), ofInt(4), ofInt(5), ofInt(6), ofInt(7)))->toEqual((
     ofInt(-1),
     ofInt(2),
@@ -93,6 +95,7 @@ test("solves system of 2 equations", (. ()) => {
 
 test("solves system of 3 equations", (. ()) => {
   open Value
+  open Solvers
   expect(
     var3(
       ofInt(3),

@@ -12,6 +12,7 @@
     "rescript": "^9.1.4"
   },
   "dependencies": {
-    "technicalc-calculator": "0.0.1"
+    "technicalc-calculator": "0.0.1",
+    "url-safe-encoding": "0.0.1"
   }
 }

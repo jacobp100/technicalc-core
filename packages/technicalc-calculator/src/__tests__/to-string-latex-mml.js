@@ -2,16 +2,15 @@ import {
   one,
   minusOne,
   ofVector,
-  ofString,
-  toString as toStringBase,
   add,
   div,
   mul,
   pi,
   i,
   nan,
-} from "../Value";
-import { toString, matrixOfFloats } from "../ValueTestUtil";
+} from "../Value/Value";
+import { ofString, toString as toStringBase } from "../Formatting/Formatting";
+import { toString, matrixOfFloats } from "../__test-util__/ValueTestUtil";
 
 const [three, minusThree, threeHalves, minusThreeHalves, half, minusHalf] = [
   "3",

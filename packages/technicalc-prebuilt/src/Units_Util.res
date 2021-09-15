@@ -16,11 +16,13 @@ let prefixes = [
   Giga,
   Tera,
   Peta,
+  Exa,
   Kibi,
   Mebi,
   Gibi,
   Tebi,
   Pebi,
+  Exbi,
 ]
 
 let prefixToString = (prefix: prefix) =>
@@ -40,11 +42,13 @@ let prefixToString = (prefix: prefix) =>
   | Giga => Some("Giga")
   | Tera => Some("Tera")
   | Peta => Some("Peta")
+  | Exa => Some("Exa")
   | Kibi => Some("Kibi")
   | Mebi => Some("Mebi")
   | Gibi => Some("Gibi")
   | Tebi => Some("Tebi")
   | Pebi => Some("Pebi")
+  | Exbi => Some("Exbi")
   }
 
 let unitToString = (unit: unitType) =>
@@ -181,11 +185,13 @@ let prefixValueToMml = (prefix: prefix) => {
   | Giga => Some("10")
   | Tera => Some("10")
   | Peta => Some("10")
+  | Exa => Some("10")
   | Kibi => Some("2")
   | Mebi => Some("2")
   | Gibi => Some("2")
   | Tebi => Some("2")
   | Pebi => Some("2")
+  | Exbi => Some("2")
   }
   let maybeSuperscript = switch prefix {
   | Femto => Some("-15")
@@ -203,11 +209,13 @@ let prefixValueToMml = (prefix: prefix) => {
   | Giga => Some("9")
   | Tera => Some("12")
   | Peta => Some("15")
+  | Exa => Some("15")
   | Kibi => Some("10")
   | Mebi => Some("20")
   | Gibi => Some("30")
   | Tebi => Some("40")
   | Pebi => Some("50")
+  | Exbi => Some("60")
   }
 
   switch (maybeBase, maybeSuperscript) {

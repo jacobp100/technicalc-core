@@ -31,10 +31,10 @@ let round = a => toDecimal(a)->Decimal.round->ofDecimalInt
 let floor = a => toDecimal(a)->Decimal.floor->ofDecimalInt
 let ceil = a => toDecimal(a)->Decimal.ceil->ofDecimalInt
 
-%%private(let oneDeg = Rational(1, 180, Pi(1)))
-%%private(let oneArcMinute = Rational(1, 10800, Pi(1)))
-%%private(let oneArcSecond = Rational(1, 648000, Pi(1)))
-%%private(let oneGrad = Rational(1, 200, Pi(1)))
+%%private(let oneDeg = ofRational(1, 180, Pi(1)))
+%%private(let oneArcMinute = ofRational(1, 10800, Pi(1)))
+%%private(let oneArcSecond = ofRational(1, 648000, Pi(1)))
+%%private(let oneGrad = ofRational(1, 200, Pi(1)))
 
 let toDeg = a => Real_Arithmetic.div(a, oneDeg)
 let toArcMinute = a => Real_Arithmetic.div(a, oneArcMinute)
@@ -51,7 +51,7 @@ let min = (a: t, b: t): t => lte(a, b) ? a : b
 
 let gcd = (a: t, b: t): t =>
   switch (toInt(a), toInt(b)) {
-  | (Some(a), Some(b)) => ofInt(Real_Util.gcd(IntUtil.abs(a), IntUtil.abs(b)))
+  | (Some(a), Some(b)) => ofInt(IntUtil.gcd(IntUtil.abs(a), IntUtil.abs(b)))
   | _ => nan
   }
 
@@ -60,7 +60,7 @@ let lcm = (a: t, b: t): t =>
   | (Some(0), Some(_))
   | (Some(_), Some(0)) => zero
   | (Some(a), Some(b)) =>
-    let gcd = Real_Util.gcd(IntUtil.abs(a), IntUtil.abs(b))
+    let gcd = IntUtil.gcd(IntUtil.abs(a), IntUtil.abs(b))
     switch {
       open SafeInt
       toInt(ofInt(a) * ofInt(b) / ofInt(gcd))

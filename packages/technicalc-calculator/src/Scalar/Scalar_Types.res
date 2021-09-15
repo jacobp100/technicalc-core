@@ -1,2 +1,1 @@
-type finite = [#Z | #R(Real.t) | #I(Real.t) | #C(Real.t, Real.t)]
-type t = [finite | #N]
+type t = [#Zero | #Real(Real.t) | #Imag(Real.t) | #Cmpx(Real.t, Real.t) | #NaNN]

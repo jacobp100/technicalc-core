@@ -18,11 +18,13 @@ open TechniCalcCalculator.Unit_Types
     | Giga => "G"
     | Tera => "T"
     | Peta => "P"
+    | Exa => "E"
     | Kibi => "Ki"
     | Mebi => "Mi"
     | Gibi => "Gi"
     | Tebi => "Ti"
     | Pebi => "Pi"
+    | Exbi => "Ei"
     }
 )
 

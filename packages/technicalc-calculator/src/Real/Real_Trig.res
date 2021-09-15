@@ -5,8 +5,12 @@ open Real_Util
 let mod2Pi = a =>
   switch a {
   | Rational(n, d, Pi(1)) =>
-    let n = IntUtil.safeMod(n, 2 * d)
-    Rational(n, d, Pi(1))
+    switch SafeInt.mulInt(d, 2) {
+    | Some(dMul2) =>
+      let n = IntUtil.safeMod(n, dMul2)
+      ofRational(n, d, Pi(1))
+    | None => a
+    }
   | _ => a
   }
 

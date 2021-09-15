@@ -1,4 +1,4 @@
-open TechniCalcCalculator.Encoding
+open UrlSafeEncoding
 open TechniCalcCalculator.Unit_Types
 
 %%private(

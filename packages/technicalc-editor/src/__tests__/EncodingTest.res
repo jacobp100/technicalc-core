@@ -21,10 +21,7 @@ test("encodes and decodes", (. ()) => {
   let value = [
     CustomAtomS({
       mml: "<mo>one</mo>",
-      value: {
-        open TechniCalcCalculator.Value
-        encode(one)
-      },
+      value: TechniCalcCalculator.Encoding.encode(TechniCalcCalculator.Value.one),
     }),
   ]
   let encoded = Encoding.encode(value)

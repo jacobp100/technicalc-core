@@ -1,88 +1,106 @@
 open Jest
+open Value
 open Encoding
 
-test("unsigned integers", (. ()) => {
-  for value in 0 to 4096 {
-    let encoded = encodeUint(value)
-
-    let decoded = read(encoded, readUint)
-    expect(decoded)->toEqual(Some(value))
-  }
-
-  // This should work - it's just a very inefficient encoding
-  expect(encodeUint(-1)->read(readUint))->toEqual(Some(-1))
+test("zero", (. ()) => {
+  let value = zero
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
 })
 
-test("integers", (. ()) => {
-  for value in 0 to 4096 {
-    expect(encodeInt(value)->read(readInt))->toEqual(Some(value))
-    expect(encodeInt(-value)->read(readInt))->toEqual(Some(-value))
-  }
-
-  expect(encodeInt(1074000000)->read(readInt))->toEqual(Some(1074000000))
+test("real rational", (. ()) => {
+  let value = ofInt(1)
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
 })
 
-test("strings", (. ()) => {
-  let string = "Hello world !@#$%^&*()"
-  let encoded = encodeString(~optimizeFor=Text, string)
-  let decoded = read(encoded, readString(~optimizeFor=Text))
-  expect(decoded)->toEqual(Some(string))
+test("real with constants", (. ()) => {
+  let valueOfConstant = c => Value.ofReal(Real.ofRational(1, 1, c))
+
+  let pi = valueOfConstant(Pi(1))
+  expect(encode(pi)->decode)->toEqual(Some(pi))
+
+  let e = valueOfConstant(Exp(1))
+  expect(encode(e)->decode)->toEqual(Some(e))
+
+  let sqrt2 = valueOfConstant(Sqrt(2))
+  expect(encode(sqrt2)->decode)->toEqual(Some(sqrt2))
 })
 
-test("string optimisation for text", (. ()) => {
-  let string = "helloworld"
-  let encoded = encodeString(~optimizeFor=Text, string)
-  let decoded = read(encoded, readString(~optimizeFor=Text))
-  expect(decoded)->toEqual(Some(string))
-  expect(String.length(encoded))->toEqual(String.length(string) + 1)
+test("negative rational", (. ()) => {
+  let value = ofInt(-1)
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
 })
 
-test("string optimisation for numbers", (. ()) => {
-  let string = "+-1234567890"
-  let encoded = encodeString(~optimizeFor=Numbers, string)
-  let decoded = read(encoded, readString(~optimizeFor=Numbers))
-  expect(decoded)->toEqual(Some(string))
-  expect(String.length(encoded))->toEqual(String.length(string) + 1)
+test("real decimal", (. ()) => {
+  // Any value that cannot be encoded as a rational
+  let value = {
+    open Decimal
+    one / pi
+  }->ofDecimal
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
 })
 
-test("arrays", (. ()) => {
-  let array = [1, 2, 3]
-  let encoded = encodeArray(array, encodeUint)
-  let decoded = read(encoded, reader => readArray(reader, readUint))
-  expect(decoded)->toEqual(Some(array))
+test("imag rational", (. ()) => {
+  let value = ofInt(1)->mul(i)
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
 })
 
-test("invalid encodings", (. ()) => {
-  expect(read("ueaueoueoa", readUint))->toBe(None)
-  expect(read("ueaueoueoa", readInt))->toBe(None)
-  expect(read("ueaueoueoa", readString(~optimizeFor=Text, _)))->toBe(None)
-  expect(read("ueaueoueoa", readString(~optimizeFor=Numbers, _)))->toBe(None)
-  expect(read("ueaueoueoa", readArray(_, readUint)))->toBe(None)
-  expect(read("ueaueoueoa", readArray(_, readString(~optimizeFor=Text, _))))->toBe(None)
-
-  expect(read("", readUint))->toBe(None)
-  expect(read("", readInt))->toBe(None)
-  expect(read("", readString(~optimizeFor=Text, _)))->toBe(None)
-  expect(read("", readString(~optimizeFor=Numbers, _)))->toBe(None)
-  expect(read("", readArray(_, readUint)))->toBe(None)
-  expect(read("", readArray(_, readString(~optimizeFor=Text, _))))->toBe(None)
-
-  // This is just to get 100% code coverage for this file
-  expect((. ()) => ignore(read("@", readUint)))->toThrow()
-  expect((. ()) => ignore(read("!", readUint)))->toThrow()
-  expect((. ()) => ignore(read("~", readUint)))->toThrow()
-  expect((. ()) => ignore(read("[", readUint)))->toThrow()
-})
-
-test("multiple reads on invalidated reader", (. ()) => {
-  let _ = read("ueoaueo", reader => {
-    let pass = switch (readString(reader), readUint(reader)) {
-    | (None, None) => true
-    | _ => false
+test("imag decimal", (. ()) => {
+  // Any value that cannot be encoded as a rational
+  let value =
+    {
+      open Decimal
+      one / pi
     }
+    ->ofDecimal
+    ->mul(i)
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
+})
 
-    expect(pass)->toBe(true)
+test("complex rational", (. ()) => {
+  let value = ofInt(1)
+  let value = add(value, mul(value, i))
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
+})
 
-    None
-  })
+test("complex decimal", (. ()) => {
+  // Any value that cannot be encoded as a rational
+  let value = {
+    open Decimal
+    one / pi
+  }->ofDecimal
+  let value = add(value, mul(value, i))
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
+})
+
+test("vector", (. ()) => {
+  let value = Vector.make([Scalar.ofFloat(1.), Scalar.ofFloat(2.), Scalar.ofFloat(3.)])->ofVector
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
+})
+
+test("matrix", (. ()) => {
+  let elements = [Scalar.ofFloat(1.), Scalar.ofFloat(2.), Scalar.ofFloat(3.), Scalar.ofFloat(4.)]
+  let value = Matrix.make(~numRows=2, ~numColumns=2, elements)->ofMatrix
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
+})
+
+test("percent", (. ()) => {
+  let value = ofPercent(Scalar.one)
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
+})
+
+test("nan", (. ()) => {
+  let value = nan
+  let result = encode(value)->decode
+  expect(result)->toEqual(Some(value))
 })

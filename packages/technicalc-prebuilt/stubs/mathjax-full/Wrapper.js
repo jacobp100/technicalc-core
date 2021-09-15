@@ -155,6 +155,14 @@ var SVGWrapper = (function (_super) {
     if (this.bbox.rscale !== 1) {
       var scale = "scale(" + this.fixed(this.bbox.rscale / 1000, 3) + ")";
       this.adaptor.setAttribute(this.element, "transform", scale);
+
+      /* CUSTOM CODE BEGIN */
+      this.adaptor.setAttribute(
+        this.element,
+        "data-transform-scale",
+        this.fixed(this.bbox.rscale / 1000, 3)
+      );
+      /* CUSTOM CODE END */
     }
   };
   SVGWrapper.prototype.handleColor = function () {
@@ -263,6 +271,21 @@ var SVGWrapper = (function (_super) {
       ")" +
       (transform ? " " + transform : "");
     this.adaptor.setAttribute(element, "transform", transform);
+
+    /* CUSTOM CODE BEGIN */
+    var transformX = this.adaptor.getAttribute(element, "data-transform-x");
+    var transformY = this.adaptor.getAttribute(element, "data-transform-y");
+    this.adaptor.setAttribute(
+      element,
+      "data-transform-x",
+      this.fixed((transformX != null ? Number(transformX) : 0) + x)
+    );
+    this.adaptor.setAttribute(
+      element,
+      "data-transform-y",
+      this.fixed((transformY != null ? Number(transformY) : 0) + y)
+    );
+    /* CUSTOM CODE END */
   };
   SVGWrapper.prototype.placeChar = function (n, x, y, parent, variant) {
     var e_4, _a;

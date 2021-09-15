@@ -7,8 +7,8 @@ open Scalar_Exponentiation
 
 let sqrt = (a: t) =>
   switch a {
-  | #Z => zero
-  | #R(re) =>
+  | #Zero => zero
+  | #Real(re) =>
     open Real
     if gte(re, zero) {
       sqrt(re)->ofReal
@@ -18,6 +18,7 @@ let sqrt = (a: t) =>
   | _ => exp(log(a) / two)
   }
 
+let inv = map(_, Real.inv)
 let abs = map(_, Real.abs)
 let round = map(_, Real.round)
 let floor = map(_, Real.floor)
@@ -33,19 +34,37 @@ let toArcMinute = map(_, Real.toArcMinute)
 let toArcSecond = map(_, Real.toArcSecond)
 let toGrad = map(_, Real.toGrad)
 
+let re = (a: t): t =>
+  switch a {
+  | #Zero
+  | #Imag(_) => zero
+  | #Real(_) => a
+  | #Cmpx(re, _) => ofReal(re)
+  | #NaNN => nan
+  }
+
+let im = (a: t): t =>
+  switch a {
+  | #Zero
+  | #Real(_) => zero
+  | #Imag(_) => a
+  | #Cmpx(_, im) => ofReal(im)
+  | #NaNN => nan
+  }
+
 let conj = (a: t): t =>
   switch a {
-  | #Z
-  | #R(_) => a
-  | #I(im) => ofImag(Real.neg(im))
-  | #C(re, im) => ofComplex(re, Real.neg(im))
-  | #N => nan
+  | #Zero
+  | #Real(_) => a
+  | #Imag(im) => ofImag(Real.neg(im))
+  | #Cmpx(re, im) => ofComplex(re, Real.neg(im))
+  | #NaNN => nan
   }
 
 %%private(
   let map2Real = (a: t, b: t, fn: (Real.t, Real.t) => Real.t): t =>
     switch (a, b) {
-    | (#R(aRe), #R(bRe)) => ofReal(fn(aRe, bRe))
+    | (#Real(aRe), #Real(bRe)) => ofReal(fn(aRe, bRe))
     | _ => nan
     }
 )

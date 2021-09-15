@@ -5,6 +5,7 @@ import childProcess from "node:child_process";
 import { createRequire } from "module";
 import esbuild from "esbuild";
 import * as terser from "terser";
+import renameTags from "./rename-tags.js";
 
 const dist = new URL("../../dist/", import.meta.url);
 const stubsDir = new URL("stubs/", import.meta.url);
@@ -16,6 +17,20 @@ try {
 } catch {
   // Directory already exists
 }
+
+const renameTagsPlugin = {
+  name: "renameTagsPlugin",
+  setup(build) {
+    build.onLoad(
+      { filter: /technicalc-core\/packages\/[^/]+\/src/ },
+      async (args) => {
+        const text = await fs.readFile(args.path, "utf8");
+        const contents = renameTags(text);
+        return { contents };
+      }
+    );
+  },
+};
 
 const evalPlugin = {
   name: "evalPlugin",
@@ -142,14 +157,14 @@ build({
   outfile: new URL("client.js", dist),
   format: "umd",
   globalName: "Client",
-  plugins: [minifyDecimalJsPlugin, evalPlugin],
+  plugins: [renameTagsPlugin, minifyDecimalJsPlugin, evalPlugin],
 });
 build({
   entryPoints: [new URL("src/Worker.mjs", import.meta.url).pathname],
   outfile: new URL("worker.js", dist),
   format: "umd",
   globalName: "Worker",
-  plugins: [minifyDecimalJsPlugin],
+  plugins: [renameTagsPlugin, minifyDecimalJsPlugin],
 });
 
 runNodeScript("scripts/fonts", [

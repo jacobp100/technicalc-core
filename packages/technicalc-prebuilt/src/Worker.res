@@ -16,7 +16,7 @@ let make = self => {
   let decodeContext = context =>
     Belt.Array.reduceU(context, TechniCalcCalculator.AST_Context.empty, (. accum, (key, value)) => {
       open TechniCalcCalculator
-      Value_Encoding.decode(value)
+      Encoding.decode(value)
       ->Belt.Option.getWithDefault(Value_Base.nan)
       ->TechniCalcCalculator.AST_Context.set(accum, key, _)
     })
@@ -39,7 +39,7 @@ let make = self => {
         ))->TechniCalcCalculator.Units.convertComposite(_, ~toUnits)
       switch res {
       | Some(res) => res
-      | None => Belt.Array.make(Belt.Array.length(values), #N)
+      | None => Belt.Array.make(Belt.Array.length(values), #NaNN)
       }
     | SolveRoot({body, initialGuess}) =>
       let res = solveRoot(~config, ~context, body, initialGuess)
@@ -61,7 +61,7 @@ let make = self => {
 
   let callback = e => {
     let arg = try {
-      results: e.data->getResults->Belt.Array.map(TechniCalcCalculator.Value_Encoding.encode),
+      results: e.data->getResults->Belt.Array.map(TechniCalcCalculator.Encoding.encode),
       didError: false,
     } catch {
     | _ => {results: [], didError: true}

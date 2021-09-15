@@ -2,13 +2,14 @@
 
 open TechniCalcCalculator.Unit_Types
 
-type rec section = {
-  title: string,
-  data: array<array<unitRow>>,
-}
-and unitRow = {
+type unitRow = {
   units: array<unitPart>,
   primary: bool,
+}
+
+type section = {
+  title: string,
+  data: array<array<unitRow>>,
 }
 
 let json = [
@@ -285,11 +286,13 @@ let json = [
         {units: [{prefix: Gibi, unit: Byte, power: 1}], primary: true},
         {units: [{prefix: Tebi, unit: Byte, power: 1}], primary: false},
         {units: [{prefix: Pebi, unit: Byte, power: 1}], primary: false},
+        {units: [{prefix: Exbi, unit: Byte, power: 1}], primary: false},
         {units: [{prefix: Kilo, unit: Byte, power: 1}], primary: false},
         {units: [{prefix: Mega, unit: Byte, power: 1}], primary: false},
         {units: [{prefix: Giga, unit: Byte, power: 1}], primary: false},
         {units: [{prefix: Tera, unit: Byte, power: 1}], primary: false},
         {units: [{prefix: Peta, unit: Byte, power: 1}], primary: false},
+        {units: [{prefix: Exa, unit: Byte, power: 1}], primary: false},
       ],
       [
         {units: [{prefix: Unit, unit: Bit, power: 1}], primary: true},
@@ -298,11 +301,13 @@ let json = [
         {units: [{prefix: Gibi, unit: Bit, power: 1}], primary: true},
         {units: [{prefix: Tebi, unit: Bit, power: 1}], primary: false},
         {units: [{prefix: Pebi, unit: Bit, power: 1}], primary: false},
+        {units: [{prefix: Exbi, unit: Bit, power: 1}], primary: false},
         {units: [{prefix: Kilo, unit: Bit, power: 1}], primary: false},
         {units: [{prefix: Mega, unit: Bit, power: 1}], primary: false},
         {units: [{prefix: Giga, unit: Bit, power: 1}], primary: false},
         {units: [{prefix: Tera, unit: Bit, power: 1}], primary: false},
         {units: [{prefix: Peta, unit: Bit, power: 1}], primary: false},
+        {units: [{prefix: Exbi, unit: Bit, power: 1}], primary: false},
       ],
     ],
   },

@@ -1,6 +1,6 @@
 import { toMatchJsValue } from "../__test-util__/index";
-import * as TechniCalc from "../Value";
-import { percentOfFloat } from "../ValueTestUtil";
+import * as TechniCalc from "../Value/Value";
+import { percentOfFloat } from "../__test-util__/ValueTestUtil";
 
 expect.extend({ toMatchJsValue });
 

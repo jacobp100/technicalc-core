@@ -7,10 +7,11 @@ let empty: t = {numRows: 0, numColumns: 0, elements: []}
 let eq = (a: t, b: t) =>
   a.numRows == b.numRows &&
     (a.numColumns == b.numColumns &&
-    Belt.Array.every2(a.elements, b.elements, Obj.magic(Scalar.eq)))
+    Belt.Array.every2(a.elements, b.elements, Obj.magic(Scalar_Base.eq)))
 
 let make = (~numRows, ~numColumns, elements: array<Scalar.t>) =>
-  numRows * numColumns == Belt.Array.length(elements) && !Belt.Array.some(elements, Scalar.isNaN)
+  numRows * numColumns == Belt.Array.length(elements) &&
+    !Belt.Array.some(elements, Scalar_Base.isNaN)
     ? {numRows: numRows, numColumns: numColumns, elements: Obj.magic(elements)}
     : empty
 
@@ -45,7 +46,7 @@ let makeByU = (~numRows, ~numColumns, fn: (. int, int) => Scalar.t) =>
   })
 
 let identity = (size: int) =>
-  makeByU(~numRows=size, ~numColumns=size, (. a, b) => a == b ? Scalar.one : Scalar.zero)
+  makeByU(~numRows=size, ~numColumns=size, (. a, b) => a == b ? Scalar_Base.one : Scalar_Base.zero)
 
 let ofVector = elements => {
   numRows: Belt.Array.length(elements),
@@ -53,14 +54,16 @@ let ofVector = elements => {
   elements: elements,
 }
 
+@get external elements: t => array<Scalar.t> = "elements"
+
+let getExn = (x, ~row, ~column) =>
+  if row >= 0 && (row <= x.numRows && (column >= 0 && column <= x.numColumns)) {
+    Belt.Array.getUnsafe(x.elements, column + row * x.numColumns)->Scalar_Finite.toScalar
+  } else {
+    raise(Not_found)
+  }
+
 let map = (x: t, fn: Scalar.t => Scalar.t): t =>
   makeByIndexU(~numRows=x.numRows, ~numColumns=x.numColumns, (. i) => {
     fn(Belt.Array.getUnsafe(x.elements, i)->Scalar.Finite.toScalar)
   })
-
-let getExn = (x, ~row, ~column) =>
-  if row >= 0 && (row <= x.numRows && (column >= 0 && column <= x.numColumns)) {
-    Belt.Array.getUnsafe(x.elements, column + row * x.numColumns)
-  } else {
-    raise(Not_found)
-  }

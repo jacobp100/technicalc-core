@@ -1,4 +1,4 @@
-open TechniCalcCalculator.Encoding
+open UrlSafeEncoding
 
 %%private(
   let elementToUint = (element: AST.t): int =>
@@ -27,9 +27,9 @@ open TechniCalcCalculator.Encoding
 
 %%private(
   let readCustomAtom = reader =>
-    switch (readString(reader), TechniCalcCalculator.Encoding_Value.readValue(reader)) {
+    switch (readString(reader), TechniCalcCalculator.Encoding_Value.read(reader)) {
     | (Some(mml), Some(value)) =>
-      let value = TechniCalcCalculator.Encoding_Value.encodeValue(value)
+      let value = TechniCalcCalculator.Encoding_Value.encode(value)
       AST.CustomAtomS({mml: mml, value: value})->Some
     | _ => None
     }

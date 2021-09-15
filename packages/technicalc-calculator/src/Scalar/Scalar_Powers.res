@@ -6,14 +6,14 @@ open Scalar_Exponentiation
 
 let pow = (a: t, b: t): t =>
   switch (a, b) {
-  | (#Z, #Z) => nan
-  | (#Z, #R(_) | #I(_) | #C(_)) => zero
-  | (#R(_) | #I(_) | #C(_), #Z) => one
-  | (#R(Rational(1, 1, Exp(1))), _) => exp(b)
-  | (_, #R(Rational(1, 2, Unit))) => sqrt(a)
-  | (_, #R(Rational(2, 1, Unit))) => mul(a, a)
-  | (#R(re), #R(Rational(bInt, 1, Unit))) => ofReal(Real.powInt(re, bInt))
-  | (#I(im), #R(Rational(bInt, 1, Unit))) =>
+  | (#Zero, #Zero) => nan
+  | (#Zero, #Real(_) | #Imag(_) | #Cmpx(_)) => zero
+  | (#Real(_) | #Imag(_) | #Cmpx(_), #Zero) => one
+  | (#Real(Rational(1, 1, Exp(1))), _) => exp(b)
+  | (_, #Real(Rational(1, 2, Unit))) => sqrt(a)
+  | (_, #Real(Rational(2, 1, Unit))) => mul(a, a)
+  | (#Real(re), #Real(Rational(bInt, 1, Unit))) => ofReal(Real.powInt(re, bInt))
+  | (#Imag(im), #Real(Rational(bInt, 1, Unit))) =>
     let aPowB = Real.powInt(im, bInt)
     switch IntUtil.safeMod(bInt, 4) {
     | 0 => ofReal(aPowB)
@@ -22,6 +22,6 @@ let pow = (a: t, b: t): t =>
     | 3 => ofImag(Real.neg(aPowB))
     | _ => raise(Not_found)
     }
-  | (#R(_) | #I(_) | #C(_), #R(_) | #I(_) | #C(_)) => mul(log(a), b)->exp
-  | (#N, _) | (_, #N) => nan
+  | (#Real(_) | #Imag(_) | #Cmpx(_), #Real(_) | #Imag(_) | #Cmpx(_)) => mul(log(a), b)->exp
+  | (#NaNN, _) | (_, #NaNN) => nan
   }

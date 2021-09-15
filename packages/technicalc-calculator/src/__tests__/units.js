@@ -1,5 +1,5 @@
-import * as TechniCalc from "../Value";
-import { testPrefixes, testUnits } from "../ValueTestUtil";
+import * as TechniCalc from "../Value/Value";
+import { testPrefixes, testUnits } from "../__test-util__/ValueTestUtil";
 import { convert, convertComposite } from "../Units/Units";
 
 const c = (value, fromUnits, toUnits) =>

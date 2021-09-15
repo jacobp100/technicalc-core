@@ -1,4 +1,4 @@
-import * as TechniCalc from "../Value";
+import * as TechniCalc from "../Value/Value";
 import cartesian from "./cartesian";
 import { Value, range12, fractionsTo12 } from "./index";
 

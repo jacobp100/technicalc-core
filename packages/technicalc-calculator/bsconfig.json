@@ -10,7 +10,7 @@
     "in-source": true
   },
   "suffix": ".mjs",
-  "bs-dependencies": [],
+  "bs-dependencies": ["url-safe-encoding"],
   "warnings": {
     "number": "-44",
     "error": "+10144"

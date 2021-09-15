@@ -1,5 +1,15 @@
-import { ofFloat, pi, add, mul, div, sqrt, log, exp, sin } from "../Value";
-import { toString } from "../ValueTestUtil";
+import {
+  ofFloat,
+  pi,
+  add,
+  mul,
+  div,
+  sqrt,
+  log,
+  exp,
+  sin,
+} from "../Value/Value";
+import { toString } from "../__test-util__/ValueTestUtil";
 
 test("simplifies division by two square roots", () => {
   expect(toString(div(sqrt(ofFloat(10)), sqrt(ofFloat(2))))).toEqual("sqrt(5)");

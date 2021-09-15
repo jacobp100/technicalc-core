@@ -11,8 +11,11 @@ let e = Rational(1, 1, Exp(1))
 let isNaN = a =>
   switch a {
   | Rational(_, 0, _) => true
-  | Decimal(f) => !Decimal.isFinite(f)
-  | _ => false
+  | Rational(_, _, _) => false
+  | Decimal(f) =>
+    // NaNs are normalised to rationals
+    assert Decimal.isFinite(f)
+    false
   }
 
 let eq = (a, b) =>
@@ -22,40 +25,44 @@ let eq = (a, b) =>
   | _ => false
   }
 
-let normalize = a =>
-  switch a {
-  | Rational(_, 0, _) => nan
-  | Decimal(f) if Decimal.eq(f, Decimal.zero) => zero
-  | Decimal(f) if !Decimal.isFinite(f) => nan
-  | _ => a
+let ofDecimal = f =>
+  if Decimal.eq(f, Decimal.zero) {
+    zero
+  } else if !Decimal.isFinite(f) {
+    nan
+  } else {
+    Decimal(f)
   }
-
-let ofDecimal = f => Decimal(f)->normalize
 
 let ofInt = n => {
   assert (n->Belt.Float.fromInt->Belt.Int.fromFloat == n)
   Rational(n, 1, Unit)
 }
 
-let ofRational = (n, d, c) =>
-  if d == 0 {
-    nan
-  } else {
+%%private(
+  let rationalGcd = (n, d, c) => {
     let n = d >= 0 ? n : -n
     let d = IntUtil.abs(d)
-    let gcd = gcd(IntUtil.abs(n), d)
+    let gcd = IntUtil.gcd(IntUtil.abs(n), d)
     let n = n / gcd
     let d = d / gcd
+    Rational(n, d, c)
+  }
+)
 
+let ofRational = (n, d, c) =>
+  if d != 0 {
     switch Real_Constant.simplify(c) {
-    | None => Rational(n, d, c)
-    | Zero => Rational(0, 1, Unit)
-    | Factor(n', c) =>
+    | None => rationalGcd(n, d, c)
+    | Zero => zero
+    | Factor(n', c') =>
       switch SafeInt.mulInt(n, n') {
-      | Some(n) => Rational(n, d, c)
-      | None => Decimal(ratDecimal(d, d, c))
+      | Some(n) => rationalGcd(n, d, c')
+      | None => Decimal(ratDecimal(n, d, c))
       }
     }
+  } else {
+    nan
   }
 
 let toDecimal = a =>

@@ -1,9 +1,9 @@
-open Scalar_Types
+type t = [#Zero | #Real(Real.t) | #Imag(Real.t) | #Cmpx(Real.t, Real.t)]
 
-external toScalar: finite => t = "%identity"
+external toScalar: t => Scalar_Types.t = "%identity"
 
-let ofScalar = (a: t): option<finite> =>
+let ofScalar = (a: Scalar_Types.t): option<t> =>
   switch a {
-  | #...finite as finite => Some(finite)
-  | #N => None
+  | #...t as finite => Some(finite)
+  | #NaNN => None
   }

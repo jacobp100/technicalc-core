@@ -18,5 +18,10 @@ export default {
       rootDir: "<rootDir>/packages/technicalc-editor",
       ...commonConfig,
     },
+    {
+      displayName: "url-safe-encoding",
+      rootDir: "<rootDir>/packages/url-safe-encoding",
+      ...commonConfig,
+    },
   ],
 };

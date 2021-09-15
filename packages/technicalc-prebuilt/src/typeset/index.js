@@ -2,13 +2,15 @@ import { MathML } from "mathjax-full/js/input/mathml";
 import { SVG } from "mathjax-full/js/output/svg";
 import { HTMLDocument } from "mathjax-full/js/handlers/html/HTMLDocument";
 import { liteAdaptor } from "mathjax-full/js/adaptors/liteAdaptor";
-import transformElement from "./transformElement";
+// import transformElement from "./transformElement";
 import {
   parseViewbox,
   parseTransform,
   parseId,
   combineTransforms,
 } from "./util";
+
+const transformElement = () => {};
 
 const inputMml = new MathML();
 const outputSvg = new SVG({ fontCache: "none" });
@@ -66,10 +68,33 @@ export default (mml, display) => {
       transform: cssTransform,
       "data-mml-node": kind,
       "data-selection-before": selectionBefore,
+      "data-transform-x": transformX,
+      "data-transform-y": transformY,
+      "data-transform-scale": transformScale,
     } = attributes;
 
-    const nodeTransform = parseTransform(cssTransform);
+    const nodeTransform = {
+      s: transformScale != null ? Number(transformScale) : 1,
+      tX: transformX != null ? Number(transformX) : 0,
+      tY: transformY != null ? Number(transformY) : 0,
+    };
     const transform = combineTransforms(inputTransform, nodeTransform);
+
+    if (__DEV__) {
+      const parsedCssTransform = parseTransform(cssTransform);
+
+      if (
+        nodeTransform.s !== parsedCssTransform.s ||
+        nodeTransform.tX !== parsedCssTransform.tX ||
+        nodeTransform.tY !== parsedCssTransform.tY
+      ) {
+        throw new Error(
+          `Invalid transform\n${JSON.stringify(
+            parsedCssTransform
+          )}\n${JSON.stringify(dataTransform)}`
+        );
+      }
+    }
 
     if (id != null) {
       const [current, after] = parseId(id);

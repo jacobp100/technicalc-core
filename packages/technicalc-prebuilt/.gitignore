@@ -9,7 +9,6 @@ npm-debug.log
 .vscode
 
 *.mjs
-playground.js
 coverage
 
 /stubs/.*

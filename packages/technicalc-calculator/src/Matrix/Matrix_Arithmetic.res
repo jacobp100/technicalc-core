@@ -1,6 +1,19 @@
 open Matrix_Types
 open Matrix_Base
-open Matrix_Util
+
+%%private(
+  let zipBy = (a: t, b: t, fn: (Scalar.t, Scalar.t) => Scalar.t): t =>
+    if a.numRows == b.numRows && a.numColumns == b.numColumns {
+      let aElements = elements(a)
+      let bElements = elements(b)
+
+      makeByIndexU(~numRows=a.numRows, ~numColumns=a.numColumns, (. i) => {
+        fn(Belt.Array.getUnsafe(aElements, i), Belt.Array.getUnsafe(bElements, i))
+      })
+    } else {
+      empty
+    }
+)
 
 let add = (a: t, b: t): t => zipBy(a, b, Scalar.add)
 
@@ -12,10 +25,7 @@ let mul = (a: t, b: t): t =>
     makeByU(~numRows=shape, ~numColumns=shape, (. row, column) => {
       let element = ref(Scalar.zero)
       for i in 0 to shape - 1 {
-        let elementProduct = Scalar.mul(
-          getExn(a, ~row, ~column=i)->Scalar.Finite.toScalar,
-          getExn(b, ~row=i, ~column)->Scalar.Finite.toScalar,
-        )
+        let elementProduct = Scalar.mul(getExn(a, ~row, ~column=i), getExn(b, ~row=i, ~column))
         element := Scalar.add(element.contents, elementProduct)
       }
       element.contents

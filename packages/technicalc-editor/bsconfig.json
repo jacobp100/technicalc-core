@@ -10,7 +10,7 @@
     "in-source": true
   },
   "suffix": ".mjs",
-  "bs-dependencies": ["technicalc-calculator"],
+  "bs-dependencies": ["url-safe-encoding", "technicalc-calculator"],
   "warnings": {
     "error": "+101"
   },

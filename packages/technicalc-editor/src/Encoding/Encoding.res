@@ -1,4 +1,4 @@
-open TechniCalcCalculator.Encoding
+open UrlSafeEncoding
 
 let encode = input => Encoding_Elements.encodeElements(input)
 

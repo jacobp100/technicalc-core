@@ -8,10 +8,7 @@ let mulVector = (m: t, v: Vector.t): Vector.t => {
     Vector.makeByU(size, (. row) => {
       let element = ref(Scalar.zero)
       for column in 0 to size - 1 {
-        let elementProduct = Scalar.mul(
-          getExn(~row, ~column, m)->Scalar.Finite.toScalar,
-          Vector.getExn(v, column)->Scalar.Finite.toScalar,
-        )
+        let elementProduct = Scalar.mul(getExn(~row, ~column, m), Vector.getExn(v, column))
         element := Scalar.add(element.contents, elementProduct)
       }
       element.contents

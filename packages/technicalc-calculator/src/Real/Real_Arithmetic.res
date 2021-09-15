@@ -16,28 +16,27 @@ open Real_Util
     }
 )
 
-%%private(
-  let inv = a =>
-    switch a {
-    | Rational(n, d, Unit) => ofRational(d, n, Unit)
-    | Rational(n, d, Pi(exp) as c) =>
-      switch SafeInt.negInt(exp) {
-      | Some(exp) => ofRational(d, n, Pi(exp))
-      | _ => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
-      }
-    | Rational(n, d, Exp(exp) as c) =>
-      switch SafeInt.negInt(exp) {
-      | Some(exp) => ofRational(d, n, Exp(exp))
-      | _ => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
-      }
-    | Rational(n, d, Sqrt(sqrt) as c) =>
-      switch SafeInt.mulInt(n, sqrt) {
-      | Some(n) => ofRational(d, n, Sqrt(sqrt))
-      | None => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
-      }
-    | _ => ofDecimal(toDecimal(a)->Decimal.inv)
+let inv = a =>
+  switch a {
+  | Rational(_, 0, _) => nan
+  | Rational(n, d, Unit) => ofRational(d, n, Unit)
+  | Rational(n, d, Pi(exp) as c) =>
+    switch SafeInt.negInt(exp) {
+    | Some(exp) => ofRational(d, n, Pi(exp))
+    | _ => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
     }
-)
+  | Rational(n, d, Exp(exp) as c) =>
+    switch SafeInt.negInt(exp) {
+    | Some(exp) => ofRational(d, n, Exp(exp))
+    | _ => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
+    }
+  | Rational(n, d, Sqrt(sqrt) as c) =>
+    switch SafeInt.mulInt(n, sqrt) {
+    | Some(n) => ofRational(d, n, c)
+    | None => ofDecimal(ratDecimal(n, d, c)->Decimal.inv)
+    }
+  | _ => ofDecimal(toDecimal(a)->Decimal.inv)
+  }
 
 let neg = a =>
   switch a {
@@ -130,49 +129,10 @@ let mul = (a, b) => {
   }
 }
 
-%%private(
-  let divRat = (an, ad, bn, bd, c) => {
-    open SafeInt
-    let n = ofInt(an) * ofInt(bd)
-    let d = ofInt(ad) * ofInt(bn)
-    safeRat(n, d, c)
-  }
-)
-
-let div = (a, b) => {
-  let rat = switch (a, b) {
-  | (_, Rational(0, _, _)) => Some(nan)
-  | (Rational(1, 1, Unit), _) => Some(inv(b))
-  | (Rational(an, ad, ac), Rational(bn, bd, bc)) if Real_Constant.eq(ac, bc) =>
-    divRat(an, ad, bn, bd, Unit)
-  | (Rational(an, ad, c), Rational(bn, bd, Unit)) => divRat(an, ad, bn, bd, c)
-  | (Rational(an, ad, Pi(aExp)), Rational(bn, bd, Pi(bExp))) =>
-    switch SafeInt.subInt(aExp, bExp) {
-    | Some(exp) => divRat(an, ad, bn, bd, Pi(exp))
-    | _ => None
-    }
-  | (Rational(an, ad, Exp(aExp)), Rational(bn, bd, Exp(bExp))) =>
-    switch SafeInt.subInt(aExp, bExp) {
-    | Some(exp) => divRat(an, ad, bn, bd, Exp(exp))
-    | _ => None
-    }
-  | (Rational(an, ad, Sqrt(aSqrt)), Rational(bn, bd, Sqrt(bSqrt)))
-    if aSqrt > bSqrt && bSqrt != 0 && mod(aSqrt, bSqrt) == 0 =>
-    // Can skip safety check here because we know bSqrt is not 0
-    divRat(an, ad, bn, bd, Sqrt(aSqrt / bSqrt))
-  | (Rational(an, ad, Unit), Rational(bn, bd, Sqrt(bSqrt))) =>
-    open SafeInt
-    safeRat(mul(ofInt(an), ofInt(bd)), ofInt(ad) * ofInt(bn) * ofInt(bSqrt), Sqrt(bSqrt))
-  | _ => None
-  }
-  switch rat {
-  | Some(rat) => rat
-  | None => ofDecimal(Decimal.div(toDecimal(a), toDecimal(b)))
-  }
-}
+let div = (a, b) => mul(a, inv(b))
 
 %%private(
-  let powRatWithConstant = (~absB, n, d, c) => {
+  let powRat = (~absB, n, d, c) => {
     open SafeInt
     let n = (ofInt(n) ** ofInt(absB))->toInt
     let d = (ofInt(d) ** ofInt(absB))->toInt
@@ -189,20 +149,20 @@ let powInt = (a, b) => {
   | (Rational(_), 0) => Some(ofInt(1))
   | (_, 1) => Some(a)
   | (_, 2) => Some(mul(a, a))
-  | (Rational(n, d, Unit), absB) => powRatWithConstant(~absB, n, d, Unit)
+  | (Rational(n, d, Unit), absB) => powRat(~absB, n, d, Unit)
   | (Rational(n, d, Pi(aExp)), absB) =>
     switch SafeInt.mulInt(aExp, absB) {
-    | Some(exp) => powRatWithConstant(~absB, n, d, Pi(exp))
+    | Some(exp) => powRat(~absB, n, d, Pi(exp))
     | _ => None
     }
   | (Rational(n, d, Exp(aExp)), absB) =>
     switch SafeInt.mulInt(aExp, absB) {
-    | Some(exp) => powRatWithConstant(~absB, n, d, Exp(exp))
+    | Some(exp) => powRat(~absB, n, d, Exp(exp))
     | _ => None
     }
   | (Rational(n, d, Sqrt(aSqrt)), absB) =>
     switch SafeInt.powInt(aSqrt, absB) {
-    | Some(aSqrt) => powRatWithConstant(~absB, n, d, Sqrt(aSqrt))
+    | Some(aSqrt) => powRat(~absB, n, d, Sqrt(aSqrt))
     | _ => None
     }
   | _ => None

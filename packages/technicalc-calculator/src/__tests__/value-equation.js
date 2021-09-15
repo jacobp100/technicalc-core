@@ -1,5 +1,6 @@
 import _ from "lodash";
-import * as TechniCalc from "../Value";
+import * as TechniCalc from "../Value/Value";
+import * as Solvers from "../Solvers/Solvers";
 import cartesian from "../__test-util__/cartesian";
 
 const testValues = _.range(-2, 2 + 1, 1);
@@ -12,7 +13,7 @@ test("quadratic", () => {
     const a = TechniCalc.ofFloat(1);
     const b = TechniCalc.ofFloat(-(x0 + x1));
     const c = TechniCalc.ofFloat(x0 * x1);
-    const [r0, r1] = TechniCalc.quadratic(a, b, c);
+    const [r0, r1] = Solvers.quadratic(a, b, c);
     expect([TechniCalc.toFloat(r0), TechniCalc.toFloat(r1)].sort()).toEqual(
       [x0, x1].sort()
     );
@@ -28,7 +29,7 @@ test("cubic", () => {
     const b = TechniCalc.ofFloat(-(x0 + x1 + x2));
     const c = TechniCalc.ofFloat(x0 * x1 + x0 * x2 + x1 * x2);
     const d = TechniCalc.ofFloat(-x0 * x1 * x2);
-    const [r0, r1, r2] = TechniCalc.cubic(a, b, c, d);
+    const [r0, r1, r2] = Solvers.cubic(a, b, c, d);
     expect(
       [
         TechniCalc.toFloat(r0),

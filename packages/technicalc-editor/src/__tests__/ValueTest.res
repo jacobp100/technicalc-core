@@ -4,7 +4,7 @@ open AST_Types
 let parse = v =>
   switch Value.parse(v) {
   | Ok(v) =>
-    TechniCalcCalculator.Value.toString({
+    TechniCalcCalculator.Formatting.toString({
       open TechniCalcCalculator.AST
       eval(~config=defaultConfig, ~context=emptyContext, v)
     })->Ok

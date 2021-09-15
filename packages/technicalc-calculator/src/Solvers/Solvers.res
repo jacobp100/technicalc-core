@@ -1,0 +1,3 @@
+include Solvers_Polynomial
+include Solvers_RootFinder
+include Solvers_SystemEquations

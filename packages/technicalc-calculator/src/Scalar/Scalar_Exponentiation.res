@@ -26,18 +26,18 @@ let expReal = re =>
 
 let exp = (a: t): t =>
   switch a {
-  | #Z => one
-  | #R(re) => ofReal(expReal(re))
-  | #I(im) =>
+  | #Zero => one
+  | #Real(re) => ofReal(expReal(re))
+  | #Imag(im) =>
     let re = Real_Trig.cos(im)
     let im = Real_Trig.sin(im)
     ofComplex(re, im)
-  | #C(re, im) =>
+  | #Cmpx(re, im) =>
     let exp = expReal(re)
     let re = Real_Trig.cos(im)->Real.mul(exp)
     let im = Real_Trig.sin(im)->Real.mul(exp)
     ofComplex(re, im)
-  | #N => nan
+  | #NaNN => nan
   }
 
 %%private(
@@ -56,24 +56,24 @@ let exp = (a: t): t =>
 
 let log = (a: t): t =>
   switch a {
-  | #Z => nan
-  | #R(gtZero) if Real.gt(gtZero, Real.zero) => ofReal(logReal(gtZero))
-  | #R(Rational(-1, 1, Unit)) => mul(pi, i)
-  | (#R(_) | #I(_) | #C(_)) as vV =>
+  | #Zero => nan
+  | #Real(gtZero) if Real.gt(gtZero, Real.zero) => ofReal(logReal(gtZero))
+  | #Real(Rational(-1, 1, Unit)) => mul(pi, i)
+  | (#Real(_) | #Imag(_) | #Cmpx(_)) as vV =>
     let re = switch vV {
-    | #R(re) => Real.mul(re, re)
-    | #I(im) => Real.mul(im, im)
-    | #C(re, im) => Real.add(Real.mul(re, re), Real.mul(im, im))
+    | #Real(re) => Real.mul(re, re)
+    | #Imag(im) => Real.mul(im, im)
+    | #Cmpx(re, im) => Real.add(Real.mul(re, re), Real.mul(im, im))
     }
     let re = {
       open Real
       div(logReal(re), ofRational(2, 1, Unit))
     }
     let im = switch vV {
-    | #R(re) => arg(re, Real.zero)
-    | #I(im) => arg(Real.zero, im)
-    | #C(re, im) => arg(re, im)
+    | #Real(re) => arg(re, Real.zero)
+    | #Imag(im) => arg(Real.zero, im)
+    | #Cmpx(re, im) => arg(re, im)
     }
     ofComplex(re, im)
-  | #N => nan
+  | #NaNN => nan
   }

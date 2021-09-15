@@ -1,5 +1,6 @@
 open Jest
 open Value
+open Formatting
 
 test("sqrt via power", (. ()) => {
   let half = ofInt(1) / ofInt(2)

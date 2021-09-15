@@ -1,8 +1,8 @@
 import * as mathjs from "mathjs/lib/esm";
 import { toMatchJsValue } from "../__test-util__/index";
 import { complexValues } from "../__test-util__/math-js";
-import * as TechniCalc from "../Value";
-import * as TechniCalcTest from "../ValueTestUtil";
+import * as TechniCalc from "../Value/Value";
+import * as TechniCalcTest from "../__test-util__/ValueTestUtil";
 
 expect.extend({ toMatchJsValue });
 

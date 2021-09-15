@@ -14,19 +14,21 @@ type prefix =
   | Giga
   | Tera
   | Peta
+  | Exa
   | Kibi
   | Mebi
   | Gibi
   | Tebi
   | Pebi
+  | Exbi
 
 /*
  This would be much better as a polymorphic variant, but it meant any switch
  statement over values took over 1kb of JS to compile
  */
 type unitType =
-  | /* Time */
-  Second
+  /* Time */
+  | Second
   | Minute
   | Hour
   | Day
@@ -35,8 +37,8 @@ type unitType =
   | Year
   | Decade
   | Century
-  | /* Length */
-  Meter
+  /* Length */
+  | Meter
   | Inch
   | Foot
   | Yard
@@ -45,17 +47,17 @@ type unitType =
   | LightYear
   | Parsec
   | Angstrom
-  | /* Mass */
-  Gram
+  /* Mass */
+  | Gram
   | Tonne
   | Ounce
   | Pound
   | Stone
-  | /* Area */
-  Acre
+  /* Area */
+  | Acre
   | Hectare
-  | /* Volume */
-  Liter
+  /* Volume */
+  | Liter
   | Gallon
   | USGallon
   | Quart
@@ -64,30 +66,30 @@ type unitType =
   | Teaspoon
   | Tablespoon
   | FluidOunce
-  | /* Speed */
-  Knot
-  | /* Force */
-  Newton
+  /* Speed */
+  | Knot
+  /* Force */
+  | Newton
   | PoundForce
-  | /* Pressure */
-  Pascal
+  /* Pressure */
+  | Pascal
   | Atmosphere
   | Bar
-  | /* Energy */
-  Joule
+  /* Energy */
+  | Joule
   | Calorie
   | ElectronVolt
   | BTU
   | Therm
-  | /* Power */
-  Watt
+  /* Power */
+  | Watt
   | Horsepower
   | MetricHorsepower
-  | /* Memory */
-  Bit
+  /* Memory */
+  | Bit
   | Byte
-  | /* Temperature */
-  Kelvin
+  /* Temperature */
+  | Kelvin
   | Celsius
   | Fahrenheit
 
