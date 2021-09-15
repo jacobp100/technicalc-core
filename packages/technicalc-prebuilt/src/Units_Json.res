@@ -307,7 +307,7 @@ let json = [
         {units: [{prefix: Giga, unit: Bit, power: 1}], primary: false},
         {units: [{prefix: Tera, unit: Bit, power: 1}], primary: false},
         {units: [{prefix: Peta, unit: Bit, power: 1}], primary: false},
-        {units: [{prefix: Exbi, unit: Bit, power: 1}], primary: false},
+        {units: [{prefix: Exa, unit: Bit, power: 1}], primary: false},
       ],
     ],
   },
