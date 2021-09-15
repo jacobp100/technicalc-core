@@ -117,8 +117,8 @@ module Elements = {
 
   let parse = elements =>
     switch Value.parse(elements) {
-    | Ok(node) => (None, Some(node))
-    | Error(i) => (Some(i), None)
+    | Ok(node) => Obj.magic({"ok": true, "value": node})
+    | Error(i) => Obj.magic({"ok": false, "error": i})
     }
 
   let bracketRanges = BracketMetadata.bracketRanges

@@ -1,16 +1,15 @@
+/* global __DEV__ */
 import { MathML } from "mathjax-full/js/input/mathml";
 import { SVG } from "mathjax-full/js/output/svg";
 import { HTMLDocument } from "mathjax-full/js/handlers/html/HTMLDocument";
 import { liteAdaptor } from "mathjax-full/js/adaptors/liteAdaptor";
-// import transformElement from "./transformElement";
+import transformElement from "./transformElement";
 import {
   parseViewbox,
   parseTransform,
   parseId,
   combineTransforms,
 } from "./util";
-
-const transformElement = () => {};
 
 const inputMml = new MathML();
 const outputSvg = new SVG({ fontCache: "none" });
@@ -90,8 +89,8 @@ export default (mml, display) => {
       ) {
         throw new Error(
           `Invalid transform\n${JSON.stringify(
-            parsedCssTransform
-          )}\n${JSON.stringify(dataTransform)}`
+            nodeTransform
+          )}\n${JSON.stringify(parsedCssTransform)}`
         );
       }
     }
