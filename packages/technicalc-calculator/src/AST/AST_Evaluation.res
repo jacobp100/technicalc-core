@@ -98,30 +98,33 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   | Lcm(a, b) => Value.lcm(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | X => x
   | Differential({at, body}) =>
-    Value.differentiate(createEvalCb(~config, ~context, body), evalAt(~config, ~context, ~x, at))
+    Value.differentiateU(
+      createEvalAtFnU(~config, ~context, body),
+      evalAt(~config, ~context, ~x, at),
+    )
   | Integral({from, to_, body}) =>
-    Value.integrate(
-      createEvalCb(~config, ~context, body),
+    Value.integrateU(
+      createEvalAtFnU(~config, ~context, body),
       evalAt(~config, ~context, ~x, from),
       evalAt(~config, ~context, ~x, to_),
     )
   | Sum({from, to_, body}) =>
-    Value.sum(
-      createEvalCb(~config, ~context, body),
+    Value.sumU(
+      createEvalAtFnU(~config, ~context, body),
       evalAt(~config, ~context, ~x, from),
       evalAt(~config, ~context, ~x, to_),
     )
   | Product({from, to_, body}) =>
-    Value.product(
-      createEvalCb(~config, ~context, body),
+    Value.productU(
+      createEvalAtFnU(~config, ~context, body),
       evalAt(~config, ~context, ~x, from),
       evalAt(~config, ~context, ~x, to_),
     )
   | Convert({body, fromUnits, toUnits}) =>
     Units.convert(evalAt(~config, ~context, ~x, body), ~fromUnits, ~toUnits)
   }
-and createEvalCb = (~config, ~context, body) => {
-  let fn = x => evalAt(~config, ~context, ~x, body)
+and createEvalAtFnU = (~config, ~context, body) => {
+  let fn = (. x) => evalAt(~config, ~context, ~x, body)
   fn
 }
 and evalScalar = (~config, ~context, ~x, body): Scalar.t =>
@@ -133,9 +136,9 @@ and evalScalar = (~config, ~context, ~x, body): Scalar.t =>
 let eval = (~context, ~config, v) => evalAt(~config, ~context, ~x=Value.nan, v)
 
 let solveRoot = (~config, ~context, body, initial) => {
-  let fn = createEvalCb(~config, ~context, body)
+  let fn = createEvalAtFnU(~config, ~context, body)
   let initial = eval(~config, ~context, initial)
-  initial != #NaNN ? Solvers.solveRoot(fn, initial) : #NaNN
+  initial != #NaNN ? Solvers.solveRootU(fn, initial) : #NaNN
 }
 let solveQuadratic = (~config, ~context, a, b, c) => {
   let a = eval(~config, ~context, a)

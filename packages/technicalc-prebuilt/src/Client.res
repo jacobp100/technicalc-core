@@ -121,11 +121,12 @@ module Elements = {
     | Error(i) => Obj.magic({"ok": false, "error": i})
     }
 
+  let eq = (a, b) => Belt.Array.eqU(a, b, (. a, b) => AST.eq(a, b))
+
   let bracketRanges = BracketMetadata.bracketRanges
   let bracketRange = BracketMetadata.bracketRange
 
-  let populatedCaptureGroups = CaptureGroupMetadata.populatedCaptureGroups
-  let emptyCaptureGroups = CaptureGroupMetadata.emptyCaptureGroups
+  let captureGroups = CaptureGroupMetadata.captureGroups
 
   let getDependencies = DependencyMetadata.getDependencies
 

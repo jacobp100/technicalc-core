@@ -1,7 +1,7 @@
 open Vector_Types
 open Vector_Base
 
-let neg = (a: t): t => map(a, Scalar.neg)
+let neg = (a: t): t => mapU(a, (. x) => Scalar.neg(x))
 
 let magnitudeSquared = (a: t): Scalar.t =>
   elements(a)->Belt.Array.reduceU(Scalar.zero, (. a, s) => {

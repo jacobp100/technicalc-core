@@ -18,21 +18,21 @@ let sqrt = (a: t) =>
   | _ => exp(log(a) / two)
   }
 
-let inv = map(_, Real.inv)
-let abs = map(_, Real.abs)
-let round = map(_, Real.round)
-let floor = map(_, Real.floor)
-let ceil = map(_, Real.ceil)
+let inv = mapU(_, (. x) => Real.inv(x))
+let abs = mapU(_, (. x) => Real.abs(x))
+let round = mapU(_, (. x) => Real.round(x))
+let floor = mapU(_, (. x) => Real.floor(x))
+let ceil = mapU(_, (. x) => Real.ceil(x))
 
-let ofDeg = map(_, Real.ofDeg)
-let ofArcMin = map(_, Real.ofArcMin)
-let ofArcSec = map(_, Real.ofArcSec)
-let ofGrad = map(_, Real.ofGrad)
+let ofDeg = mapU(_, (. x) => Real.ofDeg(x))
+let ofArcMin = mapU(_, (. x) => Real.ofArcMin(x))
+let ofArcSec = mapU(_, (. x) => Real.ofArcSec(x))
+let ofGrad = mapU(_, (. x) => Real.ofGrad(x))
 
-let toDeg = map(_, Real.toDeg)
-let toArcMinute = map(_, Real.toArcMinute)
-let toArcSecond = map(_, Real.toArcSecond)
-let toGrad = map(_, Real.toGrad)
+let toDeg = mapU(_, (. x) => Real.toDeg(x))
+let toArcMinute = mapU(_, (. x) => Real.toArcMinute(x))
+let toArcSecond = mapU(_, (. x) => Real.toArcSecond(x))
+let toGrad = mapU(_, (. x) => Real.toGrad(x))
 
 let re = (a: t): t =>
   switch a {
@@ -62,14 +62,14 @@ let conj = (a: t): t =>
   }
 
 %%private(
-  let map2Real = (a: t, b: t, fn: (Real.t, Real.t) => Real.t): t =>
+  let map2Real = (a: t, b: t, fn: (. Real.t, Real.t) => Real.t): t =>
     switch (a, b) {
-    | (#Real(aRe), #Real(bRe)) => ofReal(fn(aRe, bRe))
+    | (#Real(aRe), #Real(bRe)) => ofReal(fn(. aRe, bRe))
     | _ => nan
     }
 )
 
-let max = (a: t, b: t): t => map2Real(a, b, Real.max)
-let min = (a: t, b: t): t => map2Real(a, b, Real.min)
-let gcd = (a: t, b: t): t => map2Real(a, b, Real.gcd)
-let lcm = (a: t, b: t): t => map2Real(a, b, Real.lcm)
+let max = (a: t, b: t): t => map2Real(a, b, (. a, b) => Real.max(a, b))
+let min = (a: t, b: t): t => map2Real(a, b, (. a, b) => Real.min(a, b))
+let gcd = (a: t, b: t): t => map2Real(a, b, (. a, b) => Real.gcd(a, b))
+let lcm = (a: t, b: t): t => map2Real(a, b, (. a, b) => Real.lcm(a, b))

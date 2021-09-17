@@ -6,7 +6,7 @@ type accum = list<TechniCalcEditor.Value_Types.partialNode>
 let parse = (elements: array<t>) => {
   let error = ref(None)
 
-  let reduce = (elementsRev: accum, element, (i, i')) =>
+  let reduce = (. elementsRev: accum, element, (i, i')) =>
     if error.contents == None {
       switch element {
       | Placeholder(_)
@@ -19,7 +19,7 @@ let parse = (elements: array<t>) => {
       list{}
     }
 
-  let map = (elementsRev: accum, (i, _)): TechniCalcCalculator.AST_Types.t =>
+  let map = (. elementsRev: accum, (i, _)): TechniCalcCalculator.AST_Types.t =>
     if error.contents == None {
       let elements = Belt.List.toArray(elementsRev)
       Belt.Array.reverseInPlace(elements)
@@ -37,7 +37,7 @@ let parse = (elements: array<t>) => {
       NaN
     }
 
-  let root = reduceMap(elements, ~reduce, ~map, ~initial=list{})
+  let root = reduceMapU(elements, ~reduce, ~map, ~initial=list{})
 
   switch error.contents {
   | Some(i) => Error(i)

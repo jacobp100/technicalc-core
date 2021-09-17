@@ -101,11 +101,11 @@ let eq = (a: t, b: t): bool =>
   | _ => false
   }
 
-let map = (a: t, f: Real.t => Real.t): t =>
+let mapU = (a: t, f: (. Real.t) => Real.t): t =>
   switch a {
   | #Zero => a
-  | #Real(re) => ofReal(f(re))
-  | #Imag(im) => ofImag(f(im))
-  | #Cmpx(re, im) => ofComplex(f(re), f(im))
+  | #Real(re) => ofReal(f(. re))
+  | #Imag(im) => ofImag(f(. im))
+  | #Cmpx(re, im) => ofComplex(f(. re), f(. im))
   | #NaNN => a
   }

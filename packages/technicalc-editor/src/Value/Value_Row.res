@@ -156,13 +156,13 @@ let parse = {
   }
   let next = parseParenFreeFunctions
 
-  let rec binaryOperatorParser = (~operatorHandled, ~next, elements) => {
+  let rec binaryOperatorParserU = (~operatorHandled, ~next, elements) => {
     let next' = current =>
       switch current {
       | Some((elementIndex, op, i')) =>
         let before = ArraySlice.slice(elements, ~offset=0, ~len=elementIndex)
         let after = ArraySlice.sliceToEnd(elements, elementIndex + 1)
-        switch (binaryOperatorParser(~operatorHandled, ~next, before), next(after)) {
+        switch (binaryOperatorParserU(~operatorHandled, ~next, before), next(. after)) {
         | (Ok(before), Ok(after)) => Ok(handleOp(op, before, after))
         | (Error(_) as e, _)
         | (_, Error(_) as e) => e
@@ -170,7 +170,7 @@ let parse = {
         | (_, UnknownError) =>
           Error(i')
         }
-      | None => next(elements)
+      | None => next(. elements)
       }
 
     let rec iter = (~unaryPosition, current, elementIndex) =>
@@ -188,12 +188,20 @@ let parse = {
 
   let mulDivOperatorHandled = (. op) => op == AST.Mul || op == Div || op == Dot
   let parseMulDiv = elements =>
-    binaryOperatorParser(~operatorHandled=mulDivOperatorHandled, ~next, elements)
+    binaryOperatorParserU(
+      ~operatorHandled=mulDivOperatorHandled,
+      ~next=(. elements) => next(elements),
+      elements,
+    )
   let next = parseMulDiv
 
   let addSubOperatorHandled = (. op) => op == AST.Add || op == Sub
   let parseAddSub = elements =>
-    binaryOperatorParser(~operatorHandled=addSubOperatorHandled, ~next, elements)
+    binaryOperatorParserU(
+      ~operatorHandled=addSubOperatorHandled,
+      ~next=(. elements) => next(elements),
+      elements,
+    )
   let next = parseAddSub
 
   let handleBrackets = elements => {

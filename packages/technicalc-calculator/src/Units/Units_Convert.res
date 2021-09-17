@@ -104,25 +104,25 @@ open Unit_Types
 )
 
 %%private(
-  let celsiusToKelvin = value => {
+  let celsiusToKelvin = (. value) => {
     open Decimal
     value + ofFloat(273.15)
   }
 )
 %%private(
-  let fahrenheitToKelvin = value => {
+  let fahrenheitToKelvin = (. value) => {
     open Decimal
     (value - ofFloat(32.)) / ofFloat(1.8) + ofFloat(273.15)
   }
 )
 %%private(
-  let celsiusFromKelvin = value => {
+  let celsiusFromKelvin = (. value) => {
     open Decimal
     value - ofFloat(273.15)
   }
 )
 %%private(
-  let fahrenheitFromKelvin = value => {
+  let fahrenheitFromKelvin = (. value) => {
     open Decimal
     (value - ofFloat(273.15)) * ofFloat(1.8) + ofFloat(32.)
   }
@@ -155,8 +155,8 @@ open Unit_Types
       }
 
     switch units {
-    | [{prefix, unit: Celsius, power: 1}] => transformCelsius(prefixValue(prefix) * value)
-    | [{prefix, unit: Fahrenheit, power: 1}] => transformFahrenheit(prefixValue(prefix) * value)
+    | [{prefix, unit: Celsius, power: 1}] => transformCelsius(. prefixValue(prefix) * value)
+    | [{prefix, unit: Fahrenheit, power: 1}] => transformFahrenheit(. prefixValue(prefix) * value)
     | _ => Belt.Array.reduceU(units, value, handleLinearUnit)
     }
   }

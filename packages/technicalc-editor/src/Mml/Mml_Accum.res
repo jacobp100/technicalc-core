@@ -133,9 +133,9 @@ module MmlPrettifier = {
     lastElementType: b.lastElementType != NoElement ? b.lastElementType : a.lastElementType,
   }
 
-  let map = (v, fn) => {
+  let mapU = (v, fn) => {
     locale: v.locale,
-    body: toString(v)->fn,
+    body: fn(. toString(v)),
     length: v.length,
     digitGroupingState: defaultDigitGroupingState(v),
     lastElementType: v.lastElementType,
@@ -163,13 +163,13 @@ module BracketGroups = {
     | list{} => level0Body
     }
 
-  let transformCurrentGroupWithArg = ({level0Body, bracketGroups}, arg, fn) =>
+  let transformCurrentGroupWithArgU = ({level0Body, bracketGroups}, arg, fn) =>
     switch bracketGroups {
     | list{{body} as bracketGroup, ...rest} => {
         level0Body: level0Body,
-        bracketGroups: list{{...bracketGroup, body: fn(body, arg)}, ...rest},
+        bracketGroups: list{{...bracketGroup, body: fn(. body, arg)}, ...rest},
       }
-    | list{} => {level0Body: fn(level0Body, arg), bracketGroups: list{}}
+    | list{} => {level0Body: fn(. level0Body, arg), bracketGroups: list{}}
     }
 
   let appendOpenBracket = (v, openBracketRange) => {
@@ -204,7 +204,7 @@ module BracketGroups = {
 
       flattenBracketGroup(v, closed)
       ->MmlPrettifier.append(closeBracket)
-      ->MmlPrettifier.map(body => {
+      ->MmlPrettifier.mapU((. body) => {
         switch superscript {
         | Some({AST.superscriptBody: superscriptBody}) =>
           createElement(
@@ -215,11 +215,9 @@ module BracketGroups = {
         | None => createElement("mrow", body)
         }
       })
-      ->transformCurrentGroupWithArg(
-        {...v, bracketGroups: nextBracketGroups},
-        _,
-        MmlPrettifier.concat,
-      )
+      ->transformCurrentGroupWithArgU({...v, bracketGroups: nextBracketGroups}, _, (. a, b) => {
+        MmlPrettifier.concat(a, b)
+      })
     | list{} =>
       createElementWithRange(
         ~attributes=invalidAttributes,
@@ -227,7 +225,7 @@ module BracketGroups = {
         range,
         "mo",
         ")",
-      )->transformCurrentGroupWithArg(v, _, MmlPrettifier.append)
+      )->transformCurrentGroupWithArgU(v, _, (. a, b) => MmlPrettifier.append(a, b))
     }
 
   %%private(
@@ -262,15 +260,25 @@ module BracketGroups = {
 let make = BracketGroups.make
 let lastElementType = body => MmlPrettifier.lastElementType(BracketGroups.body(body))
 let append = (body, element) =>
-  BracketGroups.transformCurrentGroupWithArg(body, element, MmlPrettifier.append)
+  BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    MmlPrettifier.append(a, b)
+  })
 let appendOperatorOrFunction = (body, element) =>
-  BracketGroups.transformCurrentGroupWithArg(body, element, MmlPrettifier.appendOperatorOrFunction)
+  BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    MmlPrettifier.appendOperatorOrFunction(a, b)
+  })
 let appendDigit = (body, element) =>
-  BracketGroups.transformCurrentGroupWithArg(body, element, MmlPrettifier.appendDigit)
+  BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    MmlPrettifier.appendDigit(a, b)
+  })
 let appendDecimalSeparator = (body, element) =>
-  BracketGroups.transformCurrentGroupWithArg(body, element, MmlPrettifier.appendDecimalSeparator)
+  BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    MmlPrettifier.appendDecimalSeparator(a, b)
+  })
 let appendBasePrefix = (body, element) =>
-  BracketGroups.transformCurrentGroupWithArg(body, element, MmlPrettifier.appendBasePrefix)
+  BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    MmlPrettifier.appendBasePrefix(a, b)
+  })
 let appendOpenBracket = BracketGroups.appendOpenBracket
 let appendCloseBracket = BracketGroups.appendCloseBracket
 let toString = BracketGroups.toString

@@ -63,7 +63,7 @@ let getExn = (x, ~row, ~column) =>
     raise(Not_found)
   }
 
-let map = (x: t, fn: Scalar.t => Scalar.t): t =>
+let mapU = (x: t, fn: (. Scalar.t) => Scalar.t): t =>
   makeByIndexU(~numRows=x.numRows, ~numColumns=x.numColumns, (. i) => {
-    fn(Belt.Array.getUnsafe(x.elements, i)->Scalar.Finite.toScalar)
+    fn(. Belt.Array.getUnsafe(x.elements, i)->Scalar.Finite.toScalar)
   })

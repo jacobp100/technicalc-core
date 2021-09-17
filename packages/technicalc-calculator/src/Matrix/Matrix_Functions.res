@@ -2,7 +2,7 @@ open Matrix_Types
 open Matrix_Base
 open Matrix_Arithmetic
 
-let neg = (m: t) => map(m, Scalar.neg)
+let neg = (m: t) => mapU(m, (. x) => Scalar.neg(x))
 
 let pow = (m: t, i: int): t =>
   if i >= 0 && m.numColumns == m.numRows {

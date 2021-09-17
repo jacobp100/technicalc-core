@@ -32,7 +32,7 @@ external elements: t => array<Scalar.t> = "%identity"
 
 let getExn: (t, int) => Scalar.t = Obj.magic(Belt.Array.getExn)
 
-let map = (x: t, fn: Scalar.t => Scalar.t): t =>
+let mapU = (x: t, fn: (. Scalar.t) => Scalar.t): t =>
   makeByU(size(x), (. i) => {
-    fn(Belt.Array.getUnsafe(x, i)->Scalar_Finite.toScalar)
+    fn(. Belt.Array.getUnsafe(x, i)->Scalar_Finite.toScalar)
   })

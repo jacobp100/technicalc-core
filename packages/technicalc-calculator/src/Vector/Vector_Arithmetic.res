@@ -2,22 +2,22 @@ open Vector_Types
 open Vector_Base
 
 %%private(
-  let zipBy = (a: t, b: t, fn: (Scalar.t, Scalar.t) => Scalar.t): t =>
+  let zipByU = (a: t, b: t, fn: (. Scalar.t, Scalar.t) => Scalar.t): t =>
     if size(a) == size(b) {
       let aElements = elements(a)
       let bElements = elements(b)
 
       makeByU(size(a), (. i) => {
-        fn(Belt.Array.getUnsafe(aElements, i), Belt.Array.getUnsafe(bElements, i))
+        fn(. Belt.Array.getUnsafe(aElements, i), Belt.Array.getUnsafe(bElements, i))
       })
     } else {
       empty
     }
 )
 
-let add = (a: t, b: t): t => zipBy(a, b, Scalar.add)
+let add = (a: t, b: t): t => zipByU(a, b, (. a, b) => Scalar.add(a, b))
 
-let sub = (a: t, b: t): t => zipBy(a, b, Scalar.sub)
+let sub = (a: t, b: t): t => zipByU(a, b, (. a, b) => Scalar.sub(a, b))
 
 let mul = (a: t, b: t): t =>
   switch (elements(a), elements(b)) {

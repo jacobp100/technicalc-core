@@ -4,7 +4,7 @@ open Mml_Util
 
 include Mml_Types
 
-let map = (accum, range) => Mml_Accum.toString(accum, range)
+let map = (. accum, range) => Mml_Accum.toString(accum, range)
 
 %%private(
   let implicitMultiplication = createElement(
@@ -99,7 +99,7 @@ let map = (accum, range) => Mml_Accum.toString(accum, range)
   }
 )
 
-let reduce = (accum, stateElement: foldState<string>, range) =>
+let reduce = (. accum, stateElement: foldState<string>, range) =>
   switch stateElement {
   | OpenBracket => Mml_Accum.appendOpenBracket(accum, range)
   | CloseBracket(superscript) => Mml_Accum.appendCloseBracket(accum, range, superscript)
@@ -238,7 +238,7 @@ let reduce = (accum, stateElement: foldState<string>, range) =>
 
 let create = (~locale=English, ~digitGrouping=true, ~inline=false, elements) => {
   let body = if Belt.Array.length(elements) != 0 {
-    AST.reduceMap(elements, ~reduce, ~map, ~initial=Mml_Accum.make(~locale, ~digitGrouping))
+    AST.reduceMapU(elements, ~reduce, ~map, ~initial=Mml_Accum.make(~locale, ~digitGrouping))
   } else {
     ""
   }

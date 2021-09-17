@@ -84,20 +84,20 @@ let gamma = (x: t): t =>
 let factorial = x => (x + one)->gamma
 
 %%private(
-  let reduceRange = (a, b, initialValue, f, iteratee) =>
+  let reduceRangeU = (a, b, initialValue, f, iteratee) =>
     switch (toInt(a), toInt(b)) {
     | (Some(a), Some(b)) if b >= a =>
       let current = ref(initialValue)
       for i in a to b {
-        current := iteratee(current.contents, f(ofInt(i)))
+        current := iteratee(. current.contents, f(. ofInt(i)))
       }
       current.contents
     | _ => nan
     }
 )
 
-let sum = (f, a, b) => reduceRange(a, b, zero, f, add)
-let product = (f, a, b) => reduceRange(a, b, one, f, mul)
+let sumU = (f, a, b) => reduceRangeU(a, b, zero, f, (. a, b) => add(a, b))
+let productU = (f, a, b) => reduceRangeU(a, b, one, f, (. a, b) => mul(a, b))
 
 let nPr = (n, r) => n->factorial / (n - r)->factorial
 let nCr = (n, r) => n->factorial / (r->factorial * (n - r)->factorial)

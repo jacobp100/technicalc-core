@@ -131,10 +131,10 @@ type readResult<'a> =
   | Node(foldState<'a>, int, int)
   | Empty
 
-let reduceMap = (
+let reduceMapU = (
   input: array<t>,
-  ~reduce: ('accum, foldState<'a>, range) => 'accum,
-  ~map: ('accum, range) => 'value,
+  ~reduce: (. 'accum, foldState<'a>, range) => 'accum,
+  ~map: (. 'accum, range) => 'value,
   ~initial: 'accum,
 ): 'value => {
   let rec readNodeExn = (i): readResult<'a> =>
@@ -340,10 +340,10 @@ let reduceMap = (
     | None => assert false
     | Some(Arg) =>
       let i' = i
-      (map(accum, (start, i')), i' + 1)
+      (map(. accum, (start, i')), i' + 1)
     | Some(_) =>
       switch readNodeExn(i) {
-      | Node(node, i, i') => readArg(~accum=reduce(accum, node, (i, i')), i')
+      | Node(node, i, i') => readArg(~accum=reduce(. accum, node, (i, i')), i')
       | Empty => readArg(~accum, i + 1)
       }
     }
@@ -402,11 +402,11 @@ let reduceMap = (
 
   let rec readUntilEnd = (~accum=initial, i) =>
     switch Belt.Array.get(input, i) {
-    | None => map(accum, (0, i))
+    | None => map(. accum, (0, i))
     | Some(Arg) => assert false
     | Some(_) =>
       switch readNodeExn(i) {
-      | Node(node, i, i') => readUntilEnd(~accum=reduce(accum, node, (i, i')), i')
+      | Node(node, i, i') => readUntilEnd(~accum=reduce(. accum, node, (i, i')), i')
       | Empty => readUntilEnd(~accum, i + 1)
       }
     }

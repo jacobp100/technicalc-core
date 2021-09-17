@@ -39,19 +39,19 @@ type iterationMode =
 %%private(let optimiseGradientLimit = 2.)
 
 %%private(
-  let rec bisectFloat = (~iterations=100, ~negativeX, ~positiveX, f) => {
+  let rec bisectFloatU = (~iterations=100, ~negativeX, ~positiveX, f) => {
     let mFloat = (negativeX +. positiveX) /. 2.0
     let m = ofFloat(mFloat)
-    let fm = f(m)
+    let fm = f(. m)
     let fmFloat = toDecimal(fm)->Decimal.toFloat
     if FloatUtil.abs(fmFloat) < precision {
       m
     } else if iterations > 0 {
       let iterations = iterations - 1
       if fmFloat > 0. {
-        bisectFloat(~iterations, ~negativeX, ~positiveX=mFloat, f)
+        bisectFloatU(~iterations, ~negativeX, ~positiveX=mFloat, f)
       } else {
-        bisectFloat(~iterations, ~negativeX=mFloat, ~positiveX, f)
+        bisectFloatU(~iterations, ~negativeX=mFloat, ~positiveX, f)
       }
     } else {
       nan
@@ -60,9 +60,9 @@ type iterationMode =
 )
 
 %%private(
-  let rec newtonFloat = (~canBisect=true, ~iterations=100, ~previous=None, f, x) => {
+  let rec newtonFloatU = (~canBisect=true, ~iterations=100, ~previous=None, f, x) => {
     let xReal = ofFloat(x)
-    let fxReal = f(xReal)
+    let fxReal = f(. xReal)
     let fx = fxReal->toDecimal->Decimal.toFloat
 
     if FloatUtil.abs(fx) < precision {
@@ -75,16 +75,16 @@ type iterationMode =
         if FloatUtil.abs(fx -. fxPrev) < optimiseGradientLimit &&
           FloatUtil.abs(x -. xPrev) < optimiseGradientLimit =>
         Gradient((fx -. fxPrev) /. (x -. xPrev))
-      | _ => Gradient(Value_Calculus.differentiate(f, xReal)->toDecimal->Decimal.toFloat)
+      | _ => Gradient(Value_Calculus.differentiateU(f, xReal)->toDecimal->Decimal.toFloat)
       }
 
       switch op {
       | Bisect(negativeX, positiveX) =>
-        let out = bisectFloat(~negativeX, ~positiveX, f)
+        let out = bisectFloatU(~negativeX, ~positiveX, f)
         if !isNaN(out) {
           out
         } else {
-          newtonFloat(~canBisect=false, ~iterations, ~previous, f, x)
+          newtonFloatU(~canBisect=false, ~iterations, ~previous, f, x)
         }
       | Gradient(f'x) =>
         let iterations = iterations - 1
@@ -92,12 +92,12 @@ type iterationMode =
 
         if f'x != 0. {
           let xNext = x -. fx /. f'x
-          newtonFloat(~iterations, ~previous, f, xNext)
+          newtonFloatU(~iterations, ~previous, f, xNext)
         } else {
-          let gx = f(Value.add(xReal, fxReal))->toDecimal->Decimal.toFloat
+          let gx = f(. Value.add(xReal, fxReal))->toDecimal->Decimal.toFloat
           if gx != 0. {
             let xNext = x -. fx /. gx
-            newtonFloat(~iterations, ~previous, f, xNext)
+            newtonFloatU(~iterations, ~previous, f, xNext)
           } else {
             nan
           }
@@ -110,15 +110,15 @@ type iterationMode =
 )
 
 %%private(
-  let newtonPrecise = (f, x) => {
-    let fx = f(x)
-    let f'x = Value_Calculus.differentiate(f, x)
+  let newtonPreciseU = (f, x) => {
+    let fx = f(. x)
+    let f'x = Value_Calculus.differentiateU(f, x)
     let (xPrev, fxPrev) = (x, fx)
     let x = {
       open Value
       x - fx / f'x
     }
-    if f(x)->toDecimal->Decimal.toFloat->FloatUtil.abs < precision {
+    if f(. x)->toDecimal->Decimal.toFloat->FloatUtil.abs < precision {
       x
     } else {
       let previous = Some({
@@ -126,9 +126,9 @@ type iterationMode =
         fxPrev: toDecimal(fxPrev)->Decimal.toFloat,
       })
       let x = toDecimal(x)->Decimal.toFloat
-      newtonFloat(~previous, f, x)
+      newtonFloatU(~previous, f, x)
     }
   }
 )
 
-let solveRoot = (f, initial) => newtonPrecise(f, initial)
+let solveRootU = (f, initial) => newtonPreciseU(f, initial)
