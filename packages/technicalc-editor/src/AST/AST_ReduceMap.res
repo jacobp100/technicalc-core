@@ -95,8 +95,8 @@ type foldState<'a> =
       superscript: option<superscript<'a>>,
     })
   | UnitConversion({
-      fromUnits: array<TechniCalcCalculator.Unit_Types.unitPart>,
-      toUnits: array<TechniCalcCalculator.Unit_Types.unitPart>,
+      fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
+      toUnits: array<TechniCalcCalculator.Unit_Types.t>,
     })
   | Variable({id: string, name: string, superscript: option<superscript<'a>>})
 

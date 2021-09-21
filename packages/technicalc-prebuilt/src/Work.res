@@ -6,12 +6,12 @@ type work =
   | Calculate(node)
   | ConvertUnits({
       body: node,
-      fromUnits: array<TechniCalcCalculator.Unit_Types.unitPart>,
-      toUnits: array<TechniCalcCalculator.Unit_Types.unitPart>,
+      fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
+      toUnits: array<TechniCalcCalculator.Unit_Types.t>,
     })
   | ConvertUnitsComposite({
-      values: array<(node, TechniCalcCalculator.Unit_Types.unitPart)>,
-      toUnits: array<TechniCalcCalculator.Unit_Types.unitPart>,
+      values: array<(node, TechniCalcCalculator.Unit_Types.t)>,
+      toUnits: array<TechniCalcCalculator.Unit_Types.t>,
     })
   | SolveRoot({body: node, initialGuess: node})
   | Quadratic(node, node, node)

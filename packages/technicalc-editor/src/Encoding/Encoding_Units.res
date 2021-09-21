@@ -2,11 +2,11 @@ open UrlSafeEncoding
 open TechniCalcCalculator.Unit_Types
 
 %%private(
-  let unitToUint = (element: unitType): int =>
+  let unitTypeToUint = (element: unitType): int =>
     Belt.Array.getExn(Encoding_UnitMap_Eval.mapping, Obj.magic(element))
 )
 %%private(
-  let unitOfUint = (index: int): option<unitType> =>
+  let unitTypeOfUint = (index: int): option<unitType> =>
     Belt.Array.get(Encoding_UnitMap_Eval.reverseMapping, index)
 )
 
@@ -20,22 +20,22 @@ open TechniCalcCalculator.Unit_Types
 )
 
 %%private(
-  let encodeUnitPart = ({prefix, unit, power}: unitPart) =>
-    prefixToUint(prefix)->encodeUint ++ unitToUint(unit)->encodeUint ++ encodeInt(power)
+  let encodeUnit = ({prefix, type_, power}: t) =>
+    prefixToUint(prefix)->encodeUint ++ unitTypeToUint(type_)->encodeUint ++ encodeInt(power)
 )
 
 %%private(
-  let readUnitPower = (reader): option<TechniCalcCalculator.Unit_Types.unitPart> =>
+  let readUnit = (reader): option<t> =>
     switch (readUint(reader), readUint(reader), readInt(reader)) {
-    | (Some(prefix), Some(unit), Some(power)) =>
-      switch (prefixOfUint(prefix), unitOfUint(unit)) {
-      | (Some(prefix), Some(unit)) => Some({prefix: prefix, unit: unit, power: power})
+    | (Some(prefix), Some(type_), Some(power)) =>
+      switch (prefixOfUint(prefix), unitTypeOfUint(type_)) {
+      | (Some(prefix), Some(type_)) => Some({prefix: prefix, type_: type_, power: power})
       | _ => None
       }
     | _ => None
     }
 )
 
-let encodeUnitParts = units => encodeArray(units, encodeUnitPart)
+let encodeUnits = units => encodeArray(units, encodeUnit)
 
-let readUnitParts = reader => readArray(reader, readUnitPower)
+let readUnits = reader => readArray(reader, readUnit)

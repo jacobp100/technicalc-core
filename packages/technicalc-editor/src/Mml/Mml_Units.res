@@ -29,7 +29,7 @@ open TechniCalcCalculator.Unit_Types
 )
 
 %%private(
-  let unitMmlSymbol = (unit: unitType) =>
+  let unitTypeMmlSymbol = (unit: unitType) =>
     switch unit {
     | Second => "s"
     | Minute => "min"
@@ -99,22 +99,24 @@ open TechniCalcCalculator.Unit_Types
 )
 
 %%private(
-  let prefixUnitMml = (prefix: prefix, unit: unitType) => {
-    let unitMml = switch unit {
+  let prefixUnitMml = (prefix: prefix, type_: unitType) => {
+    let unitMml = switch type_ {
     | Angstrom => "A"
-    | _ => unitMmlSymbol(unit)
+    | _ => unitTypeMmlSymbol(type_)
     }
     `<mi mathvariant="normal">${prefixMmlSymbol(prefix)}${unitMml}</mi>`
   }
 )
 
-let unitPartMml = (. {prefix, unit, power}: unitPart) =>
-  switch power {
-  | 1 => prefixUnitMml(prefix, unit)
-  | _ =>
-    let powerMml = `<mn>${Belt.Int.toString(power)}</mn>`
-    `<msup>${prefixUnitMml(prefix, unit)}${powerMml}</msup>`
-  }
+%%private(
+  let unitMml = (. {prefix, type_, power}: t) =>
+    switch power {
+    | 1 => prefixUnitMml(prefix, type_)
+    | _ =>
+      let powerMml = `<mn>${Belt.Int.toString(power)}</mn>`
+      `<msup>${prefixUnitMml(prefix, type_)}${powerMml}</msup>`
+    }
+)
 
-let toMml = (units: array<unitPart>) =>
-  Belt.Array.mapU(units, unitPartMml)->StringUtil.joinWith("<mspace width=\"0.1em\" />")
+let toMml = (units: array<t>) =>
+  Belt.Array.mapU(units, unitMml)->StringUtil.joinWith("<mspace width=\"0.1em\" />")

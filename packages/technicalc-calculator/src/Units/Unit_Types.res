@@ -93,8 +93,8 @@ type unitType =
   | Celsius
   | Fahrenheit
 
-type unitPart = {
+type t = {
   prefix: prefix,
-  unit: unitType,
+  @as("type") type_: unitType,
   power: int,
 }

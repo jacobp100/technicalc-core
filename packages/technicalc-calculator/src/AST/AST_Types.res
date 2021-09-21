@@ -80,4 +80,4 @@ type rec t =
   | Integral({from: t, to_: t, body: t})
   | Sum({from: t, to_: t, body: t})
   | Product({from: t, to_: t, body: t})
-  | Convert({body: t, toUnits: array<Unit_Types.unitPart>, fromUnits: array<Unit_Types.unitPart>})
+  | Convert({body: t, toUnits: array<Unit_Types.t>, fromUnits: array<Unit_Types.t>})

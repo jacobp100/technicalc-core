@@ -129,11 +129,11 @@ open Unit_Types
 )
 
 %%private(
-  let unitPartValue = (~powerMultiplier=1, {prefix, unit, power}) => {
+  let ofValue = (~powerMultiplier=1, {prefix, type_, power}) => {
     let nextPower = power * powerMultiplier
 
     open Decimal
-    (prefixValue(prefix) * unitLinearValueExn(unit)) ** ofInt(nextPower)
+    (prefixValue(prefix) * unitLinearValueExn(type_)) ** ofInt(nextPower)
   }
 )
 
@@ -143,20 +143,20 @@ open Unit_Types
     ~transformFahrenheit,
     ~powerMultiplier,
     value: Decimal.t,
-    units: array<unitPart>,
+    units: array<t>,
   ) => {
     open Decimal
 
     let handleLinearUnit = (. value, unitPart) =>
-      switch unitPart.unit {
+      switch unitPart.type_ {
       | Celsius
       | Fahrenheit => nan
-      | _ => value * unitPartValue(~powerMultiplier, unitPart)
+      | _ => value * ofValue(~powerMultiplier, unitPart)
       }
 
     switch units {
-    | [{prefix, unit: Celsius, power: 1}] => transformCelsius(. prefixValue(prefix) * value)
-    | [{prefix, unit: Fahrenheit, power: 1}] => transformFahrenheit(. prefixValue(prefix) * value)
+    | [{prefix, type_: Celsius, power: 1}] => transformCelsius(. prefixValue(prefix) * value)
+    | [{prefix, type_: Fahrenheit, power: 1}] => transformFahrenheit(. prefixValue(prefix) * value)
     | _ => Belt.Array.reduceU(units, value, handleLinearUnit)
     }
   }
@@ -187,30 +187,30 @@ let convert = (value: Value.t, ~fromUnits, ~toUnits) =>
     #NaNN
   }
 
-let convertComposite = (values: array<(Value.t, unitPart)>, ~toUnits: array<unitPart>) => {
+let convertComposite = (values: array<(Value.t, t)>, ~toUnits: array<t>) => {
   let fromUnits = Belt.Array.mapU(values, (. (_, unitPart)) => unitPart)
 
   if Units_ConvertChecks.compositeUnitsCompatible(~fromUnits, ~toUnits) {
     let valueSi = Belt.Array.reduceU(values, Decimal.zero, (. accum, (value, unitPart)) => {
       open Decimal
-      accum + Value.toDecimal(value) * unitPartValue(~powerMultiplier=1, unitPart)
+      accum + Value.toDecimal(value) * ofValue(~powerMultiplier=1, unitPart)
     })
     let valueSiAbs = Decimal.abs(valueSi)
     let negative = Decimal.lt(valueSi, Decimal.zero)
     let toUnits = Belt.Array.copy(toUnits)->ArrayUtil.sortInPlace((a, b) => {
-      Decimal.cmp(unitPartValue(b), unitPartValue(a))
+      Decimal.cmp(ofValue(b), ofValue(a))
     })
     let remainderSi = ref(valueSiAbs)
     let lastIndex = Belt.Array.length(toUnits) - 1
     let output = Belt.Array.mapWithIndexU(toUnits, (. index, unitPart) => {
-      let value = Decimal.mul(remainderSi.contents, unitPartValue(~powerMultiplier=-1, unitPart))
+      let value = Decimal.mul(remainderSi.contents, ofValue(~powerMultiplier=-1, unitPart))
 
       let value = if index == lastIndex {
         value
       } else {
         let valueFloor = Decimal.floor(value)
         let remainder = Decimal.sub(value, valueFloor)
-        remainderSi := Decimal.mul(remainder, unitPartValue(~powerMultiplier=1, unitPart))
+        remainderSi := Decimal.mul(remainder, ofValue(~powerMultiplier=1, unitPart))
         valueFloor
       }
       let value = negative ? Decimal.neg(value) : value

@@ -51,7 +51,7 @@ let prefixToString = (prefix: prefix) =>
   | Exbi => Some("Exbi")
   }
 
-let unitToString = (unit: unitType) =>
+let unitTypeToString = (unit: unitType) =>
   switch unit {
   | Second => "Second"
   | Minute => "Minute"
@@ -108,20 +108,20 @@ let unitToString = (unit: unitType) =>
   | Fahrenheit => "Fahrenheit"
   }
 
-let unitToStringPlural = (unit: unitType) =>
-  switch unit {
+let unitTypeToStringPlural = (type_: unitType) =>
+  switch type_ {
   | Century => "Centuries"
   | Inch => "Inches"
   | Foot => "Feet"
   | Celsius
   | Fahrenheit =>
-    unitToString(unit)
-  | _ => unitToString(unit) ++ "s"
+    unitTypeToString(type_)
+  | _ => unitTypeToString(type_) ++ "s"
   }
 
 %%private(
-  let unitPartToString = (~plural, {prefix, unit, power}: unitPart) => {
-    let out = plural ? unitToStringPlural(unit) : unitToString(unit)
+  let unitToString = (~plural, {prefix, type_, power}: t) => {
+    let out = plural ? unitTypeToStringPlural(type_) : unitTypeToString(type_)
 
     let out = switch prefixToString(prefix) {
     | Some(prefix) =>
@@ -148,27 +148,27 @@ let unitToStringPlural = (unit: unitType) =>
   }
 )
 
-let unitPartsToString = (unitParts: array<unitPart>) =>
-  Belt.Array.mapWithIndexU(unitParts, (. index, unitPart) => {
-    let plural = switch unitPart.power {
+let toString = (units: array<t>) =>
+  Belt.Array.mapWithIndexU(units, (. index, unit) => {
+    let plural = switch unit.power {
     | 1 =>
-      switch Belt.Array.get(unitParts, index + 1) {
+      switch Belt.Array.get(units, index + 1) {
       | Some(nextUnitPart) => nextUnitPart.power < 0
       | None => false
       }
     | -1 => false
     | _ => true
     }
-    let out = unitPartToString(~plural, unitPart)
+    let out = unitToString(~plural, unit)
 
-    if unitPart.power < 0 {
+    if unit.power < 0 {
       "per " ++ out
     } else {
       out
     }
   })->Js.Array.joinWith(" ", _)
 
-let prefixValueToMml = (prefix: prefix) => {
+let prefixToMml = (prefix: prefix) => {
   let maybeBase = switch prefix {
   | Femto => Some("10")
   | Pico => Some("10")

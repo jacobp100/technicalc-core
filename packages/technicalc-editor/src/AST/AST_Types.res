@@ -37,8 +37,8 @@ type t =
   | Re
   | Sub
   | UnitConversion({
-      fromUnits: array<TechniCalcCalculator.Unit_Types.unitPart>,
-      toUnits: array<TechniCalcCalculator.Unit_Types.unitPart>,
+      fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
+      toUnits: array<TechniCalcCalculator.Unit_Types.t>,
     })
   /* AtomS */
   | CloseBracketS

@@ -2,18 +2,17 @@ open Unit_Types
 open Unit_Dimensions
 
 let unitsCompatible = (~fromUnits, ~toUnits) => {
-  eq(ofUnitParts(fromUnits), ofUnitParts(toUnits))
+  eq(ofUnits(fromUnits), ofUnits(toUnits))
 }
 
 let compositeUnitsCompatible = (~fromUnits, ~toUnits) =>
   switch Belt.Array.get(fromUnits, 0) {
-  | Some(unitPart) =>
-    let baseDimensions = ofUnitPart(unitPart)
-    let unitPartValid = (. unitPart) =>
-      unitPart.power == 1 && eq(ofUnitPart(unitPart), baseDimensions)
+  | Some(unit) =>
+    let baseDimensions = ofUnit(unit)
+    let unitValid = (. unit) => unit.power == 1 && eq(ofUnit(unit), baseDimensions)
 
     baseDimensions.temperature == 0 &&
       (size(baseDimensions) == 1 &&
-      (Belt.Array.everyU(fromUnits, unitPartValid) && Belt.Array.everyU(toUnits, unitPartValid)))
+      (Belt.Array.everyU(fromUnits, unitValid) && Belt.Array.everyU(toUnits, unitValid)))
   | None => false
   }

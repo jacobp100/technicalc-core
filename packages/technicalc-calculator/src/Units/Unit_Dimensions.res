@@ -1,6 +1,6 @@
 open Unit_Types
 
-type t = {
+type dimensions = {
   length: int,
   time: int,
   mass: int,
@@ -92,8 +92,8 @@ let ofUnit = (v: unitType) =>
   | Fahrenheit => temperature
   }
 
-let ofUnitPart = ({unit, power}: unitPart) => {
-  let dimensions = ofUnit(unit)
+let ofUnit = ({type_, power}: t) => {
+  let dimensions = ofUnit(type_)
   {
     length: dimensions.length * power,
     time: dimensions.time * power,
@@ -103,9 +103,9 @@ let ofUnitPart = ({unit, power}: unitPart) => {
   }
 }
 
-let ofUnitParts = (units: array<unitPart>) =>
-  Belt.Array.reduceU(units, empty, (. comdinedDimensions, unitPart) => {
-    let dimensions = ofUnitPart(unitPart)
+let ofUnits = (units: array<t>) =>
+  Belt.Array.reduceU(units, empty, (. comdinedDimensions, t) => {
+    let dimensions = ofUnit(t)
     {
       length: comdinedDimensions.length + dimensions.length,
       time: comdinedDimensions.time + dimensions.time,
@@ -115,13 +115,13 @@ let ofUnitParts = (units: array<unitPart>) =>
     }
   })
 
-let size = (a: t) =>
+let size = (a: dimensions) =>
   (a.length !== 0 ? 1 : 0) +
   (a.time !== 0 ? 1 : 0) +
   (a.mass !== 0 ? 1 : 0) +
   (a.memory !== 0 ? 1 : 0) + (a.temperature !== 0 ? 1 : 0)
 
-let eq = (a: t, b: t) =>
+let eq = (a: dimensions, b: dimensions) =>
   a.length == b.length &&
     (a.time == b.time &&
     (a.mass == b.mass && (a.memory == b.memory && a.temperature == b.temperature)))

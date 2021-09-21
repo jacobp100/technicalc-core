@@ -298,14 +298,13 @@ module Units = {
   let unitsCompatible = TechniCalcCalculator.Units_ConvertChecks.unitsCompatible
   let compositeUnitsCompatible = TechniCalcCalculator.Units_ConvertChecks.compositeUnitsCompatible
 
-  let unitPartMml = TechniCalcEditor.Mml_Units.unitPartMml
   let toMml = TechniCalcEditor.Mml_Units.toMml
+  let toString = Units_Util.toString
 
   let prefixes = Units_Util.prefixes
 
   let prefixToString = Units_Util.prefixToString
-  let unitToString = Units_Util.unitToString
-  let unitPartsToString = Units_Util.unitPartsToString
+  let unitTypeToString = Units_Util.unitTypeToString
 
-  let prefixValueToMml = Units_Util.prefixValueToMml
+  let prefixToMml = Units_Util.prefixToMml
 }
