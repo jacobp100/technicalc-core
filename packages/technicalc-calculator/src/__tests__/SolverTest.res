@@ -60,6 +60,19 @@ test("solves x^5 - 6 starting at 1000", (. ()) => {
   expect(Value.toFloat(value)->truncateTo(~dp, _))->toBe((6. ** (1. /. 5.))->truncateTo(~dp, _))
 })
 
+// test("solves hc/x = 2E-4", (. ()) => {
+//   open AST
+//   let equation = Sub(
+//     Div(Mul(OfString("6.62607015E-34"), OfString("299792458")), X),
+//     OfString("2E-4"),
+//   )
+//   let initialGuess = OfFloat(9e-22)
+
+//   let value = solveRoot(~config=defaultConfig, ~context=AST_Context.empty, equation, initialGuess)
+
+//   ignore(value)
+// })
+
 test("solves 6x^3 - 5x^2 - 17x + 6", (. ()) => {
   open AST
   let a = Mul(OfInt(6), Pow(X, OfInt(3)))

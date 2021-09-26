@@ -27,31 +27,59 @@ open Value_Base
  */
 
 type previous = {
-  xPrev: float,
-  fxPrev: float,
+  xPrev: Decimal.t,
+  fxPrev: Decimal.t,
 }
 
 type iterationMode =
-  | Bisect(float, float)
-  | Gradient(float)
+  | Bisect(Decimal.t, Decimal.t)
+  | Gradient(Decimal.t)
 
-%%private(let precision = 1e-8)
-%%private(let optimiseGradientLimit = 2.)
+%%private(let precision = Decimal.ofFloat(1e-8))
+%%private(let optimiseGradientLimit = Decimal.ofInt(2))
+%%private(
+  let withinPrecision = x => {
+    open Decimal
+    abs(x) < precision
+  }
+)
+%%private(
+  let ltZero = x => {
+    open Decimal
+    x < zero
+  }
+)
+%%private(
+  let gtZero = x => {
+    open Decimal
+    x > zero
+  }
+)
+%%private(
+  let eqZero = x => {
+    open Decimal
+    x == zero
+  }
+)
 
 %%private(
-  let rec bisectFloatU = (~iterations=100, ~negativeX, ~positiveX, f) => {
-    let mFloat = (negativeX +. positiveX) /. 2.0
-    let m = ofFloat(mFloat)
-    let fm = f(. m)
-    let fmFloat = toDecimal(fm)->Decimal.toFloat
-    if FloatUtil.abs(fmFloat) < precision {
-      m
+  let rec bisectDecimalU = (~iterations=100, ~negativeX, ~positiveX, f) => {
+    let m = {
+      open Decimal
+      (positiveX + negativeX) / ofInt(2)
+    }
+    let mReal = ofDecimal(m)
+    let fm = f(. mReal)->toDecimal
+
+    if withinPrecision(fm) {
+      mReal
     } else if iterations > 0 {
       let iterations = iterations - 1
-      if fmFloat > 0. {
-        bisectFloatU(~iterations, ~negativeX, ~positiveX=mFloat, f)
+
+      if gtZero(fm) {
+        bisectDecimalU(~iterations, ~negativeX, ~positiveX=m, f)
       } else {
-        bisectFloatU(~iterations, ~negativeX=mFloat, ~positiveX, f)
+        bisectDecimalU(~iterations, ~negativeX=m, ~positiveX, f)
       }
     } else {
       nan
@@ -60,44 +88,62 @@ type iterationMode =
 )
 
 %%private(
-  let rec newtonFloatU = (~canBisect=true, ~iterations=100, ~previous=None, f, x) => {
-    let xReal = ofFloat(x)
+  let rec newtonDecimalU = (~canBisect=true, ~iterations=100, ~previous, f, x) => {
+    let xReal = ofDecimal(x)
     let fxReal = f(. xReal)
-    let fx = fxReal->toDecimal->Decimal.toFloat
+    let fx = toDecimal(fxReal)
 
-    if FloatUtil.abs(fx) < precision {
+    if withinPrecision(fx) {
       xReal
     } else if iterations > 0 {
-      let op = switch previous {
-      | Some({xPrev, fxPrev}) if canBisect && (fx > 0. && fxPrev < 0.) => Bisect(xPrev, x)
-      | Some({xPrev, fxPrev}) if canBisect && (fx < 0. && fxPrev > 0.) => Bisect(x, xPrev)
-      | Some({xPrev, fxPrev})
-        if FloatUtil.abs(fx -. fxPrev) < optimiseGradientLimit &&
-          FloatUtil.abs(x -. xPrev) < optimiseGradientLimit =>
-        Gradient((fx -. fxPrev) /. (x -. xPrev))
-      | _ => Gradient(Value_Calculus.differentiateU(f, xReal)->toDecimal->Decimal.toFloat)
+      let {xPrev, fxPrev} = previous
+      let op = if canBisect && gtZero(fx) && ltZero(fxPrev) {
+        Bisect(xPrev, x)
+      } else if canBisect && ltZero(fx) && gtZero(fxPrev) {
+        Bisect(x, xPrev)
+      } else {
+        let xDelta = Decimal.sub(x, xPrev)
+        let fxDelta = Decimal.sub(fx, fxPrev)
+
+        let withinOptimiseGradientLimit = {
+          open Decimal
+          abs(fxDelta) < optimiseGradientLimit && abs(xDelta) < optimiseGradientLimit
+        }
+
+        if withinOptimiseGradientLimit {
+          let gradient = Decimal.div(fxDelta, xDelta)
+          Gradient(gradient)
+        } else {
+          Gradient(Value_Calculus.differentiateU(f, xReal)->toDecimal)
+        }
       }
 
       switch op {
       | Bisect(negativeX, positiveX) =>
-        let out = bisectFloatU(~negativeX, ~positiveX, f)
+        let out = bisectDecimalU(~negativeX, ~positiveX, f)
         if !isNaN(out) {
           out
         } else {
-          newtonFloatU(~canBisect=false, ~iterations, ~previous, f, x)
+          newtonDecimalU(~canBisect=false, ~iterations, ~previous, f, x)
         }
       | Gradient(f'x) =>
         let iterations = iterations - 1
-        let previous = Some({xPrev: x, fxPrev: fx})
+        let previous = {xPrev: x, fxPrev: fx}
 
-        if f'x != 0. {
-          let xNext = x -. fx /. f'x
-          newtonFloatU(~iterations, ~previous, f, xNext)
+        if !eqZero(f'x) {
+          let xNext = {
+            open Decimal
+            x - fx / f'x
+          }
+          newtonDecimalU(~iterations, ~previous, f, xNext)
         } else {
-          let gx = f(. Value.add(xReal, fxReal))->toDecimal->Decimal.toFloat
-          if gx != 0. {
-            let xNext = x -. fx /. gx
-            newtonFloatU(~iterations, ~previous, f, xNext)
+          let gx = f(. Value.add(xReal, fxReal))->toDecimal
+          if !eqZero(gx) {
+            let xNext = {
+              open Decimal
+              x - fx / gx
+            }
+            newtonDecimalU(~iterations, ~previous, f, xNext)
           } else {
             nan
           }
@@ -118,15 +164,16 @@ type iterationMode =
       open Value
       x - fx / f'x
     }
-    if f(. x)->toDecimal->Decimal.toFloat->FloatUtil.abs < precision {
+
+    if toDecimal(fx)->withinPrecision {
       x
     } else {
-      let previous = Some({
-        xPrev: toDecimal(xPrev)->Decimal.toFloat,
-        fxPrev: toDecimal(fxPrev)->Decimal.toFloat,
-      })
-      let x = toDecimal(x)->Decimal.toFloat
-      newtonFloatU(~previous, f, x)
+      let previous = {
+        xPrev: toDecimal(xPrev),
+        fxPrev: toDecimal(fxPrev),
+      }
+      let x = toDecimal(x)
+      newtonDecimalU(~previous, f, x)
     }
   }
 )
