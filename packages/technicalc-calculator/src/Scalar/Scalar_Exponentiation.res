@@ -67,7 +67,7 @@ let log = (a: t): t =>
     }
     let re = {
       open Real
-      div(logReal(re), ofRational(2, 1, Unit))
+      logReal(re) / ofRational(2, 1, Unit)
     }
     let im = switch vV {
     | #Real(re) => arg(re, Real.zero)

@@ -23,6 +23,10 @@ test("log", () => {
   });
 });
 
+test("log 0", () => {
+  expect(TechniCalc.log(TechniCalc.zero)).toBe(TechniCalc.nan);
+});
+
 test("special cases square root of negative numbers", () => {
   expect(TechniCalcTest.toString(TechniCalc.sqrt(TechniCalc.ofInt(-2)))).toBe(
     "sqrt(2)i"

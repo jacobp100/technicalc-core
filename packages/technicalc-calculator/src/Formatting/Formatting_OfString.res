@@ -232,11 +232,11 @@ type token =
       switch partialParseReal(~base, rest) {
       | Some((imag, list{I, ...rest})) =>
         let imag = sign == Plus ? imag : Real.neg(imag)
-        Some((#Cmpx(real, imag), rest))
+        Some((Scalar.ofComplex(real, imag), rest))
       | _ => None
       }
-    | Some(list{I, ...rest}) => Some((#Imag(real), rest))
-    | Some(rest) => Some((#Real(real), rest))
+    | Some(list{I, ...rest}) => Some((Scalar.ofImag(real), rest))
+    | Some(rest) => Some((Scalar.ofReal(real), rest))
     | None => None
     }
   }

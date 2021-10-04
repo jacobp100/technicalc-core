@@ -1,13 +1,8 @@
-type postMessageData = {
-  results: array<string>,
-  didError: bool,
-}
-
 type onMessageEvent = {data: Work.t}
 
 type self = {
   mutable onmessage: option<onMessageEvent => unit>,
-  postMessage: (. postMessageData) => unit,
+  postMessage: (. array<string>) => unit,
 }
 
 let make = self => {
@@ -60,13 +55,8 @@ let make = self => {
   }
 
   let callback = e => {
-    let arg = try {
-      results: e.data->getResults->Belt.Array.map(TechniCalcCalculator.Encoding.encode),
-      didError: false,
-    } catch {
-    | _ => {results: [], didError: true}
-    }
-    self.postMessage(. arg)
+    let results = getResults(e.data)->Belt.Array.map(TechniCalcCalculator.Encoding.encode)
+    self.postMessage(. results)
   }
 
   self.onmessage = Some(callback)
