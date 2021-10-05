@@ -1,4 +1,4 @@
-const names = ["Zere", "Real", "Imag", "Cmpx", "Pcnt", "Vect", "Matx", "NaNN"];
+const names = ["Zero", "Real", "Imag", "Cmpx", "Pcnt", "Vect", "Matx", "NaNN"];
 
 const mapping = new Map(names.map((name, index) => [name, index]));
 
