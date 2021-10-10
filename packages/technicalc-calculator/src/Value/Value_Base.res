@@ -1,18 +1,13 @@
 open Value_Types
 
-external ofPercentUnsafe: percent => t = "%identity"
-external ofScalarUnsafe: Scalar.t => t = "%identity"
-external ofMatrixUnsafe: matrix => t = "%identity"
-external ofVectorUnsafe: vector => t = "%identity"
-
-let zero: t = #Zero
-let one: t = ofScalarUnsafe(Scalar.one)
-let minusOne: t = ofScalarUnsafe(Scalar.minusOne)
-let i: t = ofScalarUnsafe(Scalar.i)
-let minusI: t = ofScalarUnsafe(Scalar.minusI)
-let pi: t = ofScalarUnsafe(Scalar.pi)
-let e: t = ofScalarUnsafe(Scalar.e)
-let nan: t = ofScalarUnsafe(Scalar.nan)
+let zero: t = (Scalar.zero :> t)
+let one: t = (Scalar.one :> t)
+let minusOne: t = (Scalar.minusOne :> t)
+let i: t = (Scalar.i :> t)
+let minusI: t = (Scalar.minusI :> t)
+let pi: t = (Scalar.pi :> t)
+let e: t = (Scalar.e :> t)
+let nan: t = (Scalar.nan :> t)
 
 let isNaN = (x: t) => x == #NaNN
 
@@ -25,21 +20,22 @@ let eq = (a: t, b: t): bool =>
   | _ => false
   }
 
-let ofScalar = (a: Scalar.t): t => ofScalarUnsafe(a)
-let ofReal = (a: Real.t): t => ofScalarUnsafe(Scalar.ofReal(a))
-let ofImag = (a: Real.t): t => ofScalarUnsafe(Scalar.ofImag(a))
-let ofComplex = (re: Real.t, im: Real.t): t => ofScalarUnsafe(Scalar.ofComplex(re, im))
+let ofScalar = (a: Scalar.t): t => (a :> t)
 let ofPercent = (a: Scalar.t): t =>
   switch Scalar.Finite.ofScalar(a) {
   | Some(a) => #Pcnt(a)
   | None => nan
   }
-let ofVector = (a: Vector.t): t => !Vector.isEmpty(a) ? #Vect(a) : #NaNN
-let ofMatrix = (a: Matrix.t): t => !Matrix.isEmpty(a) ? #Matx(a) : #NaNN
+let ofVector = (a: Vector.t): t => !Vector.isEmpty(a) ? #Vect(a) : nan
+let ofMatrix = (a: Matrix.t): t => !Matrix.isEmpty(a) ? #Matx(a) : nan
 
-let ofDecimal = (a): t => ofScalarUnsafe(Scalar.ofDecimal(a))
-let ofInt = (a): t => ofScalarUnsafe(Scalar.ofInt(a))
-let ofFloat = (a): t => ofScalarUnsafe(Scalar.ofFloat(a))
+let ofReal = (a: Real.t): t => (Scalar.ofReal(a) :> t)
+let ofImag = (a: Real.t): t => (Scalar.ofImag(a) :> t)
+let ofComplex = (re: Real.t, im: Real.t): t => (Scalar.ofComplex(re, im) :> t)
+
+let ofDecimal = (a): t => (Scalar.ofDecimal(a) :> t)
+let ofInt = (a): t => (Scalar.ofInt(a) :> t)
+let ofFloat = (a): t => (Scalar.ofFloat(a) :> t)
 
 let toDecimal = (a: t): Decimal.t =>
   switch a {

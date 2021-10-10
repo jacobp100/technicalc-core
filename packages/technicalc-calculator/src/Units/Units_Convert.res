@@ -184,7 +184,7 @@ let convert = (value: Value.t, ~fromUnits, ~toUnits) =>
   if Units_ConvertChecks.unitsCompatible(~fromUnits, ~toUnits) {
     value->toSi(fromUnits)->fromSi(toUnits)
   } else {
-    #NaNN
+    Value.nan
   }
 
 let convertComposite = (values: array<(Value.t, t)>, ~toUnits: array<t>) => {

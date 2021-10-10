@@ -105,3 +105,7 @@ test("selects extraneous bracket elements", (. ()) => {
   parse([N1_S, OpenBracket, N2_S, N3_S])->expect->toEqual(Error(2))
   parse([N1_S, N2_S, CloseBracketS, N3_S])->expect->toEqual(Error(3))
 })
+
+test("parses log 0", (. ()) => {
+  parse([Log, N0_S])->expect->toEqual(Ok("NaN"))
+})

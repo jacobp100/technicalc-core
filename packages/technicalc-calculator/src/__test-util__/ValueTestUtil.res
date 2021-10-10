@@ -100,8 +100,8 @@ let toComplexFloats = (a): (float, float) =>
   }
 
 %%private(
-  let mapMatrix = (a: Value.t, fn: Scalar.t => 'a): array<array<'a>> => {
-    let fn = x => Scalar.Finite.toScalar(x)->fn
+  let mapMatrixU = (a: Value.t, fn: (. Scalar.t) => 'a): array<array<'a>> => {
+    let fn = x => Scalar.Finite.toScalar(x)->fn(. _)
 
     switch a {
     | #Vect([a, b]) => [[fn(a)], [fn(b)]]
@@ -117,8 +117,8 @@ let toComplexFloats = (a): (float, float) =>
   }
 )
 
-let toFloatsMatrix = mapMatrix(_, Scalar.toFloat)
-let toComplexFloatsMatrix = mapMatrix(_, toComplexFloats)
+let toFloatsMatrix = mapMatrixU(_, (. x) => Scalar.toFloat(x))
+let toComplexFloatsMatrix = mapMatrixU(_, (. x) => toComplexFloats(x))
 
 let testPrefixes = Js.Dict.empty()
 Js.Dict.set(testPrefixes, "unit", Unit_Types.Unit)

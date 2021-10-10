@@ -93,7 +93,7 @@ let div = (a: t, b: t): t =>
     let s = magnitudeSquared(bRe, bIm)
     let bRecipRe = Real.div(bRe, s)
     let bRecipIm = Real.div(Real.neg(bIm), s)
-    let bRecip = #Cmpx(bRecipRe, bRecipIm)
+    let bRecip = ofComplex(bRecipRe, bRecipIm)
     mul(a, bRecip)
   | (#NaNN, _) | (_, #NaNN) => nan
   }

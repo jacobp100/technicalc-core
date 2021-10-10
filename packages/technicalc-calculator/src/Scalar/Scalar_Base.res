@@ -30,20 +30,20 @@ type realClassification = Zero | NaN | Real
 
 let ofReal = (a: Real.t): t =>
   switch classifyReal(a) {
-  | Zero => #Zero
-  | NaN => #NaNN
+  | Zero => zero
+  | NaN => nan
   | Real => #Real(a)
   }
 let ofImag = (a: Real.t): t =>
   switch classifyReal(a) {
-  | Zero => #Zero
-  | NaN => #NaNN
+  | Zero => zero
+  | NaN => nan
   | Real => #Imag(a)
   }
 let ofComplex = (re: Real.t, im: Real.t): t =>
   switch (classifyReal(re), classifyReal(im)) {
-  | (Zero, Zero) => #Zero
-  | (NaN, _) | (_, NaN) => #NaNN
+  | (Zero, Zero) => zero
+  | (NaN, _) | (_, NaN) => nan
   | (Real, Zero) => #Real(re)
   | (Zero, Real) => #Imag(im)
   | (Real, Real) => #Cmpx(re, im)

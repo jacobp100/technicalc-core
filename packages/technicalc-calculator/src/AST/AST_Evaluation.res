@@ -1,6 +1,14 @@
 open AST_Types
 
 %%private(
+  let toScalarOrNan = (value: Value.t): Scalar.t =>
+    switch value {
+    | #...Scalar.t as scalar => scalar
+    | _ => Scalar.nan
+    }
+)
+
+%%private(
   let toRad = (~config, value): Value.t =>
     switch config.angleMode {
     | Degree => Value.ofDeg(value)
@@ -30,21 +38,23 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   | E => Value.e
   | OfInt(a) => Value.ofInt(a)
   | OfFloat(a) => Value.ofFloat(a)
-  | OfString(a) => Formatting.ofString(a)->Belt.Option.getWithDefault(#NaNN)
-  | OfStringBase(base, a) => Formatting.ofStringBase(base, a)->Belt.Option.getWithDefault(#NaNN)
-  | Percent(percent) => evalScalar(~config, ~context, ~x, percent)->Value.ofPercent
+  | OfString(a) => Formatting.ofString(a)->Belt.Option.getWithDefault(Value.nan)
+  | OfStringBase(base, a) => Formatting.ofStringBase(base, a)->Belt.Option.getWithDefault(Value.nan)
+  | Percent(percent) => evalAt(~config, ~context, ~x, percent)->toScalarOrNan->Value.ofPercent
   | Vector(elements) =>
-    let elements = Belt.Array.mapU(elements, (. element) => {
-      evalScalar(~config, ~context, ~x, element)
+    let vector = Vector.makeByU(Belt.Array.length(elements), (. i) => {
+      let a = Belt.Array.getUnsafe(elements, i)
+      evalAt(~config, ~context, ~x, a)->toScalarOrNan
     })
-    Vector.make(elements)->Value.ofVector
+    Value.ofVector(vector)
   | Matrix({numRows, numColumns, elements}) =>
-    let elements = Belt.Array.mapU(elements, (. element) => {
-      evalScalar(~config, ~context, ~x, element)
+    let matrix = Matrix.makeByIndexU(~numRows, ~numColumns, (. i) => {
+      let a = Belt.Array.getUnsafe(elements, i)
+      evalAt(~config, ~context, ~x, a)->toScalarOrNan
     })
-    Matrix.make(~numRows, ~numColumns, elements)->Value.ofMatrix
-  | OfEncoded(a) => Encoding.decode(a)->Belt.Option.getWithDefault(#NaNN)
-  | Variable(ident) => AST_Context.get(context, ident)->Belt.Option.getWithDefault(#NaNN)
+    Value.ofMatrix(matrix)
+  | OfEncoded(a) => Encoding.decode(a)->Belt.Option.getWithDefault(Value.nan)
+  | Variable(ident) => AST_Context.get(context, ident)->Belt.Option.getWithDefault(Value.nan)
   | Add(a, b) => Value.add(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | Sub(a, b) => Value.sub(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | Mul(a, b) => Value.mul(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
@@ -127,53 +137,50 @@ and createEvalAtFnU = (~config, ~context, body) => {
   let fn = (. x) => evalAt(~config, ~context, ~x, body)
   fn
 }
-and evalScalar = (~config, ~context, ~x, body): Scalar.t =>
-  switch evalAt(~config, ~context, ~x, body) {
-  | #...Scalar.t as s => s
-  | _ => Scalar.nan
-  }
 
 let eval = (~context, ~config, v) => evalAt(~config, ~context, ~x=Value.nan, v)
 
 let solveRoot = (~config, ~context, body, initial) => {
   let fn = createEvalAtFnU(~config, ~context, body)
   let initial = eval(~config, ~context, initial)
-  initial != #NaNN ? Solvers.solveRootU(fn, initial) : #NaNN
+  initial != #NaNN ? Solvers.solveRootU(fn, initial) : Value.nan
 }
 let solveQuadratic = (~config, ~context, a, b, c) => {
   let a = eval(~config, ~context, a)
-  let b = a != #NaNN ? eval(~config, ~context, b) : #NaNN
-  let c = b != #NaNN ? eval(~config, ~context, c) : #NaNN
-  c != #NaNN ? Solvers.quadratic(a, b, c) : (#NaNN, #NaNN)
+  let b = a != #NaNN ? eval(~config, ~context, b) : Value.nan
+  let c = b != #NaNN ? eval(~config, ~context, c) : Value.nan
+  c != #NaNN ? Solvers.quadratic(a, b, c) : (Value.nan, Value.nan)
 }
 let solveCubic = (~config, ~context, a, b, c, d) => {
   let a = eval(~config, ~context, a)
-  let b = a != #NaNN ? eval(~config, ~context, b) : #NaNN
-  let c = b != #NaNN ? eval(~config, ~context, c) : #NaNN
-  let d = c != #NaNN ? eval(~config, ~context, d) : #NaNN
-  d != #NaNN ? Solvers.cubic(a, b, c, d) : (#NaNN, #NaNN, #NaNN)
+  let b = a != #NaNN ? eval(~config, ~context, b) : Value.nan
+  let c = b != #NaNN ? eval(~config, ~context, c) : Value.nan
+  let d = c != #NaNN ? eval(~config, ~context, d) : Value.nan
+  d != #NaNN ? Solvers.cubic(a, b, c, d) : (Value.nan, Value.nan, Value.nan)
 }
 let solveVar2 = (~config, ~context, x0, y0, c0, x1, y1, c1) => {
   let x0 = eval(~config, ~context, x0)
-  let y0 = x0 != #NaNN ? eval(~config, ~context, y0) : #NaNN
-  let c0 = y0 != #NaNN ? eval(~config, ~context, c0) : #NaNN
-  let x1 = c0 != #NaNN ? eval(~config, ~context, x1) : #NaNN
-  let y1 = x1 != #NaNN ? eval(~config, ~context, y1) : #NaNN
-  let c1 = y1 != #NaNN ? eval(~config, ~context, c1) : #NaNN
-  c1 != #NaNN ? Solvers.var2(x0, y0, c0, x1, y1, c1) : (#NaNN, #NaNN)
+  let y0 = x0 != #NaNN ? eval(~config, ~context, y0) : Value.nan
+  let c0 = y0 != #NaNN ? eval(~config, ~context, c0) : Value.nan
+  let x1 = c0 != #NaNN ? eval(~config, ~context, x1) : Value.nan
+  let y1 = x1 != #NaNN ? eval(~config, ~context, y1) : Value.nan
+  let c1 = y1 != #NaNN ? eval(~config, ~context, c1) : Value.nan
+  c1 != #NaNN ? Solvers.var2(x0, y0, c0, x1, y1, c1) : (Value.nan, Value.nan)
 }
 let solveVar3 = (~config, ~context, x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2) => {
   let x0 = eval(~config, ~context, x0)
-  let y0 = x0 != #NaNN ? eval(~config, ~context, y0) : #NaNN
-  let c0 = y0 != #NaNN ? eval(~config, ~context, c0) : #NaNN
-  let z0 = c0 != #NaNN ? eval(~config, ~context, z0) : #NaNN
-  let x1 = z0 != #NaNN ? eval(~config, ~context, x1) : #NaNN
-  let y1 = x1 != #NaNN ? eval(~config, ~context, y1) : #NaNN
-  let z1 = y1 != #NaNN ? eval(~config, ~context, z1) : #NaNN
-  let c1 = z1 != #NaNN ? eval(~config, ~context, c1) : #NaNN
-  let x2 = c1 != #NaNN ? eval(~config, ~context, x2) : #NaNN
-  let y2 = x2 != #NaNN ? eval(~config, ~context, y2) : #NaNN
-  let z2 = y2 != #NaNN ? eval(~config, ~context, z2) : #NaNN
-  let c2 = z2 != #NaNN ? eval(~config, ~context, c2) : #NaNN
-  c2 != #NaNN ? Solvers.var3(x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2) : (#NaNN, #NaNN, #NaNN)
+  let y0 = x0 != #NaNN ? eval(~config, ~context, y0) : Value.nan
+  let c0 = y0 != #NaNN ? eval(~config, ~context, c0) : Value.nan
+  let z0 = c0 != #NaNN ? eval(~config, ~context, z0) : Value.nan
+  let x1 = z0 != #NaNN ? eval(~config, ~context, x1) : Value.nan
+  let y1 = x1 != #NaNN ? eval(~config, ~context, y1) : Value.nan
+  let z1 = y1 != #NaNN ? eval(~config, ~context, z1) : Value.nan
+  let c1 = z1 != #NaNN ? eval(~config, ~context, c1) : Value.nan
+  let x2 = c1 != #NaNN ? eval(~config, ~context, x2) : Value.nan
+  let y2 = x2 != #NaNN ? eval(~config, ~context, y2) : Value.nan
+  let z2 = y2 != #NaNN ? eval(~config, ~context, z2) : Value.nan
+  let c2 = z2 != #NaNN ? eval(~config, ~context, c2) : Value.nan
+  c2 != #NaNN
+    ? Solvers.var3(x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2)
+    : (Value.nan, Value.nan, Value.nan)
 }
