@@ -84,6 +84,7 @@ type foldState<'a> =
   | Product({from: 'a, to_: 'a})
   | Rand(option<superscript<'a>>)
   | RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Rem({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Round({arg: 'a, superscript: option<superscript<'a>>})
   | Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
   | Sum({from: 'a, to_: 'a})
@@ -220,7 +221,7 @@ let reduceMapU = (
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
       Node(ImaginaryUnit(superscript), i, i')
-    | IteratorXS =>
+    | IterationXS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
       Node(X(superscript), i, i')
@@ -323,6 +324,11 @@ let reduceMapU = (
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
       Node(RandInt({a: a, b: b, superscript: superscript}), i, i')
+    | Rem2S =>
+      let (a, i') = readArg(i + 1)
+      let (b, i') = readArg(i')
+      let (superscript, i') = readSuperscript(i')
+      Node(Rem({a: a, b: b, superscript: superscript}), i, i')
     | Integral3 =>
       let (from, i') = readArg(i + 1)
       let (to_, i') = readArg(i')

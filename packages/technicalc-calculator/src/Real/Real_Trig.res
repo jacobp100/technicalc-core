@@ -7,8 +7,10 @@ let mod2Pi = a =>
   | Rational(n, d, Pi(1)) =>
     switch SafeInt.mulInt(d, 2) {
     | Some(dMul2) =>
-      let n = IntUtil.safeMod(n, dMul2)
-      ofRational(n, d, Pi(1))
+      switch IntUtil.safeMod(n, dMul2) {
+      | Some(n) => ofRational(n, d, Pi(1))
+      | None => a
+      }
     | None => a
     }
   | _ => a

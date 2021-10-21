@@ -73,7 +73,7 @@ open Formatting_Util
 
       let (before, n) = if mixedFractions && c == Unit {
         let integer = n / d
-        let remainder = IntUtil.safeMod(n, d)
+        let remainder = IntUtil.safeMod(n, d)->Belt.Option.getWithDefault(0)
         let before =
           integer == 0
             ? ""

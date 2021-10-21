@@ -62,7 +62,7 @@ let ofFloat = (v): t =>
     let magnitude = 1.e6
     let intMaxF = Belt.Float.fromInt(IntUtil.maxInt)
     let numeratorF = v *. magnitude
-    switch (FloatUtil.asInt(numeratorF), FloatUtil.asInt(magnitude)) {
+    switch (FloatUtil.toInt(numeratorF), FloatUtil.toInt(magnitude)) {
     | (Some(numerator), Some(denominator)) if FloatUtil.abs(numeratorF) < intMaxF =>
       ofReal(Real.ofRational(numerator, denominator, Unit))
     | _ => ofReal(Real.ofDecimal(Decimal.ofFloat(v)))

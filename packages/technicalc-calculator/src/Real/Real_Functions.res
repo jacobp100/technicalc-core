@@ -1,6 +1,13 @@
 open Real_Types
 open Real_Base
 
+let exp = a =>
+  switch a {
+  | Rational(0, 1, Unit) => one
+  | Rational(i, 1, Unit) => ofRational(1, 1, Exp(i))
+  | _ => ofDecimal(toDecimal(a)->Decimal.exp)
+  }
+
 let sqrt = a => {
   let value = switch a {
   | Rational(n, d, Unit) =>
@@ -21,7 +28,7 @@ let sqrt = a => {
 
 %%private(
   let ofDecimalInt = f =>
-    switch Decimal.toFloat(f)->FloatUtil.asInt {
+    switch Decimal.toFloat(f)->FloatUtil.toInt {
     | Some(intVal) => ofRational(intVal, 1, Unit)
     | None => ofDecimal(f)
     }
@@ -45,6 +52,28 @@ let ofDeg = a => Real_Arithmetic.mul(a, oneDeg)
 let ofArcMin = a => Real_Arithmetic.mul(a, oneArcMinute)
 let ofArcSec = a => Real_Arithmetic.mul(a, oneArcSecond)
 let ofGrad = a => Real_Arithmetic.mul(a, oneGrad)
+
+let rem = (a: t, b: t) => {
+  let rational = switch (a, b) {
+  | (Rational(an, ad, Unit), Rational(bn, bd, Unit)) =>
+    open SafeInt
+    let n = switch (mulInt(an, bd), mulInt(bn, ad)) {
+    | (Some(a), Some(b)) => IntUtil.safeMod(a, b)
+    | _ => None
+    }
+    let d = mulInt(ad, bd)
+    switch (n, d) {
+    | (Some(n), Some(d)) => ofRational(n, d, Unit)->Some
+    | _ => None
+    }
+  | _ => None
+  }
+
+  switch rational {
+  | Some(rational) => rational
+  | None => Decimal.rem(toDecimal(a), toDecimal(b))->ofDecimal
+  }
+}
 
 let max = (a: t, b: t): t => gte(a, b) ? a : b
 let min = (a: t, b: t): t => lte(a, b) ? a : b

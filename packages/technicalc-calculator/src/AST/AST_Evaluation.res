@@ -69,6 +69,8 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   | Sqrt(a) => Value.sqrt(evalAt(~config, ~context, ~x, a))
   | Exp(a) => Value.exp(evalAt(~config, ~context, ~x, a))
   | Log(a) => Value.log(evalAt(~config, ~context, ~x, a))
+  | LogBase({base, body}) =>
+    Value.logBase(~base=evalAt(~config, ~context, ~x, base), evalAt(~config, ~context, ~x, body))
   | Sin(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.sin
   | Cosec(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.cosec
   | Sinh(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.sinh
@@ -102,6 +104,7 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
     Value.randInt(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | NPR(a, b) => Value.nPr(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | NCR(a, b) => Value.nCr(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
+  | Rem(a, b) => Value.rem(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | Min(a, b) => Value.min(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | Max(a, b) => Value.max(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | Gcd(a, b) => Value.gcd(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))

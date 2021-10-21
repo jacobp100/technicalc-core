@@ -102,7 +102,7 @@ type skipMode =
     | ConstPiS
     | CustomAtomS(_)
     | ImaginaryUnitS
-    | IteratorXS
+    | IterationXS
     | N0_S
     | N1_S
     | N2_S
@@ -135,7 +135,8 @@ type skipMode =
     | Max2S
     | Min2S
     | NRoot2S
-    | RandInt2S =>
+    | RandInt2S
+    | Rem2S =>
       Movable
     }
 )

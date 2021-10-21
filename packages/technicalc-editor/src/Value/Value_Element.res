@@ -19,6 +19,7 @@ let map = (element: foldState<'a>, i, i') =>
   | ImaginaryUnit(superscript) => withSuperscript(I, superscript)->Resolved
   | Rand(superscript) => withSuperscript(Rand, superscript)->Resolved
   | RandInt({a, b, superscript}) => withSuperscript(RandInt(a, b), superscript)->Resolved
+  | Rem({a, b, superscript}) => withSuperscript(Rem(a, b), superscript)->Resolved
   | NPR({n, r}) => NPR(n, r)->Resolved
   | NCR({n, r}) => NCR(n, r)->Resolved
   | Differential({at, body}) => Differential({at: at, body: body})->Resolved

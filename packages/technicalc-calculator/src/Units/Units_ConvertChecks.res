@@ -1,9 +1,7 @@
 open Unit_Types
 open Unit_Dimensions
 
-let unitsCompatible = (~fromUnits, ~toUnits) => {
-  eq(ofUnits(fromUnits), ofUnits(toUnits))
-}
+let unitsCompatible = (~fromUnits, ~toUnits) => eq(ofUnits(fromUnits), ofUnits(toUnits))
 
 let compositeUnitsCompatible = (~fromUnits, ~toUnits) =>
   switch Belt.Array.get(fromUnits, 0) {

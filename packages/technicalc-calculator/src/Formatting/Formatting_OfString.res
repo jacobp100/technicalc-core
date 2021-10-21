@@ -199,8 +199,8 @@ type token =
     switch state {
     | Some((num, den, constant, rest)) =>
       let value = switch (
-        Decimal.toFloat(num)->FloatUtil.asInt,
-        Decimal.toFloat(den)->FloatUtil.asInt,
+        Decimal.toFloat(num)->FloatUtil.toInt,
+        Decimal.toFloat(den)->FloatUtil.toInt,
       ) {
       | (Some(num), Some(den)) => Real.ofRational(num, den, constant)
       | _ =>

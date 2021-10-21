@@ -333,3 +333,7 @@ test("powInt with constant-based integer overflows", (. ()) => {
     ofDecimalString("2.295887419986368642899842101140575e-41"),
   )
 })
+
+test("pow with precision loss", (. ()) => {
+  expect(pow(ofInt(64), ofRational(1, 3, Unit)))->toEqual(Rational(4, 1, Unit))
+})

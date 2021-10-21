@@ -9,6 +9,7 @@
     "clean": "rescript clean",
     "build-packages": "rescript build",
     "watch-packages": "watchexec -w packages -i lib -e res,resi yarn build-packages",
+    "clean-watch-packages": "watchexec -w packages -i lib -e res,resi 'yarn clean && yarn build-packages'",
     "build-bundles": "yarn workspace technicalc-prebuilt build",
     "watch-bundles": "yarn workspace technicalc-prebuilt watch-bundles",
     "build": "yarn build-packages && yarn build-bundles",
@@ -19,13 +20,13 @@
     "packages/*"
   ],
   "devDependencies": {
-    "rescript": "^9.1.4",
-    "eslint": "^7.29.0",
+    "eslint": "^8.0.1",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-import": "^2.25.2",
     "esm": "^3.2.25",
-    "jest": "^27.0.5",
-    "prettier": "^2.3.1"
+    "jest": "^27.3.1",
+    "prettier": "^2.3.1",
+    "rescript": "^9.1.4"
   }
 }

@@ -86,9 +86,9 @@ test("parses functions", (. ()) => {
 })
 
 test("parses iteration operators", (. ()) => {
-  parse([Sum2, N0_S, Arg, N3_S, Arg, IteratorXS, Add, N1_S])->expect->toEqual(Ok("7"))
+  parse([Sum2, N0_S, Arg, N3_S, Arg, IterationXS, Add, N1_S])->expect->toEqual(Ok("7"))
 
-  parse([Sum2, N0_S, Arg, N3_S, Arg, OpenBracket, IteratorXS, Add, N1_S, CloseBracketS])
+  parse([Sum2, N0_S, Arg, N3_S, Arg, OpenBracket, IterationXS, Add, N1_S, CloseBracketS])
   ->expect
   ->toEqual(Ok("10"))
 })

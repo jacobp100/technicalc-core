@@ -175,3 +175,19 @@ let powInt = (a, b) => {
     ofDecimal(toDecimal(a) ** ofInt(b))
   }
 }
+
+let pow = (a, b) =>
+  switch (a, b) {
+  | (_, Rational(b, 1, Unit)) => powInt(a, b)
+  | (Rational(_, _, Unit), Rational(1, r, Unit)) =>
+    let decimal = Decimal.pow(toDecimal(a), toDecimal(b))
+
+    // Attempt to recover from precision loss
+    switch Real_DecimalUtil.roundedRationalOfDecimal(~denimonator=60, decimal) {
+    | Some(rational) if eq(powInt(rational, r), a) => rational
+    | _ => ofDecimal(decimal)
+    }
+  | _ =>
+    open Decimal
+    ofDecimal(toDecimal(a) ** toDecimal(b))
+  }

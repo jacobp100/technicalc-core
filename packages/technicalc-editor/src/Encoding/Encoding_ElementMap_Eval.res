@@ -1,4 +1,4 @@
-%%private(let makeSureThisIsTheLastIndex = 89)
+%%private(let makeSureThisIsTheLastIndex = 90)
 %%private(
   let toUint = (element: AST.t) =>
     switch element {
@@ -90,13 +90,15 @@
     | CotS => 82
     | DegreeFunction => 83
     | GradianFunction => 84
-    /* 3rd elements */
+    /* 3rd set elements */
     | MFrac3S => 85
-    /* 4th elements */
+    /* 4th set elements */
     | CaptureGroupEndS => 86
     | RadianFunction => 87
     | RadianUnit => 88
-    | IteratorXS => makeSureThisIsTheLastIndex
+    | IterationXS => 89
+    /* 5th set elements */
+    | Rem2S => makeSureThisIsTheLastIndex
     /* Custom handling */
     | UnitConversion(_)
     | CustomAtomS(_)

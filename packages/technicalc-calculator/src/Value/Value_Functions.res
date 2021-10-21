@@ -62,6 +62,8 @@ let conj = a => mapScalarU(a, (. a) => Scalar.conj(a))
     }
 )
 
+let logBase = (~base, a) => map2ScalarU(base, a, (. base, a) => Scalar.logBase(~base, a))
+let rem = (a, b) => map2ScalarU(a, b, (. a, b) => Scalar.rem(a, b))
 let max = (a, b) => map2ScalarU(a, b, (. a, b) => Scalar.max(a, b))
 let min = (a, b) => map2ScalarU(a, b, (. a, b) => Scalar.min(a, b))
 let gcd = (a, b) => map2ScalarU(a, b, (. a, b) => Scalar.gcd(a, b))

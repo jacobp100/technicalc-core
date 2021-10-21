@@ -1,19 +1,5 @@
 open Matrix_Types
 open Matrix_Base
-open Matrix_Arithmetic
-
-let neg = (m: t) => mapU(m, (. x) => Scalar.neg(x))
-
-let pow = (m: t, i: int): t =>
-  if i >= 0 && m.numColumns == m.numRows {
-    let x = ref(identity(m.numRows))
-    for _ in 0 to i - 1 {
-      x := mul(x.contents, m)
-    }
-    x.contents
-  } else {
-    empty
-  }
 
 let determinant = (m: t): Scalar.t =>
   switch elements(m) {

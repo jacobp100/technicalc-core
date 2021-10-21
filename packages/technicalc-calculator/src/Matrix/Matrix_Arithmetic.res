@@ -1,6 +1,8 @@
 open Matrix_Types
 open Matrix_Base
 
+let neg = (m: t) => mapU(m, (. x) => Scalar.neg(x))
+
 %%private(
   let zipByU = (a: t, b: t, fn: (. Scalar.t, Scalar.t) => Scalar.t): t =>
     if a.numRows == b.numRows && a.numColumns == b.numColumns {
@@ -30,6 +32,17 @@ let mul = (a: t, b: t): t =>
       }
       element.contents
     })
+  } else {
+    empty
+  }
+
+let powInt = (m: t, i: int): t =>
+  if i >= 0 && m.numColumns == m.numRows {
+    let x = ref(identity(m.numRows))
+    for _ in 0 to i - 1 {
+      x := mul(x.contents, m)
+    }
+    x.contents
   } else {
     empty
   }

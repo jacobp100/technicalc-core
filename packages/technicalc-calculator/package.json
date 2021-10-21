@@ -9,13 +9,13 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "rescript": "^9.1.4",
     "cartesian": "^1.0.1",
     "lodash": "^4.17.21",
-    "mathjs": "^9.4.2"
+    "mathjs": "^9.5.1",
+    "rescript": "^9.1.4"
   },
   "dependencies": {
-    "decimal.js": "^10.2.0",
+    "decimal.js": "^10.3.1",
     "url-safe-encoding": "0.0.1"
   }
 }

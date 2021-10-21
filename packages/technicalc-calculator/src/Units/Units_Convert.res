@@ -215,7 +215,7 @@ let convertComposite = (values: array<(Value.t, t)>, ~toUnits: array<t>) => {
       }
       let value = negative ? Decimal.neg(value) : value
 
-      switch Decimal.toFloat(value)->FloatUtil.asInt {
+      switch Decimal.toFloat(value)->FloatUtil.toInt {
       | Some(int) => Value.ofInt(int)
       | None => Value.ofDecimal(value)
       }

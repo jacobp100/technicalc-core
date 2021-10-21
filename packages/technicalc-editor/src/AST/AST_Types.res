@@ -49,7 +49,7 @@ type t =
   | CosS
   | CotS
   | ImaginaryUnitS
-  | IteratorXS
+  | IterationXS
   | N0_S
   | N1_S
   | N2_S
@@ -98,6 +98,7 @@ type t =
   | Min2S
   | NRoot2S
   | RandInt2S
+  | Rem2S
   | Vector2S
   /* Atom3 */
   | Integral3
@@ -165,7 +166,7 @@ let argCountExn = (arg: t) =>
   | CotS
   | CustomAtomS(_)
   | ImaginaryUnitS
-  | IteratorXS
+  | IterationXS
   | N0_S
   | N1_S
   | N2_S
@@ -211,6 +212,7 @@ let argCountExn = (arg: t) =>
   | Min2S
   | NRoot2S
   | RandInt2S
+  | Rem2S
   | Vector2S => 2
   /* Atom3 */
   | Integral3
