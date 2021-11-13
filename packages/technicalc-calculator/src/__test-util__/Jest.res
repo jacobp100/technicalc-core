@@ -5,4 +5,5 @@ type testEach<'t>
 @val external expect: 't => expectation<'t> = "expect"
 @send external toEqual: (expectation<'t>, 't) => unit = "toEqual"
 @send external toBe: (expectation<'t>, 't) => unit = "toBe"
+@send external toBeCloseTo: (expectation<float>, float) => unit = "toBeCloseTo"
 @send external toThrow: (expectation<(. unit) => unit>, unit) => unit = "toThrow"

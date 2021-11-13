@@ -238,24 +238,24 @@ module Value = {
 }
 
 module Work = {
-  let calculate = (body): Work.work => Calculate(body)
-  let convertUnits = (body, fromUnits, toUnits): Work.work => ConvertUnits({
+  let calculate = (body): Work.input<'a> => Calculate(body)
+  let convertUnits = (body, fromUnits, toUnits): Work.input<'a> => ConvertUnits({
     body: body,
     fromUnits: fromUnits,
     toUnits: toUnits,
   })
-  let convertUnitsComposite = (values, toUnits): Work.work => ConvertUnitsComposite({
+  let convertUnitsComposite = (values, toUnits): Work.input<'a> => ConvertUnitsComposite({
     values: values,
     toUnits: toUnits,
   })
-  let solveRoot = (lhs, rhs, initialGuess): Work.work => {
+  let solveRoot = (lhs, rhs, initialGuess): Work.input<'a> => {
     let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs)
     SolveRoot({body: body, initialGuess: initialGuess})
   }
-  let quadratic = (a, b, c): Work.work => Quadratic(a, b, c)
-  let cubic = (a, b, c, d): Work.work => Cubic(a, b, c, d)
-  let var2 = (x0, y0, c0, x1, y1, c1): Work.work => Var2(x0, y0, c0, x1, y1, c1)
-  let var3 = (x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2): Work.work => Var3(
+  let quadratic = (a, b, c): Work.input<'a> => Quadratic(a, b, c)
+  let cubic = (a, b, c, d): Work.input<'a> => Cubic(a, b, c, d)
+  let var2 = (x0, y0, c0, x1, y1, c1): Work.input<'a> => Var2(x0, y0, c0, x1, y1, c1)
+  let var3 = (x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2): Work.input<'a> => Var3(
     x0,
     y0,
     z0,
@@ -270,7 +270,7 @@ module Work = {
     c2,
   )
 
-  let make = (config, context, work): Work.t => {
+  let make = (config, context, input): Work.t<'a> => {
     config: {
       angleMode: switch config.angleMode {
       | Some("degree") => Degree
@@ -283,8 +283,10 @@ module Work = {
       jsDictEntries(context)->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
     | None => []
     },
-    work: work,
+    input: input,
   }
+
+  let decodeOutput = Work.decodeOutput
 }
 
 module Units = {

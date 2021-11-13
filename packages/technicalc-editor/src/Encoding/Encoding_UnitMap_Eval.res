@@ -1,6 +1,6 @@
 open TechniCalcCalculator.Unit_Types
 
-%%private(let makeSureThisIsTheLastIndex = 52)
+%%private(let makeSureThisIsTheLastIndex = 57)
 %%private(
   let toUint = (element: unitType) =>
     switch element {
@@ -33,29 +33,34 @@ open TechniCalcCalculator.Unit_Types
     | Gallon => 26
     | USGallon => 27
     | Quart => 28
-    | Cup => 29
-    | USCup => 30
-    | Teaspoon => 31
-    | Tablespoon => 32
-    | FluidOunce => 33
-    | Knot => 34
-    | Newton => 35
-    | PoundForce => 36
-    | Pascal => 37
-    | Atmosphere => 38
-    | Bar => 39
-    | Joule => 40
-    | Calorie => 41
-    | ElectronVolt => 42
-    | BTU => 43
-    | Therm => 44
-    | Watt => 45
-    | Horsepower => 46
-    | MetricHorsepower => 47
-    | Bit => 48
-    | Byte => 49
-    | Kelvin => 50
-    | Celsius => 51
+    | USQuart => 29
+    | Cup => 30
+    | USCup => 31
+    | Pint => 32
+    | USPint => 33
+    | Teaspoon => 34
+    | USTeaspoon => 35
+    | Tablespoon => 36
+    | USTablespoon => 37
+    | FluidOunce => 38
+    | Knot => 39
+    | Newton => 40
+    | PoundForce => 41
+    | Pascal => 42
+    | Atmosphere => 43
+    | Bar => 44
+    | Joule => 45
+    | Calorie => 46
+    | ElectronVolt => 47
+    | BTU => 48
+    | Therm => 49
+    | Watt => 50
+    | Horsepower => 51
+    | MetricHorsepower => 52
+    | Bit => 53
+    | Byte => 54
+    | Kelvin => 55
+    | Celsius => 56
     | Fahrenheit => makeSureThisIsTheLastIndex
     }
 )

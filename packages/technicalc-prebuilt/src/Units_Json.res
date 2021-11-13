@@ -136,10 +136,17 @@ let json = [
           primary: true,
         },
       ],
-      [{units: [{prefix: Unit, type_: Quart, power: 1}], primary: true}],
+      [
+        {units: [{prefix: Unit, type_: Quart, power: 1}], primary: true},
+        {units: [{prefix: Unit, type_: USQuart, power: 1}], primary: true},
+      ],
       [
         {units: [{prefix: Unit, type_: Cup, power: 1}], primary: true},
         {units: [{prefix: Unit, type_: USCup, power: 1}], primary: true},
+      ],
+      [
+        {units: [{prefix: Unit, type_: Pint, power: 1}], primary: true},
+        {units: [{prefix: Unit, type_: USPint, power: 1}], primary: true},
       ],
       [
         {
@@ -148,6 +155,14 @@ let json = [
         },
         {
           units: [{prefix: Unit, type_: Tablespoon, power: 1}],
+          primary: true,
+        },
+        {
+          units: [{prefix: Unit, type_: USTeaspoon, power: 1}],
+          primary: true,
+        },
+        {
+          units: [{prefix: Unit, type_: USTablespoon, power: 1}],
           primary: true,
         },
       ],

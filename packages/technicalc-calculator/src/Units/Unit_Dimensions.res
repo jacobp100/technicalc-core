@@ -59,10 +59,15 @@ let ofUnit = (v: unitType) =>
   | Gallon
   | USGallon
   | Quart
+  | USQuart
   | Cup
   | USCup
+  | Pint
+  | USPint
   | Teaspoon
+  | USTeaspoon
   | Tablespoon
+  | USTablespoon
   | FluidOunce => volume
   /* Speed */
   | Knot => speed

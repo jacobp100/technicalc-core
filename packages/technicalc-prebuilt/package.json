@@ -17,5 +17,8 @@
     "technicalc-calculator": "0.0.1",
     "technicalc-editor": "0.0.1",
     "terser": "^5.9.0"
+  },
+  "dependencies": {
+    "url-safe-encoding": "0.0.1"
   }
 }

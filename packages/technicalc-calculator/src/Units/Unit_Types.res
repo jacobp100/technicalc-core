@@ -61,10 +61,15 @@ type unitType =
   | Gallon
   | USGallon
   | Quart
+  | USQuart
   | Cup
   | USCup
+  | Pint
+  | USPint
   | Teaspoon
+  | USTeaspoon
   | Tablespoon
+  | USTablespoon
   | FluidOunce
   /* Speed */
   | Knot
@@ -98,3 +103,5 @@ type t = {
   @as("type") type_: unitType,
   power: int,
 }
+
+let eq = (a, b) => a.prefix == b.prefix && a.type_ == b.type_ && a.power == b.power

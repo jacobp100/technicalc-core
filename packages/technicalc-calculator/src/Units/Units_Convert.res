@@ -64,13 +64,18 @@ open Unit_Types
       | Hectare => "1e4"
 
       | Liter => "1e-3"
-      | Gallon => "4.54609e-3"
-      | USGallon => "3.785e-3"
-      | Quart => "9.464e-4"
-      | Cup => "2.4e-4"
-      | USCup => "2.3559e-4"
-      | Teaspoon => "4.929e-6"
-      | Tablespoon => "1.479e-5"
+      | Gallon => "0.00454609"
+      | USGallon => "0.00378541200000013893"
+      | Quart => "0.00113652"
+      | USQuart => "0.00094635300000003473239"
+      | Cup => "0.000284131"
+      | USCup => "0.00024"
+      | Pint => "0.00056826128242566881568"
+      | USPint => "0.0004731765000000173662"
+      | Teaspoon => "5.919333333043e-6"
+      | USTeaspoon => "4.92899841912e-6"
+      | Tablespoon => "1.7758e-5"
+      | USTablespoon => "1.4787e-5"
       | FluidOunce => "2.8413e-5"
 
       | Knot => "0.514444"
@@ -187,6 +192,11 @@ let convert = (value: Value.t, ~fromUnits, ~toUnits) =>
     Value.nan
   }
 
+let compositeUnitsSorted = units =>
+  Belt.Array.copy(units)->ArrayUtil.sortInPlace((a, b) => {
+    Decimal.cmp(ofValue(b), ofValue(a))
+  })
+
 let convertComposite = (values: array<(Value.t, t)>, ~toUnits: array<t>) => {
   let fromUnits = Belt.Array.mapU(values, (. (_, unitPart)) => unitPart)
 
@@ -197,28 +207,23 @@ let convertComposite = (values: array<(Value.t, t)>, ~toUnits: array<t>) => {
     })
     let valueSiAbs = Decimal.abs(valueSi)
     let negative = Decimal.lt(valueSi, Decimal.zero)
-    let toUnits = Belt.Array.copy(toUnits)->ArrayUtil.sortInPlace((a, b) => {
-      Decimal.cmp(ofValue(b), ofValue(a))
-    })
+    let toUnits = compositeUnitsSorted(toUnits)
     let remainderSi = ref(valueSiAbs)
-    let lastIndex = Belt.Array.length(toUnits) - 1
-    let output = Belt.Array.mapWithIndexU(toUnits, (. index, unitPart) => {
+    let output = Belt.Array.mapU(toUnits, (. unitPart) => {
       let value = Decimal.mul(remainderSi.contents, ofValue(~powerMultiplier=-1, unitPart))
 
-      let value = if index == lastIndex {
-        value
-      } else {
-        let valueFloor = Decimal.floor(value)
-        let remainder = Decimal.sub(value, valueFloor)
-        remainderSi := Decimal.mul(remainder, ofValue(~powerMultiplier=1, unitPart))
-        valueFloor
-      }
+      let valueFloor = Decimal.floor(value)
+      let remainder = Decimal.sub(value, valueFloor)
+      remainderSi := Decimal.mul(remainder, ofValue(~powerMultiplier=1, unitPart))
+      let value = valueFloor
       let value = negative ? Decimal.neg(value) : value
 
-      switch Decimal.toFloat(value)->FloatUtil.toInt {
+      let value = switch Decimal.toFloat(value)->FloatUtil.toInt {
       | Some(int) => Value.ofInt(int)
       | None => Value.ofDecimal(value)
       }
+
+      (value, unitPart)
     })
     Some(output)
   } else {
