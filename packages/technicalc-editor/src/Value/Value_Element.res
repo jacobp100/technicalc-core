@@ -3,48 +3,58 @@ open Value_Builders
 
 let map = (element: foldState<'a>, i, i') =>
   switch element {
-  | AST.Placeholder(_) | AST.CaptureGroupPlaceholder(_) =>
+  | AST.Fold_Placeholder(_) | Fold_CaptureGroupPlaceholder(_) =>
     // Handled in Value.re
     assert false
-  | (Angle(_) | Base(_) | Conj | DecimalSeparator | Factorial | OpenBracket) as e
-  | (Operator(_) | Percent | UnitConversion(_)) as e
-  | (CloseBracket(_) | Digit(_) | Magnitude(_)) as e =>
+  | (Fold_Angle(_)
+    | Fold_Base(_)
+    | Fold_Conj
+    | Fold_DecimalSeparator
+    | Fold_Factorial
+    | Fold_OpenBracket
+    | Fold_Operator(_)
+    | Fold_Percent
+    | Fold_UnitConversion(_)
+    | Fold_CloseBracket(_)
+    | Fold_Digit(_)
+    | Fold_Magnitude(_)) as e =>
     Value_Types.Unresolved(e, i, i')
-  | Function({func, resultSuperscript}) =>
+  | Fold_Function({fn, resultSuperscript}) =>
     let resultSuperscript = Belt.Option.map(resultSuperscript, superscriptBody)
-    UnresolvedFunction(GenericFunction({func: func, resultSuperscript: resultSuperscript}), i, i')
-  | NLog({base}) => UnresolvedFunction(NLog({base: base}), i, i')
-  | Sum({from, to_}) => UnresolvedFunction(Sum({from: from, to_: to_}), i, i')
-  | Product({from, to_}) => UnresolvedFunction(Product({from: from, to_: to_}), i, i')
-  | ImaginaryUnit(superscript) => withSuperscript(I, superscript)->Resolved
-  | Rand(superscript) => withSuperscript(Rand, superscript)->Resolved
-  | RandInt({a, b, superscript}) => withSuperscript(RandInt(a, b), superscript)->Resolved
-  | Rem({a, b, superscript}) => withSuperscript(Rem(a, b), superscript)->Resolved
-  | NPR({n, r}) => NPR(n, r)->Resolved
-  | NCR({n, r}) => NCR(n, r)->Resolved
-  | Differential({at, body}) => Differential({at: at, body: body})->Resolved
-  | Integral({from, to_, body}) => Integral({from: from, to_: to_, body: body})->Resolved
-  | X(superscript) => withSuperscript(X, superscript)->Resolved
-  | Variable({id, superscript}) => withSuperscript(Variable(id), superscript)->Resolved
-  | CustomAtom({value, superscript}) => withSuperscript(OfEncoded(value), superscript)->Resolved
-  | ConstPi(superscript) => withSuperscript(Pi, superscript)->Resolved
-  | ConstE(superscript) => withSuperscript(E, superscript)->Resolved
-  | Frac({num, den, superscript}) => withSuperscript(Div(num, den), superscript)->Resolved
-  | MFrac({integer, num, den, superscript}) =>
+    UnresolvedFunction(GenericFunction({fn: fn, resultSuperscript: resultSuperscript}), i, i')
+  | Fold_NLog({base}) => UnresolvedFunction(NLog({base: base}), i, i')
+  | Fold_Sum({from, to_}) => UnresolvedFunction(Sum({from: from, to_: to_}), i, i')
+  | Fold_Product({from, to_}) => UnresolvedFunction(Product({from: from, to_: to_}), i, i')
+  | Fold_ImaginaryUnit(superscript) => withSuperscript(I, superscript)->Resolved
+  | Fold_Rand(superscript) => withSuperscript(Rand, superscript)->Resolved
+  | Fold_RandInt({a, b, superscript}) => withSuperscript(RandInt(a, b), superscript)->Resolved
+  | Fold_Rem({a, b, superscript}) => withSuperscript(Rem(a, b), superscript)->Resolved
+  | Fold_NPR({n, r}) => NPR(n, r)->Resolved
+  | Fold_NCR({n, r}) => NCR(n, r)->Resolved
+  | Fold_Differential({at, body}) => Differential({at: at, body: body})->Resolved
+  | Fold_Integral({from, to_, body}) => Integral({from: from, to_: to_, body: body})->Resolved
+  | Fold_X(superscript) => withSuperscript(X, superscript)->Resolved
+  | Fold_Variable({id, superscript}) => withSuperscript(Variable(id), superscript)->Resolved
+  | Fold_CustomAtom({value, superscript}) =>
+    withSuperscript(OfEncoded(value), superscript)->Resolved
+  | Fold_ConstPi(superscript) => withSuperscript(Pi, superscript)->Resolved
+  | Fold_ConstE(superscript) => withSuperscript(E, superscript)->Resolved
+  | Fold_Frac({num, den, superscript}) => withSuperscript(Div(num, den), superscript)->Resolved
+  | Fold_MFrac({integer, num, den, superscript}) =>
     withSuperscript(Add(integer, Div(num, den)), superscript)->Resolved
-  | Min({a, b, superscript}) => withSuperscript(Min(a, b), superscript)->Resolved
-  | Max({a, b, superscript}) => withSuperscript(Max(a, b), superscript)->Resolved
-  | Gcd({a, b, superscript}) => withSuperscript(Gcd(a, b), superscript)->Resolved
-  | Lcm({a, b, superscript}) => withSuperscript(Lcm(a, b), superscript)->Resolved
-  | Abs({arg, superscript}) => withSuperscript(Abs(arg), superscript)->Resolved
-  | Floor({arg, superscript}) => withSuperscript(Floor(arg), superscript)->Resolved
-  | Ceil({arg, superscript}) => withSuperscript(Ceil(arg), superscript)->Resolved
-  | Round({arg, superscript}) => withSuperscript(Round(arg), superscript)->Resolved
-  | Sqrt({radicand, superscript}) => withSuperscript(Sqrt(radicand), superscript)->Resolved
-  | NRoot({degree, radicand, superscript}) =>
+  | Fold_Min({a, b, superscript}) => withSuperscript(Min(a, b), superscript)->Resolved
+  | Fold_Max({a, b, superscript}) => withSuperscript(Max(a, b), superscript)->Resolved
+  | Fold_Gcd({a, b, superscript}) => withSuperscript(Gcd(a, b), superscript)->Resolved
+  | Fold_Lcm({a, b, superscript}) => withSuperscript(Lcm(a, b), superscript)->Resolved
+  | Fold_Abs({arg, superscript}) => withSuperscript(Abs(arg), superscript)->Resolved
+  | Fold_Floor({arg, superscript}) => withSuperscript(Floor(arg), superscript)->Resolved
+  | Fold_Ceil({arg, superscript}) => withSuperscript(Ceil(arg), superscript)->Resolved
+  | Fold_Round({arg, superscript}) => withSuperscript(Round(arg), superscript)->Resolved
+  | Fold_Sqrt({radicand, superscript}) => withSuperscript(Sqrt(radicand), superscript)->Resolved
+  | Fold_NRoot({degree, radicand, superscript}) =>
     withSuperscript(Pow(radicand, Div(One, degree)), superscript)->Resolved
-  | Vector({elements, superscript}) => withSuperscript(Vector(elements), superscript)->Resolved
-  | Table({elements, numRows, numColumns, superscript}) =>
+  | Fold_Vector({elements, superscript}) => withSuperscript(Vector(elements), superscript)->Resolved
+  | Fold_Table({elements, numRows, numColumns, superscript}) =>
     withSuperscript(
       Matrix({numRows: numRows, numColumns: numColumns, elements: elements}),
       superscript,

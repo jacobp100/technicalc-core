@@ -1,33 +1,6 @@
 open EditState_Types
 open EditState_Base
-
-%%private(
-  let skipFunction = (x, ~from, ~direction) => {
-    let step = direction == EditState_Util.Forwards ? 1 : -1
-    let argLevelStep = step
-
-    let rec iter = (~index, ~argLevel) =>
-      switch Belt.Array.get(x, index) {
-      | None => None
-      | Some(v) =>
-        let index = index + step
-        let argLevel = switch v {
-        | AST.Arg => argLevel - argLevelStep
-        | _ => argLevel + argLevelStep * AST.argCountExn(v)
-        }
-
-        if argLevel == 0 {
-          let fn = direction == Forwards ? Belt.Array.getExn(x, from) : v
-          Some((index, fn))
-        } else if argLevel > 0 {
-          iter(~index, ~argLevel)
-        } else {
-          None
-        }
-      }
-    iter(~index=from, ~argLevel=0)
-  }
-)
+open EditState_ASTUtil
 
 /*
  It's verbose,
@@ -142,8 +115,8 @@ type skipMode =
 )
 
 %%private(
-  let skipInsertables = (x: array<AST.t>, ~from, ~direction) => {
-    let rec iter = (~index, ~bracketLevel) =>
+  let advancePastMovableElements = (~direction, x: array<AST.t>, index) => {
+    let rec iter = (~bracketLevel, index) =>
       switch Belt.Array.get(x, index) {
       | None if bracketLevel == 0 => Some(index)
       | Some(element) if bracketLevel == 0 && skipMode(element) == TopLevelFixed => Some(index)
@@ -158,22 +131,22 @@ type skipMode =
         | EditState_Util.Forwards => bracketLevel < 0
         | Backwards => bracketLevel > 0
         }
-        let nextIndex = shouldBreak ? None : skipFunction(x, ~from=index, ~direction)
+        let nextIndex = shouldBreak ? None : advanceIndex(~direction, x, index)
         switch nextIndex {
         | Some((_, element)) if skipMode(element) == FunctionFixed => Some(index)
         | None => Some(index)
-        | Some((index, _)) => iter(~index, ~bracketLevel)
+        | Some((index, _)) => iter(~bracketLevel, index)
         }
       }
-    iter(~index=from, ~bracketLevel=0)
+    iter(~bracketLevel=0, index)
   }
 )
 
 %%private(
-  let countInsertables = (x: array<AST.t>, ~from, ~direction) =>
-    switch skipInsertables(x, ~from, ~direction) {
-    | Some(index) =>
-      let i = from - index
+  let countMovableElements = (x: array<AST.t>, ~from as startIndex, ~direction) =>
+    switch advancePastMovableElements(~direction, x, startIndex) {
+    | Some(endIndex) =>
+      let i = startIndex - endIndex
       i > 0 ? i : -i
     | None => 0
     }
@@ -184,20 +157,20 @@ type skipMode =
     switch element {
     | AST.Superscript1
     | Sqrt1S =>
-      let e = countInsertables(elements, ~from=index, ~direction=Forwards)
+      let e = countMovableElements(elements, ~from=index, ~direction=Forwards)
       let (elements, arg) = ArrayUtil.splice(elements, ~offset=index, ~len=e)
       let combined = Belt.Array.concatMany([[element], arg, [Arg]])
       let elements = ArrayUtil.insertArray(elements, combined, index)
       (elements, index + 1)
     | NRoot2S =>
-      let e = countInsertables(elements, ~from=index, ~direction=Forwards)
+      let e = countMovableElements(elements, ~from=index, ~direction=Forwards)
       let (elements, radicand) = ArrayUtil.splice(elements, ~offset=index, ~len=e)
       let combined = Belt.Array.concatMany([[element, Arg], radicand, [Arg]])
       let elements = ArrayUtil.insertArray(elements, combined, index)
       (elements, index + 1)
     | Frac2S =>
-      let s = countInsertables(elements, ~from=index - 1, ~direction=Backwards)
-      let e = countInsertables(elements, ~from=index, ~direction=Forwards)
+      let s = countMovableElements(elements, ~from=index - 1, ~direction=Backwards)
+      let e = countMovableElements(elements, ~from=index, ~direction=Forwards)
       let (elements, den) = ArrayUtil.splice(elements, ~offset=index, ~len=e)
       let (elements, num) = ArrayUtil.splice(elements, ~offset=index - s, ~len=s)
       let frac = Belt.Array.concatMany([[element], num, [Arg], den, [Arg]])
@@ -205,12 +178,17 @@ type skipMode =
       let nextIndex = s > 0 ? index + 2 : index + 1
       (elements, nextIndex)
     | MFrac3S =>
-      let s = countInsertables(elements, ~from=index - 1, ~direction=Backwards)
+      let s = countMovableElements(elements, ~from=index - 1, ~direction=Backwards)
       let (elements, integer) = ArrayUtil.splice(elements, ~offset=index - s, ~len=s)
       let mfrac = Belt.Array.concatMany([[element], integer, [Arg, Arg, Arg]])
       let elements = ArrayUtil.insertArray(elements, mfrac, index - s)
       let nextIndex = s > 0 ? index + 2 : index + 1
       (elements, nextIndex)
+    | OpenBracket =>
+      let shouldAppendCloseBracket = bracketLevel(elements, ~from=index) >= 0
+      let combined = shouldAppendCloseBracket ? [element, CloseBracketS] : [element]
+      let elements = ArrayUtil.insertArray(elements, combined, index)
+      (elements, index + 1)
     | _ =>
       let args = switch AST.argCountExn(element) {
       | 0 => [element]

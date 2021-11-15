@@ -6,7 +6,7 @@ type parseResult =
   | Error(int)
   | UnknownError
 
-type angleState = option<(Value_Types.node, AST_ReduceMap.angle)>
+type angleState = option<(Value_Types.node, AST.angle)>
 
 type openBracket = {
   startElementIndex: int,
@@ -19,23 +19,23 @@ type openBracket = {
 // This is so more optimisations can be applied
 // Less stuff needs exported, so inlining can be more aggressive
 let parse = {
-  let applyAngle = (value: Value_Types.node, angle: AST_ReduceMap.angle): Value_Types.node =>
+  let applyAngle = (value: Value_Types.node, angle: AST.angle): Value_Types.node =>
     switch angle {
-    | Radian => OfRad(value)
-    | Degree => OfDeg(value)
-    | ArcMinute => OfArcMin(value)
-    | ArcSecond => OfArcSec(value)
-    | Gradian => OfGrad(value)
+    | Angle_Radian => OfRad(value)
+    | Angle_Degree => OfDeg(value)
+    | Angle_ArcMinute => OfArcMin(value)
+    | Angle_ArcSecond => OfArcSec(value)
+    | Angle_Gradian => OfGrad(value)
     }
 
   let rec applyPostfixes = (elements, accum: TechniCalcEditor.Value_Types.node, elementIndex) => {
     let nextElement = ArraySlice.get(elements, elementIndex + 1)
     let nextAccum: option<TechniCalcEditor.Value_Types.node> = switch nextElement {
-    | Some(Unresolved(UnitConversion({fromUnits, toUnits}), _, _)) =>
+    | Some(Unresolved(Fold_UnitConversion({fromUnits, toUnits}), _, _)) =>
       Some(Convert({body: accum, fromUnits: fromUnits, toUnits: toUnits}))
-    | Some(Unresolved(Factorial, _, _)) => Some(Factorial(accum))
-    | Some(Unresolved(Conj, _, _)) => Some(Conj(accum))
-    | Some(Unresolved(Percent, _, _)) => Some(Percent(accum))
+    | Some(Unresolved(Fold_Factorial, _, _)) => Some(Factorial(accum))
+    | Some(Unresolved(Fold_Conj, _, _)) => Some(Conj(accum))
+    | Some(Unresolved(Fold_Percent, _, _)) => Some(Percent(accum))
     | _ => None
     }
     switch nextAccum {
@@ -54,7 +54,7 @@ let parse = {
         | None => value
         }
         let (value, elementIndex) = switch ArraySlice.get(elements, elementIndex + 1) {
-        | Some(Unresolved(Angle(angle), _, _)) => (applyAngle(value, angle), elementIndex + 1)
+        | Some(Unresolved(Fold_Angle(angle), _, _)) => (applyAngle(value, angle), elementIndex + 1)
         | _ => (value, elementIndex)
         }
         iter(Some(value), elementIndex + 1)
@@ -89,7 +89,7 @@ let parse = {
       let element = ArraySlice.get(elements, elementIndex)
 
       switch element {
-      | Some(Unresolved(Angle(angle), i, _)) =>
+      | Some(Unresolved(Fold_Angle(angle), i, _)) =>
         let number = switch Value_NumberParser.toNode(numberState) {
         | Some(number) => Some(applyAngle(number, angle))
         | None => None
@@ -97,8 +97,8 @@ let parse = {
         switch (number, (angleState: angleState), angle) {
         | (Some(number), None, _) =>
           iter(Value_NumberParser.empty, Some((number, angle)), elementIndex + 1)
-        | (Some(number), Some((angleAccum, Degree)), ArcMinute | ArcSecond)
-        | (Some(number), Some((angleAccum, ArcMinute)), ArcSecond) =>
+        | (Some(number), Some((angleAccum, Angle_Degree)), Angle_ArcMinute | Angle_ArcSecond)
+        | (Some(number), Some((angleAccum, Angle_ArcMinute)), Angle_ArcSecond) =>
           iter(Value_NumberParser.empty, Some((Add(angleAccum, number), angle)), elementIndex + 1)
         | _ => Error(i)
         }
@@ -120,11 +120,11 @@ let parse = {
 
   let rec parseUnary = elements =>
     switch ArraySlice.get(elements, 0) {
-    | Some(Unresolved(Operator((Add | Sub) as op), _, i')) =>
+    | Some(Unresolved(Fold_Operator((Op_Add | Op_Sub) as op), _, i')) =>
       let rest = ArraySlice.sliceToEnd(elements, 1)
       switch parseUnary(rest) {
       | Ok(root) =>
-        let root = op == Sub ? Node.Neg(root) : root
+        let root = op == Op_Sub ? Node.Neg(root) : root
         Ok(root)
       | Error(_) as e => e
       | UnknownError => Error(i')
@@ -175,7 +175,7 @@ let parse = {
 
     let rec iter = (~unaryPosition, current, elementIndex) =>
       switch ArraySlice.get(elements, elementIndex) {
-      | Some(Unresolved(Operator(op), _, i')) =>
+      | Some(Unresolved(Fold_Operator(op), _, i')) =>
         let nextAccum =
           !unaryPosition && operatorHandled(. op) ? Some((elementIndex, op, i')) : current
         iter(~unaryPosition=true, nextAccum, elementIndex + 1)
@@ -186,7 +186,7 @@ let parse = {
     iter(~unaryPosition=true, None, 0)
   }
 
-  let mulDivOperatorHandled = (. op) => op == AST.Mul || op == Div || op == Dot
+  let mulDivOperatorHandled = (. op) => op == AST.Op_Mul || op == Op_Div || op == Op_Dot
   let parseMulDiv = elements =>
     binaryOperatorParserU(
       ~operatorHandled=mulDivOperatorHandled,
@@ -195,7 +195,7 @@ let parse = {
     )
   let next = parseMulDiv
 
-  let addSubOperatorHandled = (. op) => op == AST.Add || op == Sub
+  let addSubOperatorHandled = (. op) => op == AST.Op_Add || op == Op_Sub
   let parseAddSub = elements =>
     binaryOperatorParserU(
       ~operatorHandled=addSubOperatorHandled,
@@ -207,7 +207,7 @@ let parse = {
   let handleBrackets = elements => {
     let rec iter = (elements, openBracketStack, elementIndex) =>
       switch ArraySlice.get(elements, elementIndex) {
-      | Some(Unresolved(OpenBracket, _, i')) =>
+      | Some(Unresolved(Fold_OpenBracket, _, i')) =>
         let fnIndex = elementIndex - 1
         let fn = switch ArraySlice.get(elements, fnIndex) {
         | Some(UnresolvedFunction(fn, _, _)) => Some(fn)
@@ -222,7 +222,7 @@ let parse = {
           i': i',
         }
         iter(elements, list{openBracket, ...openBracketStack}, endElementIndex)
-      | Some(Unresolved(CloseBracket(superscript), _, i')) =>
+      | Some(Unresolved(Fold_CloseBracket(superscript), _, i')) =>
         switch openBracketStack {
         | list{{startElementIndex, endElementIndex, fn}, ...openBracketStack} =>
           let innerElements = ArraySlice.slice(

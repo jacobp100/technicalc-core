@@ -1,5 +1,13 @@
 @scope("Object") @val external jsDictEntries: Js.Dict.t<'t> => array<(string, 't)> = "entries"
 
+%%private(
+  let toJsResult = result =>
+    switch result {
+    | Ok(value) => Obj.magic({"ok": true, "value": value})
+    | Error(error) => Obj.magic({"ok": false, "error": error})
+    }
+)
+
 type config = {angleMode: option<string>}
 
 type format = {
@@ -115,11 +123,7 @@ module Elements = {
     Mml.create(~locale, ~digitGrouping, ~inline, x)
   }
 
-  let parse = elements =>
-    switch Value.parse(elements) {
-    | Ok(node) => Obj.magic({"ok": true, "value": node})
-    | Error(i) => Obj.magic({"ok": false, "error": i})
-    }
+  let parse = elements => Value.parse(elements)->toJsResult
 
   let eq = (a, b) => Belt.Array.eqU(a, b, (. a, b) => AST.eq(a, b))
 
@@ -153,12 +157,28 @@ module Editor = {
   let moveStart = EditState.moveStart
   let moveEnd = EditState.moveEnd
 
-  let insert = (ast, key) =>
+  let insert = (editState, key) =>
     switch key {
-    | Keys.One(element) => EditState.insert(ast, element)
-    | Many(elements) => EditState.insertArray(ast, elements)
+    | Keys.One(element) => EditState.insert(editState, element)
+    | Many(elements) => EditState.insertArray(editState, elements)
     }
   let delete = EditState.delete
+}
+
+module RPN = {
+  open TechniCalcEditor
+
+  let empty = RPN.empty
+
+  let elements = RPN.elements
+  let depth = RPN.depth
+
+  let submit = (rpn, editState) => RPN.submit(rpn, editState)->toJsResult
+  let insert = (rpn, editState, key) =>
+    switch key {
+    | Keys.One(element) => RPN.insert(rpn, editState, element)
+    | Many(elements) => RPN.insertArray(rpn, editState, elements)
+    }->toJsResult
 }
 
 module Keys = {

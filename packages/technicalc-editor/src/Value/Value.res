@@ -9,8 +9,8 @@ let parse = (elements: array<t>) => {
   let reduce = (. elementsRev: accum, element, (i, i')) =>
     if error.contents == None {
       switch element {
-      | Placeholder(_)
-      | CaptureGroupPlaceholder(_) =>
+      | Fold_Placeholder(_)
+      | Fold_CaptureGroupPlaceholder(_) =>
         error := Some(i)
         list{}
       | _ => list{Value_Element.map(element, i, i'), ...elementsRev}

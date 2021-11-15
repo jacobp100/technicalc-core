@@ -117,10 +117,10 @@ const build = async ({ outfile, format, globalName, ...rest }) => {
     //   'var $1 = require("$2")'
     // );
     code = code.replace(/export\s*\{([^{}]+)\}/, (_, inner) => {
-      const defaultExport = inner.match(/^(\w+) as default$/);
+      const defaultExport = inner.match(/^([\w$]+) as default$/);
       return defaultExport != null
         ? `var ${varName}=${defaultExport[1]}`
-        : `var ${varName}={${inner.replace(/(\w+) as (\w+)/g, "$2:$1")}}`;
+        : `var ${varName}={${inner.replace(/([\w$]+) as ([\w$]+)/g, "$2:$1")}}`;
     });
     code = `(()=>{${code};typeof module!=='undefined'?module.exports=${varName}:self.${globalName}=${varName}})()`;
   }

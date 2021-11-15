@@ -36,8 +36,16 @@ open EditState_Base
 
 type deletionMode =
   | Keep
-  | Delete
+  | Delete(int)
   | Spread(array<AST.t>)
+
+%%private(
+  let isCloseBracketAtIndex = (elements, index) =>
+    switch Belt.Array.get(elements, index) {
+    | Some(AST.CloseBracketS) => true
+    | _ => false
+    }
+)
 
 %%private(
   let deletionMode = (elements, index) =>
@@ -47,10 +55,11 @@ type deletionMode =
     | Some(NRoot2S) =>
       let degreeIsEmpty = matchNEmptyArgs(elements, ~index=index + 1, ~count=1)
       degreeIsEmpty ? Spread(nArgsSlice(elements, index, ~skipInitial=1)) : Keep
+    | Some(OpenBracket) if isCloseBracketAtIndex(elements, index + 1) => Delete(2)
     | Some(v) =>
       let argCount = AST.argCountExn(v)
       let argsEmpty = matchNEmptyArgs(elements, ~index=index + 1, ~count=argCount)
-      argsEmpty ? Delete : Keep
+      argsEmpty ? Delete(1) : Keep
     | None => Keep
     }
 )
@@ -72,6 +81,17 @@ type deletionMode =
         Belt.Array.sliceToEnd(elements, endIndex),
       )
     }
+  }
+)
+
+%%private(
+  @inline
+  let deleteNAtIndexExn = (elements, index, ~count) => {
+    let elements = ref(elements)
+    for _ in 1 to count {
+      elements := deleteAtIndexExn(elements.contents, index)
+    }
+    elements.contents
   }
 )
 
@@ -106,7 +126,7 @@ let delete = (editState: t) => {
     let index = index - 1
     let elements = switch deletionMode(elements, index) {
     | Keep => elements
-    | Delete => deleteAtIndexExn(elements, index)->deleteEmptySuperscript(index)
+    | Delete(count) => deleteNAtIndexExn(elements, index, ~count)->deleteEmptySuperscript(index)
     | Spread(spread) =>
       deleteAtIndexExn(elements, index)
       ->deleteEmptySuperscript(index)

@@ -8,34 +8,34 @@ let withSuperscript = (value, superscript) =>
 
 let handleGenericFunction = (arg, fn) =>
   switch fn {
-  | AST.Sin => Node.Sin(arg)
-  | Asin => Asin(arg)
-  | Cosec => Cosec(arg)
-  | Sinh => Sinh(arg)
-  | Asinh => Asinh(arg)
-  | Cos => Cos(arg)
-  | Acos => Acos(arg)
-  | Sec => Sec(arg)
-  | Cosh => Cosh(arg)
-  | Acosh => Acosh(arg)
-  | Tan => Tan(arg)
-  | Atan => Atan(arg)
-  | Cot => Cot(arg)
-  | Tanh => Tanh(arg)
-  | Atanh => Atanh(arg)
-  | Deg => ToDeg(arg)
-  | Grad => ToGrad(arg)
-  | Log => Log(arg)
-  | Rad => ToRad(arg)
-  | Re => Re(arg)
-  | Im => Im(arg)
-  | Gamma => Gamma(arg)
+  | AST.Fn_Sin => Node.Sin(arg)
+  | Fn_Asin => Asin(arg)
+  | Fn_Cosec => Cosec(arg)
+  | Fn_Sinh => Sinh(arg)
+  | Fn_Asinh => Asinh(arg)
+  | Fn_Cos => Cos(arg)
+  | Fn_Acos => Acos(arg)
+  | Fn_Sec => Sec(arg)
+  | Fn_Cosh => Cosh(arg)
+  | Fn_Acosh => Acosh(arg)
+  | Fn_Tan => Tan(arg)
+  | Fn_Atan => Atan(arg)
+  | Fn_Cot => Cot(arg)
+  | Fn_Tanh => Tanh(arg)
+  | Fn_Atanh => Atanh(arg)
+  | Fn_Deg => ToDeg(arg)
+  | Fn_Grad => ToGrad(arg)
+  | Fn_Log => Log(arg)
+  | Fn_Rad => ToRad(arg)
+  | Fn_Re => Re(arg)
+  | Fn_Im => Im(arg)
+  | Fn_Gamma => Gamma(arg)
   }
 
 let handleFunction = (fn, body) =>
   switch fn {
-  | Value_Types.GenericFunction({func, resultSuperscript}) =>
-    let value = handleGenericFunction(body, func)
+  | Value_Types.GenericFunction({fn, resultSuperscript}) =>
+    let value = handleGenericFunction(body, fn)
     switch resultSuperscript {
     | Some(resultSuperscript) => Node.Pow(value, resultSuperscript)
     | None => value
@@ -47,9 +47,9 @@ let handleFunction = (fn, body) =>
 
 let handleOp = (op, a, b) =>
   switch op {
-  | AST.Add => Node.Add(a, b)
-  | Sub => Sub(a, b)
-  | Mul => Mul(a, b)
-  | Div => Div(a, b)
-  | Dot => Dot(a, b)
+  | AST.Op_Add => Node.Add(a, b)
+  | Op_Sub => Sub(a, b)
+  | Op_Mul => Mul(a, b)
+  | Op_Div => Div(a, b)
+  | Op_Dot => Dot(a, b)
   }

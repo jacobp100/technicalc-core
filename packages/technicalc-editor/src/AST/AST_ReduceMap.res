@@ -1,105 +1,65 @@
 open AST_Types
+open AST_Categorization
 
 type superscript<'a> = {
   superscriptBody: 'a,
   index: int,
 }
 
-type base =
-  | Bin
-  | Oct
-  | Hex
-type func =
-  | Acos
-  | Acosh
-  | Asin
-  | Asinh
-  | Atan
-  | Atanh
-  | Deg
-  | Gamma
-  | Grad
-  | Im
-  | Log
-  | Rad
-  | Re
-  /* Superscripts supported */
-  | Cos
-  | Cosec
-  | Cosh
-  | Cot
-  | Sec
-  | Sin
-  | Sinh
-  | Tan
-  | Tanh
-type angle =
-  | Radian
-  | Degree
-  | ArcMinute
-  | ArcSecond
-  | Gradian
-type operator =
-  | Add
-  | Sub
-  | Mul
-  | Div
-  | Dot
-
 type foldState<'a> =
-  | Abs({arg: 'a, superscript: option<superscript<'a>>})
-  | Angle(angle)
-  | Base(base)
-  | CaptureGroupPlaceholder({placeholderMml: string, superscript: option<superscript<'a>>})
-  | Ceil({arg: 'a, superscript: option<superscript<'a>>})
-  | CloseBracket(option<superscript<'a>>)
-  | ConstE(option<superscript<'a>>)
-  | ConstPi(option<superscript<'a>>)
-  | Conj
-  | CustomAtom({mml: string, value: string, superscript: option<superscript<'a>>})
-  | DecimalSeparator
-  | Differential({at: 'a, body: 'a})
-  | Digit({nucleus: string, superscript: option<superscript<'a>>})
-  | Factorial
-  | Floor({arg: 'a, superscript: option<superscript<'a>>})
-  | Frac({num: 'a, den: 'a, superscript: option<superscript<'a>>})
-  | Function({func: func, resultSuperscript: option<superscript<'a>>})
-  | Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | ImaginaryUnit(option<superscript<'a>>)
-  | Integral({from: 'a, to_: 'a, body: 'a})
-  | X(option<superscript<'a>>)
-  | Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Magnitude({value: 'a})
-  | MFrac({integer: 'a, num: 'a, den: 'a, superscript: option<superscript<'a>>})
-  | Min({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Max({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | NCR({n: 'a, r: 'a})
-  | NLog({base: 'a})
-  | NPR({n: 'a, r: 'a})
-  | NRoot({degree: 'a, radicand: 'a, superscript: option<superscript<'a>>})
-  | OpenBracket
-  | Operator(operator)
-  | Percent
-  | Placeholder(option<superscript<'a>>)
-  | Product({from: 'a, to_: 'a})
-  | Rand(option<superscript<'a>>)
-  | RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Rem({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Round({arg: 'a, superscript: option<superscript<'a>>})
-  | Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
-  | Sum({from: 'a, to_: 'a})
-  | Vector({elements: array<'a>, superscript: option<superscript<'a>>})
-  | Table({
+  | Fold_Abs({arg: 'a, superscript: option<superscript<'a>>})
+  | Fold_Angle(angle)
+  | Fold_Base(base)
+  | Fold_CaptureGroupPlaceholder({placeholderMml: string, superscript: option<superscript<'a>>})
+  | Fold_Ceil({arg: 'a, superscript: option<superscript<'a>>})
+  | Fold_CloseBracket(option<superscript<'a>>)
+  | Fold_ConstE(option<superscript<'a>>)
+  | Fold_ConstPi(option<superscript<'a>>)
+  | Fold_Conj
+  | Fold_CustomAtom({mml: string, value: string, superscript: option<superscript<'a>>})
+  | Fold_DecimalSeparator
+  | Fold_Differential({at: 'a, body: 'a})
+  | Fold_Digit({nucleus: string, superscript: option<superscript<'a>>})
+  | Fold_Factorial
+  | Fold_Floor({arg: 'a, superscript: option<superscript<'a>>})
+  | Fold_Frac({num: 'a, den: 'a, superscript: option<superscript<'a>>})
+  | Fold_Function({fn: fn, resultSuperscript: option<superscript<'a>>})
+  | Fold_Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Fold_ImaginaryUnit(option<superscript<'a>>)
+  | Fold_Integral({from: 'a, to_: 'a, body: 'a})
+  | Fold_X(option<superscript<'a>>)
+  | Fold_Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Fold_Magnitude({value: 'a})
+  | Fold_MFrac({integer: 'a, num: 'a, den: 'a, superscript: option<superscript<'a>>})
+  | Fold_Min({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Fold_Max({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Fold_NCR({n: 'a, r: 'a})
+  | Fold_NLog({base: 'a})
+  | Fold_NPR({n: 'a, r: 'a})
+  | Fold_NRoot({degree: 'a, radicand: 'a, superscript: option<superscript<'a>>})
+  | Fold_OpenBracket
+  | Fold_Operator(op)
+  | Fold_Percent
+  | Fold_Placeholder(option<superscript<'a>>)
+  | Fold_Product({from: 'a, to_: 'a})
+  | Fold_Rand(option<superscript<'a>>)
+  | Fold_RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Fold_Rem({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
+  | Fold_Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
+  | Fold_Sum({from: 'a, to_: 'a})
+  | Fold_Vector({elements: array<'a>, superscript: option<superscript<'a>>})
+  | Fold_Table({
       elements: array<'a>,
       numRows: int,
       numColumns: int,
       superscript: option<superscript<'a>>,
     })
-  | UnitConversion({
+  | Fold_UnitConversion({
       fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
       toUnits: array<TechniCalcCalculator.Unit_Types.t>,
     })
-  | Variable({id: string, name: string, superscript: option<superscript<'a>>})
+  | Fold_Variable({id: string, name: string, superscript: option<superscript<'a>>})
 
 type range = (int, int)
 
@@ -146,194 +106,194 @@ let reduceMapU = (
         let i' = i + 2
         let (superscript, i') = readSuperscript(i')
         Node(
-          CaptureGroupPlaceholder({placeholderMml: placeholderMml, superscript: superscript}),
+          Fold_CaptureGroupPlaceholder({placeholderMml: placeholderMml, superscript: superscript}),
           i,
           i',
         )
       | _ => Empty
       }
     | CaptureGroupEndS => Empty
-    | Conj => Node(Conj, i, i + 1)
-    | DecimalSeparator => Node(DecimalSeparator, i, i + 1)
-    | Factorial => Node(Factorial, i, i + 1)
-    | OpenBracket => Node(OpenBracket, i, i + 1)
-    | Percent => Node(Percent, i, i + 1)
-    | Bin => Node(Base(Bin), i, i + 1)
-    | Oct => Node(Base(Oct), i, i + 1)
-    | Hex => Node(Base(Hex), i, i + 1)
-    | Add => Node(Operator(Add), i, i + 1)
-    | Sub => Node(Operator(Sub), i, i + 1)
-    | Mul => Node(Operator(Mul), i, i + 1)
-    | Div => Node(Operator(Div), i, i + 1)
-    | Dot => Node(Operator(Dot), i, i + 1)
-    | Acos => func(i, Acos)
-    | Acosh => func(i, Acosh)
-    | Asin => func(i, Asin)
-    | Asinh => func(i, Asinh)
-    | Atan => func(i, Atan)
-    | Atanh => func(i, Atanh)
-    | DegreeFunction => func(i, Deg)
-    | Gamma => func(i, Gamma)
-    | GradianFunction => func(i, Grad)
-    | Im => func(i, Im)
-    | Log => func(i, Log)
-    | RadianFunction => func(i, Rad)
-    | Re => func(i, Re)
-    | CoshS => funcS(i, Cosh)
-    | CosS => funcS(i, Cos)
-    | SinhS => funcS(i, Sinh)
-    | SinS => funcS(i, Sin)
-    | TanhS => funcS(i, Tanh)
-    | TanS => funcS(i, Tan)
-    | CosecS => funcS(i, Cosec)
-    | SecS => funcS(i, Sec)
-    | CotS => funcS(i, Cot)
-    | RadianUnit => Node(Angle(Radian), i, i + 1)
-    | DegreeUnit => Node(Angle(Degree), i, i + 1)
-    | ArcMinuteUnit => Node(Angle(ArcMinute), i, i + 1)
-    | ArcSecondUnit => Node(Angle(ArcSecond), i, i + 1)
-    | GradianUnit => Node(Angle(Gradian), i, i + 1)
+    | Conj => Node(Fold_Conj, i, i + 1)
+    | DecimalSeparator => Node(Fold_DecimalSeparator, i, i + 1)
+    | Factorial => Node(Fold_Factorial, i, i + 1)
+    | OpenBracket => Node(Fold_OpenBracket, i, i + 1)
+    | Percent => Node(Fold_Percent, i, i + 1)
+    | Bin => Node(Fold_Base(Base_Bin), i, i + 1)
+    | Oct => Node(Fold_Base(Base_Oct), i, i + 1)
+    | Hex => Node(Fold_Base(Base_Hex), i, i + 1)
+    | Add => Node(Fold_Operator(Op_Add), i, i + 1)
+    | Sub => Node(Fold_Operator(Op_Sub), i, i + 1)
+    | Mul => Node(Fold_Operator(Op_Mul), i, i + 1)
+    | Div => Node(Fold_Operator(Op_Div), i, i + 1)
+    | Dot => Node(Fold_Operator(Op_Dot), i, i + 1)
+    | Acos => fn(i, Fn_Acos)
+    | Acosh => fn(i, Fn_Acosh)
+    | Asin => fn(i, Fn_Asin)
+    | Asinh => fn(i, Fn_Asinh)
+    | Atan => fn(i, Fn_Atan)
+    | Atanh => fn(i, Fn_Atanh)
+    | DegreeFunction => fn(i, Fn_Deg)
+    | Gamma => fn(i, Fn_Gamma)
+    | GradianFunction => fn(i, Fn_Grad)
+    | Im => fn(i, Fn_Im)
+    | Log => fn(i, Fn_Log)
+    | RadianFunction => fn(i, Fn_Rad)
+    | Re => fn(i, Fn_Re)
+    | CoshS => fnS(i, Fn_Cosh)
+    | CosS => fnS(i, Fn_Cos)
+    | SinhS => fnS(i, Fn_Sinh)
+    | SinS => fnS(i, Fn_Sin)
+    | TanhS => fnS(i, Fn_Tanh)
+    | TanS => fnS(i, Fn_Tan)
+    | CosecS => fnS(i, Fn_Cosec)
+    | SecS => fnS(i, Fn_Sec)
+    | CotS => fnS(i, Fn_Cot)
+    | RadianUnit => Node(Fold_Angle(Angle_Radian), i, i + 1)
+    | DegreeUnit => Node(Fold_Angle(Angle_Degree), i, i + 1)
+    | ArcMinuteUnit => Node(Fold_Angle(Angle_ArcMinute), i, i + 1)
+    | ArcSecondUnit => Node(Fold_Angle(Angle_ArcSecond), i, i + 1)
+    | GradianUnit => Node(Fold_Angle(Angle_Gradian), i, i + 1)
     | UnitConversion({fromUnits, toUnits}) =>
-      Node(UnitConversion({fromUnits: fromUnits, toUnits: toUnits}), i, i + 1)
+      Node(Fold_UnitConversion({fromUnits: fromUnits, toUnits: toUnits}), i, i + 1)
     | CloseBracketS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(CloseBracket(superscript), i, i')
+      Node(Fold_CloseBracket(superscript), i, i')
     | ConstPiS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(ConstPi(superscript), i, i')
+      Node(Fold_ConstPi(superscript), i, i')
     | ConstES =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(ConstE(superscript), i, i')
+      Node(Fold_ConstE(superscript), i, i')
     | CustomAtomS({mml, value}) =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(CustomAtom({mml: mml, value: value, superscript: superscript}), i, i')
+      Node(Fold_CustomAtom({mml: mml, value: value, superscript: superscript}), i, i')
     | (N0_S | N1_S | N2_S | N3_S | N4_S | N5_S | N6_S | N7_S | N8_S | N9_S) as digit
     | (NA_S | NB_S | NC_S | ND_S | NE_S | NF_S) as digit =>
       let nucleus = digitNucleusExn(digit)
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Digit({nucleus: nucleus, superscript: superscript}), i, i')
+      Node(Fold_Digit({nucleus: nucleus, superscript: superscript}), i, i')
     | ImaginaryUnitS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(ImaginaryUnit(superscript), i, i')
+      Node(Fold_ImaginaryUnit(superscript), i, i')
     | IterationXS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(X(superscript), i, i')
+      Node(Fold_X(superscript), i, i')
     | RandS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Rand(superscript), i, i')
+      Node(Fold_Rand(superscript), i, i')
     | VariableS({id, name}) =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Variable({id: id, name: name, superscript: superscript}), i, i')
+      Node(Fold_Variable({id: id, name: name, superscript: superscript}), i, i')
     | Magnitude1 =>
       let (value, i') = readArg(i + 1)
-      Node(Magnitude({value: value}), i, i')
+      Node(Fold_Magnitude({value: value}), i, i')
     | Superscript1 =>
       let (superscriptBody, i') = readArg(i + 1)
       let superscript = Some({superscriptBody: superscriptBody, index: i + 1})
-      Node(Placeholder(superscript), i, i')
+      Node(Fold_Placeholder(superscript), i, i')
     | NLog1 =>
       let (base, i') = readArg(i + 1)
-      Node(NLog({base: base}), i, i')
+      Node(Fold_NLog({base: base}), i, i')
     | Abs1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Abs({arg: arg, superscript: superscript}), i, i')
+      Node(Fold_Abs({arg: arg, superscript: superscript}), i, i')
     | Ceil1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Ceil({arg: arg, superscript: superscript}), i, i')
+      Node(Fold_Ceil({arg: arg, superscript: superscript}), i, i')
     | Floor1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Floor({arg: arg, superscript: superscript}), i, i')
+      Node(Fold_Floor({arg: arg, superscript: superscript}), i, i')
     | Round1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Round({arg: arg, superscript: superscript}), i, i')
+      Node(Fold_Round({arg: arg, superscript: superscript}), i, i')
     | Sqrt1S =>
       let (radicand, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Sqrt({radicand: radicand, superscript: superscript}), i, i')
+      Node(Fold_Sqrt({radicand: radicand, superscript: superscript}), i, i')
     | Differential2 =>
       let (body, i') = readArg(i + 1)
       let (at, i') = readArg(i')
-      Node(Differential({at: at, body: body}), i, i')
+      Node(Fold_Differential({at: at, body: body}), i, i')
     | NCR2 =>
       let (n, i') = readArg(i + 1)
       let (r, i') = readArg(i')
-      Node(NCR({n: n, r: r}), i, i')
+      Node(Fold_NCR({n: n, r: r}), i, i')
     | NPR2 =>
       let (n, i') = readArg(i + 1)
       let (r, i') = readArg(i')
-      Node(NPR({n: n, r: r}), i, i')
+      Node(Fold_NPR({n: n, r: r}), i, i')
     | Product2 =>
       let (from, i') = readArg(i + 1)
       let (to_, i') = readArg(i')
-      Node(Product({from: from, to_: to_}), i, i')
+      Node(Fold_Product({from: from, to_: to_}), i, i')
     | Sum2 =>
       let (from, i') = readArg(i + 1)
       let (to_, i') = readArg(i')
-      Node(Sum({from: from, to_: to_}), i, i')
+      Node(Fold_Sum({from: from, to_: to_}), i, i')
     | Frac2S =>
       let (num, i') = readArg(i + 1)
       let (den, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Frac({num: num, den: den, superscript: superscript}), i, i')
+      Node(Fold_Frac({num: num, den: den, superscript: superscript}), i, i')
     | MFrac3S =>
       let (integer, i') = readArg(i + 1)
       let (num, i') = readArg(i')
       let (den, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(MFrac({integer: integer, num: num, den: den, superscript: superscript}), i, i')
+      Node(Fold_MFrac({integer: integer, num: num, den: den, superscript: superscript}), i, i')
     | Min2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Min({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Min({a: a, b: b, superscript: superscript}), i, i')
     | Max2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Max({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Max({a: a, b: b, superscript: superscript}), i, i')
     | GCD2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Gcd({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Gcd({a: a, b: b, superscript: superscript}), i, i')
     | LCM2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Lcm({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Lcm({a: a, b: b, superscript: superscript}), i, i')
     | NRoot2S =>
       let (degree, i') = readArg(i + 1)
       let (radicand, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(NRoot({degree: degree, radicand: radicand, superscript: superscript}), i, i')
+      Node(Fold_NRoot({degree: degree, radicand: radicand, superscript: superscript}), i, i')
     | RandInt2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(RandInt({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_RandInt({a: a, b: b, superscript: superscript}), i, i')
     | Rem2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Rem({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Rem({a: a, b: b, superscript: superscript}), i, i')
     | Integral3 =>
       let (from, i') = readArg(i + 1)
       let (to_, i') = readArg(i')
       let (body, i') = readArg(i')
-      Node(Integral({from: from, to_: to_, body: body}), i, i')
+      Node(Fold_Integral({from: from, to_: to_, body: body}), i, i')
     | Vector2S => vectorS(i, ~numElements=2)
     | Vector3S => vectorS(i, ~numElements=3)
     | Matrix4S => tableS(i, ~numRows=2, ~numColumns=2)
@@ -369,14 +329,14 @@ let reduceMapU = (
 
     iter(argEndIndex)
   }
-  and func = (i, func) => {
+  and fn = (i, fn) => {
     let i' = i + 1
-    Node(Function({func: func, resultSuperscript: None}), i, i')
+    Node(Fold_Function({fn: fn, resultSuperscript: None}), i, i')
   }
-  and funcS = (i, func) => {
+  and fnS = (i, fn) => {
     let i' = i + 1
     let (resultSuperscript, i') = readSuperscript(i')
-    Node(Function({func: func, resultSuperscript: resultSuperscript}), i, i')
+    Node(Fold_Function({fn: fn, resultSuperscript: resultSuperscript}), i, i')
   }
   and vectorS = (i, ~numElements) => {
     let i' = i + 1
@@ -385,7 +345,7 @@ let reduceMapU = (
       (index, element)
     })
     let (superscript, i') = readSuperscript(i')
-    Node(Vector({elements: elements, superscript: superscript}), i, i')
+    Node(Fold_Vector({elements: elements, superscript: superscript}), i, i')
   }
   and tableS = (i, ~numRows, ~numColumns) => {
     let i' = i + 1
@@ -395,7 +355,7 @@ let reduceMapU = (
     })
     let (superscript, i') = readSuperscript(i')
     Node(
-      Table({
+      Fold_Table({
         elements: elements,
         numRows: numRows,
         numColumns: numColumns,

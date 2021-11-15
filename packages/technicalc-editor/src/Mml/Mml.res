@@ -10,7 +10,7 @@ let map = (. accum, range) => Mml_Accum.toString(accum, range)
   let implicitMultiplication = createElement(
     ~attributes=Placeholder.attributes,
     "mo",
-    stringOfOperator(Dot),
+    stringOfOperator(Op_Dot),
   )
 )
 
@@ -60,7 +60,7 @@ let map = (. accum, range) => Mml_Accum.toString(accum, range)
 )
 
 %%private(
-  let func2 = (name, a, b, superscript, range) =>
+  let fn2 = (name, a, b, superscript, range) =>
     createElementWithRange(
       ~superscript?,
       range,
@@ -101,46 +101,47 @@ let map = (. accum, range) => Mml_Accum.toString(accum, range)
 
 let reduce = (. accum, stateElement: foldState<string>, range) =>
   switch stateElement {
-  | OpenBracket => Mml_Accum.appendOpenBracket(accum, range)
-  | CloseBracket(superscript) => Mml_Accum.appendCloseBracket(accum, range, superscript)
-  | Digit({nucleus, superscript}) =>
+  | Fold_OpenBracket => Mml_Accum.appendOpenBracket(accum, range)
+  | Fold_CloseBracket(superscript) => Mml_Accum.appendCloseBracket(accum, range, superscript)
+  | Fold_Digit({nucleus, superscript}) =>
     createElementWithRange(~superscript?, range, "mn", nucleus)->Mml_Accum.appendDigit(accum, _)
-  | DecimalSeparator => Mml_Accum.appendDecimalSeparator(accum, range)
-  | Base(base) =>
+  | Fold_DecimalSeparator => Mml_Accum.appendDecimalSeparator(accum, range)
+  | Fold_Base(base) =>
     createElementWithRange(range, "mn", Mml_Util.stringOfBase(base))->Mml_Accum.appendBasePrefix(
       accum,
       _,
     )
 
-  | Percent => createElementWithRange(range, "mn", "%")->Mml_Accum.append(accum, _)
-  | Angle(Degree) => createElementWithRange(range, "mo", "&#x00B0;")->Mml_Accum.append(accum, _)
-  | Angle(angle) =>
+  | Fold_Percent => createElementWithRange(range, "mn", "%")->Mml_Accum.append(accum, _)
+  | Fold_Angle(Angle_Degree) =>
+    createElementWithRange(range, "mo", "&#x00B0;")->Mml_Accum.append(accum, _)
+  | Fold_Angle(angle) =>
     let superscript = switch angle {
-    | Radian => createElement(~attributes=list{("mathvariant", "normal")}, "mi", "r")
-    | ArcMinute => createElement("mo", "&#x2032;")
-    | ArcSecond => createElement("mo", "&#x2033;")
-    | Gradian => createElement(~attributes=list{("mathvariant", "normal")}, "mi", "g")
-    | Degree => assert false
+    | Angle_Radian => createElement(~attributes=list{("mathvariant", "normal")}, "mi", "r")
+    | Angle_ArcMinute => createElement("mo", "&#x2032;")
+    | Angle_ArcSecond => createElement("mo", "&#x2033;")
+    | Angle_Gradian => createElement(~attributes=list{("mathvariant", "normal")}, "mi", "g")
+    | Angle_Degree => assert false
     }
     createElementWithRange(range, "msup", "<mo />" ++ superscript)->Mml_Accum.append(accum, _)
-  | ImaginaryUnit(superscript) =>
+  | Fold_ImaginaryUnit(superscript) =>
     createElementWithRange(~superscript?, range, "mi", "i")->Mml_Accum.append(accum, _)
-  | Conj => createElementWithRange(range, "mo", "&#x2a;")->Mml_Accum.append(accum, _)
-  | Magnitude({value}) =>
-    let body = createElement("mo", Mml_Util.stringOfOperator(Mul)) ++ createElement("mn", "10")
+  | Fold_Conj => createElementWithRange(range, "mo", "&#x2a;")->Mml_Accum.append(accum, _)
+  | Fold_Magnitude({value}) =>
+    let body = createElement("mo", Mml_Util.stringOfOperator(Op_Mul)) ++ createElement("mn", "10")
     let body = createElement("mrow", body)
     createElementWithRange(range, "msup", body ++ value)->Mml_Accum.append(accum, _)
-  | Variable({name, superscript}) =>
+  | Fold_Variable({name, superscript}) =>
     createElementWithRange(~superscript?, range, "mi", name)->Mml_Accum.append(accum, _)
-  | X(superscript) =>
+  | Fold_X(superscript) =>
     createElementWithRange(~superscript?, range, "mi", "x")->Mml_Accum.append(accum, _)
-  | ConstPi(superscript) =>
+  | Fold_ConstPi(superscript) =>
     createElementWithRange(~superscript?, range, "mi", "&#x03C0;")->Mml_Accum.append(accum, _)
-  | ConstE(superscript) =>
+  | Fold_ConstE(superscript) =>
     createElementWithRange(~superscript?, range, "mi", "e")->Mml_Accum.append(accum, _)
-  | CustomAtom({mml, superscript}) =>
+  | Fold_CustomAtom({mml, superscript}) =>
     createElementWithRange(~superscript?, range, "mrow", mml)->Mml_Accum.append(accum, _)
-  | CaptureGroupPlaceholder({placeholderMml: mml, superscript}) =>
+  | Fold_CaptureGroupPlaceholder({placeholderMml: mml, superscript}) =>
     let attributes = Placeholder.attributes
     let phantomId = Belt.Int.toString(fst(range) + 1) ++ ":"
     let body = createElement(~attributes=list{("id", phantomId)}, "mphantom", "") ++ mml
@@ -148,27 +149,27 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
       accum,
       _,
     )
-  | Placeholder(superscript) =>
+  | Fold_Placeholder(superscript) =>
     open Placeholder
     createElementWithRange(~attributes, ~superscript?, range, element, body)->Mml_Accum.append(
       accum,
       _,
     )
-  | Function({func, resultSuperscript: superscript}) =>
-    let attributes = func == AST.Gamma ? list{("mathvariant", "normal")} : list{}
-    Mml_Util.stringOfFunction(func)
+  | Fold_Function({fn, resultSuperscript: superscript}) =>
+    let attributes = fn == Fn_Gamma ? list{("mathvariant", "normal")} : list{}
+    Mml_Util.stringOfFunction(fn)
     ->createElementWithRange(~superscript?, ~attributes, range, "mi", _)
     ->Mml_Accum.appendOperatorOrFunction(accum, _)
-  | Factorial => createElementWithRange(range, "mo", "!")->Mml_Accum.append(accum, _)
-  | Operator(op) =>
+  | Fold_Factorial => createElementWithRange(range, "mo", "!")->Mml_Accum.append(accum, _)
+  | Fold_Operator(op) =>
     createElementWithRange(
       range,
       "mo",
       Mml_Util.stringOfOperator(op),
     )->Mml_Accum.appendOperatorOrFunction(accum, _)
-  | Frac({num, den, superscript}) =>
+  | Fold_Frac({num, den, superscript}) =>
     appendElementWithImplicitMultiplication(~superscript, accum, range, "mfrac", num ++ den)
-  | MFrac({integer, num, den, superscript}) =>
+  | Fold_MFrac({integer, num, den, superscript}) =>
     appendElementWithImplicitMultiplication(
       ~superscript,
       accum,
@@ -176,40 +177,45 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
       "mrow",
       integer ++ createElement("mfrac", num ++ den),
     )
-  | Sqrt({radicand, superscript}) =>
+  | Fold_Sqrt({radicand, superscript}) =>
     createElementWithRange(~superscript?, range, "msqrt", radicand)->Mml_Accum.append(accum, _)
-  | NRoot({degree, radicand, superscript}) =>
+  | Fold_NRoot({degree, radicand, superscript}) =>
     createElementWithRange(~superscript?, range, "mroot", radicand ++ degree)->Mml_Accum.append(
       accum,
       _,
     )
 
-  | NLog({base}) =>
+  | Fold_NLog({base}) =>
     let body = createElement("mi", "log") ++ base
     createElementWithRange(range, "msub", body)->Mml_Accum.append(accum, _)
-  | Abs({arg, superscript}) =>
+  | Fold_Abs({arg, superscript}) =>
     bracketGroup("|", "|", arg, superscript, range)->Mml_Accum.append(accum, _)
-  | Floor({arg, superscript}) =>
+  | Fold_Floor({arg, superscript}) =>
     bracketGroup("&#x230A;", "&#x230B;", arg, superscript, range)->Mml_Accum.append(accum, _)
-  | Ceil({arg, superscript}) =>
+  | Fold_Ceil({arg, superscript}) =>
     bracketGroup("&#x2308;", "&#x2309;", arg, superscript, range)->Mml_Accum.append(accum, _)
-  | Round({arg, superscript}) =>
+  | Fold_Round({arg, superscript}) =>
     bracketGroup("&#x230A;", "&#x2309;", arg, superscript, range)->Mml_Accum.append(accum, _)
-  | Rand(superscript) =>
+  | Fold_Rand(superscript) =>
     createElementWithRange(~superscript?, range, "mi", "rand")->Mml_Accum.append(accum, _)
-  | RandInt({a, b, superscript}) =>
+  | Fold_RandInt({a, b, superscript}) =>
     let body =
       createElement("mi", "rand#") ++ createElement("mrow", a ++ createElement("mo", ",") ++ b)
     let body = createElement("msub", body)
     createElementWithRange(~superscript?, range, "mrow", body)->Mml_Accum.append(accum, _)
-  | Rem({a, b, superscript}) => func2("mod", a, b, superscript, range)->Mml_Accum.append(accum, _)
-  | Min({a, b, superscript}) => func2("min", a, b, superscript, range)->Mml_Accum.append(accum, _)
-  | Max({a, b, superscript}) => func2("max", a, b, superscript, range)->Mml_Accum.append(accum, _)
-  | Gcd({a, b, superscript}) => func2("gcd", a, b, superscript, range)->Mml_Accum.append(accum, _)
-  | Lcm({a, b, superscript}) => func2("lcm", a, b, superscript, range)->Mml_Accum.append(accum, _)
-  | NPR({n, r}) => nprNcr("P", n, r, range)->Mml_Accum.append(accum, _)
-  | NCR({n, r}) => nprNcr("C", n, r, range)->Mml_Accum.append(accum, _)
-  | Differential({at, body}) =>
+  | Fold_Rem({a, b, superscript}) =>
+    fn2("mod", a, b, superscript, range)->Mml_Accum.append(accum, _)
+  | Fold_Min({a, b, superscript}) =>
+    fn2("min", a, b, superscript, range)->Mml_Accum.append(accum, _)
+  | Fold_Max({a, b, superscript}) =>
+    fn2("max", a, b, superscript, range)->Mml_Accum.append(accum, _)
+  | Fold_Gcd({a, b, superscript}) =>
+    fn2("gcd", a, b, superscript, range)->Mml_Accum.append(accum, _)
+  | Fold_Lcm({a, b, superscript}) =>
+    fn2("lcm", a, b, superscript, range)->Mml_Accum.append(accum, _)
+  | Fold_NPR({n, r}) => nprNcr("P", n, r, range)->Mml_Accum.append(accum, _)
+  | Fold_NCR({n, r}) => nprNcr("C", n, r, range)->Mml_Accum.append(accum, _)
+  | Fold_Differential({at, body}) =>
     let pre = createElement(
       "mfrac",
       createElement(~attributes=list{("mathvariant", "normal")}, "mi", "d") ++
@@ -221,18 +227,19 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
       createElement("mo", "|") ++ xSetRow(at),
     )
     createElementWithRange(range, "mrow", pre ++ body ++ post)->Mml_Accum.append(accum, _)
-  | Integral({from, to_, body}) =>
+  | Fold_Integral({from, to_, body}) =>
     let pre = createElement("msubsup", createElement("mo", "&#x222B;") ++ from ++ to_)
     let post = createElement("mi", "dx")
     createElementWithRange(range, "mrow", pre ++ body ++ post)->Mml_Accum.append(accum, _)
-  | Sum({from, to_}) => sumProduct("&#x2211;", from, to_, range)->Mml_Accum.append(accum, _)
-  | Product({from, to_}) => sumProduct("&#x220F;", from, to_, range)->Mml_Accum.append(accum, _)
-  | Vector({elements, superscript}) =>
+  | Fold_Sum({from, to_}) => sumProduct("&#x2211;", from, to_, range)->Mml_Accum.append(accum, _)
+  | Fold_Product({from, to_}) =>
+    sumProduct("&#x220F;", from, to_, range)->Mml_Accum.append(accum, _)
+  | Fold_Vector({elements, superscript}) =>
     let numRows = Belt.Array.length(elements)
     table(~numRows, ~numColumns=1, elements, superscript, range)->Mml_Accum.append(accum, _)
-  | Table({elements, superscript, numRows, numColumns}) =>
+  | Fold_Table({elements, superscript, numRows, numColumns}) =>
     table(~numRows, ~numColumns, elements, superscript, range)->Mml_Accum.append(accum, _)
-  | UnitConversion({fromUnits, toUnits}) =>
+  | Fold_UnitConversion({fromUnits, toUnits}) =>
     let body = `${Mml_Units.toMml(fromUnits)}<mo>&RightArrow;</mo>${Mml_Units.toMml(toUnits)}`
     createElementWithRange(range, "mrow", body)->Mml_Accum.append(accum, _)
   }
