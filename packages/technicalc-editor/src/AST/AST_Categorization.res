@@ -40,6 +40,7 @@ type op =
   | Op_Mul
   | Op_Div
   | Op_Dot
+  | Op_Rem
 
 let elementToOp = (element: t): option<op> =>
   switch element {
@@ -48,6 +49,7 @@ let elementToOp = (element: t): option<op> =>
   | Mul => Some(Op_Mul)
   | Div => Some(Op_Div)
   | Dot => Some(Op_Dot)
+  | Rem => Some(Op_Rem)
   | _ => None
   }
 
@@ -58,6 +60,7 @@ let opToElement = (element: op): t =>
   | Op_Mul => Mul
   | Op_Div => Div
   | Op_Dot => Dot
+  | Op_Rem => Rem
   }
 
 let elementToFn = (element: t): option<fn> =>

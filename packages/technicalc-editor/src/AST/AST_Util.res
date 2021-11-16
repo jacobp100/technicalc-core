@@ -1,4 +1,8 @@
-let advanceIndex = (~direction=EditState_Util.Forwards, x, startIndex) => {
+open AST_Types
+
+type direction = Forwards | Backwards
+
+let advanceIndex = (~direction=Forwards, x, startIndex) => {
   let step = direction == Forwards ? 1 : -1
   let argLevelStep = step
 
@@ -8,8 +12,8 @@ let advanceIndex = (~direction=EditState_Util.Forwards, x, startIndex) => {
     | Some(v) =>
       let index = index + step
       let argLevel = switch v {
-      | AST.Arg => argLevel - argLevelStep
-      | _ => argLevel + argLevelStep * AST.argCountExn(v)
+      | Arg => argLevel - argLevelStep
+      | _ => argLevel + argLevelStep * argCountExn(v)
       }
 
       if argLevel == 0 {
@@ -24,7 +28,7 @@ let advanceIndex = (~direction=EditState_Util.Forwards, x, startIndex) => {
   iter(~argLevel=0, startIndex)
 }
 
-let bracketLevel = (~direction=EditState_Util.Forwards, ~from=0, x: array<AST.t>) => {
+let bracketLevel = (~direction=Forwards, ~from=0, x: array<t>) => {
   let rec iter = (~bracketLevel, index) =>
     switch Belt.Array.get(x, index) {
     | None => bracketLevel

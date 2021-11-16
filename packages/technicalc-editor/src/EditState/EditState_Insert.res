@@ -1,6 +1,5 @@
 open EditState_Types
 open EditState_Base
-open EditState_ASTUtil
 
 /*
  It's verbose,
@@ -33,6 +32,7 @@ type skipMode =
     | Mul
     | RadianFunction
     | Re
+    | Rem
     | Sub
     | CosecS
     | CoshS
@@ -108,14 +108,13 @@ type skipMode =
     | Max2S
     | Min2S
     | NRoot2S
-    | RandInt2S
-    | Rem2S =>
+    | RandInt2S =>
       Movable
     }
 )
 
 %%private(
-  let advancePastMovableElements = (~direction, x: array<AST.t>, index) => {
+  let advancePastMovableElements = (~direction: AST.direction, x: array<AST.t>, index) => {
     let rec iter = (~bracketLevel, index) =>
       switch Belt.Array.get(x, index) {
       | None if bracketLevel == 0 => Some(index)
@@ -128,10 +127,10 @@ type skipMode =
         | _ => bracketLevel
         }
         let shouldBreak = switch direction {
-        | EditState_Util.Forwards => bracketLevel < 0
+        | Forwards => bracketLevel < 0
         | Backwards => bracketLevel > 0
         }
-        let nextIndex = shouldBreak ? None : advanceIndex(~direction, x, index)
+        let nextIndex = shouldBreak ? None : AST.advanceIndex(~direction, x, index)
         switch nextIndex {
         | Some((_, element)) if skipMode(element) == FunctionFixed => Some(index)
         | None => Some(index)
@@ -185,7 +184,7 @@ type skipMode =
       let nextIndex = s > 0 ? index + 2 : index + 1
       (elements, nextIndex)
     | OpenBracket =>
-      let shouldAppendCloseBracket = bracketLevel(elements, ~from=index) >= 0
+      let shouldAppendCloseBracket = AST.bracketLevel(elements, ~from=index) >= 0
       let combined = shouldAppendCloseBracket ? [element, CloseBracketS] : [element]
       let elements = ArrayUtil.insertArray(elements, combined, index)
       (elements, index + 1)

@@ -13,6 +13,7 @@ let stringOfOperator = x =>
   | Op_Mul => "&#x00D7;"
   | Op_Div => "&#x00F7;"
   | Op_Dot => "&#xb7;"
+  | Op_Rem => "mod"
   }
 
 let stringOfFunction = x =>

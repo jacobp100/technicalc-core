@@ -35,6 +35,7 @@ type t =
   | RadianFunction
   | RadianUnit
   | Re
+  | Rem
   | Sub
   | UnitConversion({
       fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
@@ -98,7 +99,6 @@ type t =
   | Min2S
   | NRoot2S
   | RandInt2S
-  | Rem2S
   | Vector2S
   /* Atom3 */
   | Integral3
@@ -155,6 +155,7 @@ let argCountExn = (arg: t) =>
   | RadianFunction
   | RadianUnit
   | Re
+  | Rem
   | Sub
   | UnitConversion(_)
   | CloseBracketS
@@ -212,7 +213,6 @@ let argCountExn = (arg: t) =>
   | Min2S
   | NRoot2S
   | RandInt2S
-  | Rem2S
   | Vector2S => 2
   /* Atom3 */
   | Integral3

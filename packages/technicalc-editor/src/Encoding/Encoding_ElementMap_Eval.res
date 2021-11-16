@@ -98,7 +98,7 @@
     | RadianUnit => 88
     | IterationXS => 89
     /* 5th set elements */
-    | Rem2S => makeSureThisIsTheLastIndex
+    | Rem => makeSureThisIsTheLastIndex
     /* Custom handling */
     | UnitConversion(_)
     | CustomAtomS(_)

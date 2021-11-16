@@ -1,28 +1,6 @@
-module AST = {
-  let ofInt = x => AST_Types.OfInt(x)
-  let add = (x, y) => AST_Types.Add(x, y)
-  let sub = (x, y) => AST_Types.Sub(x, y)
-  let mul = (x, y) => AST_Types.Mul(x, y)
-  let div = (x, y) => AST_Types.Div(x, y)
-  let pow = (x, y) => AST_Types.Pow(x, y)
-  let sin = x => AST_Types.Sin(x)
-  let variable = x => AST_Types.Variable(x)
-}
-
 let matrixOfFloats = (numRows, numColumns, elements) =>
   Belt.Array.map(elements, Scalar.ofFloat)->Matrix.make(~numRows, ~numColumns, _)->Value.ofMatrix
 let percentOfFloat = float => Scalar.ofFloat(float)->Value.ofPercent
-
-let resolve = a => AST_Evaluation.eval(a)
-let resolveWithContext = (jsContext, a) => {
-  let context = Js.Dict.entries(jsContext)->Belt.Array.reduceU(AST_Context.empty, (.
-    accum,
-    (key, value),
-  ) => {
-    AST_Context.set(accum, key, value)
-  })
-  AST_Evaluation.eval(~context, a)
-}
 
 @deriving(abstract)
 type format = {
@@ -119,19 +97,3 @@ let toComplexFloats = (a): (float, float) =>
 
 let toFloatsMatrix = mapMatrixU(_, (. x) => Scalar.toFloat(x))
 let toComplexFloatsMatrix = mapMatrixU(_, (. x) => toComplexFloats(x))
-
-let testPrefixes = Js.Dict.empty()
-Js.Dict.set(testPrefixes, "unit", Unit_Types.Unit)
-Js.Dict.set(testPrefixes, "milli", Unit_Types.Milli)
-Js.Dict.set(testPrefixes, "kilo", Unit_Types.Kilo)
-
-let testUnits = Js.Dict.empty()
-Js.Dict.set(testUnits, "second", Unit_Types.Second)
-Js.Dict.set(testUnits, "hour", Unit_Types.Hour)
-Js.Dict.set(testUnits, "meter", Unit_Types.Meter)
-Js.Dict.set(testUnits, "foot", Unit_Types.Foot)
-Js.Dict.set(testUnits, "inch", Unit_Types.Inch)
-Js.Dict.set(testUnits, "acre", Unit_Types.Acre)
-Js.Dict.set(testUnits, "liter", Unit_Types.Liter)
-Js.Dict.set(testUnits, "celsius", Unit_Types.Celsius)
-Js.Dict.set(testUnits, "fahrenheit", Unit_Types.Fahrenheit)

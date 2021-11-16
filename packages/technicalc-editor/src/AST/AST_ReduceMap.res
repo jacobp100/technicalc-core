@@ -44,7 +44,6 @@ type foldState<'a> =
   | Fold_Product({from: 'a, to_: 'a})
   | Fold_Rand(option<superscript<'a>>)
   | Fold_RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Fold_Rem({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
   | Fold_Sum({from: 'a, to_: 'a})
@@ -126,6 +125,7 @@ let reduceMapU = (
     | Mul => Node(Fold_Operator(Op_Mul), i, i + 1)
     | Div => Node(Fold_Operator(Op_Div), i, i + 1)
     | Dot => Node(Fold_Operator(Op_Dot), i, i + 1)
+    | Rem => Node(Fold_Operator(Op_Rem), i, i + 1)
     | Acos => fn(i, Fn_Acos)
     | Acosh => fn(i, Fn_Acosh)
     | Asin => fn(i, Fn_Asin)
@@ -284,11 +284,6 @@ let reduceMapU = (
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_RandInt({a: a, b: b, superscript: superscript}), i, i')
-    | Rem2S =>
-      let (a, i') = readArg(i + 1)
-      let (b, i') = readArg(i')
-      let (superscript, i') = readSuperscript(i')
-      Node(Fold_Rem({a: a, b: b, superscript: superscript}), i, i')
     | Integral3 =>
       let (from, i') = readArg(i + 1)
       let (to_, i') = readArg(i')

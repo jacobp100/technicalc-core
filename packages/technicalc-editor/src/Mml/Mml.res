@@ -203,8 +203,6 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
       createElement("mi", "rand#") ++ createElement("mrow", a ++ createElement("mo", ",") ++ b)
     let body = createElement("msub", body)
     createElementWithRange(~superscript?, range, "mrow", body)->Mml_Accum.append(accum, _)
-  | Fold_Rem({a, b, superscript}) =>
-    fn2("mod", a, b, superscript, range)->Mml_Accum.append(accum, _)
   | Fold_Min({a, b, superscript}) =>
     fn2("min", a, b, superscript, range)->Mml_Accum.append(accum, _)
   | Fold_Max({a, b, superscript}) =>

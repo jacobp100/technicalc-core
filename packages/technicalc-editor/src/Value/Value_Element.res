@@ -28,7 +28,6 @@ let map = (element: foldState<'a>, i, i') =>
   | Fold_ImaginaryUnit(superscript) => withSuperscript(I, superscript)->Resolved
   | Fold_Rand(superscript) => withSuperscript(Rand, superscript)->Resolved
   | Fold_RandInt({a, b, superscript}) => withSuperscript(RandInt(a, b), superscript)->Resolved
-  | Fold_Rem({a, b, superscript}) => withSuperscript(Rem(a, b), superscript)->Resolved
   | Fold_NPR({n, r}) => NPR(n, r)->Resolved
   | Fold_NCR({n, r}) => NCR(n, r)->Resolved
   | Fold_Differential({at, body}) => Differential({at: at, body: body})->Resolved

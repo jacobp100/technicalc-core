@@ -172,6 +172,7 @@ module RPN = {
 
   let elements = RPN.elements
   let depth = RPN.depth
+  let stack = RPN.stack
 
   let submit = (rpn, editState) => RPN.submit(rpn, editState)->toJsResult
   let insert = (rpn, editState, key) =>

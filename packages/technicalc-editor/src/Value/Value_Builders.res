@@ -52,4 +52,5 @@ let handleOp = (op, a, b) =>
   | Op_Mul => Mul(a, b)
   | Op_Div => Div(a, b)
   | Op_Dot => Dot(a, b)
+  | Op_Rem => Rem(a, b)
   }

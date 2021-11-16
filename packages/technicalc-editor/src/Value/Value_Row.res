@@ -186,7 +186,8 @@ let parse = {
     iter(~unaryPosition=true, None, 0)
   }
 
-  let mulDivOperatorHandled = (. op) => op == AST.Op_Mul || op == Op_Div || op == Op_Dot
+  let mulDivOperatorHandled = (. op) =>
+    op == AST.Op_Mul || op == Op_Div || op == Op_Dot || op == Op_Rem
   let parseMulDiv = elements =>
     binaryOperatorParserU(
       ~operatorHandled=mulDivOperatorHandled,

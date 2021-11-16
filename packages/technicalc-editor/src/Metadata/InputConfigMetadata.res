@@ -21,6 +21,7 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | OpenBracket
   | Percent
   | Re
+  | Rem
   | Sub
   | UnitConversion(_)
   | CloseBracketS
@@ -66,7 +67,6 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | Min2S
   | NRoot2S
   | RandInt2S
-  | Rem2S
   | Vector2S
   | Integral3
   | MFrac3S

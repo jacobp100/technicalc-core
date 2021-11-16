@@ -32,8 +32,108 @@ type stackOperation =
 )
 
 %%private(
+  let gatherFunctionArguments = (elements: array<AST.t>, ~count) => {
+    let rec iter = (~argsRev, ~remaining, ~functionStartIndex, index) =>
+      switch Belt.Array.get(elements, index) {
+      | Some(Arg) =>
+        let functionEndIndex = index
+        let args = Belt.Array.slice(
+          elements,
+          ~offset=functionStartIndex,
+          ~len=functionEndIndex - functionStartIndex,
+        )
+        iter(
+          ~argsRev=list{args, ...argsRev},
+          ~remaining=remaining - 1,
+          ~functionStartIndex=index + 1,
+          index + 1,
+        )
+      | Some(_) =>
+        switch AST.advanceIndex(elements, index, ~direction=Forwards) {
+        | Some((index, _)) => iter(~argsRev, ~remaining, ~functionStartIndex, index)
+        | None => None
+        }
+      | None => remaining == 0 ? Some(argsRev) : None
+      }
+
+    iter(~argsRev=list{}, ~remaining=count, ~functionStartIndex=1, 1)
+  }
+)
+
+%%private(
+  let handleArgs = (stackRev: list<array<AST.t>>, elements: array<AST.t>) => {
+    let element = Belt.Array.getExn(elements, 0)
+    let count = AST.argCountExn(element)
+
+    switch gatherFunctionArguments(elements, ~count) {
+    | Some(argsRev) =>
+      let rec iterRev = (
+        ~elementsOut: array<AST.t>,
+        ~stackRev: list<array<AST.t>>,
+        ~argsRev: list<array<AST.t>>,
+      ) => {
+        switch argsRev {
+        | list{[], ...argsRev} =>
+          switch stackRev {
+          | list{arg, ...stackRev} =>
+            let elementsOut = Belt.Array.concatMany([arg, [Arg], elementsOut])
+            iterRev(~elementsOut, ~stackRev, ~argsRev)
+          | list{} => None
+          }
+        | list{arg, ...argsRev} =>
+          let elementsOut = Belt.Array.concatMany([arg, [Arg], elementsOut])
+          iterRev(~elementsOut, ~stackRev, ~argsRev)
+        | list{} =>
+          let elements = Belt.Array.concat([element], elementsOut)
+          let stackRev = list{elements, ...stackRev}
+          Some(stackRev)
+        }
+      }
+
+      iterRev(~elementsOut=[], ~stackRev, ~argsRev)
+    | None => None
+    }
+  }
+)
+
+%%private(
   let addBrackets = (elements: array<AST.t>): array<AST.t> =>
     Belt.Array.concatMany([[AST_Types.OpenBracket], elements, [CloseBracketS]])
+)
+
+%%private(
+  let operatorPrecedence = (op: AST.op) =>
+    switch op {
+    | Op_Add | Op_Sub => 1
+    | Op_Mul | Op_Div | Op_Dot | Op_Rem => 0
+    }
+)
+
+%%private(
+  let highestOperatorPrecedence = (elements: array<AST.t>) => {
+    let rec iter = (~maxPrecedence, ~bracketLevel, index) => {
+      let element = Belt.Array.get(elements, index)
+      let bracketLevel = switch element {
+      | Some(OpenBracket) => bracketLevel + 1
+      | Some(CloseBracketS) => bracketLevel - 1
+      | _ => bracketLevel
+      }
+      let op = switch element {
+      | Some(element) if bracketLevel == 0 => AST.elementToOp(element)
+      | _ => None
+      }
+      let maxPrecedence = switch (maxPrecedence, op) {
+      | (None, Some(op)) => Some(operatorPrecedence(op))
+      | (Some(maxPrecedence), Some(op)) => max(operatorPrecedence(op), maxPrecedence)->Some
+      | (maxPrecedence, None) => maxPrecedence
+      }
+      switch AST.advanceIndex(elements, index) {
+      | Some((index, _)) => iter(~maxPrecedence, ~bracketLevel, index)
+      | None => maxPrecedence
+      }
+    }
+    iter(~maxPrecedence=None, ~bracketLevel=0, 0)
+  }
 )
 
 %%private(
@@ -49,47 +149,41 @@ type stackOperation =
       let elements = Belt.Array.concat(addBrackets(arg), [Factorial])
       Some(list{elements, ...stackRev})
     | (list{rhs, lhs, ...stackRev}, Operator(op)) =>
-      let elements = Belt.Array.concatMany([
-        addBrackets(lhs),
-        [AST.opToElement(op)],
-        addBrackets(rhs),
-      ])
+      let precedence = operatorPrecedence(op)
+      let rhs = switch highestOperatorPrecedence(rhs) {
+      | Some(rhsPrecedence) if rhsPrecedence > precedence => addBrackets(rhs)
+      | _ => rhs
+      }
+      let lhs = switch highestOperatorPrecedence(lhs) {
+      | Some(lhsPrecedence) if lhsPrecedence > precedence => addBrackets(lhs)
+      | _ => lhs
+      }
+
+      let elements = Belt.Array.concatMany([lhs, [AST.opToElement(op)], rhs])
       Some(list{elements, ...stackRev})
     | (list{arg, ...stackRev}, Function(fn)) =>
       let elements = Belt.Array.concatMany([[AST.fnToElement(fn)], addBrackets(arg)])
       Some(list{elements, ...stackRev})
     | (stackRev, Element(element)) =>
-      let rec iter = (~elements: array<AST.t>, ~stackRev, ~remaining) =>
-        if remaining <= 0 {
-          let elements = Belt.Array.concat([element], elements)
-          Some(list{elements, ...stackRev})
-        } else {
-          switch stackRev {
-          | list{} => None
-          | list{arg, ...stackRev} =>
-            iter(
-              ~elements=Belt.Array.concatMany([arg, [Arg], elements]),
-              ~stackRev,
-              ~remaining=remaining - 1,
-            )
-          }
-        }
-      iter(~elements=[], ~stackRev, ~remaining=AST.argCountExn(element))
+      let elements = Belt.Array.concat(
+        [element],
+        Belt.Array.make(AST.argCountExn(element), AST.Arg),
+      )
+      handleArgs(stackRev, elements)
     | _ => None
     }
 )
 
 %%private(
   let hasPendingOpenBracket = (elements: array<AST.t>) =>
-    EditState_ASTUtil.bracketLevel(elements, ~from=0, ~direction=Forwards) > 0
+    AST.bracketLevel(elements, ~from=0, ~direction=Forwards) > 0
 )
 
 let insert = (rpn: t, editState: EditState.t, element: AST.t) => {
-  let isUnaryMinus = element == Sub && EditState.isEmpty(editState)
+  // TODO: Unary minus
   let canHandleStackOperation =
-    !isUnaryMinus &&
     editState.index == Belt.Array.length(editState.elements) &&
-    !hasPendingOpenBracket(editState.elements)
+      !hasPendingOpenBracket(editState.elements)
   let stackOperation = canHandleStackOperation ? stackOperation(element) : None
 
   switch stackOperation {
@@ -106,94 +200,39 @@ let insert = (rpn: t, editState: EditState.t, element: AST.t) => {
   }
 }
 
-%%private(
-  let gatherFunctionArguments = (elements: array<AST.t>, index) => {
-    let rec iter = (~argsRev, ~functionStartIndex, index) =>
-      switch Belt.Array.get(elements, index) {
-      | Some(Arg) =>
-        let functionEndIndex = index
-        let args = Belt.Array.slice(
-          elements,
-          ~offset=functionStartIndex,
-          ~len=functionEndIndex - functionStartIndex,
-        )
-        iter(~argsRev=list{args, ...argsRev}, ~functionStartIndex=index + 1, index + 1)
-      | Some(_) =>
-        switch EditState_ASTUtil.advanceIndex(elements, index, ~direction=Forwards) {
-        | Some((index, _)) => iter(~argsRev, ~functionStartIndex, index)
-        | None => argsRev
-        }
-      | None => argsRev
-      }
-
-    iter(~argsRev=list{}, ~functionStartIndex=1, index + 1)
-  }
-)
-
 let insertArray = (rpn: t, editState: EditState.t, elements: array<AST.t>) => {
-  let rpnFn = switch RPN_Submit.submit(~pushLashWhenEmpty=false, rpn, editState) {
+  switch RPN_Submit.submit(~pushLashWhenEmpty=false, rpn, editState) {
   | Ok(rpn) =>
-    switch EditState_ASTUtil.advanceIndex(elements, 0, ~direction=Forwards) {
-    | Some((initialFunctionEndIndex, element))
+    switch AST.advanceIndex(elements, 0, ~direction=Forwards) {
+    | Some((initialFunctionEndIndex, fn))
       if initialFunctionEndIndex === Belt.Array.length(elements) =>
-      Some((rpn, element))
-    | _ => None
-    }
-  | Error(_) => None
-  }
+      let stackRev = rpn.stackRev
 
-  let rpnFnArgs = switch rpnFn {
-  | Some((rpn, element)) =>
-    let argsRev = gatherFunctionArguments(elements, 1)
-    if AST.argCountExn(element) == Belt.List.length(argsRev) {
-      Some((rpn, element, argsRev))
-    } else {
-      None
-    }
-  | None => None
-  }
-
-  switch rpnFnArgs {
-  | Some((rpn, element, argsRev)) =>
-    let isFunction = element == NLog1
-
-    let rec iterRev = (
-      ~elements: array<AST.t>,
-      ~stackRev: list<array<AST.t>>,
-      argsRev: list<array<AST.t>>,
-    ) => {
-      switch argsRev {
-      | list{[], ...argsRev} =>
+      let isFunction = fn == NLog1 || AST.elementToFn(fn) != None
+      let (endElements, stackRev) = if isFunction {
         switch stackRev {
-        | list{arg, ...stackRev} =>
-          let elements = Belt.Array.concatMany([arg, [Arg], elements])
-          iterRev(~elements, ~stackRev, argsRev)
-        | list{} => Error(None)
+        | list{arg, ...stackRev} => (Some(addBrackets(arg)), Some(stackRev))
+        | list{} => (None, None)
         }
-      | list{arg, ...argsRev} =>
-        let elements = Belt.Array.concatMany([arg, [Arg], elements])
-        iterRev(~elements, ~stackRev, argsRev)
-      | list{} =>
-        let elementsStackRev = if isFunction {
-          switch stackRev {
-          | list{arg, ...stackRev} => Some((Belt.Array.concat(elements, arg), stackRev))
-          | list{} => None
-          }
-        } else {
-          Some((elements, stackRev))
-        }
-
-        switch elementsStackRev {
-        | Some((elements, stackRev)) =>
-          let elements = Belt.Array.concat([element], elements)
-          let stackRev = list{elements, ...stackRev}
-          let rpn = {stackRev: stackRev}
-          Ok((rpn, EditState.empty))
-        | None => Error(None)
-        }
+      } else {
+        (None, Some(stackRev))
       }
+
+      let handleArgsStackRev = switch stackRev {
+      | Some(stackRev) => handleArgs(stackRev, elements)
+      | None => None
+      }
+
+      switch (handleArgsStackRev, endElements) {
+      | (Some(list{elements, ...stackRev}), Some(endElements)) =>
+        let elements = Belt.Array.concat(elements, endElements)
+        let stackRev = list{elements, ...stackRev}
+        Ok(({stackRev: stackRev}, EditState.empty))
+      | (Some(stackRev), None) => Ok(({stackRev: stackRev}, EditState.empty))
+      | _ => Error(None)
+      }
+    | _ => Ok((rpn, EditState.insertArray(editState, elements)))
     }
-    iterRev(~elements=[], ~stackRev=rpn.stackRev, argsRev)
-  | None => Ok((rpn, EditState.insertArray(editState, elements)))
+  | Error(_) => Ok((rpn, EditState.insertArray(editState, elements)))
   }
 }
