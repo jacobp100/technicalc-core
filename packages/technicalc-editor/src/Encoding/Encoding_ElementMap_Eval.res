@@ -88,13 +88,13 @@
     | CosecS => 80
     | SecS => 81
     | CotS => 82
-    | DegreeFunction => 83
-    | GradianFunction => 84
+    | DegFunction => 83
+    | GradFunction => 84
     /* 3rd set elements */
     | MFrac3S => 85
     /* 4th set elements */
     | CaptureGroupEndS => 86
-    | RadianFunction => 87
+    | RadFunction => 87
     | RadianUnit => 88
     | IterationXS => 89
     /* 5th set elements */

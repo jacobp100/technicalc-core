@@ -81,11 +81,11 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | Asinh
   | Atan
   | Atanh
-  | DegreeFunction
+  | DegFunction
   | DegreeUnit
-  | GradianFunction
+  | GradFunction
   | GradianUnit
-  | RadianFunction
+  | RadFunction
   | RadianUnit
   | ConstPiS
   | CosecS

@@ -22,15 +22,15 @@ type skipMode =
     | Asinh
     | Atan
     | Atanh
-    | DegreeFunction
+    | DegFunction
     | Div
     | Dot
     | Gamma
-    | GradianFunction
+    | GradFunction
     | Im
     | Log
     | Mul
-    | RadianFunction
+    | RadFunction
     | Re
     | Rem
     | Sub
