@@ -91,11 +91,14 @@ let keys = {
   "arcseconds": One(ArcSecondUnit),
   "radians": One(RadianUnit),
   "gradians": One(GradianUnit),
-  // "deg": One(DegFunction),
-  // "rad": One(RadFunction),
-  // "grad": One(GradFunction),
   "vec2": One(Vector2S),
   "vec3": One(Vector3S),
   "mat2": One(Matrix4S),
   "mat3": One(Matrix9S),
+  // Used in RPN
+  "negate": One(Sub),
+  // Not used (yet)
+  // "deg": One(DegFunction),
+  // "rad": One(RadFunction),
+  // "grad": One(GradFunction),
 }
