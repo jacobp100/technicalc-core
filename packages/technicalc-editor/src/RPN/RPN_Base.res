@@ -6,7 +6,4 @@ let elements = x => Belt.List.head(x.stackRev)
 
 let stack = x => Belt.List.toArray(x.stackRev)
 
-let depth = x => {
-  let length = Belt.List.length(x.stackRev)
-  length > 0 ? Some(length - 1) : None
-}
+let depth = x => Belt.List.length(x.stackRev)
