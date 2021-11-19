@@ -233,7 +233,7 @@ test("fractions", (. ()) => {
 test("abs", (. ()) => {
   let rpn = RPN.empty
   let editState = EditState.empty
-  let Ok((rpn, editState)) = RPN.insert(rpn, editState, Sub)
+  let editState = EditState.insert(editState, Sub)
   let Ok((rpn, editState)) = RPN.insert(rpn, editState, N1_S)
   let Ok((rpn, editState)) = RPN.insert(rpn, editState, Abs1S)
 
