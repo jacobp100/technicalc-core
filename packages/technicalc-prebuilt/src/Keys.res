@@ -95,8 +95,6 @@ let keys = {
   "vec3": One(Vector3S),
   "mat2": One(Matrix4S),
   "mat3": One(Matrix9S),
-  // Used in RPN
-  "negate": One(Sub),
   // Not used (yet)
   // "deg": One(DegFunction),
   // "rad": One(RadFunction),

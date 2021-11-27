@@ -174,6 +174,9 @@ module RPN = {
   let depth = RPN.depth
   let stack = RPN.stack
 
+  let swap = RPN.swap
+  let drop = RPN.drop
+
   let submit = (rpn, editState) => RPN.submit(rpn, editState)->toJsResult
   let insert = (rpn, editState, key) =>
     switch key {
