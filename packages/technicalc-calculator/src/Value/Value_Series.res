@@ -99,5 +99,24 @@ let factorial = x => (x + one)->gamma
 let sumU = (f, a, b) => reduceRangeU(a, b, zero, f, (. a, b) => add(a, b))
 let productU = (f, a, b) => reduceRangeU(a, b, one, f, (. a, b) => mul(a, b))
 
-let nPr = (n, r) => n->factorial / (n - r)->factorial
-let nCr = (n, r) => n->factorial / (r->factorial * (n - r)->factorial)
+%%private(
+  let factorialIsFinite = x =>
+    switch toInt(x) {
+    | Some(i) if i < 0 => false
+    | _ => true
+    }
+)
+
+let nPr = (n, r) =>
+  if factorialIsFinite(n - r) {
+    n->factorial / (n - r)->factorial
+  } else {
+    zero
+  }
+
+let nCr = (n, r) =>
+  if factorialIsFinite(r) && factorialIsFinite(n - r) {
+    n->factorial / (r->factorial * (n - r)->factorial)
+  } else {
+    zero
+  }
