@@ -8,7 +8,7 @@ let unitsCompatible = (~fromUnits, ~toUnits) => {
 %%private(
   let unitsUnique = units => {
     let rec iter = (currentUnitIndex, previousUnitIndex) =>
-      if currentUnitIndex === Belt.Array.length(units) {
+      if currentUnitIndex >= Belt.Array.length(units) {
         true
       } else if previousUnitIndex >= currentUnitIndex {
         iter(currentUnitIndex + 1, 0)
@@ -28,7 +28,7 @@ let unitsCompatible = (~fromUnits, ~toUnits) => {
 
 let compositeUnitsCompatible = (~fromUnits, ~toUnits) =>
   switch Belt.Array.get(fromUnits, 0) {
-  | Some(unit) =>
+  | Some(unit) if Belt.Array.length(toUnits) != 0 =>
     let baseDimensions = Unit_Dimensions.ofUnit(unit)
     let unitValid = (. unit) =>
       unit.power == 1 && Unit_Dimensions.eq(Unit_Dimensions.ofUnit(unit), baseDimensions)
@@ -38,5 +38,5 @@ let compositeUnitsCompatible = (~fromUnits, ~toUnits) =>
     Belt.Array.everyU(fromUnits, unitValid) &&
     Belt.Array.everyU(toUnits, unitValid) &&
     unitsUnique(toUnits)
-  | None => false
+  | _ => false
   }

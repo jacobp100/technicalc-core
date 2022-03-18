@@ -154,3 +154,9 @@ test("composite units compatible for duplicate units", (. ()) => {
     ),
   )->toBe(false)
 })
+
+test("does not crash compositeUnitsCompatible with empty toUnits", (. ()) => {
+  expect(
+    compositeUnitsCompatible(~fromUnits=[{prefix: Unit, type_: Meter, power: 1}], ~toUnits=[]),
+  )->toBe(false)
+})
