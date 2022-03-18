@@ -41,6 +41,7 @@ let ofUnit = (v: unitType) =>
   | Foot
   | Yard
   | Mile
+  | ScandinavianMile
   | NauticalMile
   | LightYear
   | Parsec

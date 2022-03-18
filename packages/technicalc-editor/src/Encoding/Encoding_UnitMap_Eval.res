@@ -1,6 +1,6 @@
 open TechniCalcCalculator.Unit_Types
 
-%%private(let makeSureThisIsTheLastIndex = 57)
+%%private(let makeSureThisIsTheLastIndex = 58)
 %%private(
   let toUint = (element: unitType) =>
     switch element {
@@ -61,7 +61,9 @@ open TechniCalcCalculator.Unit_Types
     | Byte => 54
     | Kelvin => 55
     | Celsius => 56
-    | Fahrenheit => makeSureThisIsTheLastIndex
+    | Fahrenheit => 57
+    /* 1st additions */
+    | ScandinavianMile => makeSureThisIsTheLastIndex
     }
 )
 

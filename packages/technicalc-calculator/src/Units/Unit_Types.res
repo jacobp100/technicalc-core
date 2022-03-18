@@ -44,6 +44,7 @@ type unitType =
   | Yard
   | Mile
   | NauticalMile
+  | ScandinavianMile
   | LightYear
   | Parsec
   | Angstrom

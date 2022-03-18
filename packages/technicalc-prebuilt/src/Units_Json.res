@@ -61,6 +61,10 @@ let json = [
       [{units: [{prefix: Unit, type_: Mile, power: 1}], primary: true}],
       [
         {
+          units: [{prefix: Unit, type_: ScandinavianMile, power: 1}],
+          primary: true,
+        },
+        {
           units: [{prefix: Unit, type_: NauticalMile, power: 1}],
           primary: true,
         },

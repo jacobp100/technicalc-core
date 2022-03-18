@@ -47,6 +47,7 @@ open TechniCalcCalculator.Unit_Types
     | Yard => "yd"
     | Mile => "mi"
     | NauticalMile => "NM"
+    | ScandinavianMile => "mil"
     | LightYear => "ly"
     | Parsec => "pc"
     | Angstrom => "&#x212B;"

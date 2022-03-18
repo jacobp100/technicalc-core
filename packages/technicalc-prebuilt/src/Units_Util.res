@@ -68,6 +68,7 @@ let unitTypeToString = (unit: unitType) =>
   | Yard => "Yard"
   | Mile => "Mile"
   | NauticalMile => "Nautical Mile"
+  | ScandinavianMile => "Scandinavian Mile"
   | LightYear => "Light Year"
   | Parsec => "Parsec"
   | Angstrom => "Angstrom"

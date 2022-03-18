@@ -50,7 +50,8 @@ open Unit_Types
       | Yard => "0.9144"
       | Mile => "1609"
       | NauticalMile => "1852"
-      | LightYear => "9.4605284e15"
+      | ScandinavianMile => "10000"
+      | LightYear => "9460730472580800"
       | Parsec => "3.086e16"
       | Angstrom => "1e-10"
 
