@@ -1,6 +1,6 @@
 type captureGroup = {
   index: int,
-  placeholderMml: string,
+  placeholderMml: option<string>,
   elements: array<AST.t>,
 }
 

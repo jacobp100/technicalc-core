@@ -142,13 +142,17 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_CustomAtom({mml, superscript}) =>
     createElementWithRange(~superscript?, range, "mrow", mml)->Mml_Accum.append(accum, _)
   | Fold_CaptureGroupPlaceholder({placeholderMml: mml, superscript}) =>
-    let attributes = Placeholder.attributes
-    let phantomId = Belt.Int.toString(fst(range) + 1) ++ ":"
-    let body = createElement(~attributes=list{("id", phantomId)}, "mphantom", "") ++ mml
-    createElementWithRange(~attributes, ~superscript?, range, "mrow", body)->Mml_Accum.append(
-      accum,
-      _,
-    )
+    let mml = switch mml {
+    | Some(mml) =>
+      let attributes = Placeholder.attributes
+      let phantomId = Belt.Int.toString(fst(range) + 1) ++ ":"
+      let body = createElement(~attributes=list{("id", phantomId)}, "mphantom", "") ++ mml
+      createElementWithRange(~attributes, ~superscript?, range, "mrow", body)
+    | None =>
+      open Placeholder
+      createElementWithRange(~attributes, ~superscript?, range, element, body)
+    }
+    mml->Mml_Accum.append(accum, _)
   | Fold_Placeholder(superscript) =>
     open Placeholder
     createElementWithRange(~attributes, ~superscript?, range, element, body)->Mml_Accum.append(

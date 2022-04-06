@@ -2,7 +2,7 @@ type t =
   /* Arg */
   | Arg
   /* Caputure Group */
-  | CaptureGroupStart({placeholderMml: string})
+  | CaptureGroupStart({placeholderMml: option<string>})
   | CaptureGroupEndS
   /* Atom */
   | Acos

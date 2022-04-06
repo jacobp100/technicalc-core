@@ -141,6 +141,8 @@ module Elements = {
   let canInsertIteration = InsertMetadata.canInsertIteration
 
   let renameVariables = RenameVariables.renameVariables
+
+  let reifyPlaceholders = ReifyPlaceholders.reifyPlaceholders
 }
 
 module Editor = {

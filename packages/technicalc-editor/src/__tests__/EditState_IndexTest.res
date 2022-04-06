@@ -4,7 +4,7 @@ open EditState
 test("should handle a single capture group", (. ()) => {
   let state = make(
     ~index=0,
-    ~elements=[CaptureGroupStart({placeholderMml: ""}), CaptureGroupEndS],
+    ~elements=[CaptureGroupStart({placeholderMml: Some("")}), CaptureGroupEndS],
     ~formatCaptureGroups=false,
   )
 
@@ -22,10 +22,10 @@ test("should handle capture groups in functions", (. ()) => {
     ~index=0,
     ~elements=[
       Frac2S,
-      CaptureGroupStart({placeholderMml: ""}),
+      CaptureGroupStart({placeholderMml: Some("")}),
       CaptureGroupEndS,
       Arg,
-      CaptureGroupStart({placeholderMml: ""}),
+      CaptureGroupStart({placeholderMml: Some("")}),
       CaptureGroupEndS,
       Arg,
     ],
@@ -71,7 +71,13 @@ test("should handle capture groups in functions", (. ()) => {
 test("should handle empty capture groups with superscripts", (. ()) => {
   let state = make(
     ~index=0,
-    ~elements=[CaptureGroupStart({placeholderMml: ""}), CaptureGroupEndS, Superscript1, N2_S, Arg],
+    ~elements=[
+      CaptureGroupStart({placeholderMml: Some("")}),
+      CaptureGroupEndS,
+      Superscript1,
+      N2_S,
+      Arg,
+    ],
     ~formatCaptureGroups=false,
   )
 
@@ -113,7 +119,7 @@ test("should handle filled capture groups with superscripts", (. ()) => {
   let state = make(
     ~index=0,
     ~elements=[
-      CaptureGroupStart({placeholderMml: ""}),
+      CaptureGroupStart({placeholderMml: Some("")}),
       N1_S,
       CaptureGroupEndS,
       Superscript1,
@@ -162,11 +168,11 @@ test("should handle multiple capture groups in a row", (. ()) => {
   let state = make(
     ~index=0,
     ~elements=[
-      CaptureGroupStart({placeholderMml: ""}),
+      CaptureGroupStart({placeholderMml: Some("")}),
       CaptureGroupEndS,
-      CaptureGroupStart({placeholderMml: ""}),
+      CaptureGroupStart({placeholderMml: Some("")}),
       CaptureGroupEndS,
-      CaptureGroupStart({placeholderMml: ""}),
+      CaptureGroupStart({placeholderMml: Some("")}),
       CaptureGroupEndS,
     ],
     ~formatCaptureGroups=false,
@@ -208,11 +214,11 @@ test(
       ~index=0,
       ~elements=[
         N1_S,
-        CaptureGroupStart({placeholderMml: ""}),
+        CaptureGroupStart({placeholderMml: Some("")}),
         CaptureGroupEndS,
-        CaptureGroupStart({placeholderMml: ""}),
+        CaptureGroupStart({placeholderMml: Some("")}),
         CaptureGroupEndS,
-        CaptureGroupStart({placeholderMml: ""}),
+        CaptureGroupStart({placeholderMml: Some("")}),
         CaptureGroupEndS,
         N2_S,
       ],
@@ -256,7 +262,7 @@ test(
 test("should not select within a capture group when label editing", (. ()) => {
   let state = make(
     ~index=0,
-    ~elements=[CaptureGroupStart({placeholderMml: ""}), CaptureGroupEndS],
+    ~elements=[CaptureGroupStart({placeholderMml: Some("")}), CaptureGroupEndS],
     ~formatCaptureGroups=true,
   )
 

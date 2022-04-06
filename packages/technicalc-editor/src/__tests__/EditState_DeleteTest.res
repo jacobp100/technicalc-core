@@ -37,7 +37,7 @@ test("should delete empty capture groups at index", (. ()) => {
   let {index, elements} =
     make(
       ~index=2,
-      ~elements=[N1_S, CaptureGroupStart({placeholderMml: "x"}), CaptureGroupEndS, N2_S],
+      ~elements=[N1_S, CaptureGroupStart({placeholderMml: Some("x")}), CaptureGroupEndS, N2_S],
       ~formatCaptureGroups=false,
     )->delete
 
@@ -49,11 +49,15 @@ test("should not delete empty capture groups at index when allowing label editin
   let {index, elements} =
     make(
       ~index=1,
-      ~elements=[N1_S, CaptureGroupStart({placeholderMml: "x"}), CaptureGroupEndS, N2_S],
+      ~elements=[N1_S, CaptureGroupStart({placeholderMml: Some("x")}), CaptureGroupEndS, N2_S],
       ~formatCaptureGroups=true,
     )->delete
 
-  expect(elements)->toEqual([CaptureGroupStart({placeholderMml: "x"}), CaptureGroupEndS, N2_S])
+  expect(elements)->toEqual([
+    CaptureGroupStart({placeholderMml: Some("x")}),
+    CaptureGroupEndS,
+    N2_S,
+  ])
   expect(index)->toEqual(0)
 })
 
@@ -61,7 +65,7 @@ test("should delete empty capture groups before index when allowing label editin
   let {index, elements} =
     make(
       ~index=3,
-      ~elements=[N1_S, CaptureGroupStart({placeholderMml: "x"}), CaptureGroupEndS, N2_S],
+      ~elements=[N1_S, CaptureGroupStart({placeholderMml: Some("x")}), CaptureGroupEndS, N2_S],
       ~formatCaptureGroups=true,
     )->delete
 
@@ -73,7 +77,7 @@ test("should delete empty capture groups immediately after label index", (. ()) 
   let {index, elements} =
     make(
       ~index=2,
-      ~elements=[N1_S, CaptureGroupStart({placeholderMml: "x"}), CaptureGroupEndS, N2_S],
+      ~elements=[N1_S, CaptureGroupStart({placeholderMml: Some("x")}), CaptureGroupEndS, N2_S],
       ~formatCaptureGroups=false,
     )->delete
 
@@ -84,11 +88,11 @@ test("should delete empty capture groups immediately after label index", (. ()) 
 describe("should only delete a single capture empty group", (. ()) => {
   let testElements = [
     AST.N1_S,
-    CaptureGroupStart({placeholderMml: "x"}),
+    CaptureGroupStart({placeholderMml: Some("x")}),
     CaptureGroupEndS,
-    CaptureGroupStart({placeholderMml: "y"}),
+    CaptureGroupStart({placeholderMml: Some("y")}),
     CaptureGroupEndS,
-    CaptureGroupStart({placeholderMml: "z"}),
+    CaptureGroupStart({placeholderMml: Some("z")}),
     CaptureGroupEndS,
     N2_S,
   ]
@@ -99,9 +103,9 @@ describe("should only delete a single capture empty group", (. ()) => {
 
     expect(elements)->toEqual([
       N1_S,
-      CaptureGroupStart({placeholderMml: "y"}),
+      CaptureGroupStart({placeholderMml: Some("y")}),
       CaptureGroupEndS,
-      CaptureGroupStart({placeholderMml: "z"}),
+      CaptureGroupStart({placeholderMml: Some("z")}),
       CaptureGroupEndS,
       N2_S,
     ])
@@ -114,9 +118,9 @@ describe("should only delete a single capture empty group", (. ()) => {
 
     expect(elements)->toEqual([
       N1_S,
-      CaptureGroupStart({placeholderMml: "x"}),
+      CaptureGroupStart({placeholderMml: Some("x")}),
       CaptureGroupEndS,
-      CaptureGroupStart({placeholderMml: "z"}),
+      CaptureGroupStart({placeholderMml: Some("z")}),
       CaptureGroupEndS,
       N2_S,
     ])
@@ -129,9 +133,9 @@ describe("should only delete a single capture empty group", (. ()) => {
 
     expect(elements)->toEqual([
       N1_S,
-      CaptureGroupStart({placeholderMml: "x"}),
+      CaptureGroupStart({placeholderMml: Some("x")}),
       CaptureGroupEndS,
-      CaptureGroupStart({placeholderMml: "y"}),
+      CaptureGroupStart({placeholderMml: Some("y")}),
       CaptureGroupEndS,
       N2_S,
     ])

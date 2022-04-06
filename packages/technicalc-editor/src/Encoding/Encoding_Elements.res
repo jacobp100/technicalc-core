@@ -41,7 +41,8 @@ open UrlSafeEncoding
     | UnitConversion(_) => ""
     | CustomAtomS({mml, value}) => encodeUint(257) ++ encodeCustomAtom(~mml, ~value)
     | VariableS({id, name}) => encodeUint(261) ++ (encodeString(id) ++ encodeString(name))
-    | CaptureGroupStart({placeholderMml}) => encodeUint(260) ++ encodeString(placeholderMml)
+    | CaptureGroupStart({placeholderMml}) =>
+      encodeUint(260) ++ placeholderMml->Belt.Option.getWithDefault("")->encodeString
     | element => elementToUint(element)->encodeUint
     }
 )
@@ -58,7 +59,8 @@ open UrlSafeEncoding
       }
     | Some(260) =>
       switch readString(reader) {
-      | Some(placeholderMml) => Some(CaptureGroupStart({placeholderMml: placeholderMml}))
+      | Some("") => Some(CaptureGroupStart({placeholderMml: None}))
+      | Some(placeholderMml) => Some(CaptureGroupStart({placeholderMml: Some(placeholderMml)}))
       | None => None
       }
     | Some(value) => elementOfUint(value)

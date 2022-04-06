@@ -10,7 +10,10 @@ type foldState<'a> =
   | Fold_Abs({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_Angle(angle)
   | Fold_Base(base)
-  | Fold_CaptureGroupPlaceholder({placeholderMml: string, superscript: option<superscript<'a>>})
+  | Fold_CaptureGroupPlaceholder({
+      placeholderMml: option<string>,
+      superscript: option<superscript<'a>>,
+    })
   | Fold_Ceil({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_CloseBracket(option<superscript<'a>>)
   | Fold_ConstE(option<superscript<'a>>)
