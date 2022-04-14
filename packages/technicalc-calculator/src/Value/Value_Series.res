@@ -43,7 +43,7 @@ let gamma = (x: t): t =>
   | #Real(Rational(9, 1, Unit)) => ofReal(Real.ofInt(40320))
   | #Real(Rational(10, 1, Unit)) => ofReal(Real.ofInt(362880))
   | #Real(Rational(11, 1, Unit)) => ofReal(Real.ofInt(3628800))
-  | #Real(Rational(12, 1, Unit)) => ofReal(Real.ofInt(479001600))
+  | #Real(Rational(12, 1, Unit)) => ofReal(Real.ofInt(39916800))
   | #Real(re) if Real.gt(re, Real.zero) =>
     open Decimal
     /* See https://github.com/josdejong/mathjs/blob/c5971b371a5610caf37de0d6507a1c7150280f09/src/function/probability/gamma.js */

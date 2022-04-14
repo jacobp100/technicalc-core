@@ -112,7 +112,7 @@ let formatDecimal = (
   num,
 ) => {
   let absNum = Decimal.abs(num)
-  let integerPart = Decimal.floor(absNum)
+  let integerPart = Decimal.trunc(absNum)
   let decimalPart = Decimal.sub(absNum, integerPart)
 
   let integer = formatInteger(~locale, ~base, ~digitGrouping, integerPart)
@@ -125,7 +125,7 @@ let formatDecimal = (
   } else {
     let decimalAsInteger = {
       open Decimal
-      floor(decimalPart * ofInt(base) ** ofInt(maxDecimalPlaces))
+      trunc(decimalPart * ofInt(base) ** ofInt(maxDecimalPlaces))
     }
     let baseStr = decimalToString(~locale, ~base, decimalAsInteger)
     let str = StringUtil.make(maxDecimalPlaces - String.length(baseStr), '0') ++ baseStr

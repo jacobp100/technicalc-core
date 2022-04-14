@@ -206,18 +206,15 @@ let convertComposite = (values: array<(Value.t, t)>, ~toUnits: array<t>) => {
       open Decimal
       accum + Value.toDecimal(value) * ofValue(~powerMultiplier=1, unitPart)
     })
-    let valueSiAbs = Decimal.abs(valueSi)
-    let negative = Decimal.lt(valueSi, Decimal.zero)
     let toUnits = compositeUnitsSorted(toUnits)
-    let remainderSi = ref(valueSiAbs)
+    let remainderSi = ref(valueSi)
     let output = Belt.Array.mapU(toUnits, (. unitPart) => {
       let value = Decimal.mul(remainderSi.contents, ofValue(~powerMultiplier=-1, unitPart))
 
-      let valueFloor = Decimal.floor(value)
+      let valueFloor = Decimal.trunc(value)
       let remainder = Decimal.sub(value, valueFloor)
       remainderSi := Decimal.mul(remainder, ofValue(~powerMultiplier=1, unitPart))
       let value = valueFloor
-      let value = negative ? Decimal.neg(value) : value
 
       let value = switch Decimal.toFloat(value)->FloatUtil.toInt {
       | Some(int) => Value.ofInt(int)
