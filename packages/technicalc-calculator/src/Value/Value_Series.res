@@ -33,17 +33,13 @@ open Value_Operators
 let gamma = (x: t): t =>
   switch x {
   | #Zero => nan
-  | #Real(Rational(1 | 2, 1, Unit)) => ofReal(Real.ofInt(1))
-  | #Real(Rational(3, 1, Unit)) => ofReal(Real.ofInt(2))
-  | #Real(Rational(4, 1, Unit)) => ofReal(Real.ofInt(6))
-  | #Real(Rational(5, 1, Unit)) => ofReal(Real.ofInt(24))
-  | #Real(Rational(6, 1, Unit)) => ofReal(Real.ofInt(120))
-  | #Real(Rational(7, 1, Unit)) => ofReal(Real.ofInt(720))
-  | #Real(Rational(8, 1, Unit)) => ofReal(Real.ofInt(5040))
-  | #Real(Rational(9, 1, Unit)) => ofReal(Real.ofInt(40320))
-  | #Real(Rational(10, 1, Unit)) => ofReal(Real.ofInt(362880))
-  | #Real(Rational(11, 1, Unit)) => ofReal(Real.ofInt(3628800))
-  | #Real(Rational(12, 1, Unit)) => ofReal(Real.ofInt(39916800))
+  | #Real(Rational(i, 1, Unit)) if i > 1 && i < 100 =>
+    open Real
+    let out = ref(Real.one)
+    for i in 1 to pred(i) {
+      out := out.contents * ofInt(i)
+    }
+    ofReal(out.contents)
   | #Real(re) if Real.gt(re, Real.zero) =>
     open Decimal
     /* See https://github.com/josdejong/mathjs/blob/c5971b371a5610caf37de0d6507a1c7150280f09/src/function/probability/gamma.js */

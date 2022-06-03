@@ -23,6 +23,10 @@ const correctAnswers = new Map([
   ],
 ]);
 
+test("factorial 12", () => {
+  expect(TechniCalc.factorial(TechniCalc.ofInt(12))).toMatchJsValue(479001600);
+});
+
 test("factorial real", () => {
   realValues.forEach((v) => {
     const { techniCalcValue, jsValue } = v;
