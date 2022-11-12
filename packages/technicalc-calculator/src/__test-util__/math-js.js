@@ -1,5 +1,5 @@
 import _ from "lodash";
-import * as mathjs from "mathjs/lib/esm";
+import * as mathjs from "mathjs";
 import * as TechniCalc from "../Value/Value";
 import cartesian from "./cartesian";
 import { Value, fractionsTo12 } from "./index";

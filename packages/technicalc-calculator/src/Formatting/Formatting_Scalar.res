@@ -100,7 +100,7 @@ open Formatting_Util
         let out = before != "" ? `${before}+${out}` : out
         let out = before != "" && minus != "" ? `${minus}(${out})` : minus ++ out
         out
-      | Tex => `${minus}${before}${"\\"}frac{${top}}{${bottom}}`
+      | Tex => `${minus}${before}\\frac{${top}}{${bottom}}`
       | MathML => `${minus}${before}<mfrac>${top}${bottom}</mfrac>`
       }
     | (_, Some({style: Natural(_) | Decimal} as format')) =>

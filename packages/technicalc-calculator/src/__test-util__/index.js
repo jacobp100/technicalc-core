@@ -1,5 +1,5 @@
 import _ from "lodash";
-import * as mathjs from "mathjs/lib/esm";
+import * as mathjs from "mathjs";
 import baseCartesian from "cartesian";
 import * as TechniCalc from "../Value/Value";
 import * as TechniCalcTest from "./ValueTestUtil";

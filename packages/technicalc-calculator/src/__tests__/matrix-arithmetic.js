@@ -1,4 +1,4 @@
-import * as mathjs from "mathjs/lib/esm";
+import * as mathjs from "mathjs";
 import * as TechniCalc from "../Value/Value";
 import * as TechniCalcTest from "../__test-util__/ValueTestUtil";
 import { toMatchJsMatrix } from "../__test-util__/index";

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import * as mathjs from "mathjs/lib/esm";
+import * as mathjs from "mathjs";
 import * as TechniCalc from "../Value/Value";
 import { Value, toMatchJsValue } from "../__test-util__/index";
 import cartesian from "../__test-util__/cartesian";
