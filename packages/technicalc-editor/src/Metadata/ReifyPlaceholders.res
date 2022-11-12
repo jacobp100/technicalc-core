@@ -93,12 +93,9 @@ open AST
     | Min2S
     | NRoot2S
     | RandInt2S
-    | Vector2S
     | Integral3
     | MFrac3S
-    | Vector3S
-    | Matrix4S
-    | Matrix9S => true
+    | TableNS(_) => true
     }
 )
 

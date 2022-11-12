@@ -48,12 +48,9 @@ type skipMode =
     | Product2
     | Sum2
     | Frac2S
-    | Vector2S
     | Integral3
     | MFrac3S
-    | Vector3S
-    | Matrix4S
-    | Matrix9S =>
+    | TableNS(_) =>
       AST.argCountExn(element) !== 0 ? FunctionFixed : TopLevelFixed
     | Arg
     | ArcMinuteUnit

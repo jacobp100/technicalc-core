@@ -43,6 +43,8 @@ open UrlSafeEncoding
     | VariableS({id, name}) => encodeUint(261) ++ (encodeString(id) ++ encodeString(name))
     | CaptureGroupStart({placeholderMml}) =>
       encodeUint(260) ++ placeholderMml->Belt.Option.getWithDefault("")->encodeString
+    | TableNS({numRows, numColumns}) =>
+      encodeUint(262) ++ encodeUint(numRows) ++ encodeUint(numColumns)
     | element => elementToUint(element)->encodeUint
     }
 )
@@ -63,6 +65,17 @@ open UrlSafeEncoding
       | Some(placeholderMml) => Some(CaptureGroupStart({placeholderMml: Some(placeholderMml)}))
       | None => None
       }
+    | Some(262) =>
+      switch (readUint(reader), readUint(reader)) {
+      | (Some(numRows), Some(numColumns)) =>
+        Some(TableNS({numRows: numRows, numColumns: numColumns}))
+      | _ => None
+      }
+    /* Legacy table encodings */
+    | Some(54) => Some(TableNS({numRows: 2, numColumns: 2}))
+    | Some(55) => Some(TableNS({numRows: 3, numColumns: 3}))
+    | Some(78) => Some(TableNS({numRows: 2, numColumns: 1}))
+    | Some(79) => Some(TableNS({numRows: 3, numColumns: 1}))
     | Some(value) => elementOfUint(value)
     | None => None
     }

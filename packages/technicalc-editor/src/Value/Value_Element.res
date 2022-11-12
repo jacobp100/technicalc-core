@@ -52,7 +52,8 @@ let map = (element: foldState<'a>, i, i') =>
   | Fold_Sqrt({radicand, superscript}) => withSuperscript(Sqrt(radicand), superscript)->Resolved
   | Fold_NRoot({degree, radicand, superscript}) =>
     withSuperscript(Pow(radicand, Div(One, degree)), superscript)->Resolved
-  | Fold_Vector({elements, superscript}) => withSuperscript(Vector(elements), superscript)->Resolved
+  | Fold_Table({elements, numColumns: 1, superscript}) =>
+    withSuperscript(Vector(elements), superscript)->Resolved
   | Fold_Table({elements, numRows, numColumns, superscript}) =>
     withSuperscript(
       Matrix({numRows: numRows, numColumns: numColumns, elements: elements}),

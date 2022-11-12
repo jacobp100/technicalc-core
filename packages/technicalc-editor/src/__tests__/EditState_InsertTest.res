@@ -135,16 +135,24 @@ test("should insert fraction in another fraction's denominator", (. ()) => {
 
 test("should not move matrices or vectors when inserting fraction after", (. ()) => {
   let {elements} =
-    make(~index=3, ~elements=[Vector2S, Arg, Arg], ~formatCaptureGroups=false)->insert(Frac2S)
+    make(
+      ~index=3,
+      ~elements=[TableNS({numRows: 2, numColumns: 1}), Arg, Arg],
+      ~formatCaptureGroups=false,
+    )->insert(Frac2S)
 
-  expect(elements)->toEqual([Vector2S, Arg, Arg, Frac2S, Arg, Arg])
+  expect(elements)->toEqual([TableNS({numRows: 2, numColumns: 1}), Arg, Arg, Frac2S, Arg, Arg])
 })
 
 test("should not move matrices or vectors when inserting fraction before", (. ()) => {
   let {elements} =
-    make(~index=0, ~elements=[Vector2S, Arg, Arg], ~formatCaptureGroups=false)->insert(Frac2S)
+    make(
+      ~index=0,
+      ~elements=[TableNS({numRows: 2, numColumns: 1}), Arg, Arg],
+      ~formatCaptureGroups=false,
+    )->insert(Frac2S)
 
-  expect(elements)->toEqual([Frac2S, Arg, Arg, Vector2S, Arg, Arg])
+  expect(elements)->toEqual([Frac2S, Arg, Arg, TableNS({numRows: 2, numColumns: 1}), Arg, Arg])
 })
 
 test("should not insert iteratables inside iterator ranges", (. ()) => {
@@ -162,17 +170,32 @@ test("should insert iteratables outside of iterator ranges", (. ()) => {
 })
 
 test("should not insert tables inside tables", (. ()) => {
-  let state = make(~index=1, ~elements=[Vector2S, Arg, Arg], ~formatCaptureGroups=false)
-  let result = state->insert(Vector2S)
+  let state = make(
+    ~index=1,
+    ~elements=[TableNS({numRows: 2, numColumns: 1}), Arg, Arg],
+    ~formatCaptureGroups=false,
+  )
+  let result = state->insert(TableNS({numRows: 2, numColumns: 1}))
 
   expect(result)->toBe(state)
 })
 
 test("should insert tables outside of tables", (. ()) => {
   let {elements} =
-    make(~index=3, ~elements=[Vector2S, Arg, Arg], ~formatCaptureGroups=false)->insert(Vector2S)
+    make(
+      ~index=3,
+      ~elements=[TableNS({numRows: 2, numColumns: 1}), Arg, Arg],
+      ~formatCaptureGroups=false,
+    )->insert(TableNS({numRows: 2, numColumns: 1}))
 
-  expect(elements)->toEqual([Vector2S, Arg, Arg, Vector2S, Arg, Arg])
+  expect(elements)->toEqual([
+    TableNS({numRows: 2, numColumns: 1}),
+    Arg,
+    Arg,
+    TableNS({numRows: 2, numColumns: 1}),
+    Arg,
+    Arg,
+  ])
 })
 
 test("should insert within capture group", (. ()) => {

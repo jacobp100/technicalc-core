@@ -10,11 +10,7 @@ let classify = element =>
   | Differential2
   | Integral3 =>
     Iterator
-  | Vector2S
-  | Vector3S
-  | Matrix4S
-  | Matrix9S =>
-    Table
+  | TableNS(_) => Table
   | _ => Other
   }
 

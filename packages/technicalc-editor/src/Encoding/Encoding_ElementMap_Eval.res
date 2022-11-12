@@ -1,4 +1,3 @@
-%%private(let makeSureThisIsTheLastIndex = 90)
 %%private(
   let toUint = (element: AST.t) =>
     switch element {
@@ -58,8 +57,8 @@
     | ImaginaryUnitS => 51
     | Integral3 => 52
     | LCM2S => 53
-    | Matrix4S => 54
-    | Matrix9S => 55
+    // | Matrix4S => 54
+    // | Matrix9S => 55
     | Max2S => 56
     | Min2S => 57
     | NA_S => 58
@@ -82,8 +81,8 @@
     | SinhS => 75
     | Sum2 => 76
     | TanhS => 77
-    | Vector2S => 78
-    | Vector3S => 79
+    // | Vector2S => 78
+    // | Vector3S => 79
     /* 2nd set elements */
     | CosecS => 80
     | SecS => 81
@@ -98,19 +97,22 @@
     | RadianUnit => 88
     | IterationXS => 89
     /* 5th set elements */
-    | Rem => makeSureThisIsTheLastIndex
+    | Rem => 90
     /* Custom handling */
     | UnitConversion(_)
     | CustomAtomS(_)
     | VariableS(_)
-    | CaptureGroupStart(_) =>
+    | CaptureGroupStart(_)
+    | TableNS(_) =>
       assert false
     }
 )
 
-let mapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, 0)
-let reverseMapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, AST.Arg)
-for i in 0 to makeSureThisIsTheLastIndex {
+%%private(let numIntElements = 86)
+%%private(let maxUintValue = 90)
+let mapping = Belt.Array.make(numIntElements + 1, 0)
+let reverseMapping = Belt.Array.make(maxUintValue + 1, AST.Arg)
+for i in 0 to numIntElements {
   let element: AST.t = Obj.magic(i)
   let index = toUint(element)
   assert Belt.Array.set(mapping, i, index)

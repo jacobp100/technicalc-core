@@ -99,15 +99,12 @@ type t =
   | Min2S
   | NRoot2S
   | RandInt2S
-  | Vector2S
   /* Atom3 */
   | Integral3
   /* Atom3S */
   | MFrac3S
-  | Vector3S
-  /* Matrices */
-  | Matrix4S
-  | Matrix9S
+  /* Table */
+  | TableNS({numRows: int, numColumns: int})
 
 let eq = (a: t, b: t) =>
   switch (a, b) {
@@ -212,16 +209,13 @@ let argCountExn = (arg: t) =>
   | Max2S
   | Min2S
   | NRoot2S
-  | RandInt2S
-  | Vector2S => 2
+  | RandInt2S => 2
   /* Atom3 */
   | Integral3
   /* Atom3S */
-  | MFrac3S
-  | Vector3S => 3
+  | MFrac3S => 3
   /* Matrices */
-  | Matrix4S => 4
-  | Matrix9S => 9
+  | TableNS({numRows, numColumns}) => numRows * numColumns
   }
 
 let argEndIndex = (ast: array<t>, index) => {

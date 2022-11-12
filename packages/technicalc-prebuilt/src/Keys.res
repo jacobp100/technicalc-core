@@ -91,10 +91,6 @@ let keys = {
   "arcseconds": One(ArcSecondUnit),
   "radians": One(RadianUnit),
   "gradians": One(GradianUnit),
-  "vec2": One(Vector2S),
-  "vec3": One(Vector3S),
-  "mat2": One(Matrix4S),
-  "mat3": One(Matrix9S),
   // Not used (yet)
   // "deg": One(DegFunction),
   // "rad": One(RadFunction),

@@ -45,43 +45,15 @@ let ofValue = (a: TechniCalcCalculator.Value.t) =>
   | #...TechniCalcCalculator.Scalar.t as s => ofScalar(s)
   | #Pcnt((#Zero | #Real(_) | #Imag(_)) as p) => Belt.Array.concat(ofScalar(p), [Percent])
   | #Pcnt(p) => Belt.Array.concatMany([[OpenBracket], ofFinite(p), [CloseBracketS, Percent]])
-  | #Vect([a, b]) => Belt.Array.concatMany([[Vector2S], ofFinite(a), [Arg], ofFinite(b), [Arg]])
-  | #Vect([a, b, c]) =>
-    Belt.Array.concatMany([[Vector3S], ofFinite(a), [Arg], ofFinite(b), [Arg], ofFinite(c), [Arg]])
-  | #Matx({numRows: 2, numColumns: 2, elements: [a, b, c, d]}) =>
-    Belt.Array.concatMany([
-      [Matrix4S],
-      ofFinite(a),
-      [Arg],
-      ofFinite(b),
-      [Arg],
-      ofFinite(c),
-      [Arg],
-      ofFinite(d),
-      [Arg],
-    ])
-  | #Matx({numRows: 3, numColumns: 3, elements: [a, b, c, d, e, f, g, h, i]}) =>
-    Belt.Array.concatMany([
-      [Matrix9S],
-      ofFinite(a),
-      [Arg],
-      ofFinite(b),
-      [Arg],
-      ofFinite(c),
-      [Arg],
-      ofFinite(d),
-      [Arg],
-      ofFinite(e),
-      [Arg],
-      ofFinite(f),
-      [Arg],
-      ofFinite(g),
-      [Arg],
-      ofFinite(h),
-      [Arg],
-      ofFinite(i),
-      [Arg],
-    ])
-  | #Vect(_)
-  | #Matx(_) => []
+  | #Vect(elements) =>
+    Belt.Array.reduceU(
+      elements,
+      [TableNS({numRows: Belt.Array.length(elements), numColumns: 1})],
+      (. accum, element) => Belt.Array.concatMany([accum, ofFinite(element), [Arg]]),
+    )
+  | #Matx({numRows, numColumns, elements}) =>
+    Belt.Array.reduceU(elements, [TableNS({numRows: numRows, numColumns: numColumns})], (.
+      accum,
+      element,
+    ) => Belt.Array.concatMany([accum, ofFinite(element), [Arg]]))
   }

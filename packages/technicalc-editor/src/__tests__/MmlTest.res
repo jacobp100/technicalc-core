@@ -98,11 +98,11 @@ test("npr", (. ()) => {
 })
 
 test("tables", (. ()) => {
-  Mml.create([Vector2S, N1_S, Arg, N2_S, Arg])
+  Mml.create([TableNS({numRows: 2, numColumns: 1}), N1_S, Arg, N2_S, Arg])
   ->expect
   ->toEqual(j`$openTag<mrow id="0:5"><mo>[</mo><mtable><mtr><mtd><mn id="1:2">1</mn></mtd></mtr><mtr><mtd><mn id="3:4">2</mn></mtd></mtr></mtable><mo>]</mo></mrow>$closeTag`)
 
-  Mml.create([Matrix4S, N1_S, Arg, N2_S, Arg, N3_S, Arg, N4_S, Arg])
+  Mml.create([TableNS({numRows: 2, numColumns: 2}), N1_S, Arg, N2_S, Arg, N3_S, Arg, N4_S, Arg])
   ->expect
   ->toEqual(j`$openTag<mrow id="0:9"><mo>[</mo><mtable><mtr><mtd><mn id="1:2">1</mn></mtd><mtd><mn id="3:4">2</mn></mtd></mtr><mtr><mtd><mn id="5:6">3</mn></mtd><mtd><mn id="7:8">4</mn></mtd></mtr></mtable><mo>]</mo></mrow>$closeTag`)
 })

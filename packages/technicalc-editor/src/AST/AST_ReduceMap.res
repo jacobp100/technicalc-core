@@ -50,7 +50,6 @@ type foldState<'a> =
   | Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
   | Fold_Sum({from: 'a, to_: 'a})
-  | Fold_Vector({elements: array<'a>, superscript: option<superscript<'a>>})
   | Fold_Table({
       elements: array<'a>,
       numRows: int,
@@ -292,10 +291,7 @@ let reduceMapU = (
       let (to_, i') = readArg(i')
       let (body, i') = readArg(i')
       Node(Fold_Integral({from: from, to_: to_, body: body}), i, i')
-    | Vector2S => vectorS(i, ~numElements=2)
-    | Vector3S => vectorS(i, ~numElements=3)
-    | Matrix4S => tableS(i, ~numRows=2, ~numColumns=2)
-    | Matrix9S => tableS(i, ~numRows=3, ~numColumns=3)
+    | TableNS({numRows, numColumns}) => tableS(i, ~numRows, ~numColumns)
     | Arg => assert false
     }
   and readArg = (~accum=initial, ~start=?, i) => {
@@ -335,15 +331,6 @@ let reduceMapU = (
     let i' = i + 1
     let (resultSuperscript, i') = readSuperscript(i')
     Node(Fold_Function({fn: fn, resultSuperscript: resultSuperscript}), i, i')
-  }
-  and vectorS = (i, ~numElements) => {
-    let i' = i + 1
-    let (i', elements) = ArrayUtil.foldMakeU(numElements, i', (. s, _) => {
-      let (element, index) = readArg(s)
-      (index, element)
-    })
-    let (superscript, i') = readSuperscript(i')
-    Node(Fold_Vector({elements: elements, superscript: superscript}), i, i')
   }
   and tableS = (i, ~numRows, ~numColumns) => {
     let i' = i + 1

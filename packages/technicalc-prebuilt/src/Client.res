@@ -167,32 +167,16 @@ module Editor = {
   let delete = EditState.delete
 }
 
-module RPN = {
-  open TechniCalcEditor
-
-  let empty = RPN.empty
-
-  let elements = RPN.elements
-  let depth = RPN.depth
-  let stack = RPN.stack
-
-  let swap = RPN.swap
-  let drop = RPN.drop
-
-  let submit = (rpn, editState) => RPN.submit(rpn, editState)->toJsResult
-  let insert = (rpn, editState, key) =>
-    switch key {
-    | Keys.One(element) => RPN.insert(rpn, editState, element)
-    | Many(elements) => RPN.insertArray(rpn, editState, elements)
-    }->toJsResult
-}
-
 module Keys = {
   open TechniCalcEditor
 
   let keys = Keys.keys
 
   let variable = (~id, ~name) => Keys.One(VariableS({id: id, name: name}))
+
+  let table = (~numRows, ~numColumns) => Keys.One(
+    TableNS({numRows: numRows, numColumns: numColumns}),
+  )
 
   let customAtom = (~value, ~mml) =>
     AST.CustomAtomS({

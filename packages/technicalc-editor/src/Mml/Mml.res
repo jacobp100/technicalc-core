@@ -238,9 +238,6 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Sum({from, to_}) => sumProduct("&#x2211;", from, to_, range)->Mml_Accum.append(accum, _)
   | Fold_Product({from, to_}) =>
     sumProduct("&#x220F;", from, to_, range)->Mml_Accum.append(accum, _)
-  | Fold_Vector({elements, superscript}) =>
-    let numRows = Belt.Array.length(elements)
-    table(~numRows, ~numColumns=1, elements, superscript, range)->Mml_Accum.append(accum, _)
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
     table(~numRows, ~numColumns, elements, superscript, range)->Mml_Accum.append(accum, _)
   | Fold_UnitConversion({fromUnits, toUnits}) =>
