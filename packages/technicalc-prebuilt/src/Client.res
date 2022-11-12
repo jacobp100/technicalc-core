@@ -158,6 +158,8 @@ module Editor = {
   let next = EditState.next
   let moveStart = EditState.moveStart
   let moveEnd = EditState.moveEnd
+  let moveUp = EditState.moveUp
+  let moveDown = EditState.moveDown
 
   let insert = (editState, key) =>
     switch key {
@@ -172,15 +174,13 @@ module Keys = {
 
   let keys = Keys.keys
 
-  let variable = (~id, ~name) => Keys.One(VariableS({id: id, name: name}))
+  let variable = (~id, ~name) => Keys.One(VariableS({id, name}))
 
-  let table = (~numRows, ~numColumns) => Keys.One(
-    TableNS({numRows: numRows, numColumns: numColumns}),
-  )
+  let table = (~numRows, ~numColumns) => Keys.One(TableNS({numRows, numColumns}))
 
   let customAtom = (~value, ~mml) =>
     AST.CustomAtomS({
-      mml: mml,
+      mml,
       value: TechniCalcCalculator.Encoding.encode(value),
     })->Keys.One
 
@@ -204,9 +204,9 @@ module Value = {
   %%private(
     let getFormat = (~mode, maybeFormat: option<format>) =>
       switch maybeFormat {
-      | None => {...Formatting.defaultFormat, mode: mode}
+      | None => {...Formatting.defaultFormat, mode}
       | Some(format) => {
-          mode: mode,
+          mode,
           style: formatStyle(format),
           locale: formatLocale(format),
           base: formatBase(format),
@@ -250,17 +250,17 @@ module Value = {
 module Work = {
   let calculate = (body): Work.input<'a> => Calculate(body)
   let convertUnits = (body, fromUnits, toUnits): Work.input<'a> => ConvertUnits({
-    body: body,
-    fromUnits: fromUnits,
-    toUnits: toUnits,
+    body,
+    fromUnits,
+    toUnits,
   })
   let convertUnitsComposite = (values, toUnits): Work.input<'a> => ConvertUnitsComposite({
-    values: values,
-    toUnits: toUnits,
+    values,
+    toUnits,
   })
   let solveRoot = (lhs, rhs, initialGuess): Work.input<'a> => {
     let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs)
-    SolveRoot({body: body, initialGuess: initialGuess})
+    SolveRoot({body, initialGuess})
   }
   let quadratic = (a, b, c): Work.input<'a> => Quadratic(a, b, c)
   let cubic = (a, b, c, d): Work.input<'a> => Cubic(a, b, c, d)
@@ -293,7 +293,7 @@ module Work = {
       jsDictEntries(context)->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
     | None => []
     },
-    input: input,
+    input,
   }
 
   let decodeOutput = Work.decodeOutput

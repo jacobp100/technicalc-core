@@ -1,20 +1,21 @@
 open AST_Types
 
-let argEndIndex = (ast: array<t>, index) => {
-  let rec iter = (~pending, index) =>
-    switch Belt.Array.get(ast, index) {
+let argEndIndex = (x: array<t>, index) => {
+  let rec iter = (~pending, index) => {
+    switch Belt.Array.get(x, index) {
     | Some(Arg) =>
-      if pending == 0 {
+      let pending = pending - 1
+      if pending <= 0 {
         index + 1
       } else {
-        iter(~pending=pending - 1, index + 1)
+        iter(~pending, index + 1)
       }
     | Some(v) => iter(~pending=pending + argCountExn(v), index + 1)
     | None => index
     }
+  }
   iter(~pending=0, index)
 }
-
 type direction = Forwards | Backwards
 
 let advanceIndex = (~direction=Forwards, x, startIndex) => {
@@ -59,4 +60,47 @@ let bracketLevel = (~direction=Forwards, ~from=0, x: array<t>) => {
       }
     }
   iter(~bracketLevel=0, from)
+}
+
+let enclosingFunction = (x: array<t>, index) => {
+  let rec iter = startIndex =>
+    switch Belt.Array.get(x, startIndex) {
+    | Some(Arg) => iter(startIndex - 1)
+    | Some(e) if argCountExn(e) == 0 => iter(startIndex - 1)
+    | Some(element) =>
+      let endIndex = argEndIndex(x, startIndex)
+      if index >= startIndex && index < endIndex {
+        Some((element, startIndex, endIndex))
+      } else {
+        iter(startIndex - 1)
+      }
+    | None => None
+    }
+  iter(index - 1)
+}
+
+%%private(
+  let rec nextFunctionArgIndex = (x: array<t>, index) => {
+    switch Belt.Array.get(x, index) {
+    | Some(Arg) => Some(index)
+    | _ =>
+      switch advanceIndex(x, index) {
+      | Some((index, _)) => nextFunctionArgIndex(x, index)
+      | None => None
+      }
+    }
+  }
+)
+
+let functionArgRanges = (x: array<t>, index) => {
+  switch Belt.Array.get(x, index) {
+  | Some(Arg)
+  | None => []
+  | Some(element) =>
+    let (_, ranges) = ArrayUtil.foldMakeU(argCountExn(element), index + 1, (. startIndex, _) => {
+      let endIndex = nextFunctionArgIndex(x, startIndex)->Belt.Option.getExn
+      (endIndex + 1, (startIndex, endIndex))
+    })
+    ranges
+  }
 }

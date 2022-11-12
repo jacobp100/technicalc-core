@@ -205,21 +205,13 @@ type parentTable = {
 }
 
 %%private(
-  let parentTable = (elements: array<AST.t>, index: int): option<parentTable> => {
-    let rec iter = startIndex =>
-      switch Belt.Array.get(elements, startIndex) {
-      | Some(TableNS({numRows, numColumns})) =>
-        switch AST_Util.advanceIndex(elements, startIndex) {
-        | Some((endIndex, _)) if index > startIndex && index < endIndex =>
-          Some({index: startIndex, numRows: numRows, numColumns: numColumns})
-        | _ => None
-        }
-      | Some(_) => iter(startIndex - 1)
-      | None => None
-      }
-
-    iter(index)
-  }
+  let rec parentTable = (elements: array<AST.t>, index: int): option<parentTable> =>
+    switch AST_Util.enclosingFunction(elements, index) {
+    | Some((TableNS({numRows, numColumns}), startIndex, _)) =>
+      Some({index: startIndex, numRows, numColumns})
+    | Some((_, startIndex, _)) => parentTable(elements, startIndex)
+    | None => None
+    }
 )
 
 %%private(

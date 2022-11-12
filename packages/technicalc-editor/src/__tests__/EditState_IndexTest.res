@@ -278,3 +278,80 @@ test("should not select within a capture group when label editing", (. ()) => {
   expect(setIndex(state, 1).index)->toBe(0)
   expect(setIndex(state, 2).index)->toBe(2)
 })
+
+test("up", (. ()) => {
+  let elements = [
+    /* 0 */ AST.N1_S,
+    /* 1 */ Frac2S,
+    /* 2 */ N2_S,
+    /* 3 */ Arg,
+    /* 4 */ N3_S,
+    /* 5 */ NLog1,
+    /* 6 */ N4_S,
+    /* 7 */ Arg,
+    /* 8 */ N5_S,
+    /* 9 */ Arg,
+    /* 10 */ Superscript1,
+    /* 11 */ N6_S,
+    /* 12 */ Arg,
+  ]
+
+  let state = make(~index=8, ~elements, ~formatCaptureGroups=true)
+  expect(state.index)->toBe(8)
+
+  let state = moveUp(state)
+  expect(state.index)->toBe(3)
+
+  let state = moveUp(state)
+  expect(state.index)->toBe(3)
+})
+
+test("down", (. ()) => {
+  let elements = [
+    /* 0 */ AST.N1_S,
+    /* 1 */ Frac2S,
+    /* 2 */ N2_S,
+    /* 3 */ Arg,
+    /* 4 */ N3_S,
+    /* 5 */ NLog1,
+    /* 6 */ N4_S,
+    /* 7 */ Arg,
+    /* 8 */ N5_S,
+    /* 9 */ Arg,
+    /* 10 */ Superscript1,
+    /* 11 */ N6_S,
+    /* 12 */ Arg,
+  ]
+
+  let state = make(~index=3, ~elements, ~formatCaptureGroups=true)
+  expect(state.index)->toBe(3)
+
+  let state = moveDown(state)
+  expect(state.index)->toBe(4)
+
+  let state = moveDown(state)
+  expect(state.index)->toBe(4)
+})
+
+test("up/down in specific elements", (. ()) => {
+  let elements = [
+    /* 0 */ AST.TableNS({numRows: 2, numColumns: 2}),
+    /* 1 */ N1_S,
+    /* 2 */ Arg,
+    /* 3 */ N2_S,
+    /* 4 */ Arg,
+    /* 5 */ N3_S,
+    /* 6 */ Arg,
+    /* 7 */ N4_S,
+    /* 8 */ Arg,
+  ]
+
+  let state = make(~index=3, ~elements, ~formatCaptureGroups=true)
+  expect(state.index)->toBe(3)
+
+  let state = moveDown(state)
+  expect(state.index)->toBe(7)
+
+  let state = moveUp(state)
+  expect(state.index)->toBe(4)
+})

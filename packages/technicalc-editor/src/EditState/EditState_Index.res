@@ -1,9 +1,9 @@
+open EditState_Base
 open EditState_Types
 open EditState_Util
 
 let setIndex = ({elements, formatCaptureGroups}, index) => {
-  let index = preferredInsertionIndex(~index, ~elements, ~formatCaptureGroups)
-  {index: index, elements: elements, formatCaptureGroups: formatCaptureGroups}
+  make(~index, ~elements, ~formatCaptureGroups)
 }
 
 %%private(
@@ -25,7 +25,7 @@ let setIndex = ({elements, formatCaptureGroups}, index) => {
       | Some(nextIndex) if nextIndex >= 0 && nextIndex <= length => iter(nextIndex)
       | _ =>
         let index = preferredInsertionIndex(~index, ~elements, ~formatCaptureGroups)
-        {index: index, elements: elements, formatCaptureGroups: formatCaptureGroups}
+        {index, elements, formatCaptureGroups}
       }
     }
 
@@ -37,16 +37,48 @@ let previous = s => moveIndexInDirection(~forwards=false, s)
 
 let next = s => moveIndexInDirection(~forwards=true, s)
 
-let moveStart = ({elements, formatCaptureGroups}) => {
-  let index = preferredInsertionIndex(~index=0, ~elements, ~formatCaptureGroups)
-  {index: index, elements: elements, formatCaptureGroups: formatCaptureGroups}
+%%private(
+  let nextIndexRange = (~fn: AST.t, ~index, ~delta) =>
+    switch fn {
+    | Sum2 | Product2 | Integral3 => index - delta
+    | TableNS({numColumns}) => index + delta * numColumns
+    | _ => index + delta
+    }
+)
+
+%%private(
+  let moveDelta = (elements: array<AST.t>, index, delta) =>
+    switch AST_Util.enclosingFunction(elements, index) {
+    | Some((fn, startIndex, _)) =>
+      let ranges = AST_Util.functionArgRanges(elements, startIndex)
+      switch Belt.Array.getIndexByU(ranges, (. (start, end)) => index >= start && index <= end) {
+      | Some(rangeIndex) =>
+        nextIndexRange(~fn, ~index=rangeIndex, ~delta)->Belt.Array.get(ranges, _)
+      | None => None
+      }
+    | None => None
+    }
+)
+
+let moveUp = ({index, elements, formatCaptureGroups}) => {
+  let index = switch moveDelta(elements, index, -1) {
+  | Some((_, nextEnd)) => nextEnd
+  | None => index
+  }
+
+  make(~index, ~elements, ~formatCaptureGroups)
 }
 
-let moveEnd = ({elements, formatCaptureGroups}) => {
-  let index = preferredInsertionIndex(
-    ~index=Belt.Array.length(elements),
-    ~elements,
-    ~formatCaptureGroups,
-  )
-  {index: index, elements: elements, formatCaptureGroups: formatCaptureGroups}
+let moveDown = ({index, elements, formatCaptureGroups}) => {
+  let index = switch moveDelta(elements, index, 1) {
+  | Some((previousStart, _)) => previousStart
+  | None => index
+  }
+
+  make(~index, ~elements, ~formatCaptureGroups)
 }
+
+let moveStart = ({elements, formatCaptureGroups}) => make(~index=0, ~elements, ~formatCaptureGroups)
+
+let moveEnd = ({elements, formatCaptureGroups}) =>
+  make(~index=Belt.Array.length(elements), ~elements, ~formatCaptureGroups)
