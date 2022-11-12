@@ -198,14 +198,135 @@ type skipMode =
     }
 )
 
+type parentTable = {
+  index: int,
+  numRows: int,
+  numColumns: int,
+}
+
+%%private(
+  let parentTable = (elements: array<AST.t>, index: int): option<parentTable> => {
+    let rec iter = startIndex =>
+      switch Belt.Array.get(elements, startIndex) {
+      | Some(TableNS({numRows, numColumns})) =>
+        switch AST_Util.advanceIndex(elements, startIndex) {
+        | Some((endIndex, _)) if index > startIndex && index < endIndex =>
+          Some({index: startIndex, numRows: numRows, numColumns: numColumns})
+        | _ => None
+        }
+      | Some(_) => iter(startIndex - 1)
+      | None => None
+      }
+
+    iter(index)
+  }
+)
+
+%%private(
+  let resizeTable = (
+    elements,
+    index,
+    ~tableStartIndex,
+    ~fromRows,
+    ~fromColumns,
+    ~toRows,
+    ~toColumns,
+  ) => {
+    let elementsSlice = ArraySlice.ofArray(elements)
+
+    let ((selectionIndex, tableEndIndex), fromCells) = ArrayUtil.foldMakeU(
+      fromRows * fromColumns,
+      (None, tableStartIndex + 1),
+      (. (selectionIndex, startIndex), i) => {
+        let endIndex = AST_Util.argEndIndex(elements, startIndex)
+        let cell = ArraySlice.slice(elementsSlice, ~offset=startIndex, ~len=endIndex - startIndex)
+
+        let selectionIndex = if index >= startIndex && index < endIndex {
+          let column = mod(i, fromColumns)
+          let row = i / fromColumns
+          let delta = index - startIndex
+          Some((row, column, delta))
+        } else {
+          selectionIndex
+        }
+
+        ((selectionIndex, endIndex), cell)
+      },
+    )
+
+    let toCells = Belt.Array.makeByU(toRows * toColumns, (. i) => {
+      let column = mod(i, toColumns)
+      let row = i / toColumns
+
+      if row < fromRows && column < fromColumns {
+        let index = row * fromColumns + column
+        Belt.Array.getUnsafe(fromCells, index)->ArraySlice.toArray
+      } else {
+        [Arg]
+      }
+    })
+
+    let elements = Belt.Array.concatMany([
+      Belt.Array.slice(elements, ~offset=0, ~len=tableStartIndex),
+      [TableNS({numRows: toRows, numColumns: toColumns})],
+      Belt.Array.concatMany(toCells),
+      Belt.Array.sliceToEnd(elements, tableEndIndex),
+    ])
+
+    let index = switch selectionIndex {
+    | Some((row, column, _) as selectionIndex) =>
+      let (row, column, delta) = if row < toRows && column < toColumns {
+        selectionIndex
+      } else {
+        (min(row, toRows - 1), min(column, toColumns - 1), Pervasives.max_int)
+      }
+      let index = row * toColumns + column
+
+      let elementsBefore =
+        toCells
+        ->Belt.Array.slice(~offset=0, ~len=index)
+        ->Belt.Array.reduceU(0, (. accum, cells) => accum + Belt.Array.length(cells))
+      let elementsAfter = min(delta, Belt.Array.getExn(toCells, index)->Belt.Array.length - 1)
+
+      tableStartIndex + 1 + elementsBefore + elementsAfter
+    | None => tableStartIndex
+    }
+
+    (elements, index)
+  }
+)
+
 let insert = ({index, elements, formatCaptureGroups} as editState, element: AST.t) => {
   let elements = AST.normalize(elements)
 
-  if AST_NormalizationContext.elementIsValid(elements, element, index) {
+  // Avoid parent table lookup if element is not a table
+  let resizeTableArgs = switch element {
+  | TableNS({numRows, numColumns}) =>
+    switch parentTable(elements, index) {
+    | Some(parentTable) =>
+      Some((parentTable.index, parentTable.numRows, parentTable.numColumns, numRows, numColumns))
+    | None => None
+    }
+  | _ => None
+  }
+
+  switch resizeTableArgs {
+  | Some((tableStartIndex, fromRows, fromColumns, toRows, toColumns)) =>
+    let (elements, index) = resizeTable(
+      elements,
+      index,
+      ~tableStartIndex,
+      ~fromRows,
+      ~fromColumns,
+      ~toRows,
+      ~toColumns,
+    )
+
+    make(~index, ~elements, ~formatCaptureGroups)
+  | _ if AST_NormalizationContext.elementIsValid(elements, element, index) =>
     let (elements, index) = insertElement(elements, element, index)
     make(~index, ~elements, ~formatCaptureGroups)
-  } else {
-    editState
+  | _ => editState
   }
 }
 

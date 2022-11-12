@@ -169,17 +169,6 @@ test("should insert iteratables outside of iterator ranges", (. ()) => {
   expect(elements)->toEqual([Sum2, Arg, Arg, Sum2, Arg, Arg])
 })
 
-test("should not insert tables inside tables", (. ()) => {
-  let state = make(
-    ~index=1,
-    ~elements=[TableNS({numRows: 2, numColumns: 1}), Arg, Arg],
-    ~formatCaptureGroups=false,
-  )
-  let result = state->insert(TableNS({numRows: 2, numColumns: 1}))
-
-  expect(result)->toBe(state)
-})
-
 test("should insert tables outside of tables", (. ()) => {
   let {elements} =
     make(
@@ -318,4 +307,153 @@ test("should select after a capture group when inserting in format capture group
     ])
 
   expect(index)->toBe(2)
+})
+
+test("table resizing", (. ()) => {
+  let elements = [
+    AST.TableNS({numRows: 2, numColumns: 2}),
+    N1_S,
+    N2_S,
+    Arg,
+    N3_S,
+    N4_S,
+    Arg,
+    N5_S,
+    N6_S,
+    Arg,
+    N7_S,
+    N8_S,
+    Arg,
+  ]
+
+  let insertTable = index =>
+    EditState_Insert.insert(
+      make(~elements, ~index, ~formatCaptureGroups=false),
+      TableNS({numRows: 3, numColumns: 3}),
+    ).elements
+
+  expect(insertTable(0)->Belt.Array.length)->toBe(23)
+  for i in 1 to Belt.Array.length(elements) - 1 {
+    expect(insertTable(i)->Belt.Array.length)->toBe(18)
+  }
+  expect(insertTable(Belt.Array.length(elements))->Belt.Array.length)->toBe(23)
+
+  expect(insertTable(5))->toEqual([
+    AST.TableNS({numRows: 3, numColumns: 3}),
+    N1_S,
+    N2_S,
+    Arg,
+    N3_S,
+    N4_S,
+    Arg,
+    Arg,
+    N5_S,
+    N6_S,
+    Arg,
+    N7_S,
+    N8_S,
+    Arg,
+    Arg,
+    Arg,
+    Arg,
+    Arg,
+  ])
+
+  let {index} = EditState_Insert.insert(
+    make(~elements, ~index=11, ~formatCaptureGroups=false),
+    TableNS({numRows: 3, numColumns: 3}),
+  )
+  expect(index)->toBe(12)
+})
+
+test("table resizing when table is not only element", (. ()) => {
+  let elements = [
+    AST.N0_S,
+    Add,
+    TableNS({numRows: 2, numColumns: 2}),
+    N1_S,
+    Arg,
+    N2_S,
+    Arg,
+    N3_S,
+    Arg,
+    N4_S,
+    Arg,
+    Add,
+    N5_S,
+  ]
+
+  let {elements} = EditState_Insert.insert(
+    make(~elements, ~index=3, ~formatCaptureGroups=false),
+    TableNS({numRows: 3, numColumns: 3}),
+  )
+
+  expect(elements)->toEqual([
+    AST.N0_S,
+    Add,
+    TableNS({numRows: 3, numColumns: 3}),
+    N1_S,
+    Arg,
+    N2_S,
+    Arg,
+    Arg,
+    N3_S,
+    Arg,
+    N4_S,
+    Arg,
+    Arg,
+    Arg,
+    Arg,
+    Arg,
+    Add,
+    N5_S,
+  ])
+})
+
+test("table resizing when index moves outside of table", (. ()) => {
+  let elements = [
+    AST.TableNS({numRows: 2, numColumns: 3}),
+    N1_S,
+    N2_S,
+    Arg,
+    N3_S,
+    N4_S,
+    Arg,
+    N5_S,
+    N6_S,
+    Arg,
+    N7_S,
+    N8_S,
+    Arg,
+    N9_S,
+    N0_S,
+    Arg,
+    N1_S,
+    N2_S,
+    Arg,
+  ]
+
+  let {elements, index} = EditState_Insert.insert(
+    make(~elements, ~index=8, ~formatCaptureGroups=false),
+    TableNS({numRows: 3, numColumns: 2}),
+  )
+
+  expect(elements)->toEqual([
+    AST.TableNS({numRows: 3, numColumns: 2}),
+    N1_S,
+    N2_S,
+    Arg,
+    N3_S,
+    N4_S,
+    Arg,
+    N7_S,
+    N8_S,
+    Arg,
+    N9_S,
+    N0_S,
+    Arg,
+    Arg,
+    Arg,
+  ])
+  expect(index)->toBe(6)
 })
