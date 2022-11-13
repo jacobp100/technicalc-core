@@ -38,11 +38,13 @@ let previous = s => moveIndexInDirection(~forwards=false, s)
 let next = s => moveIndexInDirection(~forwards=true, s)
 
 %%private(
-  let nextIndexRange = (~fn: AST.t, ~index, ~delta) =>
+  @inline
+  let deltaFactor = (~fn: AST.t) =>
     switch fn {
-    | Sum2 | Product2 | Integral3 => index - delta
-    | TableNS({numColumns}) => index + delta * numColumns
-    | _ => index + delta
+    | Frac2S | Differential2 | NRoot2S | MFrac3S => Some(1)
+    | Sum2 | Product2 | Integral3 => Some(-1)
+    | TableNS({numColumns}) => Some(numColumns)
+    | _ => None
     }
 )
 
@@ -50,10 +52,13 @@ let next = s => moveIndexInDirection(~forwards=true, s)
   let moveDelta = (elements: array<AST.t>, index, delta) =>
     switch AST_Util.enclosingFunction(elements, index) {
     | Some((fn, startIndex, _)) =>
-      let ranges = AST_Util.functionArgRanges(elements, startIndex)
-      switch Belt.Array.getIndexByU(ranges, (. (start, end)) => index >= start && index <= end) {
-      | Some(rangeIndex) =>
-        nextIndexRange(~fn, ~index=rangeIndex, ~delta)->Belt.Array.get(ranges, _)
+      switch deltaFactor(~fn) {
+      | Some(deltaFactor) =>
+        let ranges = AST_Util.functionArgRanges(elements, startIndex)
+        switch Belt.Array.getIndexByU(ranges, (. (start, end)) => index >= start && index <= end) {
+        | Some(rangeIndex) => Belt.Array.get(ranges, rangeIndex + delta * deltaFactor)
+        | None => None
+        }
       | None => None
       }
     | None => None
