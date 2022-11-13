@@ -57,8 +57,8 @@
     | ImaginaryUnitS => 51
     | Integral3 => 52
     | LCM2S => 53
-    // | Matrix4S => 54
-    // | Matrix9S => 55
+    // REMOVED | Matrix4S => 54
+    // REMOVED | Matrix9S => 55
     | Max2S => 56
     | Min2S => 57
     | NA_S => 58
@@ -81,8 +81,8 @@
     | SinhS => 75
     | Sum2 => 76
     | TanhS => 77
-    // | Vector2S => 78
-    // | Vector3S => 79
+    // REMOVED | Vector2S => 78
+    // REMOVED | Vector3S => 79
     /* 2nd set elements */
     | CosecS => 80
     | SecS => 81
