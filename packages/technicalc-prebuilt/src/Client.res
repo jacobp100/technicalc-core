@@ -228,12 +228,16 @@ module Value = {
   let nan = Value_Base.nan
   let isNaN = Value_Base.isNaN
 
-  let toString = x => Formatting.toString(x)
   let ofString = x =>
     switch Formatting.ofString(x) {
     | Some(value) => value
     | None => Value_Base.nan
     }
+
+  let toString = (x, maybeFormat) => {
+    let format = getFormat(~mode=String, maybeFormat)
+    Formatting.toString(~format, x)
+  }
 
   let toUnicode = (x, maybeFormat) => {
     let format = getFormat(~mode=Unicode, maybeFormat)
@@ -244,6 +248,11 @@ module Value = {
     let format = getFormat(~mode=MathML, maybeFormat)
     let inline = Belt.Option.getWithDefault(maybeInline, false)
     Formatting.toString(~format, ~inline, x)
+  }
+
+  let toTex = (x, maybeFormat) => {
+    let format = getFormat(~mode=Tex, maybeFormat)
+    Formatting.toString(~format, x)
   }
 }
 
