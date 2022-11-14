@@ -234,7 +234,7 @@ type parentTable = {
       if row < fromRows && column < fromColumns {
         let index = row * fromColumns + column
         let (start, end) = Belt.Array.getExn(cellRanges, index)
-        /* +1 for Arg */
+        // +1 for Arg
         Belt.Array.slice(elements, ~offset=start, ~len=end - start + 1)
       } else {
         [Arg]

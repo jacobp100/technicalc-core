@@ -13,7 +13,7 @@ include (
       type digitGroupingState =
         | GroupingDisabled
         | Normal
-        | SkipGrouping /* After decimal points etc. */
+        | SkipGrouping // After decimal points etc.
         | GroupingDigits({numbersRev: list<string>})
 
       // type lastElementType =
@@ -30,7 +30,7 @@ include (
       }
 
       let make = (~locale, ~digitGrouping) => {
-        locale: locale,
+        locale,
         body: "",
         length: 0,
         digitGroupingState: digitGrouping ? Normal : GroupingDisabled,
@@ -88,11 +88,11 @@ include (
           let body = toString(v) ++ element
           let length = v.length + 1
           {
-            locale: locale,
-            body: body,
-            length: length,
-            digitGroupingState: digitGroupingState,
-            lastElementType: lastElementType,
+            locale,
+            body,
+            length,
+            digitGroupingState,
+            lastElementType,
           }
         }
       )
@@ -180,7 +180,7 @@ include (
       let transformCurrentGroupWithArgU = ({level0Body, bracketGroups}, arg, fn) =>
         switch bracketGroups {
         | list{{body} as bracketGroup, ...rest} => {
-            level0Body: level0Body,
+            level0Body,
             bracketGroups: list{{...bracketGroup, body: fn(. body, arg)}, ...rest},
           }
         | list{} => {level0Body: fn(. level0Body, arg), bracketGroups: list{}}
@@ -189,7 +189,7 @@ include (
       let appendOpenBracket = (v, openBracketRange) => {
         ...v,
         bracketGroups: list{
-          {openBracketRange: openBracketRange, body: MmlPrettifier.clear(v.level0Body)},
+          {openBracketRange, body: MmlPrettifier.clear(v.level0Body)},
           ...v.bracketGroups,
         },
       }
