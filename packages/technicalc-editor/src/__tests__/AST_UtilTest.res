@@ -17,11 +17,11 @@ test("arg end index", (. ()) => {
     /* 11 */ Arg,
   ]
 
-  expect(argEndIndex(elements, 0))->toBe(9)
-  expect(argEndIndex(elements, 1))->toBe(9)
+  expect(argEndIndex(elements, 0))->toBe(12)
+  expect(argEndIndex(elements, 1))->toBe(12)
   expect(argEndIndex(elements, 2))->toBe(4)
   expect(argEndIndex(elements, 3))->toBe(4)
-  expect(argEndIndex(elements, 4))->toBe(7)
+  expect(argEndIndex(elements, 4))->toBe(9)
   expect(argEndIndex(elements, 5))->toBe(7)
   expect(argEndIndex(elements, 6))->toBe(7)
   expect(argEndIndex(elements, 7))->toBe(9)

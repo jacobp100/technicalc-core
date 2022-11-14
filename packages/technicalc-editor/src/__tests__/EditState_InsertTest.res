@@ -309,21 +309,21 @@ test("should select after a capture group when inserting in format capture group
   expect(index)->toBe(2)
 })
 
-test("table resizing", (. ()) => {
+test("table resizing JPt", (. ()) => {
   let elements = [
-    AST.TableNS({numRows: 2, numColumns: 2}),
-    N1_S,
-    N2_S,
-    Arg,
-    N3_S,
-    N4_S,
-    Arg,
-    N5_S,
-    N6_S,
-    Arg,
-    N7_S,
-    N8_S,
-    Arg,
+    /* 0 */ AST.TableNS({numRows: 2, numColumns: 2}),
+    /* 1 */ N1_S,
+    /* 2 */ N2_S,
+    /* 3 */ Arg,
+    /* 4 */ N3_S,
+    /* 5 */ N4_S,
+    /* 6 */ Arg,
+    /* 7 */ N5_S,
+    /* 8 */ N6_S,
+    /* 9 */ Arg,
+    /* 10 */ N7_S,
+    /* 11 */ N8_S,
+    /* 12 */ Arg,
   ]
 
   let insertTable = index =>
@@ -368,19 +368,19 @@ test("table resizing", (. ()) => {
 
 test("table resizing when table is not only element", (. ()) => {
   let elements = [
-    AST.N0_S,
-    Add,
-    TableNS({numRows: 2, numColumns: 2}),
-    N1_S,
-    Arg,
-    N2_S,
-    Arg,
-    N3_S,
-    Arg,
-    N4_S,
-    Arg,
-    Add,
-    N5_S,
+    /* 0 */ AST.N0_S,
+    /* 1 */ Add,
+    /* 2 */ TableNS({numRows: 2, numColumns: 2}),
+    /* 3 */ N1_S,
+    /* 4 */ Arg,
+    /* 5 */ N2_S,
+    /* 6 */ Arg,
+    /* 7 */ N3_S,
+    /* 8 */ Arg,
+    /* 9 */ N4_S,
+    /* 10 */ Arg,
+    /* 11 */ Add,
+    /* 12 */ N5_S,
   ]
 
   let {elements} = EditState_Insert.insert(
@@ -412,25 +412,25 @@ test("table resizing when table is not only element", (. ()) => {
 
 test("table resizing when index moves outside of table", (. ()) => {
   let elements = [
-    AST.TableNS({numRows: 2, numColumns: 3}),
-    N1_S,
-    N2_S,
-    Arg,
-    N3_S,
-    N4_S,
-    Arg,
-    N5_S,
-    N6_S,
-    Arg,
-    N7_S,
-    N8_S,
-    Arg,
-    N9_S,
-    N0_S,
-    Arg,
-    N1_S,
-    N2_S,
-    Arg,
+    /* 0 */ AST.TableNS({numRows: 2, numColumns: 3}),
+    /* 1 */ N1_S,
+    /* 2 */ N2_S,
+    /* 3 */ Arg,
+    /* 4 */ N3_S,
+    /* 5 */ N4_S,
+    /* 6 */ Arg,
+    /* 7 */ N5_S,
+    /* 8 */ N6_S,
+    /* 9 */ Arg,
+    /* 10 */ N7_S,
+    /* 11 */ N8_S,
+    /* 12 */ Arg,
+    /* 13 */ N9_S,
+    /* 14 */ N0_S,
+    /* 15 */ Arg,
+    /* 16 */ N1_S,
+    /* 17 */ N2_S,
+    /* 18 */ Arg,
   ]
 
   let {elements, index} = EditState_Insert.insert(

@@ -224,27 +224,8 @@ type parentTable = {
     ~toRows,
     ~toColumns,
   ) => {
-    let elementsSlice = ArraySlice.ofArray(elements)
-
-    let ((selectionIndex, tableEndIndex), fromCells) = ArrayUtil.foldMakeU(
-      fromRows * fromColumns,
-      (None, tableStartIndex + 1),
-      (. (selectionIndex, startIndex), i) => {
-        let endIndex = AST_Util.argEndIndex(elements, startIndex)
-        let cell = ArraySlice.slice(elementsSlice, ~offset=startIndex, ~len=endIndex - startIndex)
-
-        let selectionIndex = if index >= startIndex && index < endIndex {
-          let column = mod(i, fromColumns)
-          let row = i / fromColumns
-          let delta = index - startIndex
-          Some((row, column, delta))
-        } else {
-          selectionIndex
-        }
-
-        ((selectionIndex, endIndex), cell)
-      },
-    )
+    let cellRanges = AST_Util.functionArgRanges(elements, tableStartIndex)
+    let tableEndIndex = Belt.Array.getExn(cellRanges, Belt.Array.length(cellRanges) - 1)->snd + 1
 
     let toCells = Belt.Array.makeByU(toRows * toColumns, (. i) => {
       let column = mod(i, toColumns)
@@ -252,7 +233,9 @@ type parentTable = {
 
       if row < fromRows && column < fromColumns {
         let index = row * fromColumns + column
-        Belt.Array.getUnsafe(fromCells, index)->ArraySlice.toArray
+        let (start, end) = Belt.Array.getExn(cellRanges, index)
+        /* +1 for Arg */
+        Belt.Array.slice(elements, ~offset=start, ~len=end - start + 1)
       } else {
         [Arg]
       }
@@ -265,10 +248,18 @@ type parentTable = {
       Belt.Array.sliceToEnd(elements, tableEndIndex),
     ])
 
+    let selectionIndex = Belt.Array.getIndexByU(cellRanges, (. (start, end)) => {
+      index >= start && index <= end
+    })
     let index = switch selectionIndex {
-    | Some((row, column, _) as selectionIndex) =>
+    | Some(i) =>
+      let (selectionStart, _) = Belt.Array.getExn(cellRanges, i)
+      let column = mod(i, fromColumns)
+      let row = i / fromColumns
+      let delta = index - selectionStart
+
       let (row, column, delta) = if row < toRows && column < toColumns {
-        selectionIndex
+        (row, column, delta)
       } else {
         (min(row, toRows - 1), min(column, toColumns - 1), Pervasives.max_int)
       }
