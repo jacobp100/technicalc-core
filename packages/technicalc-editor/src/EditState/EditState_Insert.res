@@ -278,26 +278,30 @@ type parentTable = {
       index >= start && index < end
     })
     let index = switch selectionIndex {
-    | Some(i) =>
-      let (selectionStart, _) = Belt.Array.getExn(cellRanges, i)
-      let column = mod(i, fromColumns)
-      let row = i / fromColumns
-      let delta = index - selectionStart
+    | Some(selectionIndex) =>
+      let (selectionStart, _) = Belt.Array.getExn(cellRanges, selectionIndex)
+      let column = mod(selectionIndex, fromColumns)
+      let row = selectionIndex / fromColumns
 
-      let (row, column, delta) = if row < toRows && column < toColumns {
-        (row, column, delta)
-      } else {
-        (min(row, toRows - 1), min(column, toColumns - 1), Pervasives.max_int)
-      }
-      let index = row * toColumns + column
+      let cellRetained = row < toRows && column < toColumns
 
-      let elementsBefore =
-        toCells
-        ->Belt.Array.slice(~offset=0, ~len=index)
-        ->Belt.Array.reduceU(0, (. accum, cells) => accum + Belt.Array.length(cells))
-      let elementsAfter = min(delta, Belt.Array.getExn(toCells, index)->Belt.Array.length - 1)
+      // Written like this to avoid Caml import
+      let maxColumn = toColumns - 1
+      let maxRow = toRows - 1
+      let column = min(column, maxColumn)
+      let row = min(row, maxRow)
 
-      tableStartIndex + 1 + elementsBefore + elementsAfter
+      let cellIndex = row * toColumns + column
+
+      let delta = cellRetained
+        ? index - selectionStart
+        : Belt.Array.getExn(toCells, cellIndex)->Belt.Array.length - 1
+
+      let previousCellElements = Belt.Array.reduceWithIndexU(toCells, 0, (. accum, cells, i) => {
+        accum + (i < cellIndex ? Belt.Array.length(cells) : 0)
+      })
+
+      tableStartIndex + 1 + previousCellElements + delta
     | None => tableStartIndex
     }
 

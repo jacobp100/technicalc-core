@@ -1,5 +1,6 @@
 open EditState_Types
 open EditState_Base
+open EditState_Util
 
 %%private(
   let rec matchNEmptyArgs = (elements, ~index, ~count) =>
@@ -102,10 +103,7 @@ let delete = (editState: t) => {
 
   let possibleEmptyCaptureGroupStart = formatCaptureGroups ? index - 2 : index - 1
 
-  let isEmptyCaptureGroup = EditState_Util.isEmptyCaptureGroup(
-    elements,
-    possibleEmptyCaptureGroupStart,
-  )
+  let isEmptyCaptureGroup = isEmptyCaptureGroup(elements, possibleEmptyCaptureGroupStart)
 
   if isEmptyCaptureGroup {
     let index = possibleEmptyCaptureGroupStart

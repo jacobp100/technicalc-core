@@ -12,15 +12,17 @@ type direction =
   | Forwards
   | Backwards
 
-let preferredShiftDirection = (~index, ~elements: array<AST.t>, ~formatCaptureGroups) =>
+let preferredShiftDirection = (~index, ~elements, ~formatCaptureGroups) =>
   if !formatCaptureGroups {
-    let previousElement = Belt.Array.get(elements, index - 1)
-    let currentElement = Belt.Array.get(elements, index)
+    let previousIndex = index - 1
 
-    switch (previousElement, currentElement) {
-    | (_, Some(CaptureGroupStart(_))) => Some(Forwards)
-    | (Some(CaptureGroupEndS), _) => Some(Backwards)
-    | _ => None
+    switch Belt.Array.get(elements, index) {
+    | Some(AST.CaptureGroupStart(_)) => Some(Forwards)
+    | _ =>
+      switch Belt.Array.get(elements, previousIndex) {
+      | Some(CaptureGroupEndS) => Some(Backwards)
+      | _ => None
+      }
     }
   } else if isEmptyCaptureGroup(elements, index - 1) {
     Some(Backwards)

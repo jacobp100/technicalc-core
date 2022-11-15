@@ -309,7 +309,7 @@ test("should select after a capture group when inserting in format capture group
   expect(index)->toBe(2)
 })
 
-test("table resizing JPt", (. ()) => {
+test("table resizing", (. ()) => {
   let elements = [
     /* 0 */ AST.TableNS({numRows: 2, numColumns: 2}),
     /* 1 */ N1_S,

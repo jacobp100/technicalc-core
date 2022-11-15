@@ -143,7 +143,7 @@ let unitTypeToStringPlural = (type_: unitType) =>
     | None => out
     }
 
-    let out = switch abs(power) {
+    let out = switch TechniCalcCalculator.IntUtil.abs(power) {
     | 1 => out
     | 2 => "Square " ++ out
     | 3 => "Cubic " ++ out
