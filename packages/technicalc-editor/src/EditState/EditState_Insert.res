@@ -285,17 +285,20 @@ type parentTable = {
       let cellRetained = row < toRows && column < toColumns
 
       // Written like this to avoid Caml import
-      let maxColumn = toColumns - 1
-      let maxRow = toRows - 1
-      let column = min(column, maxColumn)
-      let row = min(row, maxRow)
+      let cellIndex = {
+        let maxColumn = toColumns - 1
+        let maxRow = toRows - 1
+        let column = min(column, maxColumn)
+        let row = min(row, maxRow)
+        row * toColumns + column
+      }
 
-      let cellIndex = row * toColumns + column
-
-      let (selectionStart, _) = Belt.Array.getExn(cellRanges, selectionIndex)
-      let indexInCell = cellRetained
-        ? index - selectionStart
-        : Belt.Array.getExn(toCells, cellIndex)->Belt.Array.length - 1
+      let indexInCell = if cellRetained {
+        let (selectionStart, _) = Belt.Array.getExn(cellRanges, selectionIndex)
+        index - selectionStart
+      } else {
+        Belt.Array.getExn(toCells, cellIndex)->Belt.Array.length - 1
+      }
 
       let previousCellElements = Belt.Array.reduceWithIndexU(toCells, 0, (. accum, cells, i) => {
         accum + (i < cellIndex ? Belt.Array.length(cells) : 0)
