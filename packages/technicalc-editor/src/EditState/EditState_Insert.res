@@ -279,7 +279,6 @@ type parentTable = {
     })
     let index = switch selectionIndex {
     | Some(selectionIndex) =>
-      let (selectionStart, _) = Belt.Array.getExn(cellRanges, selectionIndex)
       let column = mod(selectionIndex, fromColumns)
       let row = selectionIndex / fromColumns
 
@@ -293,6 +292,7 @@ type parentTable = {
 
       let cellIndex = row * toColumns + column
 
+      let (selectionStart, _) = Belt.Array.getExn(cellRanges, selectionIndex)
       let indexInCell = cellRetained
         ? index - selectionStart
         : Belt.Array.getExn(toCells, cellIndex)->Belt.Array.length - 1
