@@ -293,7 +293,7 @@ type parentTable = {
 
       let cellIndex = row * toColumns + column
 
-      let delta = cellRetained
+      let indexInCell = cellRetained
         ? index - selectionStart
         : Belt.Array.getExn(toCells, cellIndex)->Belt.Array.length - 1
 
@@ -301,7 +301,7 @@ type parentTable = {
         accum + (i < cellIndex ? Belt.Array.length(cells) : 0)
       })
 
-      tableStartIndex + 1 + previousCellElements + delta
+      tableStartIndex + 1 + previousCellElements + indexInCell
     | None => tableStartIndex
     }
 
