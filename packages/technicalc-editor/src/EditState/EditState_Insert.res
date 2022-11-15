@@ -127,11 +127,18 @@ type skipMode =
         | Forwards => bracketLevel < 0
         | Backwards => bracketLevel > 0
         }
-        let nextIndex = shouldBreak ? None : AST.advanceIndex(~direction, x, index)
+        let nextIndex = shouldBreak ? None : AST.advanceScopeIndex(~direction, x, index)
         switch nextIndex {
-        | Some((_, element)) if skipMode(element) == FunctionFixed => Some(index)
+        | Some(nextIndex) =>
+          let fnIndex = direction == Forwards ? index : nextIndex + 1
+          let fn = Belt.Array.getExn(x, fnIndex)
+
+          if skipMode(fn) == FunctionFixed {
+            Some(index)
+          } else {
+            iter(~bracketLevel, nextIndex)
+          }
         | None => Some(index)
-        | Some((index, _)) => iter(~bracketLevel, index)
         }
       }
     iter(~bracketLevel=0, index)
@@ -139,13 +146,33 @@ type skipMode =
 )
 
 %%private(
-  let countMovableElements = (x: array<AST.t>, ~from as startIndex, ~direction) =>
+  let countMovableElements = (~direction, ~from as startIndex, x: array<AST.t>) =>
     switch advancePastMovableElements(~direction, x, startIndex) {
     | Some(endIndex) =>
       let i = startIndex - endIndex
       i > 0 ? i : -i
     | None => 0
     }
+)
+
+%%private(
+  let bracketLevel = (~direction=AST.Forwards, ~from=0, x: array<AST.t>) => {
+    let rec iter = (~bracketLevel, index) =>
+      switch Belt.Array.get(x, index) {
+      | None => bracketLevel
+      | Some(e) =>
+        let bracketLevel = switch e {
+        | OpenBracket => bracketLevel + 1
+        | CloseBracketS => bracketLevel - 1
+        | _ => bracketLevel
+        }
+        switch AST.advanceScopeIndex(x, index, ~direction) {
+        | Some(index) => iter(~bracketLevel, index)
+        | None => bracketLevel
+        }
+      }
+    iter(~bracketLevel=0, from)
+  }
 )
 
 %%private(
@@ -181,7 +208,7 @@ type skipMode =
       let nextIndex = s > 0 ? index + 2 : index + 1
       (elements, nextIndex)
     | OpenBracket =>
-      let shouldAppendCloseBracket = AST.bracketLevel(elements, ~from=index) >= 0
+      let shouldAppendCloseBracket = bracketLevel(elements, ~from=index) >= 0
       let combined = shouldAppendCloseBracket ? [element, CloseBracketS] : [element]
       let elements = ArrayUtil.insertArray(elements, combined, index)
       (elements, index + 1)
@@ -206,10 +233,10 @@ type parentTable = {
 
 %%private(
   let rec parentTable = (elements: array<AST.t>, index: int): option<parentTable> =>
-    switch AST_Util.enclosingFunction(elements, index) {
-    | Some((TableNS({numRows, numColumns}), startIndex, _)) =>
+    switch AST.closestParentFunction(elements, index) {
+    | Some((TableNS({numRows, numColumns}), startIndex)) =>
       Some({index: startIndex, numRows, numColumns})
-    | Some((_, startIndex, _)) => parentTable(elements, startIndex)
+    | Some((_, startIndex)) => parentTable(elements, startIndex)
     | None => None
     }
 )
@@ -224,8 +251,8 @@ type parentTable = {
     ~toRows,
     ~toColumns,
   ) => {
-    let cellRanges = AST_Util.functionArgRanges(elements, tableStartIndex)
-    let tableEndIndex = Belt.Array.getExn(cellRanges, Belt.Array.length(cellRanges) - 1)->snd + 1
+    let cellRanges = AST.functionArgRangesExn(elements, tableStartIndex)
+    let tableEndIndex = Belt.Array.getExn(cellRanges, Belt.Array.length(cellRanges) - 1)->snd
 
     let toCells = Belt.Array.makeByU(toRows * toColumns, (. i) => {
       let column = mod(i, toColumns)
@@ -234,8 +261,7 @@ type parentTable = {
       if row < fromRows && column < fromColumns {
         let index = row * fromColumns + column
         let (start, end) = Belt.Array.getExn(cellRanges, index)
-        // +1 for Arg
-        Belt.Array.slice(elements, ~offset=start, ~len=end - start + 1)
+        Belt.Array.slice(elements, ~offset=start, ~len=end - start)
       } else {
         [Arg]
       }
@@ -249,7 +275,7 @@ type parentTable = {
     ])
 
     let selectionIndex = Belt.Array.getIndexByU(cellRanges, (. (start, end)) => {
-      index >= start && index <= end
+      index >= start && index < end
     })
     let index = switch selectionIndex {
     | Some(i) =>

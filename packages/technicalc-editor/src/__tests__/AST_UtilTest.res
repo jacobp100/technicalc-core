@@ -1,7 +1,7 @@
 open Jest
 open AST_Util
 
-test("arg end index", (. ()) => {
+test("advance scope index", (. ()) => {
   let elements = [
     /* 0 */ AST.N1_S,
     /* 1 */ Frac2S,
@@ -17,23 +17,22 @@ test("arg end index", (. ()) => {
     /* 11 */ Arg,
   ]
 
-  expect(argEndIndex(elements, 0))->toBe(12)
-  expect(argEndIndex(elements, 1))->toBe(12)
-  expect(argEndIndex(elements, 2))->toBe(4)
-  expect(argEndIndex(elements, 3))->toBe(4)
-  expect(argEndIndex(elements, 4))->toBe(9)
-  expect(argEndIndex(elements, 5))->toBe(7)
-  expect(argEndIndex(elements, 6))->toBe(7)
-  expect(argEndIndex(elements, 7))->toBe(9)
-  expect(argEndIndex(elements, 8))->toBe(9)
-  expect(argEndIndex(elements, 9))->toBe(12)
-  expect(argEndIndex(elements, 10))->toBe(12)
-  expect(argEndIndex(elements, 11))->toBe(12)
-  expect(argEndIndex(elements, 12))->toBe(12)
-  expect(argEndIndex(elements, 13))->toBe(13)
+  expect(advanceScopeIndex(~direction=Forwards, elements, 0))->toEqual(Some(1))
+  expect(advanceScopeIndex(~direction=Forwards, elements, 1))->toEqual(Some(9))
+  expect(advanceScopeIndex(~direction=Forwards, elements, 2))->toEqual(Some(3))
+  expect(advanceScopeIndex(~direction=Forwards, elements, 3))->toEqual(None)
+  expect(advanceScopeIndex(~direction=Forwards, elements, 4))->toEqual(Some(7))
+  expect(advanceScopeIndex(~direction=Forwards, elements, 5))->toEqual(Some(6))
+  expect(advanceScopeIndex(~direction=Forwards, elements, 6))->toEqual(None)
+  expect(advanceScopeIndex(~direction=Forwards, elements, 7))->toEqual(Some(8))
+  expect(advanceScopeIndex(~direction=Forwards, elements, 8))->toEqual(None)
+  expect(advanceScopeIndex(~direction=Forwards, elements, 9))->toEqual(Some(12))
+  expect(advanceScopeIndex(~direction=Forwards, elements, 10))->toEqual(Some(11))
+  expect(advanceScopeIndex(~direction=Forwards, elements, 11))->toEqual(None)
+  expect(advanceScopeIndex(~direction=Forwards, elements, 12))->toEqual(None)
 })
 
-test("enclosing function", (. ()) => {
+test("closest parent function function", (. ()) => {
   let elements = [
     /* 0 */ AST.N1_S,
     /* 1 */ Frac2S,
@@ -49,20 +48,20 @@ test("enclosing function", (. ()) => {
     /* 11 */ Arg,
   ]
 
-  expect(enclosingFunction(elements, 0))->toEqual(None)
-  expect(enclosingFunction(elements, 1))->toEqual(None)
-  expect(enclosingFunction(elements, 2))->toEqual(Some(Frac2S, 1, 9))
-  expect(enclosingFunction(elements, 3))->toEqual(Some(Frac2S, 1, 9))
-  expect(enclosingFunction(elements, 4))->toEqual(Some(Frac2S, 1, 9))
-  expect(enclosingFunction(elements, 5))->toEqual(Some(NLog1, 4, 7))
-  expect(enclosingFunction(elements, 6))->toEqual(Some(NLog1, 4, 7))
-  expect(enclosingFunction(elements, 7))->toEqual(Some(Frac2S, 1, 9))
-  expect(enclosingFunction(elements, 8))->toEqual(Some(Frac2S, 1, 9))
-  expect(enclosingFunction(elements, 9))->toEqual(None)
-  expect(enclosingFunction(elements, 10))->toEqual(Some(Superscript1, 9, 12))
-  expect(enclosingFunction(elements, 11))->toEqual(Some(Superscript1, 9, 12))
-  expect(enclosingFunction(elements, 12))->toEqual(None)
-  expect(enclosingFunction(elements, 13))->toEqual(None)
+  expect(closestParentFunction(elements, 0))->toEqual(None)
+  expect(closestParentFunction(elements, 1))->toEqual(None)
+  expect(closestParentFunction(elements, 2))->toEqual(Some(Frac2S, 1))
+  expect(closestParentFunction(elements, 3))->toEqual(Some(Frac2S, 1))
+  expect(closestParentFunction(elements, 4))->toEqual(Some(Frac2S, 1))
+  expect(closestParentFunction(elements, 5))->toEqual(Some(NLog1, 4))
+  expect(closestParentFunction(elements, 6))->toEqual(Some(NLog1, 4))
+  expect(closestParentFunction(elements, 7))->toEqual(Some(Frac2S, 1))
+  expect(closestParentFunction(elements, 8))->toEqual(Some(Frac2S, 1))
+  expect(closestParentFunction(elements, 9))->toEqual(None)
+  expect(closestParentFunction(elements, 10))->toEqual(Some(Superscript1, 9))
+  expect(closestParentFunction(elements, 11))->toEqual(Some(Superscript1, 9))
+  expect(closestParentFunction(elements, 12))->toEqual(None)
+  expect(closestParentFunction(elements, 13))->toEqual(None)
 })
 
 test("recursive enclosing function", (. ()) => {
@@ -81,12 +80,12 @@ test("recursive enclosing function", (. ()) => {
     /* 11 */ Arg,
   ]
 
-  let (_, startIndex, _) = enclosingFunction(elements, 5)->Belt.Option.getExn
-  let (_, startIndex, _) = enclosingFunction(elements, startIndex)->Belt.Option.getExn
+  let (_, startIndex) = closestParentFunction(elements, 5)->Belt.Option.getExn
+  let (_, startIndex) = closestParentFunction(elements, startIndex)->Belt.Option.getExn
 
   expect(startIndex)->toBe(1)
 
-  expect(enclosingFunction(elements, startIndex))->toBe(None)
+  expect(closestParentFunction(elements, startIndex))->toBe(None)
 })
 
 test("function ranges", (. ()) => {
@@ -105,7 +104,8 @@ test("function ranges", (. ()) => {
     /* 11 */ Arg,
   ]
 
-  expect(functionArgRanges(elements, 1))->toEqual([(2, 3), (4, 8)])
-  expect(functionArgRanges(elements, 4))->toEqual([(5, 6)])
-  expect(functionArgRanges(elements, 9))->toEqual([(10, 11)])
+  expect(functionArgRangesExn(elements, 0))->toEqual([])
+  expect(functionArgRangesExn(elements, 1))->toEqual([(2, 4), (4, 9)])
+  expect(functionArgRangesExn(elements, 4))->toEqual([(5, 7)])
+  expect(functionArgRangesExn(elements, 9))->toEqual([(10, 12)])
 })

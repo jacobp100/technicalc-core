@@ -2,30 +2,21 @@ open EditState_Base
 open EditState_Types
 open EditState_Util
 
-let setIndex = ({elements, formatCaptureGroups}, index) => {
+let setIndex = ({elements, formatCaptureGroups}, index) =>
   make(~index, ~elements, ~formatCaptureGroups)
-}
 
 %%private(
-  let moveIndexInDirection = (~forwards, {index, elements, formatCaptureGroups}) => {
+  let moveIndexInDirection = (elements, index, formatCaptureGroups, step) => {
     let length = Belt.Array.length(elements)
-    let step = forwards ? 1 : -1
 
     let rec iter = index => {
-      let preferredShiftDirection = EditState_Util.preferredShiftDirection(
-        ~index,
-        ~elements,
-        ~formatCaptureGroups,
-      )
-      let nextIndex = switch preferredShiftDirection {
+      let nextIndex = switch preferredShiftDirection(~index, ~elements, ~formatCaptureGroups) {
       | Some(_) => Some(index + step)
       | None => None
       }
       switch nextIndex {
       | Some(nextIndex) if nextIndex >= 0 && nextIndex <= length => iter(nextIndex)
-      | _ =>
-        let index = preferredInsertionIndex(~index, ~elements, ~formatCaptureGroups)
-        {index, elements, formatCaptureGroups}
+      | _ => index
       }
     }
 
@@ -33,9 +24,15 @@ let setIndex = ({elements, formatCaptureGroups}, index) => {
   }
 )
 
-let previous = s => moveIndexInDirection(~forwards=false, s)
+let previous = ({elements, index, formatCaptureGroups}) => {
+  let index = moveIndexInDirection(elements, index, formatCaptureGroups, -1)
+  make(~elements, ~index, ~formatCaptureGroups)
+}
 
-let next = s => moveIndexInDirection(~forwards=true, s)
+let next = ({elements, index, formatCaptureGroups}) => {
+  let index = moveIndexInDirection(elements, index, formatCaptureGroups, 1)
+  make(~elements, ~index, ~formatCaptureGroups)
+}
 
 %%private(
   @inline
@@ -50,12 +47,12 @@ let next = s => moveIndexInDirection(~forwards=true, s)
 
 %%private(
   let moveDelta = (elements: array<AST.t>, index, delta) =>
-    switch AST_Util.enclosingFunction(elements, index) {
-    | Some((fn, startIndex, _)) =>
+    switch AST.closestParentFunction(elements, index) {
+    | Some((fn, startIndex)) =>
       switch deltaFactor(~fn) {
       | Some(deltaFactor) =>
-        let ranges = AST_Util.functionArgRanges(elements, startIndex)
-        switch Belt.Array.getIndexByU(ranges, (. (start, end)) => index >= start && index <= end) {
+        let ranges = AST.functionArgRangesExn(elements, startIndex)
+        switch Belt.Array.getIndexByU(ranges, (. (start, end)) => index >= start && index < end) {
         | Some(rangeIndex) => Belt.Array.get(ranges, rangeIndex + delta * deltaFactor)
         | None => None
         }
@@ -67,7 +64,7 @@ let next = s => moveIndexInDirection(~forwards=true, s)
 
 let moveUp = ({index, elements, formatCaptureGroups}) => {
   let index = switch moveDelta(elements, index, -1) {
-  | Some((_, nextEnd)) => nextEnd
+  | Some((_, nextEnd)) => nextEnd - 1
   | None => index
   }
 

@@ -108,10 +108,11 @@ open AST
         iter(~indicesRev, ~lastWasFunctionOrArg=true, i + 1)
       | Some(Arg) => iter(~indicesRev, ~lastWasFunctionOrArg=true, i + 1)
       | Some(Superscript1) =>
-        let needsPlaceholder = switch advanceIndex(~direction=Backwards, elements, i - 1) {
-        | Some((_, element)) if !acceptsSuperscript(element) => true
+        let needsPlaceholder = switch advanceScopeIndex(~direction=Backwards, elements, i - 1) {
+        | Some(index) =>
+          let fn = Belt.Array.getExn(elements, index + 1)
+          !acceptsSuperscript(fn)
         | None => true
-        | Some(_) => false
         }
         let indicesRev = needsPlaceholder ? list{i, ...indicesRev} : indicesRev
         iter(~indicesRev, ~lastWasFunctionOrArg=true, i + 1)

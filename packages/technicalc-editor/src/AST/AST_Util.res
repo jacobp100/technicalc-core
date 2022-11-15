@@ -1,100 +1,88 @@
 open AST_Types
 
-let argEndIndex = (x: array<t>, index) => {
-  let rec iter = (~pending, index) =>
-    switch Belt.Array.get(x, index) {
-    | Some(Arg) =>
-      if pending == 0 {
-        index + 1
-      } else {
-        iter(~pending=pending - 1, index + 1)
-      }
-    | Some(v) => iter(~pending=pending + argCountExn(v), index + 1)
-    | None => index
-    }
-
-  iter(~pending=0, index)
-}
 type direction = Forwards | Backwards
 
-let advanceIndex = (~direction=Forwards, x, startIndex) => {
+/*
+The next index within the same scope level - i.e. keeping the parent function
+the same. If the element at the index is a function with arguments, it will
+jump over it - returning the index after that function's last Arg. Returns None
+if the index is outside the bounds of the function.
+*/
+let advanceScopeIndex = (~direction=Forwards, x, index) => {
   let step = direction == Forwards ? 1 : -1
-  let argLevelStep = step
+  let argCountStep = step
 
-  let rec iter = (~argLevel, index) =>
+  let rec iter = (~pendingArgs, index) =>
     switch Belt.Array.get(x, index) {
     | None => None
-    | Some(v) =>
+    | Some(e) =>
       let index = index + step
-      let argLevel = switch v {
-      | Arg => argLevel - argLevelStep
-      | _ => argLevel + argLevelStep * argCountExn(v)
+      let pendingArgs = switch e {
+      | Arg => pendingArgs - argCountStep
+      | _ => pendingArgs + argCountStep * argCountExn(e)
       }
 
-      if argLevel == 0 {
-        let fn = direction == Forwards ? Belt.Array.getExn(x, startIndex) : v
-        Some((index, fn))
-      } else if argLevel > 0 {
-        iter(~argLevel, index)
+      if pendingArgs == 0 {
+        Some(index)
+      } else if pendingArgs > 0 {
+        iter(~pendingArgs, index)
       } else {
         None
       }
     }
-  iter(~argLevel=0, startIndex)
+  iter(~pendingArgs=0, index)
 }
 
-let bracketLevel = (~direction=Forwards, ~from=0, x: array<t>) => {
-  let rec iter = (~bracketLevel, index) =>
+/*
+Closest parent function the index is strictly within. Returns the index of the
+function element. Since the index of the function element is not within the
+function itself, you can recursively call this to traverse through the parents.
+*/
+let closestParentFunction = (x: array<t>, index) => {
+  let rec iter = (~pendingArgs, index) =>
     switch Belt.Array.get(x, index) {
-    | None => bracketLevel
-    | Some(v) =>
-      let bracketLevel = switch v {
-      | OpenBracket => bracketLevel + 1
-      | CloseBracketS => bracketLevel - 1
-      | _ => bracketLevel
-      }
-      switch advanceIndex(x, index, ~direction) {
-      | Some((index, _)) => iter(~bracketLevel, index)
-      | None => bracketLevel
-      }
-    }
-  iter(~bracketLevel=0, from)
-}
-
-%%private(
-  let rec fnEndIndex = (~argCount, x, index) =>
-    if argCount == 0 {
-      index
-    } else {
-      fnEndIndex(~argCount=argCount - 1, x, argEndIndex(x, index))
-    }
-)
-let enclosingFunction = (x: array<t>, index) => {
-  let rec iter = startIndex =>
-    switch Belt.Array.get(x, startIndex) {
-    | Some(Arg) => iter(startIndex - 1)
-    | Some(element) =>
-      let argCount = argCountExn(element)
-      let endIndex = argCount != 0 ? Some(fnEndIndex(~argCount, x, startIndex + 1)) : None
-      switch endIndex {
-      | Some(endIndex) if index >= startIndex && index < endIndex =>
-        Some((element, startIndex, endIndex))
-      | _ => iter(startIndex - 1)
+    | Some(Arg) => iter(~pendingArgs=pendingArgs + 1, index - 1)
+    | Some(e) =>
+      let pendingArgs = pendingArgs - argCountExn(e)
+      if pendingArgs < 0 {
+        Some((e, index))
+      } else {
+        iter(~pendingArgs, index - 1)
       }
     | None => None
     }
-  iter(index - 1)
+  iter(~pendingArgs=0, index - 1)
 }
 
-let functionArgRanges = (x: array<t>, index) => {
-  switch Belt.Array.get(x, index) {
-  | Some(Arg)
-  | None => []
-  | Some(element) =>
-    let (_, ranges) = ArrayUtil.foldMakeU(argCountExn(element), index + 1, (. startIndex, _) => {
-      let endIndex = argEndIndex(x, startIndex)
-      (endIndex, (startIndex, endIndex - 1))
-    })
-    ranges
-  }
+/*
+Returns an array of the ranges of an element's function arguments. Ranges are
+inclusive of the Arg element - except for non-normalized ASTs that are missing
+Arg elements. Returns an empty array if the element does not accept arguments.
+Throws if the element at the passed index is Arg - or the index is outside the
+range of the array.
+*/
+let functionArgRangesExn = (x: array<t>, index) => {
+  let argCount = Belt.Array.getExn(x, index)->argCountExn
+  let length = Belt.Array.length(x)
+  let out = Belt.Array.make(argCount, (length, length))
+
+  let rec iter = (~current, ~pendingArgs, ~rangeStartIndex, index) =>
+    if current < argCount {
+      switch Belt.Array.get(x, index) {
+      | Some(Arg) =>
+        if pendingArgs == 0 {
+          let rangeEndIndex = index + 1
+          Belt.Array.setExn(out, current, (rangeStartIndex, rangeEndIndex))
+          iter(~current=current + 1, ~pendingArgs, ~rangeStartIndex=rangeEndIndex, rangeEndIndex)
+        } else {
+          iter(~current, ~pendingArgs=pendingArgs - 1, ~rangeStartIndex, index + 1)
+        }
+      | Some(e) =>
+        iter(~current, ~pendingArgs=pendingArgs + argCountExn(e), ~rangeStartIndex, index + 1)
+      | None => out
+      }
+    } else {
+      out
+    }
+  iter(~current=0, ~pendingArgs=0, ~rangeStartIndex=index + 1, index + 1)
 }

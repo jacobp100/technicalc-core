@@ -14,24 +14,14 @@ open EditState_Base
 )
 
 %%private(
-  let nArgsSlice = (~skipInitial=0, elements, index) => {
-    let element = Belt.Array.getExn(elements, index)
-    let count = AST.argCountExn(element)
-    let current = ref([])
-
-    let next = ref(index + 1)
-    for i in 0 to count - 1 {
-      let offset = next.contents
-      next := AST.argEndIndex(elements, offset)
-      let len = next.contents - offset - 1
-      if i >= skipInitial {
-        let slice = Belt.Array.slice(elements, ~offset, ~len)
-        current := Belt.Array.concat(current.contents, slice)
-      }
-    }
-
-    current.contents
-  }
+  let nArgsSlice = (~skipInitial=0, elements, index) =>
+    AST.functionArgRangesExn(elements, index)
+    ->Belt.Array.sliceToEnd(skipInitial)
+    ->Belt.Array.flatMapU((. (start, end)) => {
+      // Remove final Arg
+      // AST has already been normalized, so end - start >= 1
+      Belt.Array.slice(elements, ~offset=start, ~len=end - start - 1)
+    })
 )
 
 type deletionMode =
@@ -66,13 +56,12 @@ type deletionMode =
 
 %%private(
   let deleteAtIndexExn = (elements, startIndex) => {
-    let element = Belt.Array.getExn(elements, startIndex)
-    let argCount = AST.argCountExn(element)
-    let endIndex = ref(startIndex + 1)
-    for _ in 1 to argCount {
-      endIndex := AST.argEndIndex(elements, endIndex.contents)
+    let endIndex = switch AST.functionArgRangesExn(elements, startIndex) {
+    | [] => startIndex + 1
+    | ranges =>
+      let (_, rangeEndIndex) = Belt.Array.getExn(ranges, Belt.Array.length(ranges) - 1)
+      rangeEndIndex + 1
     }
-    let endIndex = endIndex.contents
     if endIndex >= Belt.Array.length(elements) {
       Belt.Array.slice(elements, ~offset=0, ~len=startIndex)
     } else {

@@ -106,11 +106,7 @@ let reduceMapU = (
       | Some(CaptureGroupEndS) =>
         let i' = i + 2
         let (superscript, i') = readSuperscript(i')
-        Node(
-          Fold_CaptureGroupPlaceholder({placeholderMml: placeholderMml, superscript: superscript}),
-          i,
-          i',
-        )
+        Node(Fold_CaptureGroupPlaceholder({placeholderMml, superscript}), i, i')
       | _ => Empty
       }
     | CaptureGroupEndS => Empty
@@ -156,7 +152,7 @@ let reduceMapU = (
     | ArcSecondUnit => Node(Fold_Angle(Angle_ArcSecond), i, i + 1)
     | GradianUnit => Node(Fold_Angle(Angle_Gradian), i, i + 1)
     | UnitConversion({fromUnits, toUnits}) =>
-      Node(Fold_UnitConversion({fromUnits: fromUnits, toUnits: toUnits}), i, i + 1)
+      Node(Fold_UnitConversion({fromUnits, toUnits}), i, i + 1)
     | CloseBracketS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
@@ -172,13 +168,13 @@ let reduceMapU = (
     | CustomAtomS({mml, value}) =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_CustomAtom({mml: mml, value: value, superscript: superscript}), i, i')
+      Node(Fold_CustomAtom({mml, value, superscript}), i, i')
     | (N0_S | N1_S | N2_S | N3_S | N4_S | N5_S | N6_S | N7_S | N8_S | N9_S) as digit
     | (NA_S | NB_S | NC_S | ND_S | NE_S | NF_S) as digit =>
       let nucleus = digitNucleusExn(digit)
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Digit({nucleus: nucleus, superscript: superscript}), i, i')
+      Node(Fold_Digit({nucleus, superscript}), i, i')
     | ImaginaryUnitS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
@@ -194,13 +190,13 @@ let reduceMapU = (
     | VariableS({id, name}) =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Variable({id: id, name: name, superscript: superscript}), i, i')
+      Node(Fold_Variable({id, name, superscript}), i, i')
     | Magnitude1 =>
       let (value, i') = readArg(i + 1)
       Node(Fold_Magnitude({value: value}), i, i')
     | Superscript1 =>
       let (superscriptBody, i') = readArg(i + 1)
-      let superscript = Some({superscriptBody: superscriptBody, index: i + 1})
+      let superscript = Some({superscriptBody, index: i + 1})
       Node(Fold_Placeholder(superscript), i, i')
     | NLog1 =>
       let (base, i') = readArg(i + 1)
@@ -208,89 +204,89 @@ let reduceMapU = (
     | Abs1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Abs({arg: arg, superscript: superscript}), i, i')
+      Node(Fold_Abs({arg, superscript}), i, i')
     | Ceil1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Ceil({arg: arg, superscript: superscript}), i, i')
+      Node(Fold_Ceil({arg, superscript}), i, i')
     | Floor1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Floor({arg: arg, superscript: superscript}), i, i')
+      Node(Fold_Floor({arg, superscript}), i, i')
     | Round1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Round({arg: arg, superscript: superscript}), i, i')
+      Node(Fold_Round({arg, superscript}), i, i')
     | Sqrt1S =>
       let (radicand, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Sqrt({radicand: radicand, superscript: superscript}), i, i')
+      Node(Fold_Sqrt({radicand, superscript}), i, i')
     | Differential2 =>
       let (body, i') = readArg(i + 1)
       let (at, i') = readArg(i')
-      Node(Fold_Differential({at: at, body: body}), i, i')
+      Node(Fold_Differential({at, body}), i, i')
     | NCR2 =>
       let (n, i') = readArg(i + 1)
       let (r, i') = readArg(i')
-      Node(Fold_NCR({n: n, r: r}), i, i')
+      Node(Fold_NCR({n, r}), i, i')
     | NPR2 =>
       let (n, i') = readArg(i + 1)
       let (r, i') = readArg(i')
-      Node(Fold_NPR({n: n, r: r}), i, i')
+      Node(Fold_NPR({n, r}), i, i')
     | Product2 =>
       let (from, i') = readArg(i + 1)
       let (to_, i') = readArg(i')
-      Node(Fold_Product({from: from, to_: to_}), i, i')
+      Node(Fold_Product({from, to_}), i, i')
     | Sum2 =>
       let (from, i') = readArg(i + 1)
       let (to_, i') = readArg(i')
-      Node(Fold_Sum({from: from, to_: to_}), i, i')
+      Node(Fold_Sum({from, to_}), i, i')
     | Frac2S =>
       let (num, i') = readArg(i + 1)
       let (den, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Frac({num: num, den: den, superscript: superscript}), i, i')
+      Node(Fold_Frac({num, den, superscript}), i, i')
     | MFrac3S =>
       let (integer, i') = readArg(i + 1)
       let (num, i') = readArg(i')
       let (den, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_MFrac({integer: integer, num: num, den: den, superscript: superscript}), i, i')
+      Node(Fold_MFrac({integer, num, den, superscript}), i, i')
     | Min2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Min({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Min({a, b, superscript}), i, i')
     | Max2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Max({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Max({a, b, superscript}), i, i')
     | GCD2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Gcd({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Gcd({a, b, superscript}), i, i')
     | LCM2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Lcm({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_Lcm({a, b, superscript}), i, i')
     | NRoot2S =>
       let (degree, i') = readArg(i + 1)
       let (radicand, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_NRoot({degree: degree, radicand: radicand, superscript: superscript}), i, i')
+      Node(Fold_NRoot({degree, radicand, superscript}), i, i')
     | RandInt2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_RandInt({a: a, b: b, superscript: superscript}), i, i')
+      Node(Fold_RandInt({a, b, superscript}), i, i')
     | Integral3 =>
       let (from, i') = readArg(i + 1)
       let (to_, i') = readArg(i')
       let (body, i') = readArg(i')
-      Node(Fold_Integral({from: from, to_: to_, body: body}), i, i')
+      Node(Fold_Integral({from, to_, body}), i, i')
     | TableNS({numRows, numColumns}) => tableS(i, ~numRows, ~numColumns)
     | Arg => assert false
     }
@@ -308,29 +304,29 @@ let reduceMapU = (
       }
     }
   }
-  and readSuperscript = argEndIndex => {
+  and readSuperscript = superscriptIndex => {
     let rec iter = i =>
       switch Belt.Array.get(input, i) {
       | Some(Superscript1) =>
         let (superscriptBody, i') = readArg(i + 1)
-        (Some({superscriptBody: superscriptBody, index: argEndIndex}), i')
+        (Some({superscriptBody, index: superscriptIndex}), i')
       | Some(CaptureGroupEndS) =>
         // If a superscript occurs immediately after a capture group, apply the
         // superscript to the last element within the capture group
         iter(i + 1)
-      | _ => (None, argEndIndex)
+      | _ => (None, superscriptIndex)
       }
 
-    iter(argEndIndex)
+    iter(superscriptIndex)
   }
   and fn = (i, fn) => {
     let i' = i + 1
-    Node(Fold_Function({fn: fn, resultSuperscript: None}), i, i')
+    Node(Fold_Function({fn, resultSuperscript: None}), i, i')
   }
   and fnS = (i, fn) => {
     let i' = i + 1
     let (resultSuperscript, i') = readSuperscript(i')
-    Node(Fold_Function({fn: fn, resultSuperscript: resultSuperscript}), i, i')
+    Node(Fold_Function({fn, resultSuperscript}), i, i')
   }
   and tableS = (i, ~numRows, ~numColumns) => {
     let i' = i + 1
@@ -341,10 +337,10 @@ let reduceMapU = (
     let (superscript, i') = readSuperscript(i')
     Node(
       Fold_Table({
-        elements: elements,
-        numRows: numRows,
-        numColumns: numColumns,
-        superscript: superscript,
+        elements,
+        numRows,
+        numColumns,
+        superscript,
       }),
       i,
       i',
