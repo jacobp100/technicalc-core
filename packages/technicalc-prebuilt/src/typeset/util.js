@@ -45,14 +45,14 @@ export const parseId = (id) => {
     return {
       current: undefined,
       after: undefined,
-      avoidSelection: false,
+      avoidsSelection: false,
     };
   }
 
-  const { 1: avoidSelection, 2: current, 3: after } = idMatch;
+  const { 1: avoidsSelection, 2: current, 3: after } = idMatch;
 
   return {
-    avoidSelection: avoidSelection != null,
+    avoidsSelection: avoidsSelection != null,
     current: toNumberDefaultUndefined(current),
     after: toNumberDefaultUndefined(after),
   };

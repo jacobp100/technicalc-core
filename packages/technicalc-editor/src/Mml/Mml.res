@@ -155,6 +155,7 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
       accum,
       _,
     )
+
   | Fold_Frac({num, den, superscript}) =>
     appendElementWithImplicitMultiplication(~superscript?, accum, range, "mfrac", num ++ den)
   | Fold_MFrac({integer, num, den, superscript}) =>

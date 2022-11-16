@@ -66,7 +66,6 @@ export default (mml, display) => {
       id,
       transform: cssTransform,
       "data-mml-node": kind,
-      "data-selection-before": selectionBefore,
       "data-transform-x": transformX,
       "data-transform-y": transformY,
       "data-transform-scale": transformScale,
@@ -97,7 +96,7 @@ export default (mml, display) => {
 
     if (id != null) {
       const {
-        prefersSelectionAfter: manualAvoidsSelection,
+        avoidsSelection: manualAvoidsSelection,
         current,
         after,
       } = parseId(id);
