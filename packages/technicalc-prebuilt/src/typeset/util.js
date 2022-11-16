@@ -1,7 +1,4 @@
 /* eslint-disable operator-assignment */
-export const toNumberDefaultUndefined = (x) =>
-  x !== "" ? Number(x) : undefined;
-
 export const parseViewbox = (input) => {
   let [, y, width, height] = input.split(" ").map(Number);
   y = Math.min(y * 1e-3, -0.8);
@@ -36,16 +33,16 @@ export const parseTransform = (str) => {
   return out;
 };
 
-const idRegExp = /^(~)?(\d+):(\d+)$/;
+const idRegExp = /^(~)?(\d*)?:(\d*)?$/;
 
 export const parseId = (id) => {
   const idMatch = id != null ? id.match(idRegExp) : null;
 
   if (idMatch == null) {
     return {
+      avoidsSelection: false,
       current: undefined,
       after: undefined,
-      avoidsSelection: false,
     };
   }
 
@@ -53,8 +50,8 @@ export const parseId = (id) => {
 
   return {
     avoidsSelection: avoidsSelection != null,
-    current: toNumberDefaultUndefined(current),
-    after: toNumberDefaultUndefined(after),
+    current: current != null ? Number(current) : undefined,
+    after: after != null ? Number(after) : undefined,
   };
 };
 

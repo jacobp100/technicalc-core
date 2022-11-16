@@ -98,8 +98,7 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     element(~superscript?, ~range, "mn", nucleus)->Mml_Accum.appendDigit(accum, _)
   | Fold_DecimalSeparator => Mml_Accum.appendDecimalSeparator(accum, range)
   | Fold_Base(base) =>
-    element(~range, "mn", Mml_Util.stringOfBase(base))->Mml_Accum.appendBasePrefix(accum, _)
-
+    element(~range, "mn", stringOfBase(base))->Mml_Accum.appendBasePrefix(accum, _)
   | Fold_Percent => element(~range, "mn", "%")->Mml_Accum.append(accum, _)
   | Fold_Angle(Angle_Degree) => element(~range, "mo", "&#x00B0;")->Mml_Accum.append(accum, _)
   | Fold_Angle(angle) =>
@@ -115,7 +114,7 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     element(~superscript?, ~range, "mi", "i")->Mml_Accum.append(accum, _)
   | Fold_Conj => element(~range, "mo", "&#x2a;")->Mml_Accum.append(accum, _)
   | Fold_Magnitude({value}) =>
-    let body = element("mo", Mml_Util.stringOfOperator(Op_Mul)) ++ element("mn", "10")
+    let body = element("mo", stringOfOperator(Op_Mul)) ++ element("mn", "10")
     let body = element("mrow", body)
     element(~range, "msup", body ++ value)->Mml_Accum.append(accum, _)
   | Fold_Variable({name, superscript}) =>
@@ -129,9 +128,7 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     element(~superscript?, ~range, "mrow", mml)->Mml_Accum.append(accum, _)
   | Fold_CaptureGroupPlaceholder({placeholderMml: mml, superscript}) =>
     open Placeholder
-    let phantomId = Belt.Int.toString(fst(range) + 1) ++ ":"
-    let phantom = element(~attributes=list{(#id, phantomId)}, "mphantom", "")
-
+    let phantom = element(~attributes=list{selection(~start=fst(range) + 1, ())}, "mphantom", "")
     switch mml {
     | Some(mml) =>
       let body = phantom ++ mml
@@ -146,16 +143,12 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     element(~attributes, ~superscript?, ~range, tag, body)->Mml_Accum.append(accum, _)
   | Fold_Function({fn, resultSuperscript: superscript}) =>
     let attributes = fn == Fn_Gamma ? list{(#mathvariant, "normal")} : list{}
-    Mml_Util.stringOfFunction(fn)
+    stringOfFunction(fn)
     ->element(~superscript?, ~attributes, ~range, "mi", _)
     ->Mml_Accum.appendOperatorOrFunction(accum, _)
   | Fold_Factorial => element(~range, "mo", "!")->Mml_Accum.append(accum, _)
   | Fold_Operator(op) =>
-    element(~range, "mo", Mml_Util.stringOfOperator(op))->Mml_Accum.appendOperatorOrFunction(
-      accum,
-      _,
-    )
-
+    element(~range, "mo", stringOfOperator(op))->Mml_Accum.appendOperatorOrFunction(accum, _)
   | Fold_Frac({num, den, superscript}) =>
     appendElementWithImplicitMultiplication(~superscript?, accum, range, "mfrac", num ++ den)
   | Fold_MFrac({integer, num, den, superscript}) =>

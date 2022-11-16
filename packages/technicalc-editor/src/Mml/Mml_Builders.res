@@ -16,19 +16,31 @@
   }
 )
 
-let element = (~avoidsSelection=false, ~attributes=list{}, ~superscript=?, ~range=?, tag, body) => {
-  let idAttribute: option<Mml_Attributes.t> = switch range {
-  | Some((i, i')) =>
-    let id = (avoidsSelection ? "~" : "") ++ Belt.Int.toString(i) ++ ":" ++ Belt.Int.toString(i')
-    Some((#id, id))
+%%private(
+  let optionNumberToString = x =>
+    switch x {
+    | Some(x) => Belt.Int.toString(x)
+    | None => ""
+    }
+)
+
+let selection = (~avoid=false, ~start=?, ~end=?, ()): Mml_Attributes.t => (
+  #id,
+  (avoid ? "~" : "") ++ optionNumberToString(start) ++ ":" ++ optionNumberToString(end),
+)
+
+let element = (~avoidsSelection=?, ~attributes=list{}, ~superscript=?, ~range=?, tag, body) => {
+  let selectionAttribute: option<Mml_Attributes.t> = switch range {
+  | Some((start, end)) => Some(selection(~avoid=?avoidsSelection, ~start, ~end, ()))
   | None => None
   }
 
-  switch (idAttribute, superscript) {
-  | (Some(idAttribute), None) => mml(~attributes=list{idAttribute, ...attributes}, tag, body)
-  | (Some(idAttribute), Some({AST.superscriptBody: superscriptBody, index: s})) =>
-    let base = mml(~attributes=list{(#id, ":" ++ Belt.Int.toString(s)), ...attributes}, tag, body)
-    mml(~attributes=list{idAttribute}, "msup", base ++ superscriptBody)
+  switch (selectionAttribute, superscript) {
+  | (Some(selectionAttribute), None) =>
+    mml(~attributes=list{selectionAttribute, ...attributes}, tag, body)
+  | (Some(selectionAttribute), Some({AST.superscriptBody: superscriptBody, index: s})) =>
+    let base = mml(~attributes=list{selection(~end=s, ()), ...attributes}, tag, body)
+    mml(~attributes=list{selectionAttribute}, "msup", base ++ superscriptBody)
   | (None, None) => mml(~attributes, tag, body)
   | (None, Some({AST.superscriptBody: superscriptBody})) =>
     let base = mml(~attributes, tag, body)

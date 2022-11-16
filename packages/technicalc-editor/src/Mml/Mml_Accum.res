@@ -221,7 +221,7 @@ include (
             switch superscript {
             | Some({AST.superscriptBody: superscriptBody}) =>
               element(
-                ~attributes=list{(#id, ":" ++ snd(range)->Belt.Int.toString)},
+                ~attributes=list{selection(~end=snd(range), ())},
                 "msup",
                 element("mrow", body) ++ superscriptBody,
               )
