@@ -1,5 +1,6 @@
 /* eslint-disable operator-assignment */
-export const toNumberDefaultNaN = (x) => (x !== "" ? Number(x) : NaN);
+export const toNumberDefaultUndefined = (x) =>
+  x !== "" ? Number(x) : undefined;
 
 export const parseViewbox = (input) => {
   let [, y, width, height] = input.split(" ").map(Number);
@@ -35,13 +36,26 @@ export const parseTransform = (str) => {
   return out;
 };
 
+const idRegExp = /^(~)?(\d+):(\d+)$/;
+
 export const parseId = (id) => {
-  if (id == null) {
-    return [NaN, NaN];
+  const idMatch = id != null ? id.match(idRegExp) : null;
+
+  if (idMatch == null) {
+    return {
+      current: undefined,
+      after: undefined,
+      avoidSelection: false,
+    };
   }
 
-  const ids = id.split(":");
-  return [toNumberDefaultNaN(ids[0]), toNumberDefaultNaN(ids[1])];
+  const { 1: avoidSelection, 2: current, 3: after } = idMatch;
+
+  return {
+    avoidSelection: avoidSelection != null,
+    current: toNumberDefaultUndefined(current),
+    after: toNumberDefaultUndefined(after),
+  };
 };
 
 export const combineTransforms = (a, b) => ({

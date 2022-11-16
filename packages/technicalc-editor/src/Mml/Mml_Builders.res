@@ -1,47 +1,37 @@
-let createElement = (~attributes=list{}, element, body) => {
-  let elementWithAttributes = switch attributes {
-  | list{} => element
-  | attributes =>
-    let attributes =
-      attributes
-      ->Belt.List.toArray
-      ->Belt.Array.mapU((. (p, v)) => `${p}="${v}"`)
-      ->StringUtil.joinWith(" ")
+%%private(
+  let mml = (~attributes, tag, body) => {
+    let elementWithAttributes = switch attributes {
+    | list{} => tag
+    | attributes =>
+      let attributes =
+        attributes
+        ->Belt.List.toArray
+        ->Belt.Array.keepMapU((. attribute) => Mml_Attributes.toString(attribute))
+        ->StringUtil.joinWith(" ")
 
-    element ++ " " ++ attributes
+      tag ++ " " ++ attributes
+    }
+
+    `<${elementWithAttributes}>${body}</${tag}>`
+  }
+)
+
+let element = (~avoidsSelection=false, ~attributes=list{}, ~superscript=?, ~range=?, tag, body) => {
+  let idAttribute: option<Mml_Attributes.t> = switch range {
+  | Some((i, i')) =>
+    let id = (avoidsSelection ? "~" : "") ++ Belt.Int.toString(i) ++ ":" ++ Belt.Int.toString(i')
+    Some((#id, id))
+  | None => None
   }
 
-  `<${elementWithAttributes}>${body}</${element}>`
-}
-
-let createSuperscript = (
-  ~containerAttributes=list{},
-  ~attributes=list{},
-  superscript,
-  element,
-  body,
-) => {
-  let {AST.superscriptBody: superscriptBody, index: s} = superscript
-  let base = createElement(
-    ~attributes=list{("id", ":" ++ Belt.Int.toString(s)), ...attributes},
-    element,
-    body,
-  )
-  createElement(~attributes=containerAttributes, "msup", base ++ superscriptBody)
-}
-
-let createElementWithRange = (~attributes=list{}, ~superscript=?, (i, i'), element, body) => {
-  let idAttribute = ("id", Belt.Int.toString(i) ++ ":" ++ Belt.Int.toString(i'))
-
-  switch superscript {
-  | None => createElement(~attributes=list{idAttribute, ...attributes}, element, body)
-  | Some(superscript) =>
-    createSuperscript(
-      ~containerAttributes=list{idAttribute},
-      ~attributes,
-      superscript,
-      element,
-      body,
-    )
+  switch (idAttribute, superscript) {
+  | (Some(idAttribute), None) => mml(~attributes=list{idAttribute, ...attributes}, tag, body)
+  | (Some(idAttribute), Some({AST.superscriptBody: superscriptBody, index: s})) =>
+    let base = mml(~attributes=list{(#id, ":" ++ Belt.Int.toString(s)), ...attributes}, tag, body)
+    mml(~attributes=list{idAttribute}, "msup", base ++ superscriptBody)
+  | (None, None) => mml(~attributes, tag, body)
+  | (None, Some({AST.superscriptBody: superscriptBody})) =>
+    let base = mml(~attributes, tag, body)
+    mml(~attributes=list{}, "msup", base ++ superscriptBody)
   }
 }

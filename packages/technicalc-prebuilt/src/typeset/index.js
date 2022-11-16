@@ -44,14 +44,14 @@ export default (mml, display) => {
   const setBboxes = (wrappedNode) => {
     if (!wrappedNode.element) return;
     const { id } = wrappedNode.element.attributes;
-    const [current, after] = parseId(id);
+    const { current, after } = parseId(id);
 
     const bbox = wrappedNode.getBBox();
 
-    if (!Number.isNaN(current)) {
+    if (current != null) {
       bboxes.set(current, bbox);
     }
-    if (!Number.isNaN(after)) {
+    if (after != null) {
       advanceWidths.set(after, bbox.w);
     }
 
@@ -96,7 +96,11 @@ export default (mml, display) => {
     }
 
     if (id != null) {
-      const [current, after] = parseId(id);
+      const {
+        prefersSelectionAfter: manualAvoidsSelection,
+        current,
+        after,
+      } = parseId(id);
       // eslint-disable-next-line prefer-const
       let { tX: x, tY: y, s: scale } = transform;
       x *= 1e-3;
@@ -107,19 +111,14 @@ export default (mml, display) => {
       const ascent = (bbox?.h ?? 0) * scale;
       const descent = (bbox?.d ?? 0) * scale;
 
-      const defaultSelectionBefore = kind === "mo" ? "avoid" : undefined;
-      const shouldAvoidSelectionBefore =
-        (selectionBefore ?? defaultSelectionBefore) === "avoid";
+      const avoidsSelection = manualAvoidsSelection || kind === "mo";
 
-      if (
-        !Number.isNaN(current) &&
-        !(shouldAvoidSelectionBefore && positionMap.has(current))
-      ) {
+      if (current != null && !(avoidsSelection && positionMap.has(current))) {
         const position = { x, y, scale, width, ascent, descent };
         positionMap.set(current, position);
       }
 
-      if (!Number.isNaN(after) && !positionMap.has(after)) {
+      if (after != null && !positionMap.has(after)) {
         const advanceWidth = advanceWidths.get(after);
         if (advanceWidth == null) throw new Error(`No width for ${after}`);
         const positionX = x + advanceWidth * scale;

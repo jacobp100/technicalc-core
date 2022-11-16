@@ -79,13 +79,13 @@ include (
       )
 
       %%private(
-        let appendWith = (~digitGroupingState=?, ~lastElementType=Other, v, element) => {
+        let appendWith = (~digitGroupingState=?, ~lastElementType=Other, v, mml) => {
           let digitGroupingState = switch digitGroupingState {
           | Some(digitGroupingState) => digitGroupingState
           | None => defaultDigitGroupingState(v)
           }
           let {locale} = v
-          let body = toString(v) ++ element
+          let body = toString(v) ++ mml
           let length = v.length + 1
           {
             locale,
@@ -97,15 +97,15 @@ include (
         }
       )
 
-      let append = (v, element) => appendWith(v, element)
+      let append = (v, mml) => appendWith(v, mml)
 
-      let appendOperatorOrFunction = (v, element) =>
-        appendWith(~lastElementType=OperatorOrFunction, v, element)
+      let appendOperatorOrFunction = (v, mml) =>
+        appendWith(~lastElementType=OperatorOrFunction, v, mml)
 
-      let appendDigit = (v, element) =>
+      let appendDigit = (v, mml) =>
         switch v.digitGroupingState {
         | (GroupingDisabled | SkipGrouping) as digitGroupingState =>
-          appendWith(~digitGroupingState, v, element)
+          appendWith(~digitGroupingState, v, mml)
         | (Normal | GroupingDigits(_)) as digitGroupingState =>
           let numbersRev = switch digitGroupingState {
           | GroupingDigits({numbersRev}) => numbersRev
@@ -115,7 +115,7 @@ include (
             locale: v.locale,
             body: v.body,
             length: v.length + 1,
-            digitGroupingState: GroupingDigits({numbersRev: list{element, ...numbersRev}}),
+            digitGroupingState: GroupingDigits({numbersRev: list{mml, ...numbersRev}}),
             lastElementType: Other,
           }
         }
@@ -127,14 +127,14 @@ include (
         | English => "."
         | European => ","
         }
-        let element = createElementWithRange(range, "mn", decimalSeparator)
-        appendWith(~digitGroupingState, v, element)
+        let mml = element(~range, "mn", decimalSeparator)
+        appendWith(~digitGroupingState, v, mml)
       }
 
-      let appendBasePrefix = (v, element) => {
+      let appendBasePrefix = (v, mml) => {
         let digitGroupingState =
           v.digitGroupingState == GroupingDisabled ? GroupingDisabled : SkipGrouping
-        appendWith(~digitGroupingState, v, element)
+        appendWith(~digitGroupingState, v, mml)
       }
 
       let concat = (a, b) => {
@@ -196,14 +196,14 @@ include (
 
       %%private(
         let flattenBracketGroup = (~attributes=?, v, {openBracketRange, body}) => {
-          let openBracket = createElementWithRange(~attributes?, openBracketRange, "mo", "(")
+          let openBracket = element(~attributes?, ~range=openBracketRange, "mo", "(")
           MmlPrettifier.clear(v.level0Body)
           ->MmlPrettifier.append(openBracket)
           ->MmlPrettifier.concat(body)
         }
       )
 
-      %%private(let invalidAttributes = list{("class", "invalid"), ("stretchy", "false")})
+      %%private(let invalidAttributes = list{(#class, "invalid"), (#stretchy, "false")})
       let appendCloseBracket = (v, range, superscript): t =>
         switch v.bracketGroups {
         | list{closed, ...nextBracketGroups} =>
@@ -211,9 +211,8 @@ include (
           // not just over the close bracket
           // Every other element works differently to this
           let closeBracket = switch superscript {
-          | Some({AST.superscriptBody: _, index}) =>
-            createElementWithRange((fst(range), index), "mo", ")")
-          | None => createElementWithRange(range, "mo", ")")
+          | Some({AST.superscriptBody: _, index}) => element(~range=(fst(range), index), "mo", ")")
+          | None => element(~range, "mo", ")")
           }
 
           flattenBracketGroup(v, closed)
@@ -221,22 +220,22 @@ include (
           ->MmlPrettifier.mapU((. body) => {
             switch superscript {
             | Some({AST.superscriptBody: superscriptBody}) =>
-              createElement(
-                ~attributes=list{("id", ":" ++ snd(range)->Belt.Int.toString)},
+              element(
+                ~attributes=list{(#id, ":" ++ snd(range)->Belt.Int.toString)},
                 "msup",
-                createElement("mrow", body) ++ superscriptBody,
+                element("mrow", body) ++ superscriptBody,
               )
-            | None => createElement("mrow", body)
+            | None => element("mrow", body)
             }
           })
           ->transformCurrentGroupWithArgU({...v, bracketGroups: nextBracketGroups}, _, (. a, b) => {
             MmlPrettifier.concat(a, b)
           })
         | list{} =>
-          createElementWithRange(
+          element(
             ~attributes=invalidAttributes,
             ~superscript?,
-            range,
+            ~range,
             "mo",
             ")",
           )->transformCurrentGroupWithArgU(v, _, (. a, b) => MmlPrettifier.append(a, b))
@@ -259,14 +258,9 @@ include (
         let body = flatten(v)
         switch MmlPrettifier.length(body) {
         | 0 =>
-          createElementWithRange(
-            ~attributes=Placeholder.attributes,
-            range,
-            Placeholder.element,
-            Placeholder.body,
-          )
+          element(~attributes=Placeholder.attributes, ~range, Placeholder.tag, Placeholder.body)
         | 1 => MmlPrettifier.toString(body)
-        | _ => createElement("mrow", MmlPrettifier.toString(body))
+        | _ => element("mrow", MmlPrettifier.toString(body))
         }
       }
     }
@@ -274,24 +268,24 @@ include (
     type t = BracketGroups.t
     let make = BracketGroups.make
     let lastElementType = body => MmlPrettifier.lastElementType(BracketGroups.body(body))
-    let append = (body, element) =>
-      BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    let append = (body, mml) =>
+      BracketGroups.transformCurrentGroupWithArgU(body, mml, (. a, b) => {
         MmlPrettifier.append(a, b)
       })
-    let appendOperatorOrFunction = (body, element) =>
-      BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    let appendOperatorOrFunction = (body, mml) =>
+      BracketGroups.transformCurrentGroupWithArgU(body, mml, (. a, b) => {
         MmlPrettifier.appendOperatorOrFunction(a, b)
       })
-    let appendDigit = (body, element) =>
-      BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    let appendDigit = (body, mml) =>
+      BracketGroups.transformCurrentGroupWithArgU(body, mml, (. a, b) => {
         MmlPrettifier.appendDigit(a, b)
       })
-    let appendDecimalSeparator = (body, element) =>
-      BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    let appendDecimalSeparator = (body, mml) =>
+      BracketGroups.transformCurrentGroupWithArgU(body, mml, (. a, b) => {
         MmlPrettifier.appendDecimalSeparator(a, b)
       })
-    let appendBasePrefix = (body, element) =>
-      BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+    let appendBasePrefix = (body, mml) =>
+      BracketGroups.transformCurrentGroupWithArgU(body, mml, (. a, b) => {
         MmlPrettifier.appendBasePrefix(a, b)
       })
     let appendOpenBracket = BracketGroups.appendOpenBracket

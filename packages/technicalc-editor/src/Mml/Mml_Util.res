@@ -1,8 +1,8 @@
 open AST
 
 module Placeholder = {
-  let attributes = list{("class", "placeholder"), ("mathvariant", "normal")}
-  let element = "mi"
+  let attributes = list{(#class, "placeholder"), (#mathvariant, "normal")}
+  let tag = "mi"
   let body = "&#x25a1;"
 }
 
