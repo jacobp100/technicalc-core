@@ -148,6 +148,15 @@ module Elements = {
 module Editor = {
   open TechniCalcEditor
 
+  let normalizeIfNeeded = ({elements, index, formatCaptureGroups}: EditState.t) => {
+    let nextElements = AST.normalize(elements)
+    if nextElements !== elements {
+      Some(EditState.make(~index, ~elements=nextElements, ~formatCaptureGroups))
+    } else {
+      None
+    }
+  }
+
   let empty = EditState.empty
   let make = EditState.make
 

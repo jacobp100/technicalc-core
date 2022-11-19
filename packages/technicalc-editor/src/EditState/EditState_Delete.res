@@ -60,8 +60,8 @@ type deletionMode =
     let endIndex = switch AST.functionArgRangesExn(elements, startIndex) {
     | [] => startIndex + 1
     | ranges =>
-      let (_, rangeEndIndex) = Belt.Array.getExn(ranges, Belt.Array.length(ranges) - 1)
-      rangeEndIndex + 1
+      let (_, rangeEndIndex) = ArrayUtil.lastExn(ranges)
+      rangeEndIndex
     }
     if endIndex >= Belt.Array.length(elements) {
       Belt.Array.slice(elements, ~offset=0, ~len=startIndex)

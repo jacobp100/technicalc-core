@@ -252,7 +252,7 @@ type parentTable = {
     ~toColumns,
   ) => {
     let cellRanges = AST.functionArgRangesExn(elements, tableStartIndex)
-    let tableEndIndex = Belt.Array.getExn(cellRanges, Belt.Array.length(cellRanges) - 1)->snd
+    let (_, tableEndIndex) = ArrayUtil.lastExn(cellRanges)
 
     let toCells = Belt.Array.makeByU(toRows * toColumns, (. i) => {
       let column = mod(i, toColumns)

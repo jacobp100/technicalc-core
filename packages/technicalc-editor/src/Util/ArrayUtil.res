@@ -1,3 +1,5 @@
+let lastExn = x => Belt.Array.getExn(x, Belt.Array.length(x) - 1)
+
 let foldMakeU = (n, initialValue, fn) => {
   let nextArr = Belt.Array.makeUninitializedUnsafe(n)
   let accum = ref(initialValue)

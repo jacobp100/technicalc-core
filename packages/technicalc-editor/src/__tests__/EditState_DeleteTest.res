@@ -85,6 +85,18 @@ test("should delete empty capture groups immediately after label index", (. ()) 
   expect(index)->toEqual(1)
 })
 
+test("delete superscript in a function", (. ()) => {
+  let {index, elements} =
+    make(
+      ~index=2,
+      ~elements=[Frac2S, Superscript1, Arg, Arg, Arg],
+      ~formatCaptureGroups=false,
+    )->delete
+
+  expect(elements)->toEqual([Frac2S, Arg, Arg])
+  expect(index)->toEqual(1)
+})
+
 describe("should only delete a single capture empty group", (. ()) => {
   let testElements = [
     AST.N1_S,
