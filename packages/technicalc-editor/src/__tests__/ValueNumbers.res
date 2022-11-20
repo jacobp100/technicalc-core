@@ -11,7 +11,7 @@ let parseEval = v =>
 let ofInt = TechniCalcCalculator.Value.ofInt
 let ofString = x => TechniCalcCalculator.Formatting.ofString(x)->Belt.Option.getExn
 
-test("parses numbers", (. ()) => {
+test("parses numbers", () => {
   parseEval([N1_S, N2_S, N3_S])->expect->toEqual(Some(ofString("123")))
 
   parseEval([N1_S, DecimalSeparator, N2_S, N3_S])->expect->toEqual(Some(ofString("1.23")))
@@ -25,11 +25,11 @@ test("parses numbers", (. ()) => {
   parseEval([Sub, N3_S, DecimalSeparator, N5_S])->expect->toEqual(Some(ofString("-3.5")))
 })
 
-test("does not parse invalid numbers", (. ()) =>
+test("does not parse invalid numbers", () => {
   parseEval([N1_S, DecimalSeparator, N2_S, DecimalSeparator, N3_S])->expect->toEqual(None)
-)
+})
 
-test("parses superscripts on numbers", (. ()) => {
+test("parses superscripts on numbers", () => {
   parseEval([N2_S, Superscript1, N2_S, Arg])->expect->toEqual(Some(ofString("4")))
 
   parseEval([N1_S, N0_S, Superscript1, N2_S, Arg])->expect->toEqual(Some(ofString("100")))
@@ -37,7 +37,7 @@ test("parses superscripts on numbers", (. ()) => {
   parseEval([N1_S, Superscript1, N2_S, Arg, N0_S, Superscript1, N2_S, Arg])->expect->toEqual(None)
 })
 
-test("parses magnitudes", (. ()) => {
+test("parses magnitudes", () => {
   parseEval([N1_S, Magnitude1, N3_S, Arg])->expect->toEqual(Some(ofString("1000")))
 
   parseEval([N2_S, Superscript1, N2_S, Arg, Magnitude1, N3_S, Arg])
@@ -45,7 +45,7 @@ test("parses magnitudes", (. ()) => {
   ->toEqual(Some(ofString("4000")))
 })
 
-test("parses imaginary units", (. ()) => {
+test("parses imaginary units", () => {
   let mulI = {
     open TechniCalcCalculator.Value
     mul(i)
@@ -68,7 +68,7 @@ test("parses imaginary units", (. ()) => {
   ->toEqual(Some(ofString("-100")))
 })
 
-test("angles", (. ()) => {
+test("angles", () => {
   let pi = TechniCalcCalculator.Value.pi
   let mul = TechniCalcCalculator.Value.mul
   let div = TechniCalcCalculator.Value.div

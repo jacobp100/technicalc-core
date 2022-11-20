@@ -208,7 +208,11 @@ type skipMode =
       let nextIndex = s > 0 ? index + 2 : index + 1
       (elements, nextIndex)
     | OpenBracket =>
-      let shouldAppendCloseBracket = bracketLevel(elements, ~from=index) >= 0
+      let isAtEndOfScope = switch Belt.Array.get(elements, index) {
+      | Some(Arg) | None => true
+      | _ => false
+      }
+      let shouldAppendCloseBracket = isAtEndOfScope && bracketLevel(elements, ~from=index) >= 0
       let combined = shouldAppendCloseBracket ? [element, CloseBracketS] : [element]
       let elements = ArrayUtil.insertArray(elements, combined, index)
       (elements, index + 1)

@@ -5,7 +5,7 @@ let truncateTo = (~dp, x) => {
   truncate(x *. factor)->Belt.Int.toFloat /. factor
 }
 
-test("solves sin(x) starting at 1", (. ()) => {
+test("solves sin(x) starting at 1", () => {
   open AST
   let equation = Sin(X)
   let initialGuess = OfInt(1)
@@ -16,7 +16,7 @@ test("solves sin(x) starting at 1", (. ()) => {
   expect(Value.toFloat(value)->truncateTo(~dp, _))->toBe(0.)
 })
 
-test("solves sin(x) starting at 3", (. ()) => {
+test("solves sin(x) starting at 3", () => {
   open AST
   let equation = Sin(X)
   let initialGuess = OfInt(3)
@@ -27,7 +27,7 @@ test("solves sin(x) starting at 3", (. ()) => {
   expect(Value.toFloat(value)->truncateTo(~dp, _))->toBe(Js.Math._PI->truncateTo(~dp, _))
 })
 
-test("solves x^5 - 2", (. ()) => {
+test("solves x^5 - 2", () => {
   open AST
   let equation = Sub(Pow(X, OfInt(5)), OfInt(2))
   let initialGuess = OfInt(1)
@@ -38,7 +38,7 @@ test("solves x^5 - 2", (. ()) => {
   expect(Value.toFloat(value)->truncateTo(~dp, _))->toBe((2. ** (1. /. 5.))->truncateTo(~dp, _))
 })
 
-test("solves x^5 - 6", (. ()) => {
+test("solves x^5 - 6", () => {
   open AST
   let equation = Sub(Pow(X, OfInt(5)), OfInt(6))
   let initialGuess = OfInt(1)
@@ -49,7 +49,7 @@ test("solves x^5 - 6", (. ()) => {
   expect(Value.toFloat(value)->truncateTo(~dp, _))->toBe((6. ** (1. /. 5.))->truncateTo(~dp, _))
 })
 
-test("solves x^5 - 6 starting at 1000", (. ()) => {
+test("solves x^5 - 6 starting at 1000", () => {
   open AST
   let equation = Sub(Pow(X, OfInt(5)), OfInt(6))
   let initialGuess = OfInt(1000)
@@ -60,7 +60,7 @@ test("solves x^5 - 6 starting at 1000", (. ()) => {
   expect(Value.toFloat(value)->truncateTo(~dp, _))->toBe((6. ** (1. /. 5.))->truncateTo(~dp, _))
 })
 
-// test("solves hc/x = 2E-4", (. ()) => {
+// test("solves hc/x = 2E-4", () => {
 //   open AST
 //   let equation = Sub(
 //     Div(Mul(OfString("6.62607015E-34"), OfString("299792458")), X),
@@ -73,7 +73,7 @@ test("solves x^5 - 6 starting at 1000", (. ()) => {
 //   ignore(value)
 // })
 
-test("solves 6x^3 - 5x^2 - 17x + 6", (. ()) => {
+test("solves 6x^3 - 5x^2 - 17x + 6", () => {
   open AST
   let a = Mul(OfInt(6), Pow(X, OfInt(3)))
   let b = Mul(OfInt(-5), Pow(X, OfInt(2)))
@@ -88,7 +88,7 @@ test("solves 6x^3 - 5x^2 - 17x + 6", (. ()) => {
   expect(Value.toFloat(value)->truncateTo(~dp, _))->toBe(2.)
 })
 
-test("solves system of 2 equations", (. ()) => {
+test("solves system of 2 equations", () => {
   open Value
   open Solvers
   expect(var2(ofInt(2), ofInt(3), ofInt(4), ofInt(5), ofInt(6), ofInt(7)))->toEqual((
@@ -97,7 +97,7 @@ test("solves system of 2 equations", (. ()) => {
   ))
 })
 
-test("solves system of 2 equations", (. ()) => {
+test("solves system of 2 equations", () => {
   open Value
   open Solvers
   expect(var2(ofInt(2), ofInt(3), ofInt(4), ofInt(5), ofInt(6), ofInt(7)))->toEqual((
@@ -106,7 +106,7 @@ test("solves system of 2 equations", (. ()) => {
   ))
 })
 
-test("solves system of 3 equations", (. ()) => {
+test("solves system of 3 equations", () => {
   open Value
   open Solvers
   expect(
@@ -127,7 +127,7 @@ test("solves system of 3 equations", (. ()) => {
   )->toEqual((ofInt(1), ofInt(2), ofInt(1)))
 })
 
-test("solver bug report", (. ()) => {
+test("solver bug report", () => {
   open AST
   let x = X
   let ofFloat = a => OfFloat(a)
@@ -148,7 +148,7 @@ test("solver bug report", (. ()) => {
   expect(Value.toFloat(value))->toBe(-5.)
 })
 
-test("solver bug report 2", (. ()) => {
+test("solver bug report 2", () => {
   open AST
   let x = X
   let ofInt = a => OfInt(a)

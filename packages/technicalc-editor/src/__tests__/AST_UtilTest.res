@@ -1,7 +1,7 @@
 open Jest
 open AST_Util
 
-test("advance scope index", (. ()) => {
+test("advance scope index", () => {
   let elements = [
     /* 0 */ AST.N1_S,
     /* 1 */ Frac2S,
@@ -32,7 +32,7 @@ test("advance scope index", (. ()) => {
   expect(advanceScopeIndex(~direction=Forwards, elements, 12))->toEqual(None)
 })
 
-test("closest parent function function", (. ()) => {
+test("closest parent function function", () => {
   let elements = [
     /* 0 */ AST.N1_S,
     /* 1 */ Frac2S,
@@ -64,7 +64,7 @@ test("closest parent function function", (. ()) => {
   expect(closestParentFunction(elements, 13))->toEqual(None)
 })
 
-test("recursive enclosing function", (. ()) => {
+test("recursive enclosing function", () => {
   let elements = [
     /* 0 */ AST.N1_S,
     /* 1 */ Frac2S,
@@ -88,7 +88,7 @@ test("recursive enclosing function", (. ()) => {
   expect(closestParentFunction(elements, startIndex))->toBe(None)
 })
 
-test("function ranges", (. ()) => {
+test("function ranges", () => {
   let elements = [
     /* 0 */ AST.N1_S,
     /* 1 */ Frac2S,

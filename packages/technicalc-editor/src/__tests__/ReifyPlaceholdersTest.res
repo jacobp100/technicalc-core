@@ -5,11 +5,11 @@ open ReifyPlaceholders
 let captureGroupStart = CaptureGroupStart({placeholderMml: None})
 let captureGroupEnd = CaptureGroupEndS
 
-test("no-op", (. ()) => {
+test("no-op", () => {
   reifyPlaceholders([N1_S, Add, N2_S, Mul, N3_S])->expect->toEqual([N1_S, Add, N2_S, Mul, N3_S])
 })
 
-test("fraction", (. ()) => {
+test("fraction", () => {
   reifyPlaceholders([Frac2S, N1_S, Arg, N2_S, Arg])->expect->toEqual([Frac2S, N1_S, Arg, N2_S, Arg])
 
   reifyPlaceholders([Frac2S, N1_S, Arg, Arg])
@@ -33,11 +33,11 @@ test("fraction", (. ()) => {
   ])
 })
 
-test("sin", (. ()) => {
+test("sin", () => {
   reifyPlaceholders([SinS, N1_S])->expect->toEqual([SinS, N1_S])
 })
 
-test("superscript", (. ()) => {
+test("superscript", () => {
   reifyPlaceholders([N1_S, Superscript1, N2_S, Arg])
   ->expect
   ->toEqual([N1_S, Superscript1, N2_S, Arg])

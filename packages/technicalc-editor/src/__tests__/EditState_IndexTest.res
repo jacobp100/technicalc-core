@@ -1,7 +1,7 @@
 open Jest
 open EditState
 
-test("should handle a single capture group", (. ()) => {
+test("should handle a single capture group", () => {
   let state = make(
     ~index=0,
     ~elements=[CaptureGroupStart({placeholderMml: Some("")}), CaptureGroupEndS],
@@ -17,7 +17,7 @@ test("should handle a single capture group", (. ()) => {
   expect(state.index)->toBe(1)
 })
 
-test("should handle capture groups in functions", (. ()) => {
+test("should handle capture groups in functions", () => {
   let state = make(
     ~index=0,
     ~elements=[
@@ -68,7 +68,7 @@ test("should handle capture groups in functions", (. ()) => {
   expect(setIndex(state, 7).index)->toBe(7)
 })
 
-test("should handle empty capture groups with superscripts", (. ()) => {
+test("should handle empty capture groups with superscripts", () => {
   let state = make(
     ~index=0,
     ~elements=[
@@ -115,7 +115,7 @@ test("should handle empty capture groups with superscripts", (. ()) => {
   expect(setIndex(state, 5).index)->toBe(5)
 })
 
-test("should handle filled capture groups with superscripts", (. ()) => {
+test("should handle filled capture groups with superscripts", () => {
   let state = make(
     ~index=0,
     ~elements=[
@@ -164,7 +164,7 @@ test("should handle filled capture groups with superscripts", (. ()) => {
   expect(setIndex(state, 6).index)->toBe(6)
 })
 
-test("should handle multiple capture groups in a row", (. ()) => {
+test("should handle multiple capture groups in a row", () => {
   let state = make(
     ~index=0,
     ~elements=[
@@ -207,59 +207,56 @@ test("should handle multiple capture groups in a row", (. ()) => {
   expect(setIndex(state, 6).index)->toBe(5)
 })
 
-test(
-  "should handle multiple capture groups in a row between non-capture group elements",
-  (. ()) => {
-    let state = make(
-      ~index=0,
-      ~elements=[
-        N1_S,
-        CaptureGroupStart({placeholderMml: Some("")}),
-        CaptureGroupEndS,
-        CaptureGroupStart({placeholderMml: Some("")}),
-        CaptureGroupEndS,
-        CaptureGroupStart({placeholderMml: Some("")}),
-        CaptureGroupEndS,
-        N2_S,
-      ],
-      ~formatCaptureGroups=false,
-    )
+test("should handle multiple capture groups in a row between non-capture group elements", () => {
+  let state = make(
+    ~index=0,
+    ~elements=[
+      N1_S,
+      CaptureGroupStart({placeholderMml: Some("")}),
+      CaptureGroupEndS,
+      CaptureGroupStart({placeholderMml: Some("")}),
+      CaptureGroupEndS,
+      CaptureGroupStart({placeholderMml: Some("")}),
+      CaptureGroupEndS,
+      N2_S,
+    ],
+    ~formatCaptureGroups=false,
+  )
 
-    expect(state.index)->toBe(0)
+  expect(state.index)->toBe(0)
 
-    let state = next(state)
-    expect(state.index)->toBe(2)
+  let state = next(state)
+  expect(state.index)->toBe(2)
 
-    let state = next(state)
-    expect(state.index)->toBe(4)
+  let state = next(state)
+  expect(state.index)->toBe(4)
 
-    let state = next(state)
-    expect(state.index)->toBe(6)
+  let state = next(state)
+  expect(state.index)->toBe(6)
 
-    let state = next(state)
-    expect(state.index)->toBe(8)
+  let state = next(state)
+  expect(state.index)->toBe(8)
 
-    let state = next(state)
-    expect(state.index)->toBe(8)
+  let state = next(state)
+  expect(state.index)->toBe(8)
 
-    let state = previous(state)
-    expect(state.index)->toBe(6)
+  let state = previous(state)
+  expect(state.index)->toBe(6)
 
-    let state = previous(state)
-    expect(state.index)->toBe(4)
+  let state = previous(state)
+  expect(state.index)->toBe(4)
 
-    let state = previous(state)
-    expect(state.index)->toBe(2)
+  let state = previous(state)
+  expect(state.index)->toBe(2)
 
-    let state = previous(state)
-    expect(state.index)->toBe(0)
+  let state = previous(state)
+  expect(state.index)->toBe(0)
 
-    let state = previous(state)
-    expect(state.index)->toBe(0)
-  },
-)
+  let state = previous(state)
+  expect(state.index)->toBe(0)
+})
 
-test("should not select within a capture group when label editing", (. ()) => {
+test("should not select within a capture group when label editing", () => {
   let state = make(
     ~index=0,
     ~elements=[CaptureGroupStart({placeholderMml: Some("")}), CaptureGroupEndS],
@@ -279,7 +276,7 @@ test("should not select within a capture group when label editing", (. ()) => {
   expect(setIndex(state, 2).index)->toBe(2)
 })
 
-test("up", (. ()) => {
+test("up", () => {
   let elements = [
     /* 0 */ AST.N1_S,
     /* 1 */ Frac2S,
@@ -306,7 +303,7 @@ test("up", (. ()) => {
   expect(state.index)->toBe(3)
 })
 
-test("down", (. ()) => {
+test("down", () => {
   let elements = [
     /* 0 */ AST.N1_S,
     /* 1 */ Frac2S,
@@ -333,7 +330,7 @@ test("down", (. ()) => {
   expect(state.index)->toBe(4)
 })
 
-test("up/down in specific elements", (. ()) => {
+test("up/down in specific elements", () => {
   let elements = [
     /* 0 */ AST.TableNS({numRows: 2, numColumns: 2}),
     /* 1 */ N1_S,

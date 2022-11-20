@@ -2,7 +2,7 @@ open Jest
 open Units
 open Units_ConvertChecks
 
-test("converts simple units", (. ()) => {
+test("converts simple units", () => {
   expect(
     convert(
       Value.one,
@@ -26,7 +26,7 @@ test("converts simple units", (. ()) => {
   )->toBeCloseTo(78.74)
 })
 
-test("converts temperatures", (. ()) => {
+test("converts temperatures", () => {
   expect(
     convert(
       Value.ofInt(50),
@@ -44,7 +44,7 @@ test("converts temperatures", (. ()) => {
   )->toBeCloseTo(10.)
 })
 
-test("converts exponentiated units", (. ()) => {
+test("converts exponentiated units", () => {
   expect(
     convert(
       Value.one,
@@ -61,7 +61,7 @@ test("converts exponentiated units", (. ()) => {
   )->toBeCloseTo(6.452e-4)
 })
 
-test("converts exponentiated units with prefixes", (. ()) => {
+test("converts exponentiated units with prefixes", () => {
   expect(
     convert(
       Value.one,
@@ -78,7 +78,7 @@ test("converts exponentiated units with prefixes", (. ()) => {
   )->toBeCloseTo(1e6)
 })
 
-test("compound units", (. ()) => {
+test("compound units", () => {
   expect(
     convert(
       Value.one,
@@ -88,7 +88,7 @@ test("compound units", (. ()) => {
   )->toBeCloseTo(510236220.47244096)
 })
 
-test("converts between different dimensions", (. ()) => {
+test("converts between different dimensions", () => {
   expect(
     convert(
       Value.one,
@@ -105,7 +105,7 @@ test("converts between different dimensions", (. ()) => {
   )->toBeCloseTo(0.001)
 })
 
-test("incompatible units", (. ()) => {
+test("incompatible units", () => {
   expect(
     convert(
       Value.ofInt(50),
@@ -115,7 +115,7 @@ test("incompatible units", (. ()) => {
   )->toBe(Value.nan)
 })
 
-test("composite", (. ()) => {
+test("composite", () => {
   @warning("-8")
   let Some([(foot, _), (inch, _)]) = convertComposite(
     [(Value.one, {prefix: Unit, type_: Meter, power: 1})],
@@ -126,7 +126,7 @@ test("composite", (. ()) => {
   expect(Value.toFloat(inch))->toBe(3.)
 })
 
-test("composite with negative units", (. ()) => {
+test("composite with negative units", () => {
   @warning("-8")
   let Some([(foot, _), (inch, _)]) = convertComposite(
     [(Value.minusOne, {prefix: Unit, type_: Meter, power: 1})],
@@ -137,7 +137,7 @@ test("composite with negative units", (. ()) => {
   expect(Value.toFloat(inch))->toBe(-3.)
 })
 
-test("composite with incompatible units", (. ()) => {
+test("composite with incompatible units", () => {
   let result = convertComposite(
     [(Value.one, {prefix: Unit, type_: Meter, power: 1})],
     ~toUnits=[{prefix: Unit, type_: Foot, power: 1}, {prefix: Unit, type_: Second, power: 1}],
@@ -146,7 +146,7 @@ test("composite with incompatible units", (. ()) => {
   expect(result)->toBe(None)
 })
 
-test("composite units compatible for duplicate units", (. ()) => {
+test("composite units compatible for duplicate units", () => {
   expect(
     compositeUnitsCompatible(
       ~fromUnits=[{prefix: Unit, type_: Meter, power: 1}],
@@ -155,7 +155,7 @@ test("composite units compatible for duplicate units", (. ()) => {
   )->toBe(false)
 })
 
-test("does not crash compositeUnitsCompatible with empty toUnits", (. ()) => {
+test("does not crash compositeUnitsCompatible with empty toUnits", () => {
   expect(
     compositeUnitsCompatible(~fromUnits=[{prefix: Unit, type_: Meter, power: 1}], ~toUnits=[]),
   )->toBe(false)

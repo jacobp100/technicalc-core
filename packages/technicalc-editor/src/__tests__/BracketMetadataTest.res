@@ -1,12 +1,12 @@
 open Jest
 open BracketMetadata
 
-test("returns none when there's no ranges", (. ()) => {
+test("returns none when there's no ranges", () => {
   expect(bracketRanges([OpenBracket]))->toEqual(None)
   expect(bracketRanges([CloseBracketS]))->toEqual(None)
 })
 
-test("finds range in brackts", (. ()) => {
+test("finds range in brackts", () => {
   let ranges = bracketRanges([N1_S, OpenBracket, N2_S, N3_S, N4_S, CloseBracketS, N5_S])
 
   let topLevelRange = {start: 1, end: 6, level: 0}
@@ -22,7 +22,7 @@ test("finds range in brackts", (. ()) => {
   expect(bracketRange(ranges, 7))->toEqual(None)
 })
 
-test("finds range in nested brackts", (. ()) => {
+test("finds range in nested brackts", () => {
   let ranges = bracketRanges([
     N1_S,
     OpenBracket,
@@ -55,7 +55,7 @@ test("finds range in nested brackts", (. ()) => {
   expect(bracketRange(ranges, 11))->toEqual(None)
 })
 
-test("works with brackets in function arguments", (. ()) => {
+test("works with brackets in function arguments", () => {
   let ranges = bracketRanges([OpenBracket, Abs1S, OpenBracket, CloseBracketS, Arg, CloseBracketS])
 
   let topLevelRange = {start: 0, end: 6, level: 0}
@@ -71,7 +71,7 @@ test("works with brackets in function arguments", (. ()) => {
   expect(bracketRange(ranges, 6))->toEqual(Some(topLevelRange))
 })
 
-test("works with unmatched brackets in function arguments", (. ()) => {
+test("works with unmatched brackets in function arguments", () => {
   let ranges = bracketRanges([OpenBracket, Abs1S, OpenBracket, Arg, CloseBracketS])
 
   let topLevelRange = {start: 0, end: 5, level: 0}
@@ -85,7 +85,7 @@ test("works with unmatched brackets in function arguments", (. ()) => {
   expect(bracketRange(ranges, 5))->toEqual(Some(topLevelRange))
 })
 
-test("works with multiple top-level bracket pairs", (. ()) => {
+test("works with multiple top-level bracket pairs", () => {
   let ranges = bracketRanges([
     OpenBracket,
     CloseBracketS,
@@ -109,7 +109,7 @@ test("works with multiple top-level bracket pairs", (. ()) => {
   expect(bracketRange(ranges, 6))->toEqual(Some(topLevelRange3))
 })
 
-test("works with multiple top-level bracket pairs with function arguments", (. ()) => {
+test("works with multiple top-level bracket pairs with function arguments", () => {
   let ranges = bracketRanges([
     OpenBracket,
     CloseBracketS,

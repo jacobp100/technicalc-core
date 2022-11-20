@@ -1,6 +1,6 @@
 open Jest
 
-test("encodes and decodes simple expression", (. ()) => {
+test("encodes and decodes simple expression", () => {
   open AST_Types
   let value = [Superscript1, Arg]
   let encoded = Encoding.encode(value)
@@ -10,7 +10,7 @@ test("encodes and decodes simple expression", (. ()) => {
   expect(value)->toEqual(decoded)
 })
 
-test("encodes and decodes", (. ()) => {
+test("encodes and decodes", () => {
   open AST_Types
   let value = [N1_S, Sub, N2_S, Add, N3_S]
   let encoded = Encoding.encode(value)

@@ -2,19 +2,19 @@ open Jest
 open Value
 open Encoding
 
-test("zero", (. ()) => {
+test("zero", () => {
   let value = zero
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
-test("real rational", (. ()) => {
+test("real rational", () => {
   let value = ofInt(1)
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
-test("real with constants", (. ()) => {
+test("real with constants", () => {
   let valueOfConstant = c => Value.ofReal(Real.ofRational(1, 1, c))
 
   let pi = valueOfConstant(Pi(1))
@@ -27,13 +27,13 @@ test("real with constants", (. ()) => {
   expect(encode(sqrt2)->decode)->toEqual(Some(sqrt2))
 })
 
-test("negative rational", (. ()) => {
+test("negative rational", () => {
   let value = ofInt(-1)
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
-test("real decimal", (. ()) => {
+test("real decimal", () => {
   // Any value that cannot be encoded as a rational
   let value = {
     open Decimal
@@ -43,13 +43,13 @@ test("real decimal", (. ()) => {
   expect(result)->toEqual(Some(value))
 })
 
-test("imag rational", (. ()) => {
+test("imag rational", () => {
   let value = ofInt(1)->mul(i)
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
-test("imag decimal", (. ()) => {
+test("imag decimal", () => {
   // Any value that cannot be encoded as a rational
   let value =
     {
@@ -62,14 +62,14 @@ test("imag decimal", (. ()) => {
   expect(result)->toEqual(Some(value))
 })
 
-test("complex rational", (. ()) => {
+test("complex rational", () => {
   let value = ofInt(1)
   let value = add(value, mul(value, i))
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
-test("complex decimal", (. ()) => {
+test("complex decimal", () => {
   // Any value that cannot be encoded as a rational
   let value = {
     open Decimal
@@ -80,26 +80,26 @@ test("complex decimal", (. ()) => {
   expect(result)->toEqual(Some(value))
 })
 
-test("vector", (. ()) => {
+test("vector", () => {
   let value = Vector.make([Scalar.ofFloat(1.), Scalar.ofFloat(2.), Scalar.ofFloat(3.)])->ofVector
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
-test("matrix", (. ()) => {
+test("matrix", () => {
   let elements = [Scalar.ofFloat(1.), Scalar.ofFloat(2.), Scalar.ofFloat(3.), Scalar.ofFloat(4.)]
   let value = Matrix.make(~numRows=2, ~numColumns=2, elements)->ofMatrix
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
-test("percent", (. ()) => {
+test("percent", () => {
   let value = ofPercent(Scalar.one)
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))
 })
 
-test("nan", (. ()) => {
+test("nan", () => {
   let value = nan
   let result = encode(value)->decode
   expect(result)->toEqual(Some(value))

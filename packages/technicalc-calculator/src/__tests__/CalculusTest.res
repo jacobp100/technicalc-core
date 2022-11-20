@@ -1,6 +1,6 @@
 open Jest
 
-test("differentiate x^2 at x=5", (. ()) => {
+test("differentiate x^2 at x=5", () => {
   open Value
   open AST
   let equation = Pow(X, OfInt(2))
@@ -13,7 +13,7 @@ test("differentiate x^2 at x=5", (. ()) => {
   expect(Value.toFloat(value))->toBe(10.)
 })
 
-test("integrate x^2 between [3, 6]", (. ()) => {
+test("integrate x^2 between [3, 6]", () => {
   open Value
   open AST
   let equation = Pow(X, OfInt(2))
