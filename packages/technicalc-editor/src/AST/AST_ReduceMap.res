@@ -29,7 +29,7 @@ type foldState<'a> =
   | Fold_Function({fn: fn, resultSuperscript: option<superscript<'a>>})
   | Fold_Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_ImaginaryUnit(option<superscript<'a>>)
-  | Fold_Integral({from: 'a, to_: 'a, body: 'a})
+  | Fold_Integral({from: 'a, to: 'a, body: 'a})
   | Fold_X(option<superscript<'a>>)
   | Fold_Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Magnitude({value: 'a})
@@ -44,12 +44,12 @@ type foldState<'a> =
   | Fold_Operator(op)
   | Fold_Percent
   | Fold_Placeholder(option<superscript<'a>>)
-  | Fold_Product({from: 'a, to_: 'a})
+  | Fold_Product({from: 'a, to: 'a})
   | Fold_Rand(option<superscript<'a>>)
   | Fold_RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
-  | Fold_Sum({from: 'a, to_: 'a})
+  | Fold_Sum({from: 'a, to: 'a})
   | Fold_Table({
       elements: array<'a>,
       numRows: int,
@@ -235,12 +235,12 @@ let reduceMapU = (
       Node(Fold_NPR({n, r}), i, i')
     | Product2 =>
       let (from, i') = readArg(i + 1)
-      let (to_, i') = readArg(i')
-      Node(Fold_Product({from, to_}), i, i')
+      let (to, i') = readArg(i')
+      Node(Fold_Product({from, to}), i, i')
     | Sum2 =>
       let (from, i') = readArg(i + 1)
-      let (to_, i') = readArg(i')
-      Node(Fold_Sum({from, to_}), i, i')
+      let (to, i') = readArg(i')
+      Node(Fold_Sum({from, to}), i, i')
     | Frac2S =>
       let (num, i') = readArg(i + 1)
       let (den, i') = readArg(i')
@@ -284,9 +284,9 @@ let reduceMapU = (
       Node(Fold_RandInt({a, b, superscript}), i, i')
     | Integral3 =>
       let (from, i') = readArg(i + 1)
-      let (to_, i') = readArg(i')
+      let (to, i') = readArg(i')
       let (body, i') = readArg(i')
-      Node(Fold_Integral({from, to_, body}), i, i')
+      Node(Fold_Integral({from, to, body}), i, i')
     | TableNS({numRows, numColumns}) => tableS(i, ~numRows, ~numColumns)
     | Arg => assert false
     }

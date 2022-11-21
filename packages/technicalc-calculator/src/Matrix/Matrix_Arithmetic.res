@@ -22,11 +22,10 @@ let add = (a: t, b: t): t => zipByU(a, b, (. a, b) => Scalar.add(a, b))
 let sub = (a: t, b: t): t => zipByU(a, b, (. a, b) => Scalar.sub(a, b))
 
 let mul = (a: t, b: t): t =>
-  if a.numColumns == b.numColumns {
-    let shape = a.numColumns
-    makeByU(~numRows=shape, ~numColumns=shape, (. row, column) => {
+  if a.numColumns == b.numRows {
+    makeByU(~numRows=a.numRows, ~numColumns=b.numColumns, (. row, column) => {
       let element = ref(Scalar.zero)
-      for i in 0 to shape - 1 {
+      for i in 0 to a.numColumns - 1 {
         let elementProduct = Scalar.mul(getExn(a, ~row, ~column=i), getExn(b, ~row=i, ~column))
         element := Scalar.add(element.contents, elementProduct)
       }

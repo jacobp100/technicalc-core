@@ -14,7 +14,7 @@ let eq = (a: t, b: t) =>
 let make = (~numRows, ~numColumns, elements: array<Scalar.t>) =>
   numRows * numColumns == Belt.Array.length(elements) &&
     !Belt.Array.some(elements, Scalar_Base.isNaN)
-    ? {numRows: numRows, numColumns: numColumns, elements: Obj.magic(elements)}
+    ? {numRows, numColumns, elements: Obj.magic(elements)}
     : empty
 
 let makeByIndexU = (~numRows, ~numColumns, fn: (. int) => Scalar.t) => {
@@ -31,9 +31,9 @@ let makeByIndexU = (~numRows, ~numColumns, fn: (. int) => Scalar.t) => {
       }
     } else {
       {
-        numRows: numRows,
-        numColumns: numColumns,
-        elements: elements,
+        numRows,
+        numColumns,
+        elements,
       }
     }
 
@@ -53,13 +53,13 @@ let identity = (size: int) =>
 let ofVector = elements => {
   numRows: Belt.Array.length(elements),
   numColumns: 1,
-  elements: elements,
+  elements,
 }
 
 @get external elements: t => array<Scalar.t> = "elements"
 
 let getExn = (x, ~row, ~column) =>
-  if row >= 0 && (row <= x.numRows && (column >= 0 && column <= x.numColumns)) {
+  if row >= 0 && row < x.numRows && column >= 0 && column < x.numColumns {
     Belt.Array.getUnsafe(x.elements, column + row * x.numColumns)->Scalar_Finite.toScalar
   } else {
     assert false

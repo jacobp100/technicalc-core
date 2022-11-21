@@ -515,3 +515,29 @@ test("should insert close bracket after open bracket at end of scope", () => {
   ->expect
   ->toEqual([N1_S, Add, Frac2S, N2_S, Arg, N3_S, Arg, Add, N4_S, OpenBracket, CloseBracketS])
 })
+
+test("should ignore duplicate close brackets", () => {
+  let formatCaptureGroups = false
+
+  (make(~elements=[OpenBracket], ~index=1, ~formatCaptureGroups)->insert(CloseBracketS)).elements
+  ->expect
+  ->toEqual([OpenBracket, CloseBracketS])
+
+  (
+    make(~elements=[OpenBracket, CloseBracketS], ~index=1, ~formatCaptureGroups)->insert(
+      CloseBracketS,
+    )
+  ).elements
+  ->expect
+  ->toEqual([OpenBracket, CloseBracketS])
+
+  (
+    make(
+      ~elements=[OpenBracket, OpenBracket, CloseBracketS],
+      ~index=2,
+      ~formatCaptureGroups,
+    )->insert(CloseBracketS)
+  ).elements
+  ->expect
+  ->toEqual([OpenBracket, OpenBracket, CloseBracketS, CloseBracketS])
+})

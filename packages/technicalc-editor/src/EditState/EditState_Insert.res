@@ -216,6 +216,15 @@ type skipMode =
       let combined = shouldAppendCloseBracket ? [element, CloseBracketS] : [element]
       let elements = ArrayUtil.insertArray(elements, combined, index)
       (elements, index + 1)
+    | CloseBracketS =>
+      let elements = switch Belt.Array.get(elements, index) {
+      | Some(CloseBracketS)
+        if bracketLevel(~direction=Backwards, elements, ~from=index) == 0 => elements
+      | _ => ArrayUtil.insertArray(elements, [element], index)
+      }
+
+      (elements, index + 1)
+
     | _ =>
       let args = switch AST.argCountExn(element) {
       | 0 => [element]

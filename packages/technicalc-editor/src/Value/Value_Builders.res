@@ -40,9 +40,9 @@ let handleFunction = (fn, body) =>
     | Some(resultSuperscript) => Node.Pow(value, resultSuperscript)
     | None => value
     }
-  | NLog({base}) => LogBase({base: base, body: body})
-  | Sum({from, to_}) => Sum({from: from, to_: to_, body: body})
-  | Product({from, to_}) => Product({from: from, to_: to_, body: body})
+  | NLog({base}) => LogBase({base, body})
+  | Sum({from, to}) => Sum({from, to, body})
+  | Product({from, to}) => Product({from, to, body})
   }
 
 let handleOp = (op, a, b) =>

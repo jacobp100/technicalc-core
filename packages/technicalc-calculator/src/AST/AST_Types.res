@@ -79,7 +79,7 @@ type rec t =
   | Lcm(t, t)
   | X
   | Differential({at: t, body: t})
-  | Integral({from: t, to_: t, body: t})
-  | Sum({from: t, to_: t, body: t})
-  | Product({from: t, to_: t, body: t})
+  | Integral({from: t, to: t, body: t})
+  | Sum({from: t, to: t, body: t})
+  | Product({from: t, to: t, body: t})
   | Convert({body: t, toUnits: array<Unit_Types.t>, fromUnits: array<Unit_Types.t>})

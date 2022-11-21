@@ -21,17 +21,17 @@ let map = (element: foldState<'a>, i, i') =>
     Value_Types.Unresolved(e, i, i')
   | Fold_Function({fn, resultSuperscript}) =>
     let resultSuperscript = Belt.Option.map(resultSuperscript, superscriptBody)
-    UnresolvedFunction(GenericFunction({fn: fn, resultSuperscript: resultSuperscript}), i, i')
+    UnresolvedFunction(GenericFunction({fn, resultSuperscript}), i, i')
   | Fold_NLog({base}) => UnresolvedFunction(NLog({base: base}), i, i')
-  | Fold_Sum({from, to_}) => UnresolvedFunction(Sum({from: from, to_: to_}), i, i')
-  | Fold_Product({from, to_}) => UnresolvedFunction(Product({from: from, to_: to_}), i, i')
+  | Fold_Sum({from, to}) => UnresolvedFunction(Sum({from, to}), i, i')
+  | Fold_Product({from, to}) => UnresolvedFunction(Product({from, to}), i, i')
   | Fold_ImaginaryUnit(superscript) => withSuperscript(I, superscript)->Resolved
   | Fold_Rand(superscript) => withSuperscript(Rand, superscript)->Resolved
   | Fold_RandInt({a, b, superscript}) => withSuperscript(RandInt(a, b), superscript)->Resolved
   | Fold_NPR({n, r}) => NPR(n, r)->Resolved
   | Fold_NCR({n, r}) => NCR(n, r)->Resolved
-  | Fold_Differential({at, body}) => Differential({at: at, body: body})->Resolved
-  | Fold_Integral({from, to_, body}) => Integral({from: from, to_: to_, body: body})->Resolved
+  | Fold_Differential({at, body}) => Differential({at, body})->Resolved
+  | Fold_Integral({from, to, body}) => Integral({from, to, body})->Resolved
   | Fold_X(superscript) => withSuperscript(X, superscript)->Resolved
   | Fold_Variable({id, superscript}) => withSuperscript(Variable(id), superscript)->Resolved
   | Fold_CustomAtom({value, superscript}) =>
@@ -55,8 +55,5 @@ let map = (element: foldState<'a>, i, i') =>
   | Fold_Table({elements, numColumns: 1, superscript}) =>
     withSuperscript(Vector(elements), superscript)->Resolved
   | Fold_Table({elements, numRows, numColumns, superscript}) =>
-    withSuperscript(
-      Matrix({numRows: numRows, numColumns: numColumns, elements: elements}),
-      superscript,
-    )->Resolved
+    withSuperscript(Matrix({numRows, numColumns, elements}), superscript)->Resolved
   }

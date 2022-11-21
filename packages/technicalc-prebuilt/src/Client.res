@@ -103,24 +103,42 @@ module Elements = {
   let encode = Encoding.encode
   let decode = Encoding.decode
 
+  %%private(
+    let locale = maybeFormat => {
+      let locale = switch maybeFormat {
+      | Some(format) => formatLocale(format)
+      | None => defaultFormat.locale
+      }
+      switch locale {
+      | English => Stringifier.English
+      | European => European
+      }
+    }
+  )
+
+  %%private(
+    let digitGrouping = maybeFormat => {
+      switch maybeFormat {
+      | Some(format) => formatDigitGrouping(format)
+      | None => defaultFormat.digitGrouping
+      }
+    }
+  )
+
   let toMml = (x, maybeFormat, maybeInline) => {
-    let locale = switch maybeFormat {
-    | Some(format) => formatLocale(format)
-    | None => defaultFormat.locale
-    }
-    let locale = switch locale {
-    | English => Mml.English
-    | European => European
-    }
-    let digitGrouping = switch maybeFormat {
-    | Some(format) => formatDigitGrouping(format)
-    | None => defaultFormat.digitGrouping
-    }
+    let locale = locale(maybeFormat)
+    let digitGrouping = digitGrouping(maybeFormat)
     let inline = switch maybeInline {
     | Some(inline) => inline
     | None => false
     }
     Mml.create(~locale, ~digitGrouping, ~inline, x)
+  }
+
+  let toTex = (x, maybeFormat) => {
+    let locale = locale(maybeFormat)
+    let digitGrouping = digitGrouping(maybeFormat)
+    Tex.create(~locale, ~digitGrouping, x)
   }
 
   let parse = elements => Value.parse(elements)->toJsResult
