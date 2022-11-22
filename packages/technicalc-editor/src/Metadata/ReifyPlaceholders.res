@@ -36,6 +36,7 @@ open AST
     | RadianUnit
     | Re
     | Rem
+    | Rref
     | Sub
     | Transpose
     | UnitConversion(_)

@@ -36,6 +36,7 @@ type t =
   | RadianUnit
   | Re
   | Rem
+  | Rref
   | Sub
   | Transpose
   | UnitConversion({
@@ -154,6 +155,7 @@ let argCountExn = (arg: t) =>
   | RadianUnit
   | Re
   | Rem
+  | Rref
   | Sub
   | Transpose
   | UnitConversion(_)

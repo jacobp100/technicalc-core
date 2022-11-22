@@ -100,6 +100,7 @@
     | Rem => 90
     /* 6th set elements */
     | Transpose => 91
+    | Rref => 92
     /* Custom handling */
     | UnitConversion(_)
     | CustomAtomS(_)
@@ -111,7 +112,7 @@
 )
 
 %%private(let numIntElements = 86)
-%%private(let maxUintValue = 91)
+%%private(let maxUintValue = 92)
 let mapping = Belt.Array.make(numIntElements + 1, 0)
 let reverseMapping = Belt.Array.make(maxUintValue + 1, AST.Arg)
 for i in 0 to numIntElements {

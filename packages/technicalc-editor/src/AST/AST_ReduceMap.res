@@ -139,6 +139,7 @@ let reduceMapU = (
     | Log => fn(i, Fn_Log)
     | RadFunction => fn(i, Fn_Rad)
     | Re => fn(i, Fn_Re)
+    | Rref => fn(i, Fn_Rref)
     | CoshS => fnS(i, Fn_Cosh)
     | CosS => fnS(i, Fn_Cos)
     | SinhS => fnS(i, Fn_Sinh)

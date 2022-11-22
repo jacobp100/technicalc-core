@@ -33,6 +33,7 @@ type skipMode =
     | RadFunction
     | Re
     | Rem
+    | Rref
     | Sub
     | CosecS
     | CoshS

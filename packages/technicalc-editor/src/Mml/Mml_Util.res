@@ -38,6 +38,7 @@ let stringOfFunction = x =>
   | Fn_Rad => "rad"
   | Fn_Log => "log"
   | Fn_Re => "re"
+  | Fn_Rref => "rref"
   | Fn_Im => "im"
   | Fn_Gamma => "&#x0393;"
   }

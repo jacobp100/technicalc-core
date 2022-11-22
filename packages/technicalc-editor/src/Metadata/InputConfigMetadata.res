@@ -22,6 +22,7 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | Percent
   | Re
   | Rem
+  | Rref
   | Sub
   | UnitConversion(_)
   | Transpose

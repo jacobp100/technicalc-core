@@ -18,6 +18,7 @@ type fn =
   | Fn_Log
   | Fn_Rad
   | Fn_Re
+  | Fn_Rref
   /* Superscripts supported */
   | Fn_Cos
   | Fn_Cosec
@@ -105,6 +106,7 @@ let fnToElement = (element: fn): t =>
   | Fn_Log => Log
   | Fn_Rad => RadFunction
   | Fn_Re => Re
+  | Fn_Rref => Rref
   | Fn_Cos => CosS
   | Fn_Cosec => CosecS
   | Fn_Cosh => CoshS
