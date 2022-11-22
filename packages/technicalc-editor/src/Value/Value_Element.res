@@ -8,16 +8,17 @@ let map = (element: foldState<'a>, i, i') =>
     assert false
   | (Fold_Angle(_)
     | Fold_Base(_)
+    | Fold_CloseBracket(_)
     | Fold_Conj
     | Fold_DecimalSeparator
+    | Fold_Digit(_)
     | Fold_Factorial
+    | Fold_Magnitude(_)
     | Fold_OpenBracket
     | Fold_Operator(_)
     | Fold_Percent
-    | Fold_UnitConversion(_)
-    | Fold_CloseBracket(_)
-    | Fold_Digit(_)
-    | Fold_Magnitude(_)) as e =>
+    | Fold_Transpose
+    | Fold_UnitConversion(_)) as e =>
     Value_Types.Unresolved(e, i, i')
   | Fold_Function({fn, resultSuperscript}) =>
     let resultSuperscript = Belt.Option.map(resultSuperscript, superscriptBody)

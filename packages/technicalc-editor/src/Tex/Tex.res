@@ -57,7 +57,10 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Angle(Angle_ArcSecond) => "''"->Tex_Accum.append(. accum, _)
   | Fold_ImaginaryUnit(superscript) =>
     withSuperscript("i", superscript)->Tex_Accum.append(. accum, _)
-  | Fold_Conj => "{}^{*}"->Tex_Accum.append(. accum, _)
+  | Fold_Conj =>
+    Tex_Accum.modifyLastU(.accum, (. last) => Belt.Option.getWithDefault(last, "{}") ++ "^{*}")
+  | Fold_Transpose =>
+    Tex_Accum.modifyLastU(.accum, (. last) => Belt.Option.getWithDefault(last, "{}") ++ "^T")
   | Fold_Magnitude({value}) => `\\times 10^${value}`->Tex_Accum.append(. accum, _)
   | Fold_Variable({name, superscript}) =>
     withSuperscript(name, superscript)->Tex_Accum.append(. accum, _)

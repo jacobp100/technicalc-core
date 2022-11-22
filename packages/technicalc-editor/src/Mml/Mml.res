@@ -129,6 +129,26 @@ let map = (. accum, range) => {
   }
 )
 
+%%private(
+  let supsrscriptSuffix = (~last, ~range, tag, body) =>
+    switch last {
+    | Some(last) =>
+      let (start, end) = range
+      element(
+        ~attributes=list{selection(~end, ())},
+        "msup",
+        element("mrow", last) ++ element(~attributes=list{selection(~start, ())}, tag, body),
+      )
+    | None =>
+      element(
+        ~range,
+        "msup",
+        element(~attributes=Placeholder.attributes, Placeholder.tag, Placeholder.body) ++
+        element(tag, body),
+      )
+    }
+)
+
 let reduce = (. accum, stateElement: foldState<string>, range) =>
   switch stateElement {
   | Fold_OpenBracket => Mml_Accum.appendOpenBracket(. accum, range)
@@ -151,7 +171,10 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     element(~range, "msup", "<mo />" ++ superscript)->Mml_Accum.append(. accum, _)
   | Fold_ImaginaryUnit(superscript) =>
     element(~superscript?, ~range, "mi", "i")->Mml_Accum.append(. accum, _)
-  | Fold_Conj => element(~range, "mo", "&#x2a;")->Mml_Accum.append(. accum, _)
+  | Fold_Conj =>
+    Mml_Accum.modifyLastU(.accum, (. last) => supsrscriptSuffix(~last, ~range, "mo", "&#x02217;"))
+  | Fold_Transpose =>
+    Mml_Accum.modifyLastU(.accum, (. last) => supsrscriptSuffix(~last, ~range, "mi", "T"))
   | Fold_Magnitude({value}) =>
     let body = element("mo", stringOfOperator(Op_Mul)) ++ element("mn", "10")
     let body = element("mrow", body)
@@ -166,17 +189,18 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_CustomAtom({mml, superscript}) =>
     element(~superscript?, ~range, "mrow", mml)->Mml_Accum.append(. accum, _)
   | Fold_CaptureGroupPlaceholder({placeholderMml: mml, superscript}) =>
-    open Placeholder
     let phantom = element(~attributes=list{selection(~start=fst(range) + 1, ())}, "mphantom", "")
-    switch mml {
-    | Some(mml) =>
-      let body = phantom ++ mml
-      let body = element(~attributes, ~superscript?, ~range, "mrow", body)
-      Mml_Accum.append(. accum, body)
-    | None =>
-      let body = element(~attributes, ~range, tag, body)
-      accum->Mml_Accum.append(. _, phantom)->Mml_Accum.append(. _, body)
+    let symbol = switch mml {
+    | Some(mml) => mml
+    | None => element(Placeholder.tag, Placeholder.body)
     }
+    element(
+      ~attributes=Placeholder.attributes,
+      ~superscript?,
+      ~range,
+      "mrow",
+      phantom ++ symbol,
+    )->Mml_Accum.append(. accum, _)
   | Fold_Placeholder(superscript) =>
     open Placeholder
     element(~attributes, ~superscript?, ~range, tag, body)->Mml_Accum.append(. accum, _)

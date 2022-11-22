@@ -32,9 +32,10 @@ let parse = {
     let nextElement = ArraySlice.get(elements, elementIndex + 1)
     let nextAccum: option<TechniCalcEditor.Value_Types.node> = switch nextElement {
     | Some(Unresolved(Fold_UnitConversion({fromUnits, toUnits}), _, _)) =>
-      Some(Convert({body: accum, fromUnits: fromUnits, toUnits: toUnits}))
+      Some(Convert({body: accum, fromUnits, toUnits}))
     | Some(Unresolved(Fold_Factorial, _, _)) => Some(Factorial(accum))
     | Some(Unresolved(Fold_Conj, _, _)) => Some(Conj(accum))
+    | Some(Unresolved(Fold_Transpose, _, _)) => Some(Transpose(accum))
     | Some(Unresolved(Fold_Percent, _, _)) => Some(Percent(accum))
     | _ => None
     }
@@ -213,10 +214,10 @@ let parse = {
         let startElementIndex = fn != None ? fnIndex : elementIndex
         let endElementIndex = elementIndex + 1
         let openBracket = {
-          startElementIndex: startElementIndex,
-          endElementIndex: endElementIndex,
-          fn: fn,
-          i': i',
+          startElementIndex,
+          endElementIndex,
+          fn,
+          i',
         }
         iter(elements, list{openBracket, ...openBracketStack}, endElementIndex)
       | Some(Unresolved(Fold_CloseBracket(superscript), _, i')) =>

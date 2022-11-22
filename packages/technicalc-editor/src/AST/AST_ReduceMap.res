@@ -56,6 +56,7 @@ type foldState<'a> =
       numColumns: int,
       superscript: option<superscript<'a>>,
     })
+  | Fold_Transpose
   | Fold_UnitConversion({
       fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
       toUnits: array<TechniCalcCalculator.Unit_Types.t>,
@@ -115,6 +116,7 @@ let reduceMapU = (
     | Factorial => Node(Fold_Factorial, i, i + 1)
     | OpenBracket => Node(Fold_OpenBracket, i, i + 1)
     | Percent => Node(Fold_Percent, i, i + 1)
+    | Transpose => Node(Fold_Transpose, i, i + 1)
     | Bin => Node(Fold_Base(Base_Bin), i, i + 1)
     | Oct => Node(Fold_Base(Base_Oct), i, i + 1)
     | Hex => Node(Fold_Base(Base_Hex), i, i + 1)

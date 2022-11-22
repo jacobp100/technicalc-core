@@ -37,6 +37,7 @@ type t =
   | Re
   | Rem
   | Sub
+  | Transpose
   | UnitConversion({
       fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
       toUnits: array<TechniCalcCalculator.Unit_Types.t>,
@@ -154,6 +155,7 @@ let argCountExn = (arg: t) =>
   | Re
   | Rem
   | Sub
+  | Transpose
   | UnitConversion(_)
   | CloseBracketS
   | ConstES
@@ -212,8 +214,8 @@ let argCountExn = (arg: t) =>
   | RandInt2S => 2
   /* Atom3 */
   | Integral3
-  /* Atom3S */
-  | MFrac3S => 3
+  | /* Atom3S */
+  MFrac3S => 3
   /* Matrices */
   | TableNS({numRows, numColumns}) => numRows * numColumns
   }

@@ -37,6 +37,7 @@ open AST
     | Re
     | Rem
     | Sub
+    | Transpose
     | UnitConversion(_)
     | Magnitude1
     | NLog1

@@ -67,6 +67,7 @@ type skipMode =
     | Percent
     | RadianUnit
     | UnitConversion(_)
+    | Transpose
     | CloseBracketS
     | ConstES
     | ConstPiS

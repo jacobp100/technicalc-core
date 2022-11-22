@@ -24,6 +24,7 @@ module Make = (M: Config): {
   let appendBasePrefix: (. t, string) => t
   let appendOpenBracket: (. t, (int, int)) => t
   let appendCloseBracket: (. t, (int, int), option<AST.superscript<string>>) => t
+  let modifyLastU: (. t, (. option<string>) => string) => t
   let toString: (. t) => string
 } => {
   module DigitSeparators = {
@@ -35,14 +36,14 @@ module Make = (M: Config): {
 
     type t = {
       locale: locale,
-      body: string,
+      bodyRev: list<string>,
       digitGroupingState: digitGroupingState,
       lastElementType: lastElementType,
     }
 
     let make = (~locale, ~digitGrouping) => {
       locale,
-      body: "",
+      bodyRev: list{},
       digitGroupingState: digitGrouping ? Normal : GroupingDisabled,
       lastElementType: NoElement,
     }
@@ -59,24 +60,30 @@ module Make = (M: Config): {
           switch numbersRev {
           | list{c, b, a, ...tail} if tail != list{} =>
             iter(
-              ~formattedNumbers=groupingSeparator ++ a ++ b ++ c ++ formattedNumbers,
+              ~formattedNumbers=list{groupingSeparator, a, b, c, ...formattedNumbers},
               ~numbersRev=tail,
             )
           | list{number, ...tail} =>
-            iter(~formattedNumbers=number ++ formattedNumbers, ~numbersRev=tail)
-          | list{} => v.body ++ formattedNumbers
+            iter(~formattedNumbers=list{number, ...formattedNumbers}, ~numbersRev=tail)
+          | list{} => Belt.List.reverseConcat(formattedNumbers, v.bodyRev)
           }
-        iter(~formattedNumbers="", ~numbersRev)
+        iter(~formattedNumbers=list{}, ~numbersRev)
       }
     )
 
-    let toString = ({digitGroupingState, body} as v) =>
-      switch digitGroupingState {
-      | GroupingDisabled
-      | Normal
-      | SkipGrouping => body
-      | GroupingDigits({numbersRev}) => flattenDigits(v, ~numbersRev)
+    %%private(
+      let bodyRev = v => {
+        switch v.digitGroupingState {
+        | GroupingDisabled
+        | Normal
+        | SkipGrouping =>
+          v.bodyRev
+        | GroupingDigits({numbersRev}) => flattenDigits(v, ~numbersRev)
+        }
       }
+    )
+
+    let toString = v => bodyRev(v)->Belt.List.toArray->ArrayUtil.reverseInPlace->StringUtil.join
 
     %%private(
       let defaultDigitGroupingState = v =>
@@ -90,10 +97,10 @@ module Make = (M: Config): {
         | None => defaultDigitGroupingState(v)
         }
         let {locale} = v
-        let body = toString(v) ++ element
+        let bodyRev = list{element, ...bodyRev(v)}
         {
           locale,
-          body,
+          bodyRev,
           digitGroupingState,
           lastElementType,
         }
@@ -116,7 +123,7 @@ module Make = (M: Config): {
         }
         {
           locale: v.locale,
-          body: v.body,
+          bodyRev: v.bodyRev,
           digitGroupingState: GroupingDigits({numbersRev: list{element, ...numbersRev}}),
           lastElementType: Other,
         }
@@ -133,6 +140,19 @@ module Make = (M: Config): {
       let digitGroupingState =
         v.digitGroupingState == GroupingDisabled ? GroupingDisabled : SkipGrouping
       appendWith(~digitGroupingState, v, element)
+    }
+
+    let modifyLastU = ({locale} as v, fn) => {
+      let bodyRev = switch bodyRev(v) {
+      | list{last, ...rest} => list{fn(. Some(last)), ...rest}
+      | list{} => list{fn(. None)}
+      }
+      {
+        locale,
+        bodyRev,
+        digitGroupingState: Normal,
+        lastElementType: Other,
+      }
     }
   }
 
@@ -237,5 +257,9 @@ module Make = (M: Config): {
   let appendOpenBracket = (. body, range) => BracketGroups.appendOpenBracket(body, range)
   let appendCloseBracket = (. body, range, superscript) =>
     BracketGroups.appendCloseBracket(body, range, superscript)
+  let modifyLastU = (. body, element) =>
+    BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {
+      DigitSeparators.modifyLastU(a, b)
+    })
   let toString = (. body) => BracketGroups.toString(body)
 }
