@@ -346,7 +346,7 @@ module Units = {
   let unitsCompatible = TechniCalcCalculator.Units_ConvertChecks.unitsCompatible
   let compositeUnitsCompatible = TechniCalcCalculator.Units_ConvertChecks.compositeUnitsCompatible
 
-  let toMml = TechniCalcEditor.Mml_Units.toMml
+  let toMml = TechniCalcEditor.Mml_Units.unitsMml
   let toString = Units_Util.toString
 
   let prefixes = Units_Util.prefixes

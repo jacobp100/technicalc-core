@@ -38,3 +38,92 @@ let inverse = ({numRows, numColumns} as m: t): t =>
     make(~numRows, ~numColumns, elements)
   | _ => empty
   }
+
+let transpose = (m: t) =>
+  makeByU(~numRows=m.numColumns, ~numColumns=m.numRows, (. row, column) => {
+    getExn(m, ~row=column, ~column=row)
+  })
+
+%%private(
+  let swapRows = ({numRows, numColumns} as m: t, i: int, j: int) =>
+    makeByU(~numRows, ~numColumns, (. row, column) => {
+      let row = if row == i {
+        j
+      } else if row == j {
+        i
+      } else {
+        row
+      }
+      getExn(m, ~row, ~column)
+    })
+)
+
+%%private(
+  let divideRow = ({numRows, numColumns} as m: t, i: int, by: Scalar.t) =>
+    makeByU(~numRows, ~numColumns, (. row, column) => {
+      let current = getExn(m, ~row, ~column)
+      row == i ? Scalar.div(current, by) : current
+    })
+)
+
+%%private(
+  let subtractRow = ({numRows, numColumns} as m: t, ~from, ~to, ~factor) =>
+    makeByU(~numRows, ~numColumns, (. row, column) => {
+      let current = getExn(m, ~row, ~column)
+      if row == to {
+        Scalar.sub(current, Scalar.mul(getExn(m, ~row=from, ~column), factor))
+      } else {
+        current
+      }
+    })
+)
+
+// https://en.wikipedia.org/wiki/Row_echelon_form#Pseudocode_for_reduced_row_echelon_form
+let rref = (m: t) => {
+  let {numRows, numColumns} = m
+  let out = ref(m)
+  let lead = ref(0)
+  let r = ref(0)
+
+  while r.contents < numRows && lead.contents < numColumns {
+    let i = ref(r.contents)
+
+    while (
+      lead.contents < numColumns &&
+        getExn(out.contents, ~row=i.contents, ~column=lead.contents)->Scalar.eq(Scalar.zero)
+    ) {
+      i := i.contents + 1
+
+      if i.contents == numRows {
+        i := r.contents
+        lead := lead.contents + 1
+      }
+    }
+
+    if lead.contents < numColumns {
+      if i.contents != r.contents {
+        out := swapRows(out.contents, i.contents, r.contents)
+      }
+
+      out :=
+        divideRow(
+          out.contents,
+          r.contents,
+          getExn(out.contents, ~row=r.contents, ~column=lead.contents),
+        )
+
+      for j in 0 to numRows - 1 {
+        if j != r.contents {
+          let factor = getExn(out.contents, ~row=j, ~column=lead.contents)
+          out := subtractRow(out.contents, ~from=r.contents, ~to=j, ~factor)
+        }
+      }
+
+      lead := lead.contents + 1
+    }
+
+    r := r.contents + 1
+  }
+
+  out.contents
+}

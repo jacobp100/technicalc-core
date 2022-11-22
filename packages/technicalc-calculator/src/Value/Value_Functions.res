@@ -68,3 +68,22 @@ let max = (a, b) => map2ScalarU(a, b, (. a, b) => Scalar.max(a, b))
 let min = (a, b) => map2ScalarU(a, b, (. a, b) => Scalar.min(a, b))
 let gcd = (a, b) => map2ScalarU(a, b, (. a, b) => Scalar.gcd(a, b))
 let lcm = (a, b) => map2ScalarU(a, b, (. a, b) => Scalar.lcm(a, b))
+
+let transpose = (a: t) =>
+  switch a {
+  | #...Scalar.t as a => a
+  | #Matx(m) => Matrix.transpose(m)->ofMatrix
+  | #Vect(v) => Matrix.make(~numRows=1, ~numColumns=Vector.size(v), Vector.elements(v))->ofMatrix
+  | _ => nan
+  }
+
+let rref = (a: t) =>
+  switch a {
+  | #...Scalar.t => ofScalar(Scalar.one)
+  | #Matx(m) => Matrix.rref(m)->ofMatrix
+  | #Vect(v) =>
+    Matrix.makeByU(~numRows=1, ~numColumns=Vector.size(v), (. row, _) =>
+      row == 0 ? Scalar.one : Scalar.zero
+    )->ofMatrix
+  | _ => nan
+  }

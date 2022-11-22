@@ -124,5 +124,5 @@ open TechniCalcCalculator.Unit_Types
     }
 )
 
-let toMml = (units: array<t>) =>
+let unitsMml = (units: array<t>) =>
   Belt.Array.mapU(units, unitMml)->StringUtil.joinWith("<mspace width=\"0.1em\" />")

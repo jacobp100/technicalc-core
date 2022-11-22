@@ -77,6 +77,8 @@ type rec t =
   | Max(t, t)
   | Gcd(t, t)
   | Lcm(t, t)
+  | Transpose(t)
+  | Rref(t)
   | X
   | Differential({at: t, body: t})
   | Integral({from: t, to: t, body: t})

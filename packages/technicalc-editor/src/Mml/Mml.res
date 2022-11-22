@@ -1,5 +1,6 @@
 open AST
 open Mml_Builders
+open Mml_Units
 open Mml_Util
 
 %%private(let invalidAttributes = list{(#class, "invalid"), (#stretchy, "false")})
@@ -250,7 +251,7 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
     table(~numRows, ~numColumns, elements, superscript, range)->Mml_Accum.append(. accum, _)
   | Fold_UnitConversion({fromUnits, toUnits}) =>
-    let body = `${Mml_Units.toMml(fromUnits)}<mo>&RightArrow;</mo>${Mml_Units.toMml(toUnits)}`
+    let body = `${unitsMml(fromUnits)}<mo>&RightArrow;</mo>${unitsMml(toUnits)}`
     element(~range, "mrow", body)->Mml_Accum.append(. accum, _)
   }
 
