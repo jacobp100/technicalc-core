@@ -135,11 +135,11 @@ test("conjugate", () => {
 
   create([N1_S, Conj])
   ->expect
-  ->toEqual(`<mrow><msup id=\":2\"><mrow><mn id=\"0:1\">1</mn></mrow><mo id=\"1:\">&#x02217;</mo></msup></mrow>`)
+  ->toEqual(`<mrow><msup id=\":2\"><mrow><mn id=\"0:1\">1</mn></mrow><mo id=\"~1:\">&#x02217;</mo></msup></mrow>`)
 
   create([Frac2S, N1_S, Arg, N2_S, Arg, Conj])
   ->expect
-  ->toEqual(`<mrow><msup id=\":6\"><mrow><mfrac id=\"0:5\"><mrow><mn id=\"1:2\">1</mn></mrow><mrow><mn id=\"3:4\">2</mn></mrow></mfrac></mrow><mo id=\"5:\">&#x02217;</mo></msup></mrow>`)
+  ->toEqual(`<mrow><msup id=\":6\"><mrow><mfrac id=\"0:5\"><mrow><mn id=\"1:2\">1</mn></mrow><mrow><mn id=\"3:4\">2</mn></mrow></mfrac></mrow><mo id=\"~5:\">&#x02217;</mo></msup></mrow>`)
 })
 
 test("transpose", () => {
@@ -149,7 +149,7 @@ test("transpose", () => {
 
   create([N1_S, Transpose])
   ->expect
-  ->toEqual(`<mrow><msup id=\":2\"><mrow><mn id=\"0:1\">1</mn></mrow><mi id=\"1:\">T</mi></msup></mrow>`)
+  ->toEqual(`<mrow><msup id=\":2\"><mrow><mn id=\"0:1\">1</mn></mrow><mi id=\"~1:\">T</mi></msup></mrow>`)
 
   create([
     TableNS({numRows: 2, numColumns: 2}),
@@ -164,5 +164,5 @@ test("transpose", () => {
     Transpose,
   ])
   ->expect
-  ->toEqual(`<mrow><msup id=\":10\"><mrow><mrow id=\"0:9\"><mo>[</mo><mtable><mtr><mtd><mrow><mn id=\"1:2\">1</mn></mrow></mtd><mtd><mrow><mn id=\"3:4\">2</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn id=\"5:6\">3</mn></mrow></mtd><mtd><mrow><mn id=\"7:8\">4</mn></mrow></mtd></mtr></mtable><mo>]</mo></mrow></mrow><mi id=\"9:\">T</mi></msup></mrow>`)
+  ->toEqual(`<mrow><msup id=\":10\"><mrow><mrow id=\"0:9\"><mo>[</mo><mtable><mtr><mtd><mrow><mn id=\"1:2\">1</mn></mrow></mtd><mtd><mrow><mn id=\"3:4\">2</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn id=\"5:6\">3</mn></mrow></mtd><mtd><mrow><mn id=\"7:8\">4</mn></mrow></mtd></mtr></mtable><mo>]</mo></mrow></mrow><mi id=\"~9:\">T</mi></msup></mrow>`)
 })

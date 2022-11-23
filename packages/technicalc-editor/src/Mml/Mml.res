@@ -137,7 +137,8 @@ let map = (. accum, range) => {
       element(
         ~attributes=list{selection(~end, ())},
         "msup",
-        element("mrow", last) ++ element(~attributes=list{selection(~start, ())}, tag, body),
+        element("mrow", last) ++
+        element(~attributes=list{selection(~avoid=true, ~start, ())}, tag, body),
       )
     | None =>
       element(

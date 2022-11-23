@@ -91,6 +91,8 @@ let keys = {
   "arcseconds": One(ArcSecondUnit),
   "radians": One(RadianUnit),
   "gradians": One(GradianUnit),
+  "transpose": One(Transpose),
+  "rref": One(Rref),
   // Not used (yet)
   // "deg": One(DegFunction),
   // "rad": One(RadFunction),
