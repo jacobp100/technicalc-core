@@ -38,6 +38,7 @@ open AST
     | Rem
     | Rref
     | Sub
+    | Trace
     | Transpose
     | UnitConversion(_)
     | Magnitude1

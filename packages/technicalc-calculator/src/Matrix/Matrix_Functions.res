@@ -1,26 +1,43 @@
 open Matrix_Types
 open Matrix_Base
 
+%%private(let squareElements = m => m.numRows == m.numColumns ? Some(elements(m)) : None)
+
 let determinant = (m: t): Scalar.t =>
-  switch elements(m) {
-  | [a, b, c, d] =>
+  switch squareElements(m) {
+  | Some([a, b, c, d]) =>
     open Scalar_Operators
     a * d - b * c
-  | [a, b, c, d, e, f, g, h, i] =>
+  | Some([a, b, c, d, e, f, g, h, i]) =>
     /* https://www.wolframalpha.com/input/?i=det(%7B%7Ba,b,c%7D,%7Bd,e,f%7D,%7Bg,h,i%7D%7D) */
     open Scalar_Operators
     a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g
   | _ => Scalar.nan
   }
+let trace = ({numRows, numColumns} as m) =>
+  if numRows == numColumns {
+    let out = ref(Scalar.zero)
+    for i in 0 to numRows - 1 {
+      out := Scalar.add(out.contents, getExn(m, ~row=i, ~column=i))
+    }
+    out.contents
+  } else {
+    Scalar.nan
+  }
+
+let transpose = (m: t) =>
+  makeByU(~numRows=m.numColumns, ~numColumns=m.numRows, (. row, column) => {
+    getExn(m, ~row=column, ~column=row)
+  })
 
 let inverse = ({numRows, numColumns} as m: t): t =>
-  switch elements(m) {
-  | [a, b, c, d] =>
+  switch squareElements(m) {
+  | Some([a, b, c, d]) =>
     open Scalar_Operators
     let factor = a * d - b * c
     let elements = [d / factor, -b / factor, -c / factor, a / factor]
     make(~numRows, ~numColumns, elements)
-  | [a, b, c, d, e, f, g, h, i] =>
+  | Some([a, b, c, d, e, f, g, h, i]) =>
     /* https://www.wolframalpha.com/input/?i=%7B%7Ba,b,c%7D,%7Bd,e,f%7D,%7Bg,h,i%7D%7D%5E-1 */
     open Scalar_Operators
     let factor = a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g
@@ -38,11 +55,6 @@ let inverse = ({numRows, numColumns} as m: t): t =>
     make(~numRows, ~numColumns, elements)
   | _ => empty
   }
-
-let transpose = (m: t) =>
-  makeByU(~numRows=m.numColumns, ~numColumns=m.numRows, (. row, column) => {
-    getExn(m, ~row=column, ~column=row)
-  })
 
 %%private(
   let swapRows = ({numRows, numColumns} as m: t, i: int, j: int) =>

@@ -35,6 +35,7 @@ type skipMode =
     | Rem
     | Rref
     | Sub
+    | Trace
     | CosecS
     | CoshS
     | CosS

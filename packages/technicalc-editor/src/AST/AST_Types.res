@@ -38,6 +38,7 @@ type t =
   | Rem
   | Rref
   | Sub
+  | Trace
   | Transpose
   | UnitConversion({
       fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
@@ -157,6 +158,7 @@ let argCountExn = (arg: t) =>
   | Rem
   | Rref
   | Sub
+  | Trace
   | Transpose
   | UnitConversion(_)
   | CloseBracketS

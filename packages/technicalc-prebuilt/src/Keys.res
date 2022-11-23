@@ -91,6 +91,7 @@ let keys = {
   "arcseconds": One(ArcSecondUnit),
   "radians": One(RadianUnit),
   "gradians": One(GradianUnit),
+  "trace": One(Trace),
   "transpose": One(Transpose),
   "rref": One(Rref),
   // Not used (yet)

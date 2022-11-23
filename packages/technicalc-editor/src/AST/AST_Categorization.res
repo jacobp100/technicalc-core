@@ -19,6 +19,7 @@ type fn =
   | Fn_Rad
   | Fn_Re
   | Fn_Rref
+  | Fn_Trace
   /* Superscripts supported */
   | Fn_Cos
   | Fn_Cosec
@@ -62,58 +63,4 @@ let opToElement = (element: op): t =>
   | Op_Div => Div
   | Op_Dot => Dot
   | Op_Rem => Rem
-  }
-
-let elementToFn = (element: t): option<fn> =>
-  switch element {
-  | Acos => Some(Fn_Acos)
-  | Acosh => Some(Fn_Acosh)
-  | Asin => Some(Fn_Asin)
-  | Asinh => Some(Fn_Asinh)
-  | Atan => Some(Fn_Atan)
-  | Atanh => Some(Fn_Atanh)
-  | DegFunction => Some(Fn_Deg)
-  | Gamma => Some(Fn_Gamma)
-  | GradFunction => Some(Fn_Grad)
-  | Im => Some(Fn_Im)
-  | Log => Some(Fn_Log)
-  | RadFunction => Some(Fn_Rad)
-  | Re => Some(Fn_Re)
-  | CosS => Some(Fn_Cos)
-  | CosecS => Some(Fn_Cosec)
-  | CoshS => Some(Fn_Cosh)
-  | CotS => Some(Fn_Cot)
-  | SecS => Some(Fn_Sec)
-  | SinS => Some(Fn_Sin)
-  | SinhS => Some(Fn_Sinh)
-  | TanS => Some(Fn_Tan)
-  | TanhS => Some(Fn_Tanh)
-  | _ => None
-  }
-
-let fnToElement = (element: fn): t =>
-  switch element {
-  | Fn_Acos => Acos
-  | Fn_Acosh => Acosh
-  | Fn_Asin => Asin
-  | Fn_Asinh => Asinh
-  | Fn_Atan => Atan
-  | Fn_Atanh => Atanh
-  | Fn_Deg => DegFunction
-  | Fn_Gamma => Gamma
-  | Fn_Grad => GradFunction
-  | Fn_Im => Im
-  | Fn_Log => Log
-  | Fn_Rad => RadFunction
-  | Fn_Re => Re
-  | Fn_Rref => Rref
-  | Fn_Cos => CosS
-  | Fn_Cosec => CosecS
-  | Fn_Cosh => CoshS
-  | Fn_Cot => CotS
-  | Fn_Sec => SecS
-  | Fn_Sin => SinS
-  | Fn_Sinh => SinhS
-  | Fn_Tan => TanS
-  | Fn_Tanh => TanhS
   }

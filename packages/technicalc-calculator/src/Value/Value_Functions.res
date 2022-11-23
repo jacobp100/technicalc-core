@@ -77,6 +77,13 @@ let transpose = (a: t) =>
   | _ => nan
   }
 
+let trace = (a: t) =>
+  switch a {
+  | #...Scalar.t as a => a
+  | #Matx(m) => Matrix.trace(m)->ofScalar
+  | _ => nan
+  }
+
 let rref = (a: t) =>
   switch a {
   | #...Scalar.t => ofScalar(Scalar.one)

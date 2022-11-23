@@ -28,8 +28,9 @@ let handleGenericFunction = (arg, fn) =>
   | Fn_Log => Log(arg)
   | Fn_Rad => ToRad(arg)
   | Fn_Re => Re(arg)
-  | Fn_Rref => Rref(arg)
   | Fn_Im => Im(arg)
+  | Fn_Rref => Rref(arg)
+  | Fn_Trace => Trace(arg)
   | Fn_Gamma => Gamma(arg)
   }
 

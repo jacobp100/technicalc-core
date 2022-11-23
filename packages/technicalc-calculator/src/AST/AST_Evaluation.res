@@ -109,8 +109,9 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   | Max(a, b) => Value.max(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | Gcd(a, b) => Value.gcd(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
   | Lcm(a, b) => Value.lcm(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Transpose(a) => Value.transpose(evalAt(~config, ~context, ~x, a))
   | Rref(a) => Value.rref(evalAt(~config, ~context, ~x, a))
+  | Trace(a) => Value.trace(evalAt(~config, ~context, ~x, a))
+  | Transpose(a) => Value.transpose(evalAt(~config, ~context, ~x, a))
   | X => x
   | Differential({at, body}) =>
     Value.differentiateU(

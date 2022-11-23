@@ -26,8 +26,18 @@ let ofPercent = (a: Scalar.t): t =>
   | Some(a) => #Pcnt(a)
   | None => nan
   }
-let ofVector = (a: Vector.t): t => !Vector.isEmpty(a) ? #Vect(a) : nan
-let ofMatrix = (a: Matrix.t): t => !Matrix.isEmpty(a) ? #Matx(a) : nan
+let ofVector = (a: Vector.t): t =>
+  switch a {
+  | [] => nan
+  | [element] => ofScalar((element :> Scalar.t))
+  | _ => #Vect(a)
+  }
+let ofMatrix = (a: Matrix.t) =>
+  switch a.elements {
+  | [] => nan
+  | [element] => ofScalar((element :> Scalar.t))
+  | _ => #Matx(a)
+  }
 
 let ofReal = (a: Real.t): t => (Scalar.ofReal(a) :> t)
 let ofImag = (a: Real.t): t => (Scalar.ofImag(a) :> t)
