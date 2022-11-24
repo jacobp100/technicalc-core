@@ -26,12 +26,9 @@ let parse = (elements: array<t>) => {
 
       switch Value_Row.parse(elements) {
       | Ok(root) => root
-      | Error(i) =>
-        error := Some(i)
+      | Error(index) =>
+        error := Some(Belt.Option.getWithDefault(index, i))
         Node.NaN
-      | UnknownError =>
-        error := Some(i)
-        NaN
       }
     } else {
       NaN

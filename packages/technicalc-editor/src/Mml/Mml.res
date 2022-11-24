@@ -46,34 +46,6 @@ let map = (. accum, range) => {
 }
 
 %%private(
-  let implicitMultiplication = element(
-    ~attributes=Placeholder.attributes,
-    "mo",
-    stringOfOperator(Op_Dot),
-  )
-)
-
-%%private(
-  let appendElementWithImplicitMultiplication = (
-    ~attributes=?,
-    ~superscript=?,
-    accum,
-    range,
-    tag,
-    body,
-  ) =>
-    switch Mml_Accum.lastElementType(. accum) {
-    | Other =>
-      let mml = element(~avoidsSelection=true, ~attributes?, ~superscript?, ~range, tag, body)
-      Mml_Accum.append(. accum, implicitMultiplication)->Mml_Accum.append(. _, mml)
-    | NoElement
-    | OperatorOrFunction =>
-      let mml = element(~attributes?, ~superscript?, ~range, tag, body)
-      Mml_Accum.append(. accum, mml)
-    }
-)
-
-%%private(
   let bracketGroup = (leftBracket, rightBracket, arg, superscript, range) => {
     let body = element("mo", leftBracket) ++ arg ++ element("mo", rightBracket)
     element(~superscript?, ~range, "mrow", body)
@@ -214,20 +186,11 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Operator(op) =>
     element(~range, "mo", stringOfOperator(op))->Mml_Accum.appendOperatorOrFunction(. accum, _)
   | Fold_Frac({num, den, superscript}) =>
-    appendElementWithImplicitMultiplication(~superscript?, accum, range, "mfrac", num ++ den)
-  | Fold_MFrac({integer, num, den, superscript}) =>
-    appendElementWithImplicitMultiplication(
-      ~superscript?,
-      accum,
-      range,
-      "mrow",
-      integer ++ element("mfrac", num ++ den),
-    )
+    element(~superscript?, ~range, "mfrac", num ++ den)->Mml_Accum.append(. accum, _)
   | Fold_Sqrt({radicand, superscript}) =>
     element(~superscript?, ~range, "msqrt", radicand)->Mml_Accum.append(. accum, _)
   | Fold_NRoot({degree, radicand, superscript}) =>
     element(~superscript?, ~range, "mroot", radicand ++ degree)->Mml_Accum.append(. accum, _)
-
   | Fold_NLog({base}) =>
     let body = element("mi", "log") ++ base
     element(~range, "msub", body)->Mml_Accum.append(. accum, _)

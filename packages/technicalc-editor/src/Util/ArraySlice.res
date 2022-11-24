@@ -7,7 +7,7 @@ type slice<'a> = {
 type t<'a> = option<slice<'a>>
 
 let ofArray = (array: array<'a>): t<'a> => Some({
-  array: array,
+  array,
   offset: 0,
   len: Belt.Array.length(array),
 })
@@ -16,6 +16,12 @@ let toArray = (x: t<'a>): array<'a> =>
   switch x {
   | Some({array, len, offset}) => Belt.Array.slice(array, ~len, ~offset)
   | None => []
+  }
+
+let length = (x: t<'a>) =>
+  switch x {
+  | Some(x) => x.len
+  | None => 0
   }
 
 let get = (x: t<'a>, index: int): option<'a> =>

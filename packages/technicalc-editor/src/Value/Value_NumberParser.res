@@ -18,25 +18,47 @@ type numState = {
   numHasDecimal: bool,
   numSup: option<node>,
   magSup: option<node>,
+  range: option<(int, int)>,
 }
 
-let reduce = (state, element) =>
-  switch (state, element) {
-  | ({numBase: None, numString: "", numSup: None, magSup: None}, Fold_Base(numBase)) =>
-    Some({...state, numBase: Some(numBase)})
-  | ({numSup: None, magSup: None}, Fold_Digit({nucleus, superscript}))
-    if numberIsValidForBase(state.numBase, nucleus) =>
-    Some({
-      ...state,
-      numString: state.numString ++ nucleus,
-      numSup: Belt.Option.map(superscript, superscriptBody),
-    })
-  | ({numHasDecimal: false, numSup: None, magSup: None}, Fold_DecimalSeparator) =>
-    Some({...state, numString: state.numString ++ ".", numHasDecimal: true})
-  | ({magSup: None}, Fold_Magnitude({value})) if state.numString != "" =>
-    Some({...state, magSup: Some(value)})
+let reduce = (state, element, (i, i') as range) => {
+  let range = switch state.range {
+  | Some((j, j')) =>
+    let i = i < j ? i : j
+    let i' = i' > j' ? i' : j'
+    Some((i, i'))
+  | None => Some(range)
+  }
+
+  switch element {
+  | Fold_Base(numBase) =>
+    switch state {
+    | {numBase: None, numString: "", numSup: None, magSup: None} =>
+      Some(Ok({...state, range, numBase: Some(numBase)}))
+    | _ => Some(Error(Some(i')))
+    }
+  | Fold_Digit({nucleus, superscript}) =>
+    switch state {
+    | {numSup: None, magSup: None} if numberIsValidForBase(state.numBase, nucleus) =>
+      let numString = state.numString ++ nucleus
+      let numSup = Belt.Option.map(superscript, superscriptBody)
+      Some(Ok({...state, range, numString, numSup}))
+    | _ => Some(Error(Some(i')))
+    }
+  | Fold_DecimalSeparator =>
+    switch state {
+    | {numHasDecimal: false, numSup: None, magSup: None} =>
+      Some(Ok({...state, range, numString: state.numString ++ ".", numHasDecimal: true}))
+    | _ => Some(Error(Some(i')))
+    }
+  | Fold_Magnitude({value}) =>
+    switch state {
+    | {magSup: None} if state.numString != "" => Some(Ok({...state, range, magSup: Some(value)}))
+    | _ => Some(Error(Some(i')))
+    }
   | _ => None
   }
+}
 
 let toNode = state =>
   switch state {
@@ -54,8 +76,10 @@ let toNode = state =>
       magSup
       ->Belt.Option.mapU((. x) => Node.Pow(OfInt(10), x))
       ->Belt.Option.mapWithDefaultU(out, (. x) => Mul(out, x))
-    Some(out)
+    Some((out, Belt.Option.getExn(state.range)))
   }
+
+let range = state => state.range
 
 let empty = {
   numBase: None,
@@ -63,4 +87,5 @@ let empty = {
   numHasDecimal: false,
   numSup: None,
   magSup: None,
+  range: None,
 }

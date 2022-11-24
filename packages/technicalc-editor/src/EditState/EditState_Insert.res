@@ -51,7 +51,6 @@ type skipMode =
     | Sum2
     | Frac2S
     | Integral3
-    | MFrac3S
     | TableNS(_) =>
       AST.argCountExn(element) !== 0 ? FunctionFixed : TopLevelFixed
     | Arg
@@ -197,19 +196,18 @@ type skipMode =
     | Frac2S =>
       let s = countMovableElements(elements, ~from=index - 1, ~direction=Backwards)
       let e = countMovableElements(elements, ~from=index, ~direction=Forwards)
-      let (elements, den) = ArrayUtil.splice(elements, ~offset=index, ~len=e)
-      let (elements, num) = ArrayUtil.splice(elements, ~offset=index - s, ~len=s)
-      let frac = Belt.Array.concatMany([[element], num, [Arg], den, [Arg]])
-      let elements = ArrayUtil.insertArray(elements, frac, index - s)
-      let nextIndex = s > 0 ? index + 2 : index + 1
-      (elements, nextIndex)
-    | MFrac3S =>
-      let s = countMovableElements(elements, ~from=index - 1, ~direction=Backwards)
-      let (elements, integer) = ArrayUtil.splice(elements, ~offset=index - s, ~len=s)
-      let mfrac = Belt.Array.concatMany([[element], integer, [Arg, Arg, Arg]])
-      let elements = ArrayUtil.insertArray(elements, mfrac, index - s)
-      let nextIndex = s > 0 ? index + 2 : index + 1
-      (elements, nextIndex)
+      if s == 0 || e == 0 {
+        let frac = [element, Arg, Arg]
+        let elements = ArrayUtil.insertArray(elements, frac, index)
+        (elements, index + 1)
+      } else {
+        let (elements, den) = ArrayUtil.splice(elements, ~offset=index, ~len=e)
+        let (elements, num) = ArrayUtil.splice(elements, ~offset=index - s, ~len=s)
+        let frac = Belt.Array.concatMany([[element], num, [Arg], den, [Arg]])
+        let elements = ArrayUtil.insertArray(elements, frac, index - s)
+        let nextIndex = s > 0 ? index + 2 : index + 1
+        (elements, nextIndex)
+      }
     | OpenBracket =>
       let isAtEndOfScope = switch Belt.Array.get(elements, index) {
       | Some(Arg) | None => true
@@ -225,9 +223,7 @@ type skipMode =
         if bracketLevel(~direction=Backwards, elements, ~from=index) == 0 => elements
       | _ => ArrayUtil.insertArray(elements, [element], index)
       }
-
       (elements, index + 1)
-
     | _ =>
       let args = switch AST.argCountExn(element) {
       | 0 => [element]

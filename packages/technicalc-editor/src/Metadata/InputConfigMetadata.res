@@ -71,7 +71,6 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | NRoot2S
   | RandInt2S
   | Integral3
-  | MFrac3S
   | TableNS(_) => false
   | Acos
   | Acosh

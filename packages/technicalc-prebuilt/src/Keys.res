@@ -35,7 +35,6 @@ let keys = {
   "base2": One(Bin),
   "base8": One(Oct),
   "base16": One(Hex),
-  "mfrac": One(MFrac3S),
   "sqrt": One(Sqrt1S),
   "cuberoot": Many([NRoot2S, N3_S, Arg, Arg]),
   "nroot": One(NRoot2S),

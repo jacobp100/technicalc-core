@@ -38,7 +38,7 @@ let next = ({elements, index, formatCaptureGroups}) => {
   @inline
   let deltaFactor = (~fn: AST.t) =>
     switch fn {
-    | Frac2S | Differential2 | NRoot2S | MFrac3S => Some(1)
+    | Frac2S | Differential2 | NRoot2S => Some(1)
     | Sum2 | Product2 | Integral3 => Some(-1)
     | TableNS({numColumns}) => Some(numColumns)
     | _ => None

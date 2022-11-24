@@ -97,7 +97,6 @@ open AST
     | NRoot2S
     | RandInt2S
     | Integral3
-    | MFrac3S
     | TableNS(_) => true
     }
 )

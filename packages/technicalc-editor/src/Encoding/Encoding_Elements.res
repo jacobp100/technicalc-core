@@ -30,7 +30,7 @@ open UrlSafeEncoding
     switch (readString(reader), TechniCalcCalculator.Encoding_Value.read(reader)) {
     | (Some(mml), Some(value)) =>
       let value = TechniCalcCalculator.Encoding_Value.encode(value)
-      AST.CustomAtomS({mml: mml, value: value})->Some
+      AST.CustomAtomS({mml, value})->Some
     | _ => None
     }
 )
@@ -56,7 +56,7 @@ open UrlSafeEncoding
     | Some(257) => readCustomAtom(reader)
     | Some(261) =>
       switch (readString(reader), readString(reader)) {
-      | (Some(id), Some(name)) => Some(VariableS({id: id, name: name}))
+      | (Some(id), Some(name)) => Some(VariableS({id, name}))
       | _ => None
       }
     | Some(260) =>
@@ -67,8 +67,7 @@ open UrlSafeEncoding
       }
     | Some(262) =>
       switch (readUint(reader), readUint(reader)) {
-      | (Some(numRows), Some(numColumns)) =>
-        Some(TableNS({numRows: numRows, numColumns: numColumns}))
+      | (Some(numRows), Some(numColumns)) => Some(TableNS({numRows, numColumns}))
       | _ => None
       }
     /* Legacy table encodings */
@@ -76,6 +75,7 @@ open UrlSafeEncoding
     | Some(55) => Some(TableNS({numRows: 3, numColumns: 3}))
     | Some(78) => Some(TableNS({numRows: 2, numColumns: 1}))
     | Some(79) => Some(TableNS({numRows: 3, numColumns: 1}))
+    | Some(85) => None /* Mfrac - no easy conversion */
     | Some(value) => elementOfUint(value)
     | None => None
     }

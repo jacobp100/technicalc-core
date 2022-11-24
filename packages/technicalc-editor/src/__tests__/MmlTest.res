@@ -62,16 +62,6 @@ test("bracket states", () => {
   ->toEqual(`<mrow><mn id=\"0:1\">1</mn><mo id=\"1:2\">(</mo><mn id=\"2:3\">2</mn><mo id=\"3:4\">(</mo><mn id=\"4:5\">3</mn><mo id=\"5:6\">)</mo><mn id=\"6:7\">4</mn><mo id=\"7:8\">)</mo><mn id=\"8:9\">5</mn></mrow>`)
 })
 
-test("implicit multiplication indicator", () => {
-  create([Frac2S, N2_S, Arg, N3_S, Arg])
-  ->expect
-  ->toEqual(`<mrow><mfrac id=\"0:5\"><mrow><mn id=\"1:2\">2</mn></mrow><mrow><mn id=\"3:4\">3</mn></mrow></mfrac></mrow>`)
-
-  create([N1_S, Frac2S, N2_S, Arg, N3_S, Arg])
-  ->expect
-  ->toEqual(`<mrow><mn id=\"0:1\">1</mn><mo class=\"placeholder\" mathvariant=\"normal\">&#xb7;</mo><mfrac id=\"~1:6\"><mrow><mn id=\"2:3\">2</mn></mrow><mrow><mn id=\"4:5\">3</mn></mrow></mfrac></mrow>`)
-})
-
 test("abs-like functions", () => {
   create([Abs1S, N1_S, Arg])
   ->expect

@@ -33,7 +33,6 @@ type foldState<'a> =
   | Fold_X(option<superscript<'a>>)
   | Fold_Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Magnitude({value: 'a})
-  | Fold_MFrac({integer: 'a, num: 'a, den: 'a, superscript: option<superscript<'a>>})
   | Fold_Min({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Max({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_NCR({n: 'a, r: 'a})
@@ -250,12 +249,6 @@ let reduceMapU = (
       let (den, i') = readArg(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Frac({num, den, superscript}), i, i')
-    | MFrac3S =>
-      let (integer, i') = readArg(i + 1)
-      let (num, i') = readArg(i')
-      let (den, i') = readArg(i')
-      let (superscript, i') = readSuperscript(i')
-      Node(Fold_MFrac({integer, num, den, superscript}), i, i')
     | Min2S =>
       let (a, i') = readArg(i + 1)
       let (b, i') = readArg(i')

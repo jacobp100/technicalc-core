@@ -7,6 +7,6 @@ type funcitionLike =
   | Product({from: node, to: node})
 
 type partialNode =
-  | Resolved(node)
-  | Unresolved(AST.foldState<node>, int, int)
-  | UnresolvedFunction(funcitionLike, int, int)
+  | Resolved(node, (int, int))
+  | Unresolved(AST.foldState<node>, (int, int))
+  | UnresolvedFunction(funcitionLike, (int, int))

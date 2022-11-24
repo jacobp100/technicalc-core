@@ -80,8 +80,6 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Operator(op) => stringOfOperator(op)->Tex_Accum.appendOperatorOrFunction(. accum, _)
   | Fold_Frac({num, den, superscript}) =>
     withSuperscript(`\\frac${num}${den}`, superscript)->Tex_Accum.append(. accum, _)
-  | Fold_MFrac({integer, num, den, superscript}) =>
-    withSuperscript(`${integer}\\frac${num}${den}`, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Sqrt({radicand, superscript}) =>
     withSuperscript(`\\sqrt${radicand}`, superscript)->Tex_Accum.append(. accum, _)
   | Fold_NRoot({degree, radicand, superscript}) =>

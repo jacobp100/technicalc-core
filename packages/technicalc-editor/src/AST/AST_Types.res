@@ -104,8 +104,6 @@ type t =
   | RandInt2S
   /* Atom3 */
   | Integral3
-  /* Atom3S */
-  | MFrac3S
   /* Table */
   | TableNS({numRows: int, numColumns: int})
 
@@ -217,9 +215,7 @@ let argCountExn = (arg: t) =>
   | NRoot2S
   | RandInt2S => 2
   /* Atom3 */
-  | Integral3
-  | /* Atom3S */
-  MFrac3S => 3
+  | Integral3 => 3
   /* Matrices */
   | TableNS({numRows, numColumns}) => numRows * numColumns
   }

@@ -19,42 +19,44 @@ let map = (element: foldState<'a>, i, i') =>
     | Fold_Percent
     | Fold_Transpose
     | Fold_UnitConversion(_)) as e =>
-    Value_Types.Unresolved(e, i, i')
+    Value_Types.Unresolved(e, (i, i'))
+  | Fold_Frac({num, den, superscript}) =>
+    Resolved(withSuperscript(Div(num, den), superscript), (i, i'))
   | Fold_Function({fn, resultSuperscript}) =>
     let resultSuperscript = Belt.Option.map(resultSuperscript, superscriptBody)
-    UnresolvedFunction(GenericFunction({fn, resultSuperscript}), i, i')
-  | Fold_NLog({base}) => UnresolvedFunction(NLog({base: base}), i, i')
-  | Fold_Sum({from, to}) => UnresolvedFunction(Sum({from, to}), i, i')
-  | Fold_Product({from, to}) => UnresolvedFunction(Product({from, to}), i, i')
-  | Fold_ImaginaryUnit(superscript) => withSuperscript(I, superscript)->Resolved
-  | Fold_Rand(superscript) => withSuperscript(Rand, superscript)->Resolved
-  | Fold_RandInt({a, b, superscript}) => withSuperscript(RandInt(a, b), superscript)->Resolved
-  | Fold_NPR({n, r}) => NPR(n, r)->Resolved
-  | Fold_NCR({n, r}) => NCR(n, r)->Resolved
-  | Fold_Differential({at, body}) => Differential({at, body})->Resolved
-  | Fold_Integral({from, to, body}) => Integral({from, to, body})->Resolved
-  | Fold_X(superscript) => withSuperscript(X, superscript)->Resolved
-  | Fold_Variable({id, superscript}) => withSuperscript(Variable(id), superscript)->Resolved
+    UnresolvedFunction(GenericFunction({fn, resultSuperscript}), (i, i'))
+  | Fold_NLog({base}) => UnresolvedFunction(NLog({base: base}), (i, i'))
+  | Fold_Sum({from, to}) => UnresolvedFunction(Sum({from, to}), (i, i'))
+  | Fold_Product({from, to}) => UnresolvedFunction(Product({from, to}), (i, i'))
+  | Fold_ImaginaryUnit(superscript) => Resolved(withSuperscript(I, superscript), (i, i'))
+  | Fold_Rand(superscript) => Resolved(withSuperscript(Rand, superscript), (i, i'))
+  | Fold_RandInt({a, b, superscript}) =>
+    Resolved(withSuperscript(RandInt(a, b), superscript), (i, i'))
+  | Fold_NPR({n, r}) => Resolved(NPR(n, r), (i, i'))
+  | Fold_NCR({n, r}) => Resolved(NCR(n, r), (i, i'))
+  | Fold_Differential({at, body}) => Resolved(Differential({at, body}), (i, i'))
+  | Fold_Integral({from, to, body}) => Resolved(Integral({from, to, body}), (i, i'))
+  | Fold_X(superscript) => Resolved(withSuperscript(X, superscript), (i, i'))
+  | Fold_Variable({id, superscript}) =>
+    Resolved(withSuperscript(Variable(id), superscript), (i, i'))
   | Fold_CustomAtom({value, superscript}) =>
-    withSuperscript(OfEncoded(value), superscript)->Resolved
-  | Fold_ConstPi(superscript) => withSuperscript(Pi, superscript)->Resolved
-  | Fold_ConstE(superscript) => withSuperscript(E, superscript)->Resolved
-  | Fold_Frac({num, den, superscript}) => withSuperscript(Div(num, den), superscript)->Resolved
-  | Fold_MFrac({integer, num, den, superscript}) =>
-    withSuperscript(Add(integer, Div(num, den)), superscript)->Resolved
-  | Fold_Min({a, b, superscript}) => withSuperscript(Min(a, b), superscript)->Resolved
-  | Fold_Max({a, b, superscript}) => withSuperscript(Max(a, b), superscript)->Resolved
-  | Fold_Gcd({a, b, superscript}) => withSuperscript(Gcd(a, b), superscript)->Resolved
-  | Fold_Lcm({a, b, superscript}) => withSuperscript(Lcm(a, b), superscript)->Resolved
-  | Fold_Abs({arg, superscript}) => withSuperscript(Abs(arg), superscript)->Resolved
-  | Fold_Floor({arg, superscript}) => withSuperscript(Floor(arg), superscript)->Resolved
-  | Fold_Ceil({arg, superscript}) => withSuperscript(Ceil(arg), superscript)->Resolved
-  | Fold_Round({arg, superscript}) => withSuperscript(Round(arg), superscript)->Resolved
-  | Fold_Sqrt({radicand, superscript}) => withSuperscript(Sqrt(radicand), superscript)->Resolved
+    Resolved(withSuperscript(OfEncoded(value), superscript), (i, i'))
+  | Fold_ConstPi(superscript) => Resolved(withSuperscript(Pi, superscript), (i, i'))
+  | Fold_ConstE(superscript) => Resolved(withSuperscript(E, superscript), (i, i'))
+  | Fold_Min({a, b, superscript}) => Resolved(withSuperscript(Min(a, b), superscript), (i, i'))
+  | Fold_Max({a, b, superscript}) => Resolved(withSuperscript(Max(a, b), superscript), (i, i'))
+  | Fold_Gcd({a, b, superscript}) => Resolved(withSuperscript(Gcd(a, b), superscript), (i, i'))
+  | Fold_Lcm({a, b, superscript}) => Resolved(withSuperscript(Lcm(a, b), superscript), (i, i'))
+  | Fold_Abs({arg, superscript}) => Resolved(withSuperscript(Abs(arg), superscript), (i, i'))
+  | Fold_Floor({arg, superscript}) => Resolved(withSuperscript(Floor(arg), superscript), (i, i'))
+  | Fold_Ceil({arg, superscript}) => Resolved(withSuperscript(Ceil(arg), superscript), (i, i'))
+  | Fold_Round({arg, superscript}) => Resolved(withSuperscript(Round(arg), superscript), (i, i'))
+  | Fold_Sqrt({radicand, superscript}) =>
+    Resolved(withSuperscript(Sqrt(radicand), superscript), (i, i'))
   | Fold_NRoot({degree, radicand, superscript}) =>
-    withSuperscript(Pow(radicand, Div(One, degree)), superscript)->Resolved
+    Resolved(withSuperscript(Pow(radicand, Div(One, degree)), superscript), (i, i'))
   | Fold_Table({elements, numColumns: 1, superscript}) =>
-    withSuperscript(Vector(elements), superscript)->Resolved
+    Resolved(withSuperscript(Vector(elements), superscript), (i, i'))
   | Fold_Table({elements, numRows, numColumns, superscript}) =>
-    withSuperscript(Matrix({numRows, numColumns, elements}), superscript)->Resolved
+    Resolved(withSuperscript(Matrix({numRows, numColumns, elements}), superscript), (i, i'))
   }

@@ -9,6 +9,14 @@ test("should insert fraction consuming characters", () => {
   expect(index)->toEqual(3)
 })
 
+test("should not consume characters when placing a fraction that has no denominator", () => {
+  let {index, elements} =
+    make(~index=1, ~elements=[N1_S], ~formatCaptureGroups=false)->insert(Frac2S)
+
+  expect(elements)->toEqual([N1_S, Frac2S, Arg, Arg])
+  expect(index)->toEqual(2)
+})
+
 test("should insert fraction consuming non-operator characters", () => {
   let {index, elements} =
     make(
@@ -37,43 +45,43 @@ test("should move bracket groups when inserting fraction after", () => {
   let {index, elements} =
     make(
       ~index=3,
-      ~elements=[OpenBracket, N1_S, CloseBracketS],
+      ~elements=[OpenBracket, N1_S, CloseBracketS, N2_S],
       ~formatCaptureGroups=false,
     )->insert(Frac2S)
 
-  expect(elements)->toEqual([Frac2S, OpenBracket, N1_S, CloseBracketS, Arg, Arg])
+  expect(elements)->toEqual([Frac2S, OpenBracket, N1_S, CloseBracketS, Arg, N2_S, Arg])
   expect(index)->toEqual(5)
 })
 
 test("should move bracket groups when inserting fraction before", () => {
   let {index, elements} =
     make(
-      ~index=0,
-      ~elements=[OpenBracket, N1_S, CloseBracketS],
+      ~index=1,
+      ~elements=[N2_S, OpenBracket, N1_S, CloseBracketS],
       ~formatCaptureGroups=false,
     )->insert(Frac2S)
 
-  expect(elements)->toEqual([Frac2S, Arg, OpenBracket, N1_S, CloseBracketS, Arg])
-  expect(index)->toEqual(1)
+  expect(elements)->toEqual([Frac2S, N2_S, Arg, OpenBracket, N1_S, CloseBracketS, Arg])
+  expect(index)->toEqual(3)
 })
 
 test("should move bracket groups with operators when inserting fraction before", () => {
   let {index, elements} =
     make(
       ~index=5,
-      ~elements=[OpenBracket, N1_S, Add, N2_S, CloseBracketS],
+      ~elements=[OpenBracket, N1_S, Add, N2_S, CloseBracketS, N2_S],
       ~formatCaptureGroups=false,
     )->insert(Frac2S)
 
-  expect(elements)->toEqual([Frac2S, OpenBracket, N1_S, Add, N2_S, CloseBracketS, Arg, Arg])
+  expect(elements)->toEqual([Frac2S, OpenBracket, N1_S, Add, N2_S, CloseBracketS, Arg, N2_S, Arg])
   expect(index)->toEqual(7)
 })
 
 test("should move function when inserting fraction before", () => {
   let {index, elements} =
-    make(~index=2, ~elements=[Superscript1, Arg], ~formatCaptureGroups=false)->insert(Frac2S)
+    make(~index=2, ~elements=[Superscript1, Arg, N1_S], ~formatCaptureGroups=false)->insert(Frac2S)
 
-  expect(elements)->toEqual([Frac2S, Superscript1, Arg, Arg, Arg])
+  expect(elements)->toEqual([Frac2S, Superscript1, Arg, Arg, N1_S, Arg])
   expect(index)->toEqual(4)
 })
 
@@ -95,10 +103,10 @@ test("should not move stationary function with arguments when inserting fraction
 
 test("should move function when inserting fraction after", () => {
   let {index, elements} =
-    make(~index=0, ~elements=[Superscript1, Arg], ~formatCaptureGroups=false)->insert(Frac2S)
+    make(~index=1, ~elements=[N1_S, Superscript1, Arg], ~formatCaptureGroups=false)->insert(Frac2S)
 
-  expect(elements)->toEqual([Frac2S, Arg, Superscript1, Arg, Arg])
-  expect(index)->toEqual(1)
+  expect(elements)->toEqual([Frac2S, N1_S, Arg, Superscript1, Arg, Arg])
+  expect(index)->toEqual(3)
 })
 
 test("should insert fraction in 1st argument of 2ary function", () => {
