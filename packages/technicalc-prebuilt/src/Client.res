@@ -152,15 +152,24 @@ module Elements = {
 
   let getDependencies = DependencyMetadata.getDependencies
 
+  let hint = (elements, index) =>
+    switch HintMetadata.hint(elements, index) {
+    | Some(Value({mml, value})) => Some(Obj.magic({"type": "Value", "mml": mml, "value": value}))
+    | Some(Variable({id})) => Some(Obj.magic({"type": "Variable", "id": id}))
+    | Some(CaptureGroup({placeholderMml})) =>
+      Some(Obj.magic({"type": "CaptureGroup", "placeholderMml": placeholderMml}))
+    | None => None
+    }
+
   let inputSettingsMode = InputConfigMetadata.inputSettingsMode
 
   let insertRanges = InsertMetadata.insertRanges
   let canInsertTable = InsertMetadata.canInsertTable
   let canInsertIteration = InsertMetadata.canInsertIteration
 
-  let renameVariables = RenameVariables.renameVariables
-
   let reifyPlaceholders = ReifyPlaceholders.reifyPlaceholders
+
+  let renameVariables = RenameVariables.renameVariables
 }
 
 module Editor = {
