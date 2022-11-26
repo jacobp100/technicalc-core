@@ -222,40 +222,25 @@ let argCountExn = (arg: t) =>
 
 type normalizationState =
   | Normalised
-  | GenericError
+  | TooManyArgsError
   | TooFewArgsError(int)
 
-%%private(
-  let rec normalizationState = (ast, remaining, i) =>
+let normalize = (ast: array<t>) => {
+  let rec iter = (ast, remaining, i) =>
     switch (remaining, Belt.Array.get(ast, i)) {
-    | (0, Some(Arg)) => GenericError
-    | (_, Some(Arg)) => normalizationState(ast, remaining - 1, i + 1)
-    | (_, Some(v)) => normalizationState(ast, remaining + argCountExn(v), i + 1)
-    | (0, None) => Normalised
-    | (_, None) => TooFewArgsError(remaining)
-    }
-)
-
-let normalize = (ast: array<t>) =>
-  switch normalizationState(ast, 0, 0) {
-  | Normalised => ast
-  | GenericError =>
-    let remaining = ref(0)
-    let ast = Belt.Array.keepU(ast, (. element) => {
-      if element != Arg {
-        remaining := remaining.contents + argCountExn(element)
-        true
-      } else if remaining.contents != 0 {
-        remaining := remaining.contents - 1
-        true
-      } else {
-        false
-      }
-    })
-    if remaining.contents != 0 {
-      Belt.Array.concat(ast, Belt.Array.make(remaining.contents, Arg))
-    } else {
+    | (0, Some(Arg)) =>
+      let ast = Belt.Array.concat(
+        Belt.Array.slice(ast, ~offset=0, ~len=i),
+        Belt.Array.sliceToEnd(ast, i + 1),
+      )
+      iter(ast, remaining, i)
+    | (_, Some(Arg)) => iter(ast, remaining - 1, i + 1)
+    | (_, Some(v)) => iter(ast, remaining + argCountExn(v), i + 1)
+    | (0, None) => ast
+    | (_, None) =>
+      let ast = Belt.Array.concat(ast, Belt.Array.make(remaining, Arg))
       ast
     }
-  | TooFewArgsError(remaining) => Belt.Array.concat(ast, Belt.Array.make(remaining, Arg))
-  }
+
+  iter(ast, 0, 0)
+}

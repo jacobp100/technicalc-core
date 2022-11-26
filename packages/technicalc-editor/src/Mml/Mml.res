@@ -102,24 +102,26 @@ let map = (. accum, range) => {
 )
 
 %%private(
-  let supsrscriptSuffix = (~last, ~range, tag, body) =>
-    switch last {
-    | Some(last) =>
-      let (start, end) = range
-      element(
-        ~attributes=list{selection(~end, ())},
-        "msup",
-        element("mrow", last) ++
-        element(~attributes=list{selection(~avoid=true, ~start, ())}, tag, body),
-      )
-    | None =>
-      element(
-        ~range,
-        "msup",
-        element(~attributes=Placeholder.attributes, Placeholder.tag, Placeholder.body) ++
-        element(tag, body),
-      )
-    }
+  let supsrscriptSuffix = (~attributes=list{}, ~range, accum, tag, body) =>
+    Mml_Accum.modifyLastU(.accum, (. last) => {
+      switch last {
+      | Some(last) =>
+        let (start, end) = range
+        element(
+          ~attributes=list{selection(~end, ())},
+          "msup",
+          element("mrow", last) ++
+          element(~attributes=list{selection(~avoid=true, ~start, ()), ...attributes}, tag, body),
+        )
+      | None =>
+        element(
+          ~range,
+          "msup",
+          element(~attributes=Placeholder.attributes, Placeholder.tag, Placeholder.body) ++
+          element(~attributes, tag, body),
+        )
+      }
+    })
 )
 
 let reduce = (. accum, stateElement: foldState<string>, range) =>
@@ -133,21 +135,16 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     element(~range, "mn", stringOfBase(base))->Mml_Accum.appendBasePrefix(. accum, _)
   | Fold_Percent => element(~range, "mn", "%")->Mml_Accum.append(. accum, _)
   | Fold_Angle(Angle_Degree) => element(~range, "mo", "&#x00B0;")->Mml_Accum.append(. accum, _)
-  | Fold_Angle(angle) =>
-    let superscript = switch angle {
-    | Angle_Radian => element(~attributes=list{(#mathvariant, "normal")}, "mi", "r")
-    | Angle_ArcMinute => element("mo", "&#x2032;")
-    | Angle_ArcSecond => element("mo", "&#x2033;")
-    | Angle_Gradian => element(~attributes=list{(#mathvariant, "normal")}, "mi", "g")
-    | Angle_Degree => assert false
-    }
-    element(~range, "msup", "<mo />" ++ superscript)->Mml_Accum.append(. accum, _)
+  | Fold_Angle(Angle_ArcMinute) => supsrscriptSuffix(~range, accum, "mo", "&#x2032;")
+  | Fold_Angle(Angle_ArcSecond) => supsrscriptSuffix(~range, accum, "mo", "&#x2033;")
+  | Fold_Angle(Angle_Radian) =>
+    supsrscriptSuffix(~attributes=list{(#mathvariant, "normal")}, ~range, accum, "mi", "r")
+  | Fold_Angle(Angle_Gradian) =>
+    supsrscriptSuffix(~attributes=list{(#mathvariant, "normal")}, ~range, accum, "mi", "g")
   | Fold_ImaginaryUnit(superscript) =>
     element(~superscript?, ~range, "mi", "i")->Mml_Accum.append(. accum, _)
-  | Fold_Conj =>
-    Mml_Accum.modifyLastU(.accum, (. last) => supsrscriptSuffix(~last, ~range, "mo", "&#x02217;"))
-  | Fold_Transpose =>
-    Mml_Accum.modifyLastU(.accum, (. last) => supsrscriptSuffix(~last, ~range, "mi", "T"))
+  | Fold_Conj => supsrscriptSuffix(~range, accum, "mo", "&#x02217;")
+  | Fold_Transpose => supsrscriptSuffix(~range, accum, "mi", "T")
   | Fold_Magnitude({value}) =>
     let body = element("mo", stringOfOperator(Op_Mul)) ++ element("mn", "10")
     let body = element("mrow", body)

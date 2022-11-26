@@ -62,6 +62,57 @@ test("bracket states", () => {
   ->toEqual(`<mrow><mn id=\"0:1\">1</mn><mo id=\"1:2\">(</mo><mn id=\"2:3\">2</mn><mo id=\"3:4\">(</mo><mn id=\"4:5\">3</mn><mo id=\"5:6\">)</mo><mn id=\"6:7\">4</mn><mo id=\"7:8\">)</mo><mn id=\"8:9\">5</mn></mrow>`)
 })
 
+test("angles", () => {
+  create([DegreeUnit])->expect->toEqual("<mrow><mo id=\"0:1\">&#x00B0;</mo></mrow>")
+  create([N1_S, DegreeUnit])
+  ->expect
+  ->toEqual("<mrow><mn id=\"0:1\">1</mn><mo id=\"1:2\">&#x00B0;</mo></mrow>")
+
+  create([ArcMinuteUnit])
+  ->expect
+  ->toEqual(
+    "<mrow><msup id=\"0:1\"><mi class=\"placeholder\" mathvariant=\"normal\">&#x25a1;</mi><mo>&#x2032;</mo></msup></mrow>",
+  )
+  create([N1_S, ArcMinuteUnit])
+  ->expect
+  ->toEqual(
+    "<mrow><msup id=\":2\"><mrow><mn id=\"0:1\">1</mn></mrow><mo id=\"~1:\">&#x2032;</mo></msup></mrow>",
+  )
+
+  create([ArcSecondUnit])
+  ->expect
+  ->toEqual(
+    "<mrow><msup id=\"0:1\"><mi class=\"placeholder\" mathvariant=\"normal\">&#x25a1;</mi><mo>&#x2033;</mo></msup></mrow>",
+  )
+  create([N1_S, ArcSecondUnit])
+  ->expect
+  ->toEqual(
+    "<mrow><msup id=\":2\"><mrow><mn id=\"0:1\">1</mn></mrow><mo id=\"~1:\">&#x2033;</mo></msup></mrow>",
+  )
+
+  create([RadianUnit])
+  ->expect
+  ->toEqual(
+    "<mrow><msup id=\"0:1\"><mi class=\"placeholder\" mathvariant=\"normal\">&#x25a1;</mi><mi mathvariant=\"normal\">r</mi></msup></mrow>",
+  )
+  create([N1_S, RadianUnit])
+  ->expect
+  ->toEqual(
+    "<mrow><msup id=\":2\"><mrow><mn id=\"0:1\">1</mn></mrow><mi id=\"~1:\" mathvariant=\"normal\">r</mi></msup></mrow>",
+  )
+
+  create([GradianUnit])
+  ->expect
+  ->toEqual(
+    "<mrow><msup id=\"0:1\"><mi class=\"placeholder\" mathvariant=\"normal\">&#x25a1;</mi><mi mathvariant=\"normal\">g</mi></msup></mrow>",
+  )
+  create([N1_S, GradianUnit])
+  ->expect
+  ->toEqual(
+    "<mrow><msup id=\":2\"><mrow><mn id=\"0:1\">1</mn></mrow><mi id=\"~1:\" mathvariant=\"normal\">g</mi></msup></mrow>",
+  )
+})
+
 test("abs-like functions", () => {
   create([Abs1S, N1_S, Arg])
   ->expect

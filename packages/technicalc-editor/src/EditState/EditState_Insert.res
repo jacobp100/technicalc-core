@@ -18,23 +18,27 @@ type skipMode =
     | Acos
     | Acosh
     | Add
+    | ArcMinuteUnit
+    | ArcSecondUnit
     | Asin
     | Asinh
     | Atan
     | Atanh
     | DegFunction
+    | DegreeUnit
     | Div
     | Dot
     | Gamma
     | GradFunction
+    | GradianUnit
     | Im
     | Log
     | Mul
     | RadFunction
+    | RadianUnit
     | Re
     | Rem
     | Rref
-    | Sub
     | Trace
     | CosecS
     | CoshS
@@ -43,6 +47,7 @@ type skipMode =
     | SecS
     | SinhS
     | SinS
+    | Sub
     | TanhS
     | TanS
     | NLog1
@@ -54,21 +59,16 @@ type skipMode =
     | TableNS(_) =>
       AST.argCountExn(element) !== 0 ? FunctionFixed : TopLevelFixed
     | Arg
-    | ArcMinuteUnit
-    | ArcSecondUnit
     | Bin
     | Conj
     | DecimalSeparator
-    | DegreeUnit
     | Factorial
-    | GradianUnit
     | Hex
     | Oct
     | OpenBracket
     | Percent
-    | RadianUnit
-    | UnitConversion(_)
     | Transpose
+    | UnitConversion(_)
     | CloseBracketS
     | ConstES
     | ConstPiS
@@ -101,11 +101,11 @@ type skipMode =
     | Round1S
     | Sqrt1S
     | NCR2
-    | NPR2
     | GCD2S
     | LCM2S
     | Max2S
     | Min2S
+    | NPR2
     | NRoot2S
     | RandInt2S =>
       Movable

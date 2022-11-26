@@ -8,3 +8,4 @@
 @send external slice: (string, int, int) => string = "slice"
 @send external includes: (string, string) => bool = "includes"
 @send external startsWith: (string, string) => bool = "startsWith"
+@send external trim: string => string = "trim"

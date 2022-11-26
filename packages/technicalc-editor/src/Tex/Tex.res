@@ -1,30 +1,23 @@
 open AST
 open Tex_Util
 
-let withSuperscript = (body, superscript) =>
-  switch superscript {
-  | Some({AST.superscriptBody: superscriptBody}) => `${body}^${superscriptBody}`
-  | None => body
-  }
+%%private(let withSpaces = body => ` ${body} `)
 
-module Tex_Accum = Stringifier.Make({
-  let groupingSeparatorU = (. locale) => Stringifier.groupingSeparator(locale)
-  let decimalSeparatorU = (. locale, _) => Stringifier.decimalSeparator(locale)
+%%private(
+  let withSuperscript = (body, superscript) =>
+    switch superscript {
+    | Some({AST.superscriptBody: superscriptBody}) => `${body}^${superscriptBody}`
+    | None => body
+    }
+)
 
-  let unpairedOpenBracketU = (. _) => "("
-  let unpairedCloseBracketU = (. superscript, _) => withSuperscript(")", superscript)
+%%private(let removeBraces = body => StringUtil.slice(body, 1, -1)->StringUtil.trim)
 
-  let bracketRangeU = (. superscript, body, _, _) =>
-    withSuperscript(`\\left(${body}\\right)`, superscript)
-})
-
-let map = (. accum, _) => `{${Tex_Accum.toString(. accum)}}`
-
-%%private(let sumProduct = (symbol, start, end) => `${symbol}_{x=${start}}^${end}`)
+%%private(let sumProduct = (symbol, start, end) => `${symbol}_{x=${removeBraces(start)}}^${end}`)
 
 %%private(
   let fn2 = (name, a, b, superscript) =>
-    withSuperscript(`${name}\\left(${a}, ${b}\\right)`, superscript)
+    withSuperscript(`${name} \\left(${removeBraces(a)}, ${removeBraces(b)}\\right)`, superscript)
 )
 
 %%private(let nprNcr = (symbol, n, r) => `{}_${n}${symbol}{}_${r}`)
@@ -33,13 +26,34 @@ let map = (. accum, _) => `{${Tex_Accum.toString(. accum)}}`
   let table = (~numRows, ~numColumns, elements, superscript) => {
     let body = Belt.Array.makeByU(numRows, (. row) => {
       Belt.Array.makeByU(numColumns, (. column) => {
-        Belt.Array.getUnsafe(elements, row * numColumns + column)
+        Belt.Array.getUnsafe(elements, row * numColumns + column)->removeBraces
       })->StringUtil.joinWith(" & ")
     })->StringUtil.joinWith(" \\\\ ")
 
     `\\left[\\begin{matrix}${body}\\end{matrix}${withSuperscript(`\\right]`, superscript)}`
   }
 )
+
+module Tex_Accum = Stringifier.Make({
+  let groupingSeparatorU = (. locale) => Stringifier.groupingSeparator(locale)
+  let decimalSeparatorU = (. locale, _) => Stringifier.decimalSeparator(locale)
+
+  let unpairedOpenBracketU = (. _) => " ( "
+  let unpairedCloseBracketU = (. superscript, _) => withSuperscript(" ) ", superscript)
+
+  let bracketRangeU = (. superscript, body, _, _) =>
+    withSpaces(`\\left( ${body} \\right)`)->withSuperscript(superscript)
+})
+
+%%private(
+  let supsrscriptSuffix = (accum, body) =>
+    Tex_Accum.modifyLastU(.accum, (. last) => {
+      let prev = Belt.Option.getWithDefault(last, "{}")
+      `${prev}^{${body}}`
+    })
+)
+
+let map = (. accum, _) => `{${Tex_Accum.toString(. accum)->StringUtil.trim}}`
 
 let reduce = (. accum, stateElement: foldState<string>, range) =>
   switch stateElement {
@@ -50,17 +64,15 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_DecimalSeparator => Tex_Accum.appendDecimalSeparator(. accum, range)
   | Fold_Base(base) => stringOfBase(base)->Tex_Accum.appendBasePrefix(. accum, _)
   | Fold_Percent => "\\%"->Tex_Accum.append(. accum, _)
-  | Fold_Angle(Angle_Degree) => "{}^{\\circ}"->Tex_Accum.append(. accum, _)
-  | Fold_Angle(Angle_Radian) => "{}^{r}"->Tex_Accum.append(. accum, _)
-  | Fold_Angle(Angle_Gradian) => "{}^{g}"->Tex_Accum.append(. accum, _)
+  | Fold_Angle(Angle_Degree) => supsrscriptSuffix(accum, "\\circ")
+  | Fold_Angle(Angle_Radian) => supsrscriptSuffix(accum, "r")
+  | Fold_Angle(Angle_Gradian) => supsrscriptSuffix(accum, "g")
   | Fold_Angle(Angle_ArcMinute) => "'"->Tex_Accum.append(. accum, _)
   | Fold_Angle(Angle_ArcSecond) => "''"->Tex_Accum.append(. accum, _)
   | Fold_ImaginaryUnit(superscript) =>
     withSuperscript("i", superscript)->Tex_Accum.append(. accum, _)
-  | Fold_Conj =>
-    Tex_Accum.modifyLastU(.accum, (. last) => Belt.Option.getWithDefault(last, "{}") ++ "^{*}")
-  | Fold_Transpose =>
-    Tex_Accum.modifyLastU(.accum, (. last) => Belt.Option.getWithDefault(last, "{}") ++ "^T")
+  | Fold_Conj => supsrscriptSuffix(accum, "*")
+  | Fold_Transpose => supsrscriptSuffix(accum, "T")
   | Fold_Magnitude({value}) => `\\times 10^${value}`->Tex_Accum.append(. accum, _)
   | Fold_Variable({name, superscript}) =>
     withSuperscript(name, superscript)->Tex_Accum.append(. accum, _)
@@ -68,23 +80,27 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_ConstPi(superscript) => withSuperscript("\\pi", superscript)->Tex_Accum.append(. accum, _)
   | Fold_ConstE(superscript) => withSuperscript("e", superscript)->Tex_Accum.append(. accum, _)
   | Fold_CustomAtom({mml: _mml, superscript}) =>
-    withSuperscript("???", superscript)->Tex_Accum.append(. accum, _)
+    withSuperscript("?", superscript)->Tex_Accum.append(. accum, _)
   | Fold_CaptureGroupPlaceholder({placeholderMml: _mml, superscript}) =>
-    withSuperscript("???", superscript)->Tex_Accum.append(. accum, _)
+    withSuperscript("?", superscript)->Tex_Accum.append(. accum, _)
   | Fold_Placeholder(_superscript) => "{}"->Tex_Accum.append(. accum, _)
   | Fold_Function({fn, resultSuperscript: superscript}) =>
     stringOfFunction(fn)
     ->withSuperscript(superscript)
+    ->withSpaces
     ->Tex_Accum.appendOperatorOrFunction(. accum, _)
   | Fold_Factorial => "!"->Tex_Accum.append(. accum, _)
-  | Fold_Operator(op) => stringOfOperator(op)->Tex_Accum.appendOperatorOrFunction(. accum, _)
+  | Fold_Operator(op) =>
+    stringOfOperator(op)->withSpaces->Tex_Accum.appendOperatorOrFunction(. accum, _)
   | Fold_Frac({num, den, superscript}) =>
-    withSuperscript(`\\frac${num}${den}`, superscript)->Tex_Accum.append(. accum, _)
+    withSuperscript(`\\frac${num}${den}`, superscript)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Sqrt({radicand, superscript}) =>
-    withSuperscript(`\\sqrt${radicand}`, superscript)->Tex_Accum.append(. accum, _)
+    withSuperscript(`\\sqrt${radicand}`, superscript)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_NRoot({degree, radicand, superscript}) =>
-    withSuperscript(`\\sqrt[${degree}]${radicand}`, superscript)->Tex_Accum.append(. accum, _)
-  | Fold_NLog({base}) => `\\log_${base}`->Tex_Accum.append(. accum, _)
+    withSuperscript(`\\sqrt[${degree}]${radicand}`, superscript)
+    ->withSpaces
+    ->Tex_Accum.append(. accum, _)
+  | Fold_NLog({base}) => `\\log_${base}`->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Abs({arg, superscript}) =>
     withSuperscript(`\\left|${arg}\\right|`, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Floor({arg, superscript}) =>
@@ -94,25 +110,30 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Round({arg, superscript}) =>
     withSuperscript(`\\lfloor|${arg}\\rceil|`, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Rand(superscript) =>
-    withSuperscript(`\\rm{rand}`, superscript)->Tex_Accum.append(. accum, _)
+    withSuperscript(`\\rm{rand}`, superscript)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_RandInt({a, b, superscript}) =>
-    withSuperscript(`\\rm{rand}_{\#${a},${b}}`, superscript)->Tex_Accum.append(. accum, _)
+    withSuperscript(`\\rm{rand}_{\#${a},${b}}`, superscript)
+    ->withSpaces
+    ->Tex_Accum.append(. accum, _)
   | Fold_Min({a, b, superscript}) => fn2("\\min", a, b, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Max({a, b, superscript}) => fn2("\\max", a, b, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Gcd({a, b, superscript}) => fn2("\\gcd", a, b, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Lcm({a, b, superscript}) =>
     fn2("\\rm{lcm}", a, b, superscript)->Tex_Accum.append(. accum, _)
-  | Fold_NPR({n, r}) => nprNcr("P", n, r)->Tex_Accum.append(. accum, _)
-  | Fold_NCR({n, r}) => nprNcr("C", n, r)->Tex_Accum.append(. accum, _)
+  | Fold_NPR({n, r}) => nprNcr("P", n, r)->withSpaces->Tex_Accum.append(. accum, _)
+  | Fold_NCR({n, r}) => nprNcr("C", n, r)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Differential({at, body}) =>
-    `\\left.\\frac{d}{dx}${body}\\right|_{x=${at}}`->Tex_Accum.append(. accum, _)
+    `\\left.\\frac{d}{dx}${body}\\right|_{x=${removeBraces(at)}}`
+    ->withSpaces
+    ->Tex_Accum.append(. accum, _)
   | Fold_Integral({from, to, body}) =>
-    `\\int_${from}^${to} ${body} dx`->Tex_Accum.append(. accum, _)
-  | Fold_Sum({from, to}) => sumProduct("\\sum", from, to)->Tex_Accum.append(. accum, _)
-  | Fold_Product({from, to}) => sumProduct("\\prod", from, to)->Tex_Accum.append(. accum, _)
+    `\\int_${from}^${to} ${body} dx`->withSpaces->Tex_Accum.append(. accum, _)
+  | Fold_Sum({from, to}) => sumProduct("\\sum", from, to)->withSpaces->Tex_Accum.append(. accum, _)
+  | Fold_Product({from, to}) =>
+    sumProduct("\\prod", from, to)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
-    table(~numRows, ~numColumns, elements, superscript)->Tex_Accum.append(. accum, _)
-  | Fold_UnitConversion(_) => "???"->Tex_Accum.append(. accum, _)
+    table(~numRows, ~numColumns, elements, superscript)->withSpaces->Tex_Accum.append(. accum, _)
+  | Fold_UnitConversion(_) => "?"->Tex_Accum.append(. accum, _)
   }
 
 let create = (~locale=Stringifier.English, ~digitGrouping=true, elements) =>
@@ -122,7 +143,7 @@ let create = (~locale=Stringifier.English, ~digitGrouping=true, elements) =>
       ~reduce,
       ~map,
       ~initial=Tex_Accum.make(. locale, digitGrouping),
-    )->StringUtil.slice(1, -1)
+    )->removeBraces
   } else {
     ""
   }
