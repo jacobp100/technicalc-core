@@ -36,6 +36,7 @@ let ofMatrix = (a: Matrix.t) =>
   switch a.elements {
   | [] => nan
   | [element] => ofScalar((element :> Scalar.t))
+  | elements if a.numColumns == 1 => ofVector(elements)
   | _ => #Matx(a)
   }
 
