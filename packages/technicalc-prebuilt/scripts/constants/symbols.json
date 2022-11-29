@@ -1,0 +1,688 @@
+{
+  "Alpha particle mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "\u03B1"
+  },
+  "Alpha particle molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "\u03B1"
+  },
+  "Angstrom star": {
+    "bold": false,
+    "italic": false,
+    "base": "A",
+    "superscript": "*",
+    "subscript": ""
+  },
+  "Atomic mass constant": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "u"
+  },
+  "Avogadro constant": {
+    "bold": false,
+    "italic": true,
+    "base": "N",
+    "superscript": "",
+    "subscript": "A"
+  },
+  "Bohr magneton": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "B"
+  },
+  "Bohr radius": {
+    "bold": false,
+    "italic": true,
+    "base": "a",
+    "superscript": "",
+    "subscript": "0"
+  },
+  "Boltzmann constant": {
+    "bold": false,
+    "italic": true,
+    "base": "k",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Characteristic impedance of vacuum": {
+    "bold": false,
+    "italic": true,
+    "base": "Z",
+    "superscript": "",
+    "subscript": "0"
+  },
+  "Classical electron radius": {
+    "bold": false,
+    "italic": true,
+    "base": "r",
+    "superscript": "",
+    "subscript": "e"
+  },
+  "Compton wavelength": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BB",
+    "superscript": "",
+    "subscript": "C"
+  },
+  "Conductance quantum": {
+    "bold": false,
+    "italic": true,
+    "base": "G",
+    "superscript": "",
+    "subscript": "0"
+  },
+  "Conventional value of Josephson constant": {
+    "bold": false,
+    "italic": true,
+    "base": "K",
+    "superscript": "",
+    "subscript": "J-90"
+  },
+  "Conventional value of von Klitzing constant": {
+    "bold": false,
+    "italic": true,
+    "base": "R",
+    "superscript": "",
+    "subscript": "K-90"
+  },
+  "Deuteron g factor": {
+    "bold": false,
+    "italic": true,
+    "base": "g",
+    "superscript": "",
+    "subscript": "d"
+  },
+  "Deuteron magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "d"
+  },
+  "Deuteron mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "d"
+  },
+  "Deuteron molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "d"
+  },
+  "Deuteron rms charge radius": {
+    "bold": false,
+    "italic": true,
+    "base": "r",
+    "superscript": "",
+    "subscript": "d"
+  },
+  "Electric constant": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03B5",
+    "superscript": "",
+    "subscript": "0"
+  },
+  "Electron g factor": {
+    "bold": false,
+    "italic": true,
+    "base": "g",
+    "superscript": "",
+    "subscript": "e"
+  },
+  "Electron magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "e"
+  },
+  "Electron magnetic moment anomaly": {
+    "bold": false,
+    "italic": true,
+    "base": "a",
+    "superscript": "",
+    "subscript": "e"
+  },
+  "Electron mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "e"
+  },
+  "Electron molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "e"
+  },
+  "Electron volt": {
+    "bold": false,
+    "italic": true,
+    "base": "eV",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Elementary charge": {
+    "bold": false,
+    "italic": true,
+    "base": "e",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Faraday constant": {
+    "bold": false,
+    "italic": true,
+    "base": "F",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Faraday constant for conventional electric current": {
+    "bold": false,
+    "italic": true,
+    "base": "F*",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Fine-structure constant": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03B1",
+    "superscript": "",
+    "subscript": ""
+  },
+  "First radiation constant": {
+    "bold": false,
+    "italic": true,
+    "base": "c",
+    "superscript": "",
+    "subscript": "1"
+  },
+  "First radiation constant for spectral radiance": {
+    "bold": false,
+    "italic": true,
+    "base": "c",
+    "superscript": "",
+    "subscript": "1L"
+  },
+  "Hartree energy": {
+    "bold": false,
+    "italic": true,
+    "base": "E",
+    "superscript": "",
+    "subscript": "h"
+  },
+  "Helion g factor": {
+    "bold": false,
+    "italic": true,
+    "base": "g",
+    "superscript": "",
+    "subscript": "h"
+  },
+  "Helion magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "h"
+  },
+  "Helion mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "h"
+  },
+  "Helion molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "h"
+  },
+  "Josephson constant": {
+    "bold": false,
+    "italic": true,
+    "base": "K",
+    "superscript": "",
+    "subscript": "J"
+  },
+  "Lattice parameter of silicon": {
+    "bold": false,
+    "italic": true,
+    "base": "a",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Loschmidt constant (273.15 K, 100 kPa)": {
+    "bold": false,
+    "italic": true,
+    "base": "n",
+    "superscript": "",
+    "subscript": "0"
+  },
+  "Loschmidt constant (273.15 K, 101.325 kPa)": {
+    "bold": false,
+    "italic": true,
+    "base": "n",
+    "superscript": "",
+    "subscript": "0"
+  },
+  "Magnetic constant": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "0"
+  },
+  "Magnetic flux quantum": {
+    "bold": false,
+    "italic": false,
+    "base": "\u03A6",
+    "superscript": "",
+    "subscript": "0"
+  },
+  "Molar gas constant": {
+    "bold": false,
+    "italic": true,
+    "base": "R",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Molar mass constant": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "u"
+  },
+  "Molar mass of carbon-12": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "C12"
+  },
+  "Molar Planck constant": {
+    "bold": false,
+    "italic": true,
+    "base": "NH",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Molar volume of ideal gas (273.15 K, 100 kPa)": {
+    "bold": false,
+    "italic": true,
+    "base": "V",
+    "superscript": "",
+    "subscript": "m"
+  },
+  "Molar volume of ideal gas (273.15 K, 101.325 kPa)": {
+    "bold": false,
+    "italic": true,
+    "base": "V",
+    "superscript": "",
+    "subscript": "m"
+  },
+  "Molar volume of silicon": {
+    "bold": false,
+    "italic": true,
+    "base": "V",
+    "superscript": "",
+    "subscript": "si"
+  },
+  "Muon Compton wavelength": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BB",
+    "superscript": "",
+    "subscript": "C\u03BC"
+  },
+  "Muon g factor": {
+    "bold": false,
+    "italic": true,
+    "base": "g",
+    "superscript": "",
+    "subscript": "\u03BC"
+  },
+  "Muon magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "\u03BC"
+  },
+  "Muon magnetic moment anomaly": {
+    "bold": false,
+    "italic": true,
+    "base": "a",
+    "superscript": "",
+    "subscript": "\u03BC"
+  },
+  "Muon mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "\u03BC"
+  },
+  "Muon molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "\u03BC"
+  },
+  "Neutron Compton wavelength": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BB",
+    "superscript": "",
+    "subscript": "Cn"
+  },
+  "Neutron g factor": {
+    "bold": false,
+    "italic": true,
+    "base": "g",
+    "superscript": "",
+    "subscript": "n"
+  },
+  "Neutron magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "n"
+  },
+  "Neutron mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "n"
+  },
+  "Neutron molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "n"
+  },
+  "Newtonian constant of gravitation": {
+    "bold": false,
+    "italic": true,
+    "base": "G",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Nuclear magneton": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "N"
+  },
+  "Planck constant": {
+    "bold": false,
+    "italic": true,
+    "base": "h",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Planck constant over 2 pi": {
+    "bold": false,
+    "italic": true,
+    "base": "\u0127",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Planck length": {
+    "bold": false,
+    "italic": true,
+    "base": "l",
+    "superscript": "",
+    "subscript": "P"
+  },
+  "Planck mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "m"
+  },
+  "Planck temperature": {
+    "bold": false,
+    "italic": true,
+    "base": "T",
+    "superscript": "",
+    "subscript": "P"
+  },
+  "Planck time": {
+    "bold": false,
+    "italic": true,
+    "base": "t",
+    "superscript": "",
+    "subscript": "P"
+  },
+  "Proton Compton wavelength": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BB",
+    "superscript": "",
+    "subscript": "Cp"
+  },
+  "Proton g factor": {
+    "bold": false,
+    "italic": true,
+    "base": "g",
+    "superscript": "",
+    "subscript": "p"
+  },
+  "Proton magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "p"
+  },
+  "Proton magnetic shielding correction": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03C3",
+    "superscript": "\u2032",
+    "subscript": "p"
+  },
+  "Proton mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "p"
+  },
+  "Proton molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "p"
+  },
+  "Proton rms charge radius": {
+    "bold": false,
+    "italic": true,
+    "base": "r",
+    "superscript": "",
+    "subscript": "p"
+  },
+  "Rydberg constant": {
+    "bold": false,
+    "italic": true,
+    "base": "R",
+    "superscript": "",
+    "subscript": "\u221E"
+  },
+  "Second radiation constant": {
+    "bold": false,
+    "italic": true,
+    "base": "c",
+    "superscript": "",
+    "subscript": "2"
+  },
+  "Shielded helion magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "\u2032",
+    "subscript": "h"
+  },
+  "Shielded proton magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "\u2032",
+    "subscript": "p"
+  },
+  "Speed of light in vacuum": {
+    "bold": false,
+    "italic": true,
+    "base": "c",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Standard acceleration of gravity": {
+    "bold": false,
+    "italic": true,
+    "base": "g",
+    "superscript": "",
+    "subscript": "n"
+  },
+  "Standard atmosphere": {
+    "bold": false,
+    "italic": false,
+    "base": "atm",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Standard-state pressure": {
+    "bold": false,
+    "italic": false,
+    "base": "ssp",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Stefan-Boltzmann constant": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03C3",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Tau Compton wavelength": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BB",
+    "superscript": "",
+    "subscript": "C\u03C4"
+  },
+  "Tau mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "\u03C4"
+  },
+  "Tau molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "\u03C4"
+  },
+  "Thomson cross section": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03C3",
+    "superscript": "",
+    "subscript": "e"
+  },
+  "Triton g factor": {
+    "bold": false,
+    "italic": true,
+    "base": "g",
+    "superscript": "",
+    "subscript": "t"
+  },
+  "Triton magnetic moment": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03BC",
+    "superscript": "",
+    "subscript": "t"
+  },
+  "Triton mass": {
+    "bold": false,
+    "italic": true,
+    "base": "m",
+    "superscript": "",
+    "subscript": "t"
+  },
+  "Triton molar mass": {
+    "bold": false,
+    "italic": true,
+    "base": "M",
+    "superscript": "",
+    "subscript": "t"
+  },
+  "Unified atomic mass unit": {
+    "bold": false,
+    "italic": false,
+    "base": "u",
+    "superscript": "",
+    "subscript": ""
+  },
+  "Von Klitzing constant": {
+    "bold": false,
+    "italic": true,
+    "base": "R",
+    "superscript": "",
+    "subscript": "K"
+  },
+  "Wien frequency displacement law constant": {
+    "bold": false,
+    "italic": true,
+    "base": "b",
+    "superscript": "\u2032",
+    "subscript": ""
+  },
+  "Wien wavelength displacement law constant": {
+    "bold": false,
+    "italic": true,
+    "base": "b",
+    "superscript": "",
+    "subscript": ""
+  },
+  "{220} lattice spacing of silicon": {
+    "bold": false,
+    "italic": true,
+    "base": "d",
+    "superscript": "",
+    "subscript": "220"
+  }
+}
