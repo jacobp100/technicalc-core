@@ -11,7 +11,7 @@ type foldState<'a> =
   | Fold_Angle(angle)
   | Fold_Base(base)
   | Fold_CaptureGroupPlaceholder({
-      placeholderMml: option<string>,
+      placeholder: option<Symbol.t>,
       superscript: option<superscript<'a>>,
     })
   | Fold_Ceil({arg: 'a, superscript: option<superscript<'a>>})
@@ -19,7 +19,7 @@ type foldState<'a> =
   | Fold_ConstE(option<superscript<'a>>)
   | Fold_ConstPi(option<superscript<'a>>)
   | Fold_Conj
-  | Fold_CustomAtom({mml: string, value: string, superscript: option<superscript<'a>>})
+  | Fold_CustomAtom({symbol: Symbol.t, value: string, superscript: option<superscript<'a>>})
   | Fold_DecimalSeparator
   | Fold_Differential({at: 'a, body: 'a})
   | Fold_Digit({nucleus: string, superscript: option<superscript<'a>>})
@@ -101,12 +101,12 @@ let reduceMapU = (
 ): 'value => {
   let rec readNodeExn = (i): readResult<'a> =>
     switch Belt.Array.getExn(input, i) {
-    | CaptureGroupStart({placeholderMml}) =>
+    | CaptureGroupStart({placeholder}) =>
       switch Belt.Array.get(input, i + 1) {
       | Some(CaptureGroupEndS) =>
         let i' = i + 2
         let (superscript, i') = readSuperscript(i')
-        Node(Fold_CaptureGroupPlaceholder({placeholderMml, superscript}), i, i')
+        Node(Fold_CaptureGroupPlaceholder({placeholder, superscript}), i, i')
       | _ => Empty
       }
     | CaptureGroupEndS => Empty
@@ -168,10 +168,10 @@ let reduceMapU = (
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
       Node(Fold_ConstE(superscript), i, i')
-    | CustomAtomS({mml, value}) =>
+    | CustomAtomS({symbol, value}) =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_CustomAtom({mml, value, superscript}), i, i')
+      Node(Fold_CustomAtom({symbol, value, superscript}), i, i')
     | (N0_S | N1_S | N2_S | N3_S | N4_S | N5_S | N6_S | N7_S | N8_S | N9_S) as digit
     | (NA_S | NB_S | NC_S | ND_S | NE_S | NF_S) as digit =>
       let nucleus = digitNucleusExn(digit)

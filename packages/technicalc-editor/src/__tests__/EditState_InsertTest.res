@@ -199,13 +199,13 @@ test("should insert within capture group", () => {
   let {index, elements} =
     make(
       ~index=2,
-      ~elements=[N1_S, CaptureGroupStart({placeholderMml: Some("x")}), CaptureGroupEndS, N3_S],
+      ~elements=[N1_S, CaptureGroupStart({placeholder: None}), CaptureGroupEndS, N3_S],
       ~formatCaptureGroups=false,
     )->insert(N2_S)
 
   expect(elements)->toEqual([
     N1_S,
-    CaptureGroupStart({placeholderMml: Some("x")}),
+    CaptureGroupStart({placeholder: None}),
     N2_S,
     CaptureGroupEndS,
     N3_S,
@@ -216,11 +216,11 @@ test("should insert within capture group", () => {
 test("should only insert within current capture group", () => {
   let testElements = [
     AST.N1_S,
-    CaptureGroupStart({placeholderMml: Some("x")}),
+    CaptureGroupStart({placeholder: None}),
     CaptureGroupEndS,
-    CaptureGroupStart({placeholderMml: Some("y")}),
+    CaptureGroupStart({placeholder: None}),
     CaptureGroupEndS,
-    CaptureGroupStart({placeholderMml: Some("z")}),
+    CaptureGroupStart({placeholder: None}),
     CaptureGroupEndS,
     N3_S,
   ]
@@ -229,12 +229,12 @@ test("should only insert within current capture group", () => {
 
   expect(elements)->toEqual([
     N1_S,
-    CaptureGroupStart({placeholderMml: Some("x")}),
+    CaptureGroupStart({placeholder: None}),
     CaptureGroupEndS,
-    CaptureGroupStart({placeholderMml: Some("y")}),
+    CaptureGroupStart({placeholder: None}),
     N2_S,
     CaptureGroupEndS,
-    CaptureGroupStart({placeholderMml: Some("z")}),
+    CaptureGroupStart({placeholder: None}),
     CaptureGroupEndS,
     N3_S,
   ])
@@ -242,13 +242,21 @@ test("should only insert within current capture group", () => {
 })
 
 test("should select first capture group when inserting array", () => {
+  let placeholderWithLabel = base => Some({
+    Symbol.bold: false,
+    italic: false,
+    base,
+    superscript: "",
+    subscript: "",
+  })
+
   let {index} =
     make(~index=0, ~elements=[], ~formatCaptureGroups=false)->insertArray([
       N1_S,
-      CaptureGroupStart({placeholderMml: Some("selected")}),
+      CaptureGroupStart({placeholder: placeholderWithLabel("selected")}),
       CaptureGroupEndS,
       N2_S,
-      CaptureGroupStart({placeholderMml: Some("not_selected")}),
+      CaptureGroupStart({placeholder: placeholderWithLabel("not_selected")}),
       CaptureGroupEndS,
       N3_S,
     ])
@@ -310,7 +318,7 @@ test(
 test("should select after a capture group when inserting in format capture group mode", () => {
   let {index} =
     make(~index=0, ~elements=[], ~formatCaptureGroups=true)->insertArray([
-      CaptureGroupStart({placeholderMml: Some("")}),
+      CaptureGroupStart({placeholder: None}),
       CaptureGroupEndS,
     ])
 

@@ -23,14 +23,40 @@ open UrlSafeEncoding
 //   | _ => None
 //   };
 
-%%private(let encodeCustomAtom = (~mml, ~value) => encodeString(mml) ++ value)
+%%private(
+  let encodeCaptureGroup = (~placeholder) => {
+    let placeholder = switch placeholder {
+    | Some(placeholder) => encodeUint(1) ++ Encoding_Symbol.encode(placeholder)
+    | None => encodeUint(0)
+    }
+    encodeUint(260) ++ placeholder
+  }
+)
+
+%%private(
+  let readCaptureGroup = reader => {
+    switch readUint(reader) {
+    | Some(0) => Some(AST.CaptureGroupStart({placeholder: None}))
+    | Some(1) =>
+      switch Encoding_Symbol.read(reader) {
+      | Some(placeholder) => Some(CaptureGroupStart({placeholder: Some(placeholder)}))
+      | None => None
+      }
+    | _ => None
+    }
+  }
+)
+
+%%private(
+  let encodeCustomAtom = (~symbol, ~value) => Encoding_Symbol.encode(symbol) ++ value
+)
 
 %%private(
   let readCustomAtom = reader =>
-    switch (readString(reader), TechniCalcCalculator.Encoding_Value.read(reader)) {
-    | (Some(mml), Some(value)) =>
+    switch (Encoding_Symbol.read(reader), TechniCalcCalculator.Encoding_Value.read(reader)) {
+    | (Some(symbol), Some(value)) =>
       let value = TechniCalcCalculator.Encoding_Value.encode(value)
-      AST.CustomAtomS({mml, value})->Some
+      AST.CustomAtomS({symbol, value})->Some
     | _ => None
     }
 )
@@ -39,10 +65,9 @@ open UrlSafeEncoding
   let encodeElement = (element: AST.t) =>
     switch element {
     | UnitConversion(_) => ""
-    | CustomAtomS({mml, value}) => encodeUint(257) ++ encodeCustomAtom(~mml, ~value)
+    | CustomAtomS({symbol, value}) => encodeUint(257) ++ encodeCustomAtom(~symbol, ~value)
     | VariableS({id, name}) => encodeUint(261) ++ (encodeString(id) ++ encodeString(name))
-    | CaptureGroupStart({placeholderMml}) =>
-      encodeUint(260) ++ placeholderMml->Belt.Option.getWithDefault("")->encodeString
+    | CaptureGroupStart({placeholder}) => encodeUint(260) ++ encodeCaptureGroup(~placeholder)
     | TableNS({numRows, numColumns}) =>
       encodeUint(262) ++ encodeUint(numRows) ++ encodeUint(numColumns)
     | element => elementToUint(element)->encodeUint
@@ -59,12 +84,7 @@ open UrlSafeEncoding
       | (Some(id), Some(name)) => Some(VariableS({id, name}))
       | _ => None
       }
-    | Some(260) =>
-      switch readString(reader) {
-      | Some("") => Some(CaptureGroupStart({placeholderMml: None}))
-      | Some(placeholderMml) => Some(CaptureGroupStart({placeholderMml: Some(placeholderMml)}))
-      | None => None
-      }
+    | Some(260) => readCaptureGroup(reader)
     | Some(262) =>
       switch (readUint(reader), readUint(reader)) {
       | (Some(numRows), Some(numColumns)) => Some(TableNS({numRows, numColumns}))

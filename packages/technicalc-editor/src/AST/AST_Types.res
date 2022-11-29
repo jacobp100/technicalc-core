@@ -2,7 +2,7 @@ type t =
   /* Arg */
   | Arg
   /* Caputure Group */
-  | CaptureGroupStart({placeholderMml: option<string>})
+  | CaptureGroupStart({placeholder: option<Symbol.t>})
   | CaptureGroupEndS
   /* Atom */
   | Acos
@@ -76,7 +76,7 @@ type t =
   | SinS
   | TanhS
   | TanS
-  | CustomAtomS({mml: string, value: string})
+  | CustomAtomS({symbol: Symbol.t, value: string})
   | VariableS({id: string, name: string})
   /* Atom1 */
   | Magnitude1
@@ -109,9 +109,10 @@ type t =
 
 let eq = (a: t, b: t) =>
   switch (a, b) {
-  | (CaptureGroupStart({placeholderMml: a1}), CaptureGroupStart({placeholderMml: b1})) => a1 == b1
+  | (CaptureGroupStart({placeholder: a1}), CaptureGroupStart({placeholder: b1})) => a1 == b1
   | (UnitConversion(_), UnitConversion(_)) => false // Not used yet (ignore)
-  | (CustomAtomS({mml: a1, value: a2}), CustomAtomS({mml: b1, value: b2})) => a1 == b1 && a2 == b2
+  | (CustomAtomS({symbol: a1, value: a2}), CustomAtomS({symbol: b1, value: b2})) =>
+    Symbol.eq(a1, b1) && a2 == b2
   | (VariableS({id: a1, name: a2}), VariableS({id: b1, name: b2})) => a1 == b1 && a2 == b2
   | (a, b) => a === b
   }

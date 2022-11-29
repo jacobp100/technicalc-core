@@ -156,12 +156,12 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     element(~superscript?, ~range, "mi", "&#x03C0;")->Mml_Accum.append(. accum, _)
   | Fold_ConstE(superscript) =>
     element(~superscript?, ~range, "mi", "e")->Mml_Accum.append(. accum, _)
-  | Fold_CustomAtom({mml, superscript}) =>
-    element(~superscript?, ~range, "mrow", mml)->Mml_Accum.append(. accum, _)
-  | Fold_CaptureGroupPlaceholder({placeholderMml: mml, superscript}) =>
+  | Fold_CustomAtom({symbol, superscript}) =>
+    element(~superscript?, ~range, "mrow", Mml_Symbol.toMml(symbol))->Mml_Accum.append(. accum, _)
+  | Fold_CaptureGroupPlaceholder({placeholder, superscript}) =>
     let phantom = element(~attributes=list{selection(~start=fst(range) + 1, ())}, "mphantom", "")
-    let symbol = switch mml {
-    | Some(mml) => mml
+    let symbol = switch placeholder {
+    | Some(placeholder) => Mml_Symbol.toMml(placeholder)
     | None => element(Placeholder.tag, Placeholder.body)
     }
     element(

@@ -1,25 +1,25 @@
 type captureGroup = {
   index: int,
-  placeholderMml: option<string>,
+  placeholder: option<Symbol.t>,
   elements: array<AST.t>,
 }
 
 let captureGroups = (elements: array<AST.t>): array<captureGroup> => {
   let rec iter = (~captureGroupStartStack=list{}, ~captureGroupsRev=list{}, index) =>
     switch Belt.Array.get(elements, index) {
-    | Some(CaptureGroupStart({placeholderMml})) =>
-      let captureGroupStartStack = list{(index + 1, placeholderMml), ...captureGroupStartStack}
+    | Some(CaptureGroupStart({placeholder})) =>
+      let captureGroupStartStack = list{(index + 1, placeholder), ...captureGroupStartStack}
       iter(~captureGroupStartStack, ~captureGroupsRev, index + 1)
     | Some(CaptureGroupEndS) =>
       switch captureGroupStartStack {
-      | list{(start, placeholderMml), ...captureGroupStartStack} =>
+      | list{(start, placeholder), ...captureGroupStartStack} =>
         let elements =
           Belt.Array.slice(elements, ~offset=start, ~len=index - start)->AST_Types.normalize
 
         let captureGroup = {
           index: start,
-          placeholderMml: placeholderMml,
-          elements: elements,
+          placeholder,
+          elements,
         }
         let captureGroupsRev = list{captureGroup, ...captureGroupsRev}
 

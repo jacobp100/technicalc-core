@@ -1,13 +1,7 @@
 /* eslint-disable no-console */
 // Android font: GFS Didot
 import fs from "node:fs";
-import { TeX } from "mathjax-full/js/input/tex.js";
-import { SVG } from "mathjax-full/js/output/svg.js";
-import { HTMLDocument } from "mathjax-full/js/handlers/html/HTMLDocument.js";
-import { liteAdaptor } from "mathjax-full/js/adaptors/liteAdaptor.js";
-import { AllPackages } from "mathjax-full/js/input/tex/AllPackages.js";
-import { SerializedMmlVisitor } from "mathjax-full/js/core/MmlTree/SerializedMmlVisitor.js";
-import { Value } from "../../src/Client.mjs";
+import { Value, $$Symbol } from "../../src/Client.mjs";
 import titles from "./titles.js";
 
 const outputFilename = process.argv[2];
@@ -16,30 +10,9 @@ const data = JSON.parse(
   fs.readFileSync(new URL("data.json", import.meta.url), "utf8")
 );
 
-const Typeset = (string, display) => {
-  const tex = new TeX({ packages: AllPackages.sort() });
-  const svg = new SVG();
-
-  const html = new HTMLDocument("", liteAdaptor(), {
-    InputJax: tex,
-    OutputJax: svg,
-  });
-
-  const visitor = new SerializedMmlVisitor();
-  const toMathML = (node) => visitor.visitTree(node, html);
-
-  const math = new html.options.MathItem(string, tex, display);
-  math.setMetrics(16, 16, 80, 100000, 1);
-  math.compile(html);
-  math.typeset(html);
-
-  const out = toMathML(math.root)
-    .replace(/>[\s\n]*</gm, "><")
-    .replace(/\s?class="[^"]*"/g, "");
-  return out;
-};
-
-const unnestDocument = (d) => d.replace(/<\/?math[^>]*>/g, "");
+const symbols = JSON.parse(
+  fs.readFileSync(new URL("symbols.json", import.meta.url), "utf8")
+);
 
 const superscriptReplacements = {
   "-": "⁻",
@@ -68,6 +41,8 @@ const subscriptReplacements = {
   9: "₉",
   h: "h",
 };
+
+const ignored = new Set(["Molar Planck constant"]);
 
 const normalizeTitle = (a) =>
   a
@@ -149,188 +124,43 @@ const nist = fs
     return { titleNormalized, value, valueMml, unitsUtf };
   });
 
-const formats = [
-  ["\\AA", "\\unicode{x212B}"],
-  ["\\hbar", "\\unicode{x127}"],
-  ["\\lbar", "\\unicode{x19b}"],
-  ["\\lambdabar", "\\unicode{x19b}"],
-  ["\\unicode{x212B}", "A"],
-  ["\\unicode{x19b}", "\\lambda"],
-];
-
-let out = data.map(({ title: baseTitle, tex }) => {
-  let formattedTex = tex;
-  formattedTex = formattedTex.replace(
-    /(?:\$([^$]*)\$|([^$,]+))/g,
-    (_full, texString, rawString) => {
-      if (texString) return texString;
-      if (rawString) return `{\\rm ${rawString}}`;
-      throw new Error("Oh");
-    }
-  );
-  // Take first if comma group (like c, c_0) UNLESS the comma is in a _{} or ^ group
-  formattedTex = formattedTex
-    .match(/^((?:[^{,_^]|[_^][^{]|[_^]?\{(?:[^}]|\{[^}]*\})*\})*).*$/)[1]
-    .trim();
-  formattedTex = formats.reduce(
-    (accum, [a, b]) => accum.replace(a, b),
-    formattedTex
-  );
-
-  if (baseTitle === "magnetic flux quantum") {
-    // We would have to load a whole font just for this entry
-    // Just change the formatting
-    formattedTex = "\\Phi_0";
-  }
-
+let out = data.map(({ title: baseTitle }) => {
   const baseTitleNormalized = normalizeTitle(baseTitle);
   const { value, unitsUtf } = nist.find((item) => {
     return baseTitleNormalized === item.titleNormalized;
   });
-  let symbolMml;
-
-  try {
-    symbolMml = unnestDocument(Typeset(formattedTex, true));
-    // Remove mrows that only contain one element
-    symbolMml = symbolMml.replace(
-      /<mrow>(<(\w+)[^>]*>[^<]*<\/\2>)<\/mrow>/g,
-      "$1"
-    );
-
-    if (symbolMml.includes("merror")) {
-      throw new Error(`Invalid tex ${tex}`);
-    }
-  } catch (e) {
-    console.log("FAILED");
-    console.log(e);
-    console.log(baseTitle);
-    console.log(formattedTex);
-    throw e;
-  }
 
   const title = baseTitle[0].toUpperCase() + baseTitle.slice(1);
 
-  const alias = Array.from(
-    symbolMml.matchAll(/<m([ino]|text)[^>]*>([^<>]+)<\/m\1>/g),
-    (match) => match[2]
-  )
-    .join("")
-    .toLowerCase()
-    .replace(/[()]/g, "")
-    .replace(/&#x([0-9A-Fa-f]+);/g, (fullMatch, code) => {
-      switch (parseInt(code, 16)) {
-        case 0xa0: // NO-BREAK SPACE
-        case 0x2061: // FUNCTION APPLICATION?
-          return "";
-        case 0x03b1:
-        case 0x0391:
-          return "alpha";
-        case 0x03b2:
-        case 0x0392:
-          return "beta";
-        case 0x03b3:
-        case 0x0393:
-          return "gamma";
-        case 0x03b4:
-        case 0x0394:
-          return "delta";
-        case 0x03b5:
-        case 0x0395:
-          return "epsilon";
-        case 0x03b6:
-        case 0x0396:
-          return "zeta";
-        case 0x03b7:
-        case 0x0397:
-          return "eta";
-        case 0x03b8:
-        case 0x0398:
-          return "theta";
-        case 0x03b9:
-        case 0x0399:
-          return "iota";
-        case 0x03ba:
-        case 0x039a:
-          return "kappa";
-        case 0x03bb:
-        case 0x039b:
-          return "lambda";
-        case 0x03bc:
-        case 0x039c:
-          return "mu";
-        case 0x03bd:
-        case 0x039d:
-          return "nu";
-        case 0x03be:
-        case 0x039e:
-          return "xi";
-        case 0x03bf:
-        case 0x039f:
-          return "omicron";
-        case 0x03c0:
-        case 0x03a0:
-          return "pi";
-        case 0x03c1:
-        case 0x03a1:
-          return "rho";
-        case 0x03c3:
-        case 0x03a3:
-          return "sigma";
-        case 0x03c4:
-        case 0x03a4:
-          return "tau";
-        case 0x03c5:
-        case 0x03a5:
-          return "upsilon";
-        case 0x03c6:
-        case 0x03a6:
-          return "phi";
-        case 0x03c7:
-        case 0x03a7:
-          return "chi";
-        case 0x03c8:
-        case 0x03a8:
-          return "psi";
-        case 0x03c9:
-        case 0x03a9:
-          return "omega";
-        case 0x127:
-          return "hbar";
-        case 0x2032:
-          return "prime";
-        case 0x2212:
-          return "-";
-        case 0x2217:
-          return "*";
-        case 0x221e:
-          return "inf";
-        default:
-          throw new Error(`Failed to replace ${fullMatch}`);
-      }
-    });
+  const symbolJson = symbols[title];
+  const symbol =
+    symbolJson != null && symbolJson.base !== ""
+      ? $$Symbol.encode(symbolJson)
+      : null;
 
-  return { title, alias, value, symbolMml, unitsUtf };
+  return { title, value, symbol, unitsUtf };
 });
 
 out = out
   .filter((t) => !/in [KMG]?eV/.test(t.title))
+  .filter((t) => !/^Inverse /.test(t.title))
   .filter((t) => {
+    if (ignored.has(t.title)) {
+      return false;
+    }
+
     const filter = titles.get(t.title);
     if (filter == null) {
       throw new Error(`Missing filter for ${t.title}`);
     }
+
     return filter;
   });
 
-// const test = new Map();
-// out.forEach(({ title, symbolMml }) => {
-//   const existing = test.get(symbolMml) || [];
-//   existing.push(title);
-//   test.set(symbolMml, existing);
-// });
-//
-// const conflicts = Array.from(test.values()).filter(
-//   (values) => values.length > 0
-// );
+out.forEach((t) => {
+  if (t.symbol == null) {
+    throw new Error(`Missing symbol for ${t.title}`);
+  }
+});
 
 fs.writeFileSync(outputFilename, JSON.stringify(out));

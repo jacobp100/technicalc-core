@@ -1,9 +1,9 @@
 open AST_Types
 
 type hint =
-  | Value({mml: string, value: string})
+  | Value({symbol: Symbol.t, value: string})
   | Variable({id: string})
-  | CaptureGroup({placeholderMml: string})
+  | CaptureGroup({placeholder: Symbol.t})
 
 %%private(
   let captureGroupHintAtIndex = (elements: array<t>, index: int) => {
@@ -11,13 +11,13 @@ type hint =
     let rec iter = index =>
       switch Belt.Array.get(elements, index) {
       | Some(CaptureGroupEndS) => None
-      | Some(CaptureGroupStart({placeholderMml})) =>
+      | Some(CaptureGroupStart({placeholder})) =>
         let isEmpty = switch Belt.Array.get(elements, index + 1) {
         | Some(CaptureGroupEndS) => true
         | _ => false
         }
-        switch placeholderMml {
-        | Some(placeholderMml) if !isEmpty => Some(CaptureGroup({placeholderMml: placeholderMml}))
+        switch placeholder {
+        | Some(placeholder) if !isEmpty => Some(CaptureGroup({placeholder: placeholder}))
         | _ => None
         }
       | Some(_) => iter(index - 1)
@@ -31,7 +31,7 @@ type hint =
 %%private(
   let elementHintAtIndex = (elements: array<t>, index: int) =>
     switch Belt.Array.get(elements, index) {
-    | Some(CustomAtomS({mml, value})) => Some(Value({mml, value}))
+    | Some(CustomAtomS({symbol, value})) => Some(Value({symbol, value}))
     | Some(VariableS({id})) => Some(Variable({id: id}))
     | _ => None
     }

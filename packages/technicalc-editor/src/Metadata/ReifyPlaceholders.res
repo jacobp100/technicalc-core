@@ -132,7 +132,7 @@ let reifyPlaceholders = (elements: array<t>) => {
   let rec iter = (~indicesRev, elements) =>
     switch indicesRev {
     | list{index, ...indicesRev} =>
-      let insertedElements = [CaptureGroupStart({placeholderMml: None}), CaptureGroupEndS]
+      let insertedElements = [CaptureGroupStart({placeholder: None}), CaptureGroupEndS]
       let elements = ArrayUtil.insertArray(elements, insertedElements, index)
       iter(~indicesRev, elements)
     | list{} => elements

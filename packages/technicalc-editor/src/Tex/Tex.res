@@ -79,10 +79,14 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_X(superscript) => withSuperscript("x", superscript)->Tex_Accum.append(. accum, _)
   | Fold_ConstPi(superscript) => withSuperscript("\\pi", superscript)->Tex_Accum.append(. accum, _)
   | Fold_ConstE(superscript) => withSuperscript("e", superscript)->Tex_Accum.append(. accum, _)
-  | Fold_CustomAtom({mml: _mml, superscript}) =>
-    withSuperscript("?", superscript)->Tex_Accum.append(. accum, _)
-  | Fold_CaptureGroupPlaceholder({placeholderMml: _mml, superscript}) =>
-    withSuperscript("?", superscript)->Tex_Accum.append(. accum, _)
+  | Fold_CustomAtom({symbol, superscript}) =>
+    Tex_Symbol.toTex(symbol)->withSuperscript(superscript)->Tex_Accum.append(. accum, _)
+  | Fold_CaptureGroupPlaceholder({placeholder, superscript}) =>
+    let placeholder = switch placeholder {
+    | Some(placeholder) => Tex_Symbol.toTex(placeholder)
+    | None => "{}"
+    }
+    withSuperscript(placeholder, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Placeholder(_superscript) => "{}"->Tex_Accum.append(. accum, _)
   | Fold_Function({fn, resultSuperscript: superscript}) =>
     stringOfFunction(fn)

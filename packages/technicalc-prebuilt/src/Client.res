@@ -154,10 +154,11 @@ module Elements = {
 
   let hint = (elements, index) =>
     switch HintMetadata.hint(elements, index) {
-    | Some(Value({mml, value})) => Some(Obj.magic({"type": "Value", "mml": mml, "value": value}))
+    | Some(Value({symbol, value})) =>
+      Some(Obj.magic({"type": "Value", "symbol": symbol, "value": value}))
     | Some(Variable({id})) => Some(Obj.magic({"type": "Variable", "id": id}))
-    | Some(CaptureGroup({placeholderMml})) =>
-      Some(Obj.magic({"type": "CaptureGroup", "placeholderMml": placeholderMml}))
+    | Some(CaptureGroup({placeholder})) =>
+      Some(Obj.magic({"type": "CaptureGroup", "placeholder": placeholder}))
     | None => None
     }
 
@@ -214,14 +215,14 @@ module Keys = {
 
   let table = (~numRows, ~numColumns) => Keys.One(TableNS({numRows, numColumns}))
 
-  let customAtom = (~value, ~mml) =>
+  let customAtom = (~value, ~symbol) =>
     AST.CustomAtomS({
-      mml,
+      symbol,
       value: TechniCalcCalculator.Encoding.encode(value),
     })->Keys.One
 
-  let label = (~placeholderMml) => Keys.Many([
-    CaptureGroupStart({placeholderMml: placeholderMml}),
+  let label = (~placeholder) => Keys.Many([
+    CaptureGroupStart({placeholder: placeholder}),
     CaptureGroupEndS,
   ])
 
@@ -364,4 +365,12 @@ module Units = {
   let unitTypeToString = Units_Util.unitTypeToString
 
   let prefixToMml = Units_Util.prefixToMml
+}
+
+module Symbol = {
+  let encode = TechniCalcEditor.Encoding_Symbol.encode
+  let decode = string => UrlSafeEncoding.read(string, TechniCalcEditor.Encoding_Symbol.read)
+
+  let toMml = TechniCalcEditor.Mml_Symbol.toMml
+  let ofMml = TechniCalcEditor.Mml_Symbol.ofMml
 }

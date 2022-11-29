@@ -2,7 +2,7 @@ open Jest
 open AST
 open ReifyPlaceholders
 
-let captureGroupStart = CaptureGroupStart({placeholderMml: None})
+let captureGroupStart = CaptureGroupStart({placeholder: None})
 let captureGroupEnd = CaptureGroupEndS
 
 test("no-op", () => {
