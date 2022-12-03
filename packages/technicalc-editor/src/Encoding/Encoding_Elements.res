@@ -24,13 +24,11 @@ open UrlSafeEncoding
 //   };
 
 %%private(
-  let encodeCaptureGroup = (~placeholder) => {
-    let placeholder = switch placeholder {
-    | Some(placeholder) => encodeUint(1) ++ Encoding_Symbol.encode(placeholder)
+  let encodeCaptureGroup = (~placeholder) =>
+    switch placeholder {
     | None => encodeUint(0)
+    | Some(placeholder) => encodeUint(1) ++ Encoding_Symbol.encode(placeholder)
     }
-    encodeUint(260) ++ placeholder
-  }
 )
 
 %%private(
@@ -47,9 +45,7 @@ open UrlSafeEncoding
   }
 )
 
-%%private(
-  let encodeCustomAtom = (~symbol, ~value) => Encoding_Symbol.encode(symbol) ++ value
-)
+%%private(let encodeCustomAtom = (~symbol, ~value) => Encoding_Symbol.encode(symbol) ++ value)
 
 %%private(
   let readCustomAtom = reader =>
@@ -65,11 +61,11 @@ open UrlSafeEncoding
   let encodeElement = (element: AST.t) =>
     switch element {
     | UnitConversion(_) => ""
-    | CustomAtomS({symbol, value}) => encodeUint(257) ++ encodeCustomAtom(~symbol, ~value)
-    | VariableS({id, name}) => encodeUint(261) ++ (encodeString(id) ++ encodeString(name))
     | CaptureGroupStart({placeholder}) => encodeUint(260) ++ encodeCaptureGroup(~placeholder)
+    | VariableS({id, name}) => encodeUint(261) ++ encodeString(id) ++ encodeString(name)
     | TableNS({numRows, numColumns}) =>
       encodeUint(262) ++ encodeUint(numRows) ++ encodeUint(numColumns)
+    | CustomAtomS({symbol, value}) => encodeUint(263) ++ encodeCustomAtom(~symbol, ~value)
     | element => elementToUint(element)->encodeUint
     }
 )
@@ -77,25 +73,27 @@ open UrlSafeEncoding
 %%private(
   let readElement = reader =>
     switch readUint(reader) {
-    | Some(256) => None
-    | Some(257) => readCustomAtom(reader)
+    /* Legacy encodings */
+    | Some(256 | 257 | 258 | 259) => None
+    | Some(260) => readCaptureGroup(reader)
     | Some(261) =>
       switch (readString(reader), readString(reader)) {
       | (Some(id), Some(name)) => Some(VariableS({id, name}))
       | _ => None
       }
-    | Some(260) => readCaptureGroup(reader)
     | Some(262) =>
       switch (readUint(reader), readUint(reader)) {
       | (Some(numRows), Some(numColumns)) => Some(TableNS({numRows, numColumns}))
       | _ => None
       }
+    | Some(263) => readCustomAtom(reader)
     /* Legacy table encodings */
     | Some(54) => Some(TableNS({numRows: 2, numColumns: 2}))
     | Some(55) => Some(TableNS({numRows: 3, numColumns: 3}))
     | Some(78) => Some(TableNS({numRows: 2, numColumns: 1}))
     | Some(79) => Some(TableNS({numRows: 3, numColumns: 1}))
-    | Some(85) => None /* Mfrac - no easy conversion */
+    /* Legacy Mfrac element - no easy conversion */
+    | Some(85) => None
     | Some(value) => elementOfUint(value)
     | None => None
     }

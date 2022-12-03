@@ -30,7 +30,7 @@ open Tex_Util
       })->StringUtil.joinWith(" & ")
     })->StringUtil.joinWith(" \\\\ ")
 
-    `\\left[\\begin{matrix}${body}\\end{matrix}${withSuperscript(`\\right]`, superscript)}`
+    `\\left[ \\begin{matrix} ${body} \\end{matrix} ${withSuperscript(`\\right]`, superscript)}`
   }
 )
 
@@ -48,7 +48,7 @@ module Tex_Accum = Stringifier.Make({
 %%private(
   let supsrscriptSuffix = (accum, body) =>
     Tex_Accum.modifyLastU(.accum, (. last) => {
-      let prev = Belt.Option.getWithDefault(last, "{}")
+      let prev = Belt.Option.getWithDefault(last, "{}")->StringUtil.trim
       `${prev}^{${body}}`
     })
 )
