@@ -128,6 +128,12 @@ test("unary operators", () => {
   parse([N1_S, Sub, Sub, Sub, N2_S])->asString->expect->toEqual(Ok("-1"))
 })
 
+test("percent and mod", () => {
+  parse([N1_S, N0_S, Add, N1_S, N0_S, Percent])->asString->expect->toEqual(Ok("11"))
+
+  parse([N8_S, Percent, N3_S])->asString->expect->toEqual(Ok("2"))
+})
+
 test("brackets", () => {
   parse([N2_S, Mul, OpenBracket, N3_S, Add, N4_S, CloseBracketS, Mul, N2_S])
   ->asString

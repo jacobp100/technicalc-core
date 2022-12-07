@@ -97,7 +97,7 @@
     | RadianUnit => 88
     | IterationXS => 89
     /* 5th set elements */
-    | Rem => 90
+    // REMOVED | Rem => 90
     /* 6th set elements */
     | Rref => 91
     | Trace => 92

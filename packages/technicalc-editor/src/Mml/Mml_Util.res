@@ -6,16 +6,6 @@ module Placeholder = {
   let body = "&#x25a1;"
 }
 
-let stringOfOperator = x =>
-  switch x {
-  | Op_Add => "+"
-  | Op_Sub => "-"
-  | Op_Mul => "&#x00D7;"
-  | Op_Div => "&#x00F7;"
-  | Op_Dot => "&#xb7;"
-  | Op_Rem => "mod"
-  }
-
 let stringOfFunction = x =>
   switch x {
   | Fn_Sin => "sin"

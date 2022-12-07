@@ -46,13 +46,3 @@ let handleFunction = (fn, body) =>
   | Sum({from, to}) => Sum({from, to, body})
   | Product({from, to}) => Product({from, to, body})
   }
-
-let handleOp = (op, a, b) =>
-  switch op {
-  | AST.Op_Add => Node.Add(a, b)
-  | Op_Sub => Sub(a, b)
-  | Op_Mul => Mul(a, b)
-  | Op_Div => Div(a, b)
-  | Op_Dot => Dot(a, b)
-  | Op_Rem => Rem(a, b)
-  }

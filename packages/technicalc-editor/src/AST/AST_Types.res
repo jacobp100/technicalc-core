@@ -35,7 +35,6 @@ type t =
   | RadFunction
   | RadianUnit
   | Re
-  | Rem
   | Rref
   | Sub
   | Trace
@@ -154,7 +153,6 @@ let argCountExn = (arg: t) =>
   | RadFunction
   | RadianUnit
   | Re
-  | Rem
   | Rref
   | Sub
   | Trace

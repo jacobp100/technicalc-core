@@ -35,7 +35,6 @@ open AST
     | RadFunction
     | RadianUnit
     | Re
-    | Rem
     | Rref
     | Sub
     | Trace

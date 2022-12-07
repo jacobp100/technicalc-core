@@ -39,18 +39,18 @@ let parse = {
   }
 
   let parsePostfixesAndRest = elements => {
-    let rec iter = (current, elementIndex) =>
+    let rec iter = (accum, elementIndex) =>
       switch ArraySlice.get(elements, elementIndex) {
       | Some(Resolved(value, _)) =>
         let (value, elementIndex) = applyPostfixes(elements, value, elementIndex)
-        let value = switch current {
+        let value = switch accum {
         | Some(a) => Node.Mul(a, value)
         | None => value
         }
         iter(Some(value), elementIndex + 1)
       | Some(UnresolvedFunction(_, (_, i')) | Unresolved(_, (_, i'))) => Error(Some(i'))
       | None =>
-        switch current {
+        switch accum {
         | Some(v) => Ok(v)
         | None => Error(None)
         }
@@ -168,11 +168,11 @@ let parse = {
 
   let rec parseUnary = elements =>
     switch ArraySlice.get(elements, 0) {
-    | Some(Unresolved(Fold_Operator((Op_Add | Op_Sub) as op), (_, i'))) =>
+    | Some(Unresolved((Fold_Add | Fold_Sub) as op, (_, i'))) =>
       let rest = ArraySlice.sliceToEnd(elements, 1)
       switch parseUnary(rest) {
       | Ok(root) =>
-        let root = op == Op_Sub ? Node.Neg(root) : root
+        let root = op == Fold_Sub ? Node.Neg(root) : root
         Ok(root)
       | Error(Some(_)) as e => e
       | Error(None) => Error(Some(i'))
@@ -204,48 +204,70 @@ let parse = {
   }
   let next = parseParenFreeFunctions
 
-  let rec binaryOperatorParserU = (~operatorHandledU, ~nextU, elements) => {
-    let next' = current =>
-      switch current {
-      | Some((elementIndex, op, i')) =>
-        let before = ArraySlice.slice(elements, ~offset=0, ~len=elementIndex)
-        let after = ArraySlice.sliceToEnd(elements, elementIndex + 1)
-        switch (binaryOperatorParserU(~operatorHandledU, ~nextU, before), nextU(. after)) {
-        | (Ok(before), Ok(after)) => Ok(handleOp(op, before, after))
-        | (Error(Some(_)) as e, _)
-        | (_, Error(Some(_)) as e) => e
-        | (Error(None), _)
-        | (_, Error(None)) =>
-          Error(Some(i'))
-        }
-      | None => nextU(. elements)
+  let handleBinaryOperator = (~iterU, ~nextU, elements, elementIndex, op, (_, i'): (int, int)) => {
+    let before = ArraySlice.slice(elements, ~offset=0, ~len=elementIndex)
+    let after = ArraySlice.sliceToEnd(elements, elementIndex + 1)
+    switch (iterU(. before), nextU(. after)) {
+    | (Ok(before), Ok(after)) =>
+      switch op {
+      | AST.Fold_Add => Node.Add(before, after)->Ok
+      | Fold_Sub => Sub(before, after)->Ok
+      | Fold_Mul => Mul(before, after)->Ok
+      | Fold_Div => Div(before, after)->Ok
+      | Fold_Dot => Dot(before, after)->Ok
+      | Fold_Percent => Rem(before, after)->Ok
+      | _ => Error(Some(i'))
       }
-
-    let rec iter = (~unaryPosition, current, elementIndex) =>
-      switch ArraySlice.get(elements, elementIndex) {
-      | Some(Unresolved(Fold_Operator(op), (_, i'))) =>
-        let nextAccum =
-          !unaryPosition && operatorHandledU(. op) ? Some((elementIndex, op, i')) : current
-        iter(~unaryPosition=true, nextAccum, elementIndex + 1)
-      | Some(_) => iter(~unaryPosition=false, current, elementIndex + 1)
-      | None => next'(current)
-      }
-
-    iter(~unaryPosition=true, None, 0)
+    | (Error(Some(_)) as e, _)
+    | (_, Error(Some(_)) as e) => e
+    | (Error(None), _)
+    | (_, Error(None)) =>
+      Error(Some(i'))
+    }
   }
 
-  let parseMulDiv = {
+  // It's hard to unify parsing mul/div and add/sub since one has prefixes
+  // and the other postfixes, and it would be more effort to make a generic
+  // implementation that handled both
+  let rec parseMulDiv = elements => {
+    let iterU = (. elements) => parseMulDiv(elements)
     let nextU = (. elements) => next(elements)
-    let operatorHandledU = (. op) =>
-      op == AST.Op_Mul || op == Op_Div || op == Op_Dot || op == Op_Rem
-    elements => binaryOperatorParserU(~operatorHandledU, ~nextU, elements)
+
+    let rec iter = (~inPostFixPosition, elementIndex) =>
+      switch ArraySlice.get(elements, elementIndex) {
+      | Some(Unresolved((Fold_Mul | Fold_Div | Fold_Dot) as op, range)) =>
+        // These operators are never post fixes
+        handleBinaryOperator(~iterU, ~nextU, elements, elementIndex, op, range)
+      | Some(Unresolved(Fold_Percent as op, range)) if !inPostFixPosition =>
+        handleBinaryOperator(~iterU, ~nextU, elements, elementIndex, op, range)
+      | Some(_) => iter(~inPostFixPosition=false, elementIndex - 1)
+      | None => next(elements)
+      }
+
+    iter(~inPostFixPosition=true, ArraySlice.length(elements) - 1)
   }
   let next = parseMulDiv
 
-  let parseAddSub = {
-    let operatorHandledU = (. op) => op == AST.Op_Add || op == Op_Sub
+  let rec parseAddSub = elements => {
+    let iterU = (. elements) => parseAddSub(elements)
     let nextU = (. elements) => next(elements)
-    elements => binaryOperatorParserU(~operatorHandledU, ~nextU, elements)
+
+    let rec iter = (~inPrefixPosition, accum, elementIndex) =>
+      switch ArraySlice.get(elements, elementIndex) {
+      | Some(Unresolved((Fold_Add | Fold_Sub) as op, range)) =>
+        // Both + and - can be prefixes
+        let nextAccum = !inPrefixPosition ? Some((elementIndex, op, range)) : accum
+        iter(~inPrefixPosition=true, nextAccum, elementIndex + 1)
+      | Some(_) => iter(~inPrefixPosition=false, accum, elementIndex + 1)
+      | None =>
+        switch accum {
+        | Some((elementIndex, op, range)) =>
+          handleBinaryOperator(~iterU, ~nextU, elements, elementIndex, op, range)
+        | None => next(elements)
+        }
+      }
+
+    iter(~inPrefixPosition=true, None, 0)
   }
   let next = parseAddSub
 

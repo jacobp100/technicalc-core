@@ -1,5 +1,3 @@
-open AST_Types
-
 type base =
   | Base_Bin
   | Base_Oct
@@ -36,31 +34,3 @@ type angle =
   | Angle_ArcMinute
   | Angle_ArcSecond
   | Angle_Gradian
-type op =
-  | Op_Add
-  | Op_Sub
-  | Op_Mul
-  | Op_Div
-  | Op_Dot
-  | Op_Rem
-
-let elementToOp = (element: t): option<op> =>
-  switch element {
-  | Add => Some(Op_Add)
-  | Sub => Some(Op_Sub)
-  | Mul => Some(Op_Mul)
-  | Div => Some(Op_Div)
-  | Dot => Some(Op_Dot)
-  | Rem => Some(Op_Rem)
-  | _ => None
-  }
-
-let opToElement = (element: op): t =>
-  switch element {
-  | Op_Add => Add
-  | Op_Sub => Sub
-  | Op_Mul => Mul
-  | Op_Div => Div
-  | Op_Dot => Dot
-  | Op_Rem => Rem
-  }

@@ -1,15 +1,5 @@
 open AST
 
-let stringOfOperator = x =>
-  switch x {
-  | Op_Add => "+"
-  | Op_Sub => "-"
-  | Op_Mul => "\\times"
-  | Op_Div => "\\div"
-  | Op_Dot => "\\cdot"
-  | Op_Rem => "\\mod"
-  }
-
 let stringOfFunction = x =>
   switch x {
   | Fn_Sin => "\\sin"

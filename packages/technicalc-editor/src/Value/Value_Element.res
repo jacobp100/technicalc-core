@@ -6,17 +6,21 @@ let map = (element: foldState<'a>, i, i') =>
   | AST.Fold_Placeholder(_) | Fold_CaptureGroupPlaceholder(_) =>
     // Handled in Value.re
     assert false
-  | (Fold_Angle(_)
+  | (Fold_Add
+    | Fold_Angle(_)
     | Fold_Base(_)
     | Fold_CloseBracket(_)
     | Fold_Conj
     | Fold_DecimalSeparator
     | Fold_Digit(_)
+    | Fold_Div
+    | Fold_Dot
     | Fold_Factorial
     | Fold_Magnitude(_)
+    | Fold_Mul
     | Fold_OpenBracket
-    | Fold_Operator(_)
     | Fold_Percent
+    | Fold_Sub
     | Fold_Transpose
     | Fold_UnitConversion(_)) as e =>
     Value_Types.Unresolved(e, (i, i'))

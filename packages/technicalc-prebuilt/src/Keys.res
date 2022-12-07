@@ -72,7 +72,6 @@ let keys = {
   "gamma": One(Gamma),
   "rand": One(RandS),
   "randint": One(RandInt2S),
-  "mod": One(Rem),
   "npr": One(NPR2),
   "ncr": One(NCR2),
   "min": One(Min2S),

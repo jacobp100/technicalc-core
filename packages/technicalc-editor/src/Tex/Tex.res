@@ -94,8 +94,11 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     ->withSpaces
     ->Tex_Accum.appendOperatorOrFunction(. accum, _)
   | Fold_Factorial => "!"->Tex_Accum.append(. accum, _)
-  | Fold_Operator(op) =>
-    stringOfOperator(op)->withSpaces->Tex_Accum.appendOperatorOrFunction(. accum, _)
+  | Fold_Add => withSpaces("+")->Tex_Accum.appendOperatorOrFunction(. accum, _)
+  | Fold_Sub => withSpaces("-")->Tex_Accum.appendOperatorOrFunction(. accum, _)
+  | Fold_Mul => withSpaces("\\times")->Tex_Accum.appendOperatorOrFunction(. accum, _)
+  | Fold_Div => withSpaces("\\div")->Tex_Accum.appendOperatorOrFunction(. accum, _)
+  | Fold_Dot => withSpaces("\\cdot")->Tex_Accum.appendOperatorOrFunction(. accum, _)
   | Fold_Frac({num, den, superscript}) =>
     withSuperscript(`\\frac${num}${den}`, superscript)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Sqrt({radicand, superscript}) =>

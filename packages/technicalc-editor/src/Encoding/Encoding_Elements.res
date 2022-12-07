@@ -94,6 +94,8 @@ open UrlSafeEncoding
     | Some(79) => Some(TableNS({numRows: 3, numColumns: 1}))
     /* Legacy Mfrac element - no easy conversion */
     | Some(85) => None
+    /* Legacy Rem element */
+    | Some(90) => Some(Percent)
     | Some(value) => elementOfUint(value)
     | None => None
     }

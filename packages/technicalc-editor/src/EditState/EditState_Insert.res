@@ -37,7 +37,6 @@ type skipMode =
     | RadFunction
     | RadianUnit
     | Re
-    | Rem
     | Rref
     | Trace
     | CosecS

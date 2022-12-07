@@ -8,6 +8,7 @@ type superscript<'a> = {
 
 type foldState<'a> =
   | Fold_Abs({arg: 'a, superscript: option<superscript<'a>>})
+  | Fold_Add
   | Fold_Angle(angle)
   | Fold_Base(base)
   | Fold_CaptureGroupPlaceholder({
@@ -16,13 +17,15 @@ type foldState<'a> =
     })
   | Fold_Ceil({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_CloseBracket(option<superscript<'a>>)
+  | Fold_Conj
   | Fold_ConstE(option<superscript<'a>>)
   | Fold_ConstPi(option<superscript<'a>>)
-  | Fold_Conj
   | Fold_CustomAtom({symbol: Symbol.t, value: string, superscript: option<superscript<'a>>})
   | Fold_DecimalSeparator
   | Fold_Differential({at: 'a, body: 'a})
   | Fold_Digit({nucleus: string, superscript: option<superscript<'a>>})
+  | Fold_Div
+  | Fold_Dot
   | Fold_Factorial
   | Fold_Floor({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_Frac({num: 'a, den: 'a, superscript: option<superscript<'a>>})
@@ -30,17 +33,16 @@ type foldState<'a> =
   | Fold_Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_ImaginaryUnit(option<superscript<'a>>)
   | Fold_Integral({from: 'a, to: 'a, body: 'a})
-  | Fold_X(option<superscript<'a>>)
   | Fold_Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Magnitude({value: 'a})
-  | Fold_Min({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Max({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Fold_Min({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | Fold_Mul
   | Fold_NCR({n: 'a, r: 'a})
   | Fold_NLog({base: 'a})
   | Fold_NPR({n: 'a, r: 'a})
   | Fold_NRoot({degree: 'a, radicand: 'a, superscript: option<superscript<'a>>})
   | Fold_OpenBracket
-  | Fold_Operator(op)
   | Fold_Percent
   | Fold_Placeholder(option<superscript<'a>>)
   | Fold_Product({from: 'a, to: 'a})
@@ -48,6 +50,7 @@ type foldState<'a> =
   | Fold_RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
+  | Fold_Sub
   | Fold_Sum({from: 'a, to: 'a})
   | Fold_Table({
       elements: array<'a>,
@@ -61,6 +64,7 @@ type foldState<'a> =
       toUnits: array<TechniCalcCalculator.Unit_Types.t>,
     })
   | Fold_Variable({id: string, name: string, superscript: option<superscript<'a>>})
+  | Fold_X(option<superscript<'a>>)
 
 type range = (int, int)
 
@@ -119,12 +123,11 @@ let reduceMapU = (
     | Bin => Node(Fold_Base(Base_Bin), i, i + 1)
     | Oct => Node(Fold_Base(Base_Oct), i, i + 1)
     | Hex => Node(Fold_Base(Base_Hex), i, i + 1)
-    | Add => Node(Fold_Operator(Op_Add), i, i + 1)
-    | Sub => Node(Fold_Operator(Op_Sub), i, i + 1)
-    | Mul => Node(Fold_Operator(Op_Mul), i, i + 1)
-    | Div => Node(Fold_Operator(Op_Div), i, i + 1)
-    | Dot => Node(Fold_Operator(Op_Dot), i, i + 1)
-    | Rem => Node(Fold_Operator(Op_Rem), i, i + 1)
+    | Add => Node(Fold_Add, i, i + 1)
+    | Sub => Node(Fold_Sub, i, i + 1)
+    | Mul => Node(Fold_Mul, i, i + 1)
+    | Div => Node(Fold_Div, i, i + 1)
+    | Dot => Node(Fold_Dot, i, i + 1)
     | Acos => fn(i, Fn_Acos)
     | Acosh => fn(i, Fn_Acosh)
     | Asin => fn(i, Fn_Asin)

@@ -90,11 +90,11 @@ test("npr", () => {
 test("tables", () => {
   create([TableNS({numRows: 2, numColumns: 1}), N1_S, Arg, N2_S, Arg])
   ->expect
-  ->toEqual(`\\left[\\begin{matrix}1 \\\\ 2\\end{matrix}\\right]`)
+  ->toEqual(`\\left[ \\begin{matrix} 1 \\\\ 2 \\end{matrix} \\right]`)
 
   create([TableNS({numRows: 2, numColumns: 2}), N1_S, Arg, N2_S, Arg, N3_S, Arg, N4_S, Arg])
   ->expect
-  ->toEqual(`\\left[\\begin{matrix}1 & 2 \\\\ 3 & 4\\end{matrix}\\right]`)
+  ->toEqual(`\\left[ \\begin{matrix} 1 & 2 \\\\ 3 & 4 \\end{matrix} \\right]`)
 })
 
 test("operators", () => {
