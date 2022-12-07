@@ -94,6 +94,8 @@ test("angles", () => {
   parse([N1_S, DegreeUnit, N1_S, DegreeUnit])->expect->toEqual(Error(4))
 
   parse([N1_S, DegreeUnit, N1_S])->expect->toEqual(Error(2))
+
+  parse([ConstPiS, RadianUnit])->expect->toEqual(Ok(pi))
 })
 
 test("mixed fractions", () => {

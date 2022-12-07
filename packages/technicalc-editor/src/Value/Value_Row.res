@@ -30,6 +30,7 @@ let parse = {
     | Some(Unresolved(Fold_Conj, _)) => Some(Conj(accum))
     | Some(Unresolved(Fold_Transpose, _)) => Some(Transpose(accum))
     | Some(Unresolved(Fold_Percent, _)) => Some(Percent(accum))
+    | Some(Unresolved(Fold_Angle(angle), _)) => Some(applyAngle(accum, angle))
     | _ => None
     }
     switch nextAccum {
