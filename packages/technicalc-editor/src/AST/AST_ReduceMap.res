@@ -68,7 +68,7 @@ type foldState<'a> =
 
 type range = (int, int)
 
-let superscriptBody = superscript => superscript.superscriptBody
+let superscriptBodyU = (. superscript) => superscript.superscriptBody
 
 %%private(
   let digitNucleusExn = digit =>

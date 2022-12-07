@@ -1,5 +1,7 @@
 let matrixOfFloats = (numRows, numColumns, elements) =>
-  Belt.Array.map(elements, Scalar.ofFloat)->Matrix.make(~numRows, ~numColumns, _)->Value.ofMatrix
+  Belt.Array.mapU(elements, (. element) => Scalar.ofFloat(element))
+  ->Matrix.make(~numRows, ~numColumns, _)
+  ->Value.ofMatrix
 let percentOfFloat = float => Scalar.ofFloat(float)->Value.ofPercent
 
 @deriving(abstract)
@@ -34,7 +36,7 @@ let toString = (x, maybeFormat) => {
   }
 
   let format = {
-    mode: mode,
+    mode,
     style: switch styleGet(f) {
     | Some("decimal") => Decimal
     | Some("engineering") => Engineering

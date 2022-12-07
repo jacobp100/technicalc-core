@@ -7,13 +7,13 @@ let empty: t = {numRows: 0, numColumns: 0, elements: []}
 let eq = (a: t, b: t) =>
   a.numRows == b.numRows &&
   a.numColumns == b.numColumns &&
-  Belt.Array.every2(a.elements, b.elements, (a, b) => {
+  Belt.Array.every2U(a.elements, b.elements, (. a, b) => {
     Scalar_Base.eq((a :> Scalar.t), (b :> Scalar.t))
   })
 
 let make = (~numRows, ~numColumns, elements: array<Scalar.t>) =>
   numRows * numColumns == Belt.Array.length(elements) &&
-    !Belt.Array.some(elements, Scalar_Base.isNaN)
+    !Belt.Array.someU(elements, (. element) => Scalar_Base.isNaN(element))
     ? {numRows, numColumns, elements: Obj.magic(elements)}
     : empty
 

@@ -5,10 +5,16 @@ open Vector_Types
 let empty: t = []
 let isEmpty = (x: t) => size(x) == 0
 
-let eq = (a: t, b: t) => size(a) == size(b) && Belt.Array.every2(a, b, Obj.magic(Scalar_Base.eq))
+let eq = (a: t, b: t) =>
+  size(a) == size(b) &&
+    Belt.Array.every2U(a, b, (. a, b) => {
+      Scalar_Base.eq(Scalar.Finite.toScalar(a), Scalar.Finite.toScalar(b))
+    })
 
 let make = (elements: array<Scalar.t>): t =>
-  !Belt.Array.some(elements, Scalar_Base.isNaN) ? Obj.magic(elements) : empty
+  !Belt.Array.someU(elements, (. element) => Scalar_Base.isNaN(element))
+    ? Obj.magic(elements)
+    : empty
 
 let makeByU = (size: int, fn: (. int) => Scalar.t): t => {
   let elements = Belt.Array.makeUninitializedUnsafe(size)

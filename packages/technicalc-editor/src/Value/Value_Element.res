@@ -27,7 +27,7 @@ let map = (element: foldState<'a>, i, i') =>
   | Fold_Frac({num, den, superscript}) =>
     Resolved(withSuperscript(Div(num, den), superscript), (i, i'))
   | Fold_Function({fn, resultSuperscript}) =>
-    let resultSuperscript = Belt.Option.map(resultSuperscript, superscriptBody)
+    let resultSuperscript = Belt.Option.mapU(resultSuperscript, superscriptBodyU)
     UnresolvedFunction(GenericFunction({fn, resultSuperscript}), (i, i'))
   | Fold_NLog({base}) => UnresolvedFunction(NLog({base: base}), (i, i'))
   | Fold_Sum({from, to}) => UnresolvedFunction(Sum({from, to}), (i, i'))

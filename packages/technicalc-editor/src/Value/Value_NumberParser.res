@@ -41,7 +41,7 @@ let reduce = (state, element, (i, i') as range) => {
     switch state {
     | {numSup: None, magSup: None} if numberIsValidForBase(state.numBase, nucleus) =>
       let numString = state.numString ++ nucleus
-      let numSup = Belt.Option.map(superscript, superscriptBody)
+      let numSup = Belt.Option.mapU(superscript, superscriptBodyU)
       Some(Ok({...state, range, numString, numSup}))
     | _ => Some(Error(Some(i')))
     }

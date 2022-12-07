@@ -60,6 +60,8 @@ let parse = {
   }
   let next = parsePostfixesAndRest
 
+  let sndU = (. (_, b)) => b
+
   let parseSimpleNumerics = {
     let rec parseLeadingNumber = (~numberState, elements, elementIndex) => {
       let nextNumberState = switch ArraySlice.get(elements, elementIndex) {
@@ -83,7 +85,7 @@ let parse = {
             let elements = ArraySlice.sliceToEnd(elements, elementIndex)
             Ok(Some((elements, number, range, true)))
           | None =>
-            let errorIndex = Value_NumberParser.range(numberState)->Belt.Option.map(snd)
+            let errorIndex = Value_NumberParser.range(numberState)->Belt.Option.mapU(sndU)
             Error(errorIndex)
           }
         | None => Ok(None)
