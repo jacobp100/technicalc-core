@@ -50,7 +50,7 @@ type t<'output> = {
       Some({
         prefix: Obj.magic(prefix),
         type_: Obj.magic(type_),
-        power: power,
+        power,
       })
     | _ => None
     }

@@ -24,10 +24,19 @@ let classify = element =>
 )
 
 %%private(
+  @inline
+  let addSequentialIndex = (x, i) =>
+    switch x {
+    | list{(a, b), ...rest} if b == i - 1 => list{(a, i), ...rest}
+    | rest => list{(i, i), ...rest}
+    }
+)
+
+%%private(
   let validityStackReducer = prependValidityStack => {
     let reducerFn = (. (range, validityStack), element, i) => {
       let range = switch validityStack {
-      | list{false, ..._} => Ranges.addSequentialIndex(range, i)
+      | list{false, ..._} => addSequentialIndex(range, i)
       | _ => range
       }
       let validityStack = switch element {
@@ -46,7 +55,8 @@ let noTableRanges = validityStackReducer((. validityStack, element) =>
   | Abs1S
   | Floor1S
   | Ceil1S
-  | Round1S => list{true, ...validityStack}
+  | Round1S =>
+    list{true, ...validityStack}
   | _ =>
     let argCount = AST_Types.argCountExn(element)
     validityStack->ListUtil.prependMany(argCount, false)

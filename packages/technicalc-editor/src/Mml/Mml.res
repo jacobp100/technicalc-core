@@ -30,9 +30,13 @@ module Mml_Accum = Stringifier.Make({
         element("mrow", body) ++ superscriptBody,
       )
     | None =>
-      element(~range=openBracketRange, "mo", "(") ++
-      body ++
-      element(~range=closeBracketRange, "mo", ")")
+      // Always wrap in mrow so bracket heights don't change when adding superscript
+      element(
+        "mrow",
+        element(~range=openBracketRange, "mo", "(") ++
+        body ++
+        element(~range=closeBracketRange, "mo", ")"),
+      )
     }
 })
 

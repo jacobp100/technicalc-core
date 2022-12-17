@@ -29,7 +29,6 @@ let mul = (a: t, b: t): t =>
   | _ => empty
   }
 
-
 let dot = (a: t, b: t): Scalar.t =>
   if size(a) == size(b) {
     let out = ref(Scalar.zero)

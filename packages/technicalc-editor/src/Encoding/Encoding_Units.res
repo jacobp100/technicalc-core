@@ -29,7 +29,7 @@ open TechniCalcCalculator.Unit_Types
     switch (readUint(reader), readUint(reader), readInt(reader)) {
     | (Some(prefix), Some(type_), Some(power)) =>
       switch (prefixOfUint(prefix), unitTypeOfUint(type_)) {
-      | (Some(prefix), Some(type_)) => Some({prefix: prefix, type_: type_, power: power})
+      | (Some(prefix), Some(type_)) => Some({prefix, type_, power})
       | _ => None
       }
     | _ => None

@@ -159,8 +159,8 @@ let acosh = (x: t): t =>
   | Real(f, Inside) => Decimal.acosh(f)->ofDecimal
   | Real(_, LowerBound) => zero
   | Real(_, BothBound | UpperBound | Outside)
-  /* acosh ix != i cosh x */
   | Complex =>
+    /* acosh ix != i cosh x */
     /* From complex.js library */
     let res = acos(x)
     let imLteZero = switch res {

@@ -55,11 +55,11 @@ test("invalid brackets", () => {
 test("bracket states", () => {
   create([N1_S, OpenBracket, N2_S, CloseBracketS, N3_S])
   ->expect
-  ->toEqual(`<mrow><mn id=\"0:1\">1</mn><mo id=\"1:2\">(</mo><mn id=\"2:3\">2</mn><mo id=\"3:4\">)</mo><mn id=\"4:5\">3</mn></mrow>`)
+  ->toEqual(`<mrow><mn id=\"0:1\">1</mn><mrow><mo id=\"1:2\">(</mo><mn id=\"2:3\">2</mn><mo id=\"3:4\">)</mo></mrow><mn id=\"4:5\">3</mn></mrow>`)
 
   create([N1_S, OpenBracket, N2_S, OpenBracket, N3_S, CloseBracketS, N4_S, CloseBracketS, N5_S])
   ->expect
-  ->toEqual(`<mrow><mn id=\"0:1\">1</mn><mo id=\"1:2\">(</mo><mn id=\"2:3\">2</mn><mo id=\"3:4\">(</mo><mn id=\"4:5\">3</mn><mo id=\"5:6\">)</mo><mn id=\"6:7\">4</mn><mo id=\"7:8\">)</mo><mn id=\"8:9\">5</mn></mrow>`)
+  ->toEqual(`<mrow><mn id=\"0:1\">1</mn><mrow><mo id=\"1:2\">(</mo><mn id=\"2:3\">2</mn><mrow><mo id=\"3:4\">(</mo><mn id=\"4:5\">3</mn><mo id=\"5:6\">)</mo></mrow><mn id=\"6:7\">4</mn><mo id=\"7:8\">)</mo></mrow><mn id=\"8:9\">5</mn></mrow>`)
 })
 
 test("angles", () => {

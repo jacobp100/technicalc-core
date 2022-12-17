@@ -168,6 +168,9 @@ module Elements = {
   let canInsertTable = InsertMetadata.canInsertTable
   let canInsertIteration = InsertMetadata.canInsertIteration
 
+  let iterationRanges = IterationMetadata.iterationRanges
+  let insideIterator = IterationMetadata.insideIterator
+
   let reifyPlaceholders = ReifyPlaceholders.reifyPlaceholders
 
   let renameVariables = RenameVariables.renameVariables

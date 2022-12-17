@@ -52,8 +52,7 @@ let ofValue = (a: TechniCalcCalculator.Value.t) =>
       (. accum, element) => Belt.Array.concatMany([accum, ofFinite(element), [Arg]]),
     )
   | #Matx({numRows, numColumns, elements}) =>
-    Belt.Array.reduceU(elements, [TableNS({numRows: numRows, numColumns: numColumns})], (.
-      accum,
-      element,
-    ) => Belt.Array.concatMany([accum, ofFinite(element), [Arg]]))
+    Belt.Array.reduceU(elements, [TableNS({numRows, numColumns})], (. accum, element) => {
+      Belt.Array.concatMany([accum, ofFinite(element), [Arg]])
+    })
   }

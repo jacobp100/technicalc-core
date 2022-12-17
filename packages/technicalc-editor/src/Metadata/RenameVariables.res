@@ -9,7 +9,7 @@ let renameVariables = (ast: array<t>, mapping) => {
       switch Belt.Array.getByU(mapping, (. (mappingId, _)) => mappingId == id) {
       | Some((_, mappingName)) if name != mappingName =>
         didChange.contents = true
-        VariableS({id: id, name: mappingName})
+        VariableS({id, name: mappingName})
       | _ => element
       }
     | _ => element

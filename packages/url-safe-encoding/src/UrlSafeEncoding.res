@@ -11,7 +11,7 @@ type reader = {
 )
 
 let read = (string, decoder) => {
-  let reader = {string: string, index: Some(0)}
+  let reader = {string, index: Some(0)}
   let value = decoder(reader)
 
   let isComplete = switch reader.index {
