@@ -76,7 +76,7 @@ type t =
   | TanhS
   | TanS
   | ConstantS({symbol: Symbol.t, value: string})
-  | VariableS({id: string, name: string})
+  | VariableS({id: string, symbol: Symbol.t})
   /* Atom1 */
   | Magnitude1
   | NLog1
@@ -108,11 +108,16 @@ type t =
 
 let eq = (a: t, b: t) =>
   switch (a, b) {
-  | (CaptureGroupStart({placeholder: a1}), CaptureGroupStart({placeholder: b1})) => a1 == b1
+  | (CaptureGroupStart(a), CaptureGroupStart(b)) =>
+    switch (a.placeholder, b.placeholder) {
+    | (Some(aSymbol), Some(bSymbol)) => Symbol.eq(aSymbol, bSymbol)
+    | (None, None) => true
+    | (Some(_), None)
+    | (None, Some(_)) => false
+    }
   | (UnitConversion(_), UnitConversion(_)) => false // Not used yet (ignore)
-  | (ConstantS({symbol: a1, value: a2}), ConstantS({symbol: b1, value: b2})) =>
-    Symbol.eq(a1, b1) && a2 == b2
-  | (VariableS({id: a1, name: a2}), VariableS({id: b1, name: b2})) => a1 == b1 && a2 == b2
+  | (ConstantS(a), ConstantS(b)) => Symbol.eq(a.symbol, b.symbol) && a.value == a.value
+  | (VariableS(a), VariableS(b)) => a.id == b.id && Symbol.eq(a.symbol, b.symbol)
   | (a, b) => a === b
   }
 

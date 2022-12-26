@@ -153,14 +153,13 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     let body = element("mo", "&#x00D7;") ++ element("mn", "10")
     let body = element("mrow", body)
     element(~range, "msup", body ++ value)->Mml_Accum.append(. accum, _)
-  | Fold_Variable({name, superscript}) =>
-    element(~superscript?, ~range, "mi", name)->Mml_Accum.append(. accum, _)
   | Fold_X(superscript) => element(~superscript?, ~range, "mi", "x")->Mml_Accum.append(. accum, _)
   | Fold_ConstPi(superscript) =>
     element(~superscript?, ~range, "mi", "&#x03C0;")->Mml_Accum.append(. accum, _)
   | Fold_ConstE(superscript) =>
     element(~superscript?, ~range, "mi", "e")->Mml_Accum.append(. accum, _)
-  | Fold_Constant({symbol, superscript}) =>
+  | Fold_Constant({symbol, superscript})
+  | Fold_Variable({symbol, superscript}) =>
     element(~superscript?, ~range, "mrow", Mml_Symbol.toMml(symbol))->Mml_Accum.append(. accum, _)
   | Fold_CaptureGroupPlaceholder({placeholder, superscript}) =>
     let phantom = element(~attributes=list{selection(~start=fst(range) + 1, ())}, "mphantom", "")

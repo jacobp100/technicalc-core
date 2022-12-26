@@ -65,7 +65,7 @@ let keys = {
   "x": One(IterationXS),
   "pi": One(ConstPiS),
   "e": One(ConstES),
-  "ans": One(VariableS({id: "Ans", name: "Ans"})),
+  "ans": One(VariableS({id: "Ans", symbol: TechniCalcEditor.Symbol.ofString("Ans")})),
   "re": One(Re),
   "im": One(Im),
   "conj": One(Conj),

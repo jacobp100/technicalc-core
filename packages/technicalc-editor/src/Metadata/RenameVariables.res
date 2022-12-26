@@ -5,11 +5,11 @@ let renameVariables = (ast: array<t>, mapping) => {
 
   let mappedAst = Belt.Array.mapU(ast, (. element) =>
     switch element {
-    | VariableS({id, name}) =>
+    | VariableS({id, symbol}) =>
       switch Belt.Array.getByU(mapping, (. (mappingId, _)) => mappingId == id) {
-      | Some((_, mappingName)) if name != mappingName =>
+      | Some((_, mappingSymbol)) if !Symbol.eq(symbol, mappingSymbol) =>
         didChange.contents = true
-        VariableS({id, name: mappingName})
+        VariableS({id, symbol: mappingSymbol})
       | _ => element
       }
     | _ => element

@@ -63,7 +63,7 @@ type foldState<'a> =
       fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
       toUnits: array<TechniCalcCalculator.Unit_Types.t>,
     })
-  | Fold_Variable({id: string, name: string, superscript: option<superscript<'a>>})
+  | Fold_Variable({id: string, symbol: Symbol.t, superscript: option<superscript<'a>>})
   | Fold_X(option<superscript<'a>>)
 
 type range = (int, int)
@@ -193,10 +193,10 @@ let reduceMapU = (
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Rand(superscript), i, i')
-    | VariableS({id, name}) =>
+    | VariableS({id, symbol}) =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_Variable({id, name, superscript}), i, i')
+      Node(Fold_Variable({id, symbol, superscript}), i, i')
     | Magnitude1 =>
       let (value, i') = readArg(i + 1)
       Node(Fold_Magnitude({value: value}), i, i')

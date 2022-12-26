@@ -214,7 +214,7 @@ module Keys = {
 
   let keys = Keys.keys
 
-  let variable = (~id, ~name) => Keys.One(VariableS({id, name}))
+  let variable = (~id, ~symbol) => Keys.One(VariableS({id, symbol}))
 
   let constant = (~value, ~symbol) =>
     AST.ConstantS({
@@ -371,6 +371,12 @@ module Units = {
 }
 
 module Symbol = {
+  let empty = TechniCalcEditor.Symbol.empty
+  let ofString = TechniCalcEditor.Symbol.ofString
+
+  let isEmpty = TechniCalcEditor.Symbol.isEmpty
+  let isValid = TechniCalcEditor.Symbol.isValid
+
   let encode = TechniCalcEditor.Encoding_Symbol.encode
   let decode = string => UrlSafeEncoding.read(string, TechniCalcEditor.Encoding_Symbol.read)
 

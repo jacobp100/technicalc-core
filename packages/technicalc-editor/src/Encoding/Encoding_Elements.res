@@ -45,14 +45,24 @@ open UrlSafeEncoding
   }
 )
 
-%%private(let encodeCustomAtom = (~symbol, ~value) => Encoding_Symbol.encode(symbol) ++ value)
+%%private(let encodeConstant = (~symbol, ~value) => Encoding_Symbol.encode(symbol) ++ value)
 
 %%private(
-  let readCustomAtom = reader =>
+  let readConstant = reader =>
     switch (Encoding_Symbol.read(reader), TechniCalcCalculator.Encoding_Value.read(reader)) {
     | (Some(symbol), Some(value)) =>
       let value = TechniCalcCalculator.Encoding_Value.encode(value)
       AST.ConstantS({symbol, value})->Some
+    | _ => None
+    }
+)
+
+%%private(let encodeVariable = (~id, ~symbol) => encodeString(id) ++ Encoding_Symbol.encode(symbol))
+
+%%private(
+  let readVariable = reader =>
+    switch (readString(reader), Encoding_Symbol.read(reader)) {
+    | (Some(id), Some(symbol)) => AST.VariableS({id, symbol})->Some
     | _ => None
     }
 )
@@ -62,10 +72,10 @@ open UrlSafeEncoding
     switch element {
     | UnitConversion(_) => ""
     | CaptureGroupStart({placeholder}) => encodeUint(260) ++ encodeCaptureGroup(~placeholder)
-    | VariableS({id, name}) => encodeUint(261) ++ encodeString(id) ++ encodeString(name)
     | TableNS({numRows, numColumns}) =>
       encodeUint(262) ++ encodeUint(numRows) ++ encodeUint(numColumns)
-    | ConstantS({symbol, value}) => encodeUint(263) ++ encodeCustomAtom(~symbol, ~value)
+    | ConstantS({symbol, value}) => encodeUint(263) ++ encodeConstant(~symbol, ~value)
+    | VariableS({id, symbol}) => encodeUint(264) ++ encodeVariable(~id, ~symbol)
     | element => elementToUint(element)->encodeUint
     }
 )
@@ -76,17 +86,13 @@ open UrlSafeEncoding
     /* Legacy encodings */
     | Some(256 | 257 | 258 | 259) => None
     | Some(260) => readCaptureGroup(reader)
-    | Some(261) =>
-      switch (readString(reader), readString(reader)) {
-      | (Some(id), Some(name)) => Some(VariableS({id, name}))
-      | _ => None
-      }
     | Some(262) =>
       switch (readUint(reader), readUint(reader)) {
       | (Some(numRows), Some(numColumns)) => Some(TableNS({numRows, numColumns}))
       | _ => None
       }
-    | Some(263) => readCustomAtom(reader)
+    | Some(263) => readConstant(reader)
+    | Some(264) => readVariable(reader)
     /* Legacy table encodings */
     | Some(54) => Some(TableNS({numRows: 2, numColumns: 2}))
     | Some(55) => Some(TableNS({numRows: 3, numColumns: 3}))
