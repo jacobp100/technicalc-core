@@ -81,7 +81,7 @@ open AST
     | SinS
     | TanhS
     | TanS
-    | CustomAtomS(_)
+    | ConstantS(_)
     | VariableS(_)
     | Abs1S
     | Ceil1S

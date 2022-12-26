@@ -71,7 +71,7 @@ type skipMode =
     | CloseBracketS
     | ConstES
     | ConstPiS
-    | CustomAtomS(_)
+    | ConstantS(_)
     | ImaginaryUnitS
     | IterationXS
     | N0_S

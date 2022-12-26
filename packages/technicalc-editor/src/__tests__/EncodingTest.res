@@ -19,7 +19,7 @@ test("encodes and decodes", () => {
   expect(value)->toEqual(decoded)
 
   let value = [
-    CustomAtomS({
+    ConstantS({
       symbol: {
         bold: false,
         italic: false,

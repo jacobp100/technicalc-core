@@ -43,7 +43,7 @@ let map = (element: foldState<'a>, i, i') =>
   | Fold_X(superscript) => Resolved(withSuperscript(X, superscript), (i, i'))
   | Fold_Variable({id, superscript}) =>
     Resolved(withSuperscript(Variable(id), superscript), (i, i'))
-  | Fold_CustomAtom({value, superscript}) =>
+  | Fold_Constant({value, superscript}) =>
     Resolved(withSuperscript(OfEncoded(value), superscript), (i, i'))
   | Fold_ConstPi(superscript) => Resolved(withSuperscript(Pi, superscript), (i, i'))
   | Fold_ConstE(superscript) => Resolved(withSuperscript(E, superscript), (i, i'))

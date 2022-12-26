@@ -52,7 +52,7 @@ open UrlSafeEncoding
     switch (Encoding_Symbol.read(reader), TechniCalcCalculator.Encoding_Value.read(reader)) {
     | (Some(symbol), Some(value)) =>
       let value = TechniCalcCalculator.Encoding_Value.encode(value)
-      AST.CustomAtomS({symbol, value})->Some
+      AST.ConstantS({symbol, value})->Some
     | _ => None
     }
 )
@@ -65,7 +65,7 @@ open UrlSafeEncoding
     | VariableS({id, name}) => encodeUint(261) ++ encodeString(id) ++ encodeString(name)
     | TableNS({numRows, numColumns}) =>
       encodeUint(262) ++ encodeUint(numRows) ++ encodeUint(numColumns)
-    | CustomAtomS({symbol, value}) => encodeUint(263) ++ encodeCustomAtom(~symbol, ~value)
+    | ConstantS({symbol, value}) => encodeUint(263) ++ encodeCustomAtom(~symbol, ~value)
     | element => elementToUint(element)->encodeUint
     }
 )

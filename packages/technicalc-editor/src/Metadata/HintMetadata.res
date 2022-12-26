@@ -31,7 +31,7 @@ type hint =
 %%private(
   let elementHintAtIndex = (elements: array<t>, index: int) =>
     switch Belt.Array.get(elements, index) {
-    | Some(CustomAtomS({symbol, value})) => Some(Value({symbol, value}))
+    | Some(ConstantS({symbol, value})) => Some(Value({symbol, value}))
     | Some(VariableS({id})) => Some(Variable({id: id}))
     | _ => None
     }

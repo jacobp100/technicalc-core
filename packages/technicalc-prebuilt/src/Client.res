@@ -216,15 +216,15 @@ module Keys = {
 
   let variable = (~id, ~name) => Keys.One(VariableS({id, name}))
 
-  let table = (~numRows, ~numColumns) => Keys.One(TableNS({numRows, numColumns}))
-
-  let customAtom = (~value, ~symbol) =>
-    AST.CustomAtomS({
+  let constant = (~value, ~symbol) =>
+    AST.ConstantS({
       symbol,
       value: TechniCalcCalculator.Encoding.encode(value),
     })->Keys.One
 
-  let label = (~placeholder) => Keys.Many([
+  let table = (~numRows, ~numColumns) => Keys.One(TableNS({numRows, numColumns}))
+
+  let captureGroup = (~placeholder) => Keys.Many([
     CaptureGroupStart({placeholder: placeholder}),
     CaptureGroupEndS,
   ])

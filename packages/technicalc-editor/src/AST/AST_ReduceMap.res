@@ -20,7 +20,7 @@ type foldState<'a> =
   | Fold_Conj
   | Fold_ConstE(option<superscript<'a>>)
   | Fold_ConstPi(option<superscript<'a>>)
-  | Fold_CustomAtom({symbol: Symbol.t, value: string, superscript: option<superscript<'a>>})
+  | Fold_Constant({symbol: Symbol.t, value: string, superscript: option<superscript<'a>>})
   | Fold_DecimalSeparator
   | Fold_Differential({at: 'a, body: 'a})
   | Fold_Digit({nucleus: string, superscript: option<superscript<'a>>})
@@ -171,10 +171,10 @@ let reduceMapU = (
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
       Node(Fold_ConstE(superscript), i, i')
-    | CustomAtomS({symbol, value}) =>
+    | ConstantS({symbol, value}) =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_CustomAtom({symbol, value, superscript}), i, i')
+      Node(Fold_Constant({symbol, value, superscript}), i, i')
     | (N0_S | N1_S | N2_S | N3_S | N4_S | N5_S | N6_S | N7_S | N8_S | N9_S) as digit
     | (NA_S | NB_S | NC_S | ND_S | NE_S | NF_S) as digit =>
       let nucleus = digitNucleusExn(digit)

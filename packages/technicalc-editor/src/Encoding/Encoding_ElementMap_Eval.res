@@ -104,7 +104,7 @@
     | Transpose => 93
     /* Custom handling */
     | UnitConversion(_)
-    | CustomAtomS(_)
+    | ConstantS(_)
     | VariableS(_)
     | CaptureGroupStart(_)
     | TableNS(_) =>
