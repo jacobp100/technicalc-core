@@ -1,5 +1,7 @@
 # TechniCalc Core
 
+[![Part of the TechniCalc Project](https://github.com/jacobp100/technicalc-core/blob/master/banner.png)](https://jacobdoescode.com/technicalc)
+
 Monorepo for various open source aspects of the [TechniCalc app](https://jacobdoescode.com/technicalc) [(iOS)](https://apps.apple.com/gb/app/technicalc-calculator/id1504965415) [(Android)](https://play.google.com/store/apps/details?id=com.technicalc).
 
 This whole project almost exclusively uses ReScript. It uses ReasonML syntax until the new ReScript syntax supports redefining infix operators (it's used extensively in the technicalc-calculator package).
