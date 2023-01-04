@@ -39,7 +39,6 @@ open AST
     | Sub
     | Trace
     | Transpose
-    | UnitConversion(_)
     | Magnitude1
     | NLog1
     | Superscript1

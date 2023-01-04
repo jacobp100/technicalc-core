@@ -139,7 +139,6 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     sumProduct("\\prod", from, to)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
     table(~numRows, ~numColumns, elements, superscript)->withSpaces->Tex_Accum.append(. accum, _)
-  | Fold_UnitConversion(_) => "?"->Tex_Accum.append(. accum, _)
   }
 
 let create = (~locale=Stringifier.English, ~digitGrouping=true, elements) =>

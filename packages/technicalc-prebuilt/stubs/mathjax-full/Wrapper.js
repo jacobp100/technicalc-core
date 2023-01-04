@@ -304,7 +304,9 @@ var SVGWrapper = (function (_super) {
     /* CUSTOM CODE BEGIN */
     if (data.p === 0) {
       var char = String.fromCodePoint(n);
-      var attributes = { "data-variant": variant, transform: "scale(1 -1)" };
+      // Transform scale(1 -1) happens in transformElement
+      // This is because a lot of subclasses overwrite the transform
+      var attributes = { "data-variant": variant };
       var textNode = this.svg("text", attributes, [this.jax.text(char)]);
       var text = this.adaptor.append(parent, textNode);
       this.place(x, y, text);

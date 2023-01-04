@@ -39,10 +39,6 @@ type t =
   | Sub
   | Trace
   | Transpose
-  | UnitConversion({
-      fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
-      toUnits: array<TechniCalcCalculator.Unit_Types.t>,
-    })
   /* AtomS */
   | CloseBracketS
   | ConstES
@@ -115,7 +111,6 @@ let eq = (a: t, b: t) =>
     | (Some(_), None)
     | (None, Some(_)) => false
     }
-  | (UnitConversion(_), UnitConversion(_)) => false // Not used yet (ignore)
   | (ConstantS(a), ConstantS(b)) => Symbol.eq(a.symbol, b.symbol) && a.value == a.value
   | (VariableS(a), VariableS(b)) => a.id == b.id && Symbol.eq(a.symbol, b.symbol)
   | (a, b) => a === b
@@ -162,7 +157,6 @@ let argCountExn = (arg: t) =>
   | Sub
   | Trace
   | Transpose
-  | UnitConversion(_)
   | CloseBracketS
   | ConstES
   | ConstPiS

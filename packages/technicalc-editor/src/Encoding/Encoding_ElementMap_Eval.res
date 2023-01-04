@@ -103,7 +103,6 @@
     | Trace => 92
     | Transpose => 93
     /* Custom handling */
-    | UnitConversion(_)
     | ConstantS(_)
     | VariableS(_)
     | CaptureGroupStart(_)

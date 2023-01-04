@@ -65,8 +65,8 @@ export default (node, children, index) => {
     case "path":
       return React.createElement(Path, {
         key: index,
+        transform: attributes.transform,
         d: attributes.d,
-        transform: attributes.transform, // for brackets
       });
     case "rect":
       return React.createElement(Rect, {
@@ -80,11 +80,15 @@ export default (node, children, index) => {
       const variant = attributes["data-variant"];
       const fontFamily =
         variant[0] === "-" ? `mathjax${variant}` : `mathjax-${variant}`;
+      const transform =
+        attributes.transform != null
+          ? `${attributes.transform} scale(1 -1)`
+          : "scale(1 -1)";
       return React.createElement(
         Text,
         {
           key: index,
-          transform: attributes.transform,
+          transform,
           fontFamily,
           fontSize: 1000,
         },

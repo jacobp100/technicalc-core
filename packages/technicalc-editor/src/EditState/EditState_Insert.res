@@ -67,7 +67,6 @@ type skipMode =
     | OpenBracket
     | Percent
     | Transpose
-    | UnitConversion(_)
     | CloseBracketS
     | ConstES
     | ConstPiS

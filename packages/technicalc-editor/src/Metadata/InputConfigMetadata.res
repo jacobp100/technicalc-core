@@ -25,7 +25,6 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | Sub
   | Trace
   | Transpose
-  | UnitConversion(_)
   | CloseBracketS
   | ConstES
   | ConstantS(_)

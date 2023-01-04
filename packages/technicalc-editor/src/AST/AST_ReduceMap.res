@@ -59,10 +59,6 @@ type foldState<'a> =
       superscript: option<superscript<'a>>,
     })
   | Fold_Transpose
-  | Fold_UnitConversion({
-      fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
-      toUnits: array<TechniCalcCalculator.Unit_Types.t>,
-    })
   | Fold_Variable({id: string, symbol: Symbol.t, superscript: option<superscript<'a>>})
   | Fold_X(option<superscript<'a>>)
 
@@ -157,8 +153,6 @@ let reduceMapU = (
     | ArcMinuteUnit => Node(Fold_Angle(Angle_ArcMinute), i, i + 1)
     | ArcSecondUnit => Node(Fold_Angle(Angle_ArcSecond), i, i + 1)
     | GradianUnit => Node(Fold_Angle(Angle_Gradian), i, i + 1)
-    | UnitConversion({fromUnits, toUnits}) =>
-      Node(Fold_UnitConversion({fromUnits, toUnits}), i, i + 1)
     | CloseBracketS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')

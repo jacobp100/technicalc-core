@@ -9,20 +9,6 @@ open UrlSafeEncoding
     Belt.Array.get(Encoding_ElementMap_Eval.reverseMapping, index)
 )
 
-// let%private encodeUnitConversion = (~fromUnits, ~toUnits) =>
-//   Encoding_Units.encodeUnitParts(fromUnits)
-//   ++ Encoding_Units.encodeUnitParts(toUnits);
-
-// let%private readUnitConversion = reader =>
-//   switch (
-//     Encoding_Units.readUnitParts(reader),
-//     Encoding_Units.readUnitParts(reader),
-//   ) {
-//   | (Some(fromUnits), Some(toUnits)) =>
-//     Some(AST.UnitConversion({fromUnits, toUnits}))
-//   | _ => None
-//   };
-
 %%private(
   let encodeCaptureGroup = (~placeholder) =>
     switch placeholder {
@@ -70,7 +56,6 @@ open UrlSafeEncoding
 %%private(
   let encodeElement = (element: AST.t) =>
     switch element {
-    | UnitConversion(_) => ""
     | CaptureGroupStart({placeholder}) => encodeUint(260) ++ encodeCaptureGroup(~placeholder)
     | TableNS({numRows, numColumns}) =>
       encodeUint(262) ++ encodeUint(numRows) ++ encodeUint(numColumns)

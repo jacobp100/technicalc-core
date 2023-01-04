@@ -46,14 +46,18 @@ let slice = (x: t<'a>, ~offset: int, ~len: int): t<'a> =>
   }
 
 let sliceToEnd = (x: t<'a>, offset: int): t<'a> =>
-  switch x {
-  | Some(x) =>
-    let start = x.offset + (offset >= 0 ? offset : x.len + offset)
-    let end = x.offset + x.len
-    if start < end {
-      Some({array: x.array, offset: start, len: end - start})
-    } else {
-      None
+  if offset == 0 {
+    x
+  } else {
+    switch x {
+    | Some(x) =>
+      let start = x.offset + (offset >= 0 ? offset : x.len + offset)
+      let end = x.offset + x.len
+      if start < end {
+        Some({array: x.array, offset: start, len: end - start})
+      } else {
+        None
+      }
+    | None => None
     }
-  | None => None
   }

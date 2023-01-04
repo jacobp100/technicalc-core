@@ -29,14 +29,10 @@ const ensureDir = (dir) => {
 ensureDir(fontsStubs);
 ensureDir(fontsAssetsPath);
 
-const buildJsonFont = (font, { preserveSvgChars }) => {
+const buildJsonFont = (font) => {
   Object.keys(font).forEach((key) => {
-    const keepChar = Array.isArray(preserveSvgChars)
-      ? preserveSvgChars.includes(+key)
-      : preserveSvgChars ?? false;
-
     const data = font[key][3];
-    if (!keepChar && data != null && data.p != null) {
+    if (data?.p != null) {
       data.p = 0;
     }
   });
@@ -69,34 +65,14 @@ const writeFont = (font, name, options = {}) => {
   );
 };
 
-const verticalBracketExtensions = [
-  // Parentheses
-  0x239c, 0x239f,
-  // Square brackets
-  0x23a2, 0x23a5,
-  // Square root
-  0xe000, 0xe001,
-];
-
 writeFont(boldItalic, "bold-italic");
 writeFont(bold, "bold");
 writeFont(italic, "italic");
-writeFont(normal, "normal", {
-  // abs and d/dx with large content
-  preserveSvgChars: [0x2223],
-});
-writeFont(largeop, "largeop", {
-  preserveSvgChars: verticalBracketExtensions,
-});
-writeFont(smallop, "smallop", {
-  preserveSvgChars: verticalBracketExtensions,
-});
-writeFont(texSize3, "size3", {
-  preserveSvgChars: verticalBracketExtensions,
-});
-writeFont(texSize4, "size4", {
-  preserveSvgChars: verticalBracketExtensions,
-});
+writeFont(normal, "normal");
+writeFont(largeop, "largeop");
+writeFont(smallop, "smallop");
+writeFont(texSize3, "size3");
+writeFont(texSize4, "size4");
 
 const stubFont = (name) => {
   const exportName = camelCase(name);

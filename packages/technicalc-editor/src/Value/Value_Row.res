@@ -1,6 +1,13 @@
 open Value_Builders
 open Value_Types
 
+type numericParseResult<'a> = {
+  elements: ArraySlice.t<partialNode>,
+  value: 'a,
+  range: (int, int),
+  continue: bool,
+}
+
 type openBracket = {
   startElementIndex: int,
   endElementIndex: int,
@@ -24,13 +31,10 @@ let parse = {
   let rec applyPostfixes = (elements, accum: TechniCalcEditor.Value_Types.node, elementIndex) => {
     let nextElement = ArraySlice.get(elements, elementIndex + 1)
     let nextAccum: option<TechniCalcEditor.Value_Types.node> = switch nextElement {
-    | Some(Unresolved(Fold_UnitConversion({fromUnits, toUnits}), _)) =>
-      Some(Convert({body: accum, fromUnits, toUnits}))
     | Some(Unresolved(Fold_Factorial, _)) => Some(Factorial(accum))
     | Some(Unresolved(Fold_Conj, _)) => Some(Conj(accum))
     | Some(Unresolved(Fold_Transpose, _)) => Some(Transpose(accum))
     | Some(Unresolved(Fold_Percent, _)) => Some(Percent(accum))
-    | Some(Unresolved(Fold_Angle(angle), _)) => Some(applyAngle(accum, angle))
     | _ => None
     }
     switch nextAccum {
@@ -81,9 +85,9 @@ let parse = {
         switch numberState {
         | Some(numberState) =>
           switch Value_NumberParser.toNode(numberState) {
-          | Some((number, range)) =>
+          | Some((value, range)) =>
             let elements = ArraySlice.sliceToEnd(elements, elementIndex)
-            Ok(Some((elements, number, range, true)))
+            Ok(Some({elements, value, range, continue: true}))
           | None =>
             let errorIndex = Value_NumberParser.range(numberState)->Belt.Option.mapU(sndU)
             Error(errorIndex)
@@ -93,24 +97,93 @@ let parse = {
       }
     }
 
-    let parseMixedFraction = elements => {
-      switch parseLeadingNumber(~numberState=None, elements, 0) {
-      | Ok(Some(elements, number, (i, _), _)) as res =>
-        switch ArraySlice.get(elements, 0) {
-        | Some(Resolved(Div(_, _) as fraction, (_, i'))) =>
-          let elements = ArraySlice.sliceToEnd(elements, 1)
-          let number: node = Add(number, fraction)
-          Ok(Some((elements, number, (i, i'), false)))
-        | _ => res
+    let readFraction = elements =>
+      switch ArraySlice.get(elements, 0) {
+      | Some(Unresolved(Fold_Frac({num, den, superscript}), range)) =>
+        let elements = ArraySlice.sliceToEnd(elements, 1)
+        let fraction: node = Div(num, den)
+        Some((elements, (fraction, superscript), range))
+      | _ => None
+      }
+
+    let readConstants = elements => {
+      let rec iter = (current: option<(node, (int, int))>, i) => {
+        let value = switch ArraySlice.get(elements, i) {
+        | Some(Unresolved(Fold_Constant({value, superscript}), range)) =>
+          Some((withSuperscript(OfEncoded(value), superscript), range))
+        | Some(Unresolved(Fold_ConstPi(superscript), range)) =>
+          Some((withSuperscript(Pi, superscript), range))
+        | Some(Unresolved(Fold_ConstE(superscript), range)) =>
+          Some((withSuperscript(E, superscript), range))
+        | Some(Unresolved(Fold_ImaginaryUnit(superscript), range)) =>
+          Some((withSuperscript(I, superscript), range))
+        | Some(Unresolved(Fold_Variable({id, superscript}), range)) =>
+          Some((withSuperscript(Variable(id), superscript), range))
+        | Some(Unresolved(Fold_X(superscript), range)) =>
+          Some((withSuperscript(X, superscript), range))
+        | _ => None
         }
-      | Ok(None) => Ok(None)
+        switch (current, value) {
+        | (Some(a, (i, _)), Some(b, (_, i'))) => iter(Some((Mul(a, b), (i, i'))), i + 1)
+        | (None, Some(_) as next) => iter(next, i + 1)
+        | (Some((value, range)), None) =>
+          let elements = ArraySlice.sliceToEnd(elements, i)
+          Some((elements, value, range))
+        | (None, None) => None
+        }
+      }
+
+      iter(None, 0)
+    }
+
+    let parseNumerics = elements => {
+      switch parseLeadingNumber(~numberState=None, elements, 0) {
+      | Ok(parseResult) =>
+        // Cardinal numbers as start
+        let (elements, current, continue) = switch parseResult {
+        | Some({elements, value, range, continue}) => (elements, Some((value, range)), continue)
+        | None => (elements, None, true)
+        }
+
+        // Handle mixed/lone fractions
+        let (elements, current, continue) = switch (
+          current,
+          continue ? readFraction(elements) : None,
+        ) {
+        | (Some((value, (i, _))), Some((elements, (fraction, superscript), (_, i')))) =>
+          // Mixed fraction - don't continue
+          let value: node = Add(value, fraction)->withSuperscript(superscript)
+          (elements, Some(value, (i, i')), false)
+        | (None, Some((elements, (fraction, superscript), range))) =>
+          // Lone fraction - continue
+          let value = withSuperscript(fraction, superscript)
+          (elements, Some((value, range)), true)
+        | (_, None) => (elements, current, continue)
+        }
+
+        // Handle constants
+        let (elements, current, continue) = switch (
+          current,
+          continue ? readConstants(elements) : None,
+        ) {
+        | (Some((value, (i, _))), Some((elements, constants, (_, i')))) =>
+          let value: node = Mul(value, constants)
+          (elements, Some(value, (i, i')), true)
+        | (None, Some((elements, value, range))) => (elements, Some((value, range)), true)
+        | (_, None) => (elements, current, continue)
+        }
+
+        switch current {
+        | Some((value, range)) => Ok(Some({elements, value, range, continue}))
+        | None => Ok(None)
+        }
       | Error(_) as e => e
       }
     }
 
     let rec parseAngleLine = (~angleMode: option<AST.angle>, ~accum, elements) =>
-      switch parseMixedFraction(elements) {
-      | Ok(Some((elements, number, (i, _), _))) as res =>
+      switch parseNumerics(elements) {
+      | Ok(Some({elements, value, range: (i, _)})) as res =>
         switch ArraySlice.get(elements, 0) {
         | Some(Unresolved(Fold_Angle(angle), (_, i'))) =>
           let angleValid = switch (angleMode, angle) {
@@ -121,7 +194,7 @@ let parse = {
           }
           if angleValid {
             let elements = ArraySlice.sliceToEnd(elements, 1)
-            let angleValue = applyAngle(number, angle)
+            let angleValue = applyAngle(value, angle)
             let accum = switch accum {
             | Some((accum, (i, _))) => Some((Add(angleValue, accum): node), (i, i'))
             | None => Some((angleValue, (i, i')))
@@ -142,21 +215,21 @@ let parse = {
         }
       | Ok(None) =>
         switch accum {
-        | Some((accum, range)) => Ok(Some(elements, accum, range, false))
+        | Some((value, range)) => Ok(Some({elements, value, range, continue: false}))
         | None => Ok(None)
         }
       | Error(_) as e => e
       }
 
-    elements =>
+    let parseAngles = elements =>
       switch parseAngleLine(~angleMode=None, ~accum=None, elements) {
-      | Ok(Some((elements, number, (_, i'), continue))) =>
+      | Ok(Some({elements, value, range: (_, i'), continue})) =>
         if ArraySlice.length(elements) == 0 {
-          Ok(number)
+          Ok(value)
         } else if continue {
           let elements =
             Belt.Array.concat(
-              [Resolved(number, Obj.magic(0))],
+              [Resolved(value, Obj.magic(None))],
               ArraySlice.toArray(elements),
             )->ArraySlice.ofArray
           next(elements)
@@ -166,6 +239,8 @@ let parse = {
       | Ok(None) => next(elements)
       | Error(_) as e => e
       }
+
+    parseAngles
   }
   let next = parseSimpleNumerics
 

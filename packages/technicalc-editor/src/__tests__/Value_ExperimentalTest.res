@@ -2,7 +2,7 @@ open Jest
 open AST_Types
 
 let parse = v =>
-  switch Value.parse(v) {
+  switch Value_Experimental.parse(v) {
   | Ok(v) =>
     Ok({
       open TechniCalcCalculator.AST
