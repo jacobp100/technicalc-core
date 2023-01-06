@@ -1,33 +1,33 @@
 open AST
 open Value_Builders
+open Value_Types
 
-type accum = list<TechniCalcEditor.Value_Types.partialNode>
+type accum = list<(AST.foldState<node>, (int, int))>
 
 let parse = (elements: array<t>) => {
   let error = ref(None)
 
-  let reduce = (. elementsRev: accum, element, (i, i')) =>
+  let reduce = (. elementsRev: accum, element, (r, _) as range) =>
     if error.contents == None {
       switch element {
-      | Fold_Placeholder(_)
-      | Fold_CaptureGroupPlaceholder(_) =>
-        error := Some(i)
+      | Fold_Placeholder(_) =>
+        error := Some(r)
         list{}
-      | _ => list{Value_Element.map(element, i, i'), ...elementsRev}
+      | _ => list{(element, range), ...elementsRev}
       }
     } else {
       list{}
     }
 
-  let map = (. elementsRev: accum, (i, _)): TechniCalcCalculator.AST_Types.t =>
+  let map = (. elementsRev: accum, _): TechniCalcCalculator.AST_Types.t =>
     if error.contents == None {
       let elements = Belt.List.toArray(elementsRev)
       Belt.Array.reverseInPlace(elements)
 
-      switch Value_Row.parse(elements) {
+      switch Value_Map.parse(elements) {
       | Ok(root) => root
       | Error(index) =>
-        error := Some(Belt.Option.getWithDefault(index, i))
+        error := Some(index)
         Node.NaN
       }
     } else {

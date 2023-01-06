@@ -6,7 +6,16 @@ let withSuperscript = (value, superscript) =>
   | None => value
   }
 
-let handleGenericFunction = (arg, fn) =>
+let applyAngle = (value: Value_Types.node, angle: AST.angle): Value_Types.node =>
+  switch angle {
+  | Angle_Radian => OfRad(value)
+  | Angle_Degree => OfDeg(value)
+  | Angle_ArcMinute => OfArcMin(value)
+  | Angle_ArcSecond => OfArcSec(value)
+  | Angle_Gradian => OfGrad(value)
+  }
+
+let applyFunction = (fn, arg) =>
   switch fn {
   | AST.Fn_Sin => Node.Sin(arg)
   | Fn_Asin => Asin(arg)
@@ -32,17 +41,7 @@ let handleGenericFunction = (arg, fn) =>
   | Fn_Rref => Rref(arg)
   | Fn_Trace => Trace(arg)
   | Fn_Gamma => Gamma(arg)
-  }
-
-let handleFunction = (fn, body) =>
-  switch fn {
-  | Value_Types.GenericFunction({fn, resultSuperscript}) =>
-    let value = handleGenericFunction(body, fn)
-    switch resultSuperscript {
-    | Some(resultSuperscript) => Node.Pow(value, resultSuperscript)
-    | None => value
-    }
-  | NLog({base}) => LogBase({base, body})
-  | Sum({from, to}) => Sum({from, to, body})
-  | Product({from, to}) => Product({from, to, body})
+  | Fn_NLog({base}) => LogBase({base, body: arg})
+  | Fn_Sum({from, to}) => Sum({from, to, body: arg})
+  | Fn_Product({from, to}) => Product({from, to, body: arg})
   }

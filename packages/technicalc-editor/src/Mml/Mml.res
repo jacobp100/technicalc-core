@@ -1,6 +1,5 @@
 open AST
 open Mml_Builders
-open Mml_Util
 
 %%private(let invalidAttributes = list{(#class, "invalid"), (#stretchy, "false")})
 module Mml_Accum = Stringifier.Make({
@@ -40,13 +39,23 @@ module Mml_Accum = Stringifier.Make({
 })
 
 let map = (. accum, range) => {
-  let body = Mml_Accum.toString(. accum)
-  if body == "" {
-    element(~attributes=Placeholder.attributes, ~range, Placeholder.tag, Placeholder.body)
+  let row = Mml_Accum.toString(. accum)
+  if row == "" {
+    open Mml_Placeholder
+    element(~attributes, ~range, tag, body)
   } else {
-    `<mrow>${body}</mrow>`
+    `<mrow>${row}</mrow>`
   }
 }
+
+%%private(
+  let stringOfBase = base =>
+    switch base {
+    | Base_Bin => "0b"
+    | Base_Oct => "0o"
+    | Base_Hex => "0x"
+    }
+)
 
 %%private(
   let bracketGroup = (leftBracket, rightBracket, arg, superscript, range) => {
@@ -58,10 +67,44 @@ let map = (. accum, range) => {
 %%private(let xSetRow = value => element("mrow", element("mi", "x") ++ element("mo", "=") ++ value))
 
 %%private(
-  let sumProduct = (symbol, start, end, range) => {
-    let body = element("munderover", element("mo", symbol) ++ xSetRow(start) ++ end)
-    element(~range, "mrow", body)
-  }
+  let functionMml = (~superscript=?, ~range, x) =>
+    switch x {
+    | Fn_Sin => element(~superscript?, ~range, "mi", "sin")
+    | Fn_Asin => element(~superscript?, ~range, "mi", "arcsin")
+    | Fn_Cosec => element(~superscript?, ~range, "mi", "cosec")
+    | Fn_Sinh => element(~superscript?, ~range, "mi", "sinh")
+    | Fn_Asinh => element(~superscript?, ~range, "mi", "arcsinh")
+    | Fn_Cos => element(~superscript?, ~range, "mi", "cos")
+    | Fn_Acos => element(~superscript?, ~range, "mi", "arccos")
+    | Fn_Sec => element(~superscript?, ~range, "mi", "sec")
+    | Fn_Cosh => element(~superscript?, ~range, "mi", "cosh")
+    | Fn_Acosh => element(~superscript?, ~range, "mi", "arccosh")
+    | Fn_Tan => element(~superscript?, ~range, "mi", "tan")
+    | Fn_Atan => element(~superscript?, ~range, "mi", "arctan")
+    | Fn_Cot => element(~superscript?, ~range, "mi", "cot")
+    | Fn_Tanh => element(~superscript?, ~range, "mi", "tanh")
+    | Fn_Atanh => element(~superscript?, ~range, "mi", "arctanh")
+    | Fn_Deg => element(~superscript?, ~range, "mi", "deg")
+    | Fn_Grad => element(~superscript?, ~range, "mi", "grad")
+    | Fn_Rad => element(~superscript?, ~range, "mi", "rad")
+    | Fn_Log => element(~superscript?, ~range, "mi", "log")
+    | Fn_Re => element(~superscript?, ~range, "mi", "re")
+    | Fn_Im => element(~superscript?, ~range, "mi", "im")
+    | Fn_Rref => element(~superscript?, ~range, "mi", "rref")
+    | Fn_Trace => element(~superscript?, ~range, "mi", "tr")
+    | Fn_Gamma =>
+      element(~superscript?, ~range, ~attributes=list{(#mathvariant, "normal")}, "mi", "&#x0393;")
+    | Fn_NLog({base}) =>
+      let body = element("mi", "log") ++ base
+      element(~superscript?, ~range, "msub", body)
+    | Fn_Sum({from, to}) | Fn_Product({from, to}) =>
+      let symbol = switch x {
+      | Fn_Sum(_) => "&#x2211;"
+      | _ => "&#x220F;"
+      }
+      let body = element("munderover", element("mo", symbol) ++ xSetRow(from) ++ to)
+      element(~superscript?, ~range, "mrow", body)
+    }
 )
 
 %%private(
@@ -120,7 +163,11 @@ let map = (. accum, range) => {
         element(
           ~range,
           "msup",
-          element(~attributes=Placeholder.attributes, Placeholder.tag, Placeholder.body) ++
+          element(
+            ~attributes=Mml_Placeholder.attributes,
+            Mml_Placeholder.tag,
+            Mml_Placeholder.body,
+          ) ++
           element(~attributes, tag, body),
         )
       }
@@ -160,27 +207,21 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Constant({symbol, superscript})
   | Fold_Variable({symbol, superscript}) =>
     element(~superscript?, ~range, "mrow", Mml_Symbol.toMml(symbol))->Mml_Accum.append(. accum, _)
-  | Fold_CaptureGroupPlaceholder({placeholder, superscript}) =>
+  | Fold_Placeholder({placeholder, superscript}) =>
     let phantom = element(~attributes=list{selection(~start=fst(range) + 1, ())}, "mphantom", "")
     let symbol = switch placeholder {
     | Some(placeholder) => Mml_Symbol.toMml(placeholder)
-    | None => element(Placeholder.tag, Placeholder.body)
+    | None => element(Mml_Placeholder.tag, Mml_Placeholder.body)
     }
     element(
-      ~attributes=Placeholder.attributes,
+      ~attributes=Mml_Placeholder.attributes,
       ~superscript?,
       ~range,
       "mrow",
       phantom ++ symbol,
     )->Mml_Accum.append(. accum, _)
-  | Fold_Placeholder(superscript) =>
-    open Placeholder
-    element(~attributes, ~superscript?, ~range, tag, body)->Mml_Accum.append(. accum, _)
   | Fold_Function({fn, resultSuperscript: superscript}) =>
-    let attributes = fn == Fn_Gamma ? list{(#mathvariant, "normal")} : list{}
-    stringOfFunction(fn)
-    ->element(~superscript?, ~attributes, ~range, "mi", _)
-    ->Mml_Accum.appendOperatorOrFunction(. accum, _)
+    functionMml(~superscript?, ~range, fn)->Mml_Accum.appendOperatorOrFunction(. accum, _)
   | Fold_Factorial => element(~range, "mo", "!")->Mml_Accum.append(. accum, _)
   | Fold_Add => element(~range, "mo", "+")->Mml_Accum.appendOperatorOrFunction(. accum, _)
   | Fold_Sub => element(~range, "mo", "-")->Mml_Accum.appendOperatorOrFunction(. accum, _)
@@ -193,9 +234,6 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     element(~superscript?, ~range, "msqrt", radicand)->Mml_Accum.append(. accum, _)
   | Fold_NRoot({degree, radicand, superscript}) =>
     element(~superscript?, ~range, "mroot", radicand ++ degree)->Mml_Accum.append(. accum, _)
-  | Fold_NLog({base}) =>
-    let body = element("mi", "log") ++ base
-    element(~range, "msub", body)->Mml_Accum.append(. accum, _)
   | Fold_Abs({arg, superscript}) =>
     bracketGroup("|", "|", arg, superscript, range)->Mml_Accum.append(. accum, _)
   | Fold_Floor({arg, superscript}) =>
@@ -235,9 +273,6 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     let pre = element("msubsup", element("mo", "&#x222B;") ++ from ++ to)
     let post = element("mi", "dx")
     element(~range, "mrow", pre ++ body ++ post)->Mml_Accum.append(. accum, _)
-  | Fold_Sum({from, to}) => sumProduct("&#x2211;", from, to, range)->Mml_Accum.append(. accum, _)
-  | Fold_Product({from, to}) =>
-    sumProduct("&#x220F;", from, to, range)->Mml_Accum.append(. accum, _)
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
     table(~numRows, ~numColumns, elements, superscript, range)->Mml_Accum.append(. accum, _)
   }

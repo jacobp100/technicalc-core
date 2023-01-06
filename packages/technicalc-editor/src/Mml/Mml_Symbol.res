@@ -1,5 +1,3 @@
-open Mml_Util
-
 %%private(
   let regExpMatchAtIndex = (matchGroup: option<array<option<string>>>, index) =>
     switch matchGroup {
@@ -23,7 +21,7 @@ let ofMml = (mml: string): Symbol.t => {
   let bold = StringUtil.includes(mathVairant, "bold")
   let italic = StringUtil.includes(mathVairant, "italic")
   let base = regExpMatchAtIndex(baseMatch, mmlIndex)
-  let base = base != Placeholder.body ? base : ""
+  let base = base != Mml_Placeholder.body ? base : ""
 
   let (subscript, superscript) = if StringUtil.startsWith(mml, "<msub>") {
     let subscript = Js.String.match_(regExp, mml)->regExpMatchAtIndex(mmlIndex)
@@ -53,7 +51,7 @@ let toMml = (x: Symbol.t) => {
   let base =
     x.base != ""
       ? `<mi mathvariant="${style}">${x.base}</mi>`
-      : `<mi mathvariant="normal" class="placeholder">${Placeholder.body}</mi>`
+      : `<mi mathvariant="normal" class="placeholder">${Mml_Placeholder.body}</mi>`
 
   let superscript = `<mi mathvariant="normal">${x.superscript}</mi>`
   let subscript = `<mi mathvariant="normal">${x.subscript}</mi>`

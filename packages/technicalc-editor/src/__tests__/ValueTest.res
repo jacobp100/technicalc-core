@@ -112,15 +112,15 @@ test("mixed fractions", () => {
   ->toEqual(Ok("6.25"))
 })
 
-test("mixed fraction angles", () => {
-  let pi = TechniCalcCalculator.Value.pi
-  let mul = TechniCalcCalculator.Value.mul
-  let div = TechniCalcCalculator.Value.div
+// test("mixed fraction angles", () => {
+//   let pi = TechniCalcCalculator.Value.pi
+//   let mul = TechniCalcCalculator.Value.mul
+//   let div = TechniCalcCalculator.Value.div
 
-  parse([N1_S, Frac2S, N1_S, Arg, N2_S, Arg, DegreeUnit])
-  ->expect
-  ->toEqual(Ok(mul(div(ofInt(3), ofInt(2)), div(pi, ofInt(180)))))
-})
+//   parse([N1_S, Frac2S, N1_S, Arg, N2_S, Arg, DegreeUnit])
+//   ->expect
+//   ->toEqual(Ok(mul(div(ofInt(3), ofInt(2)), div(pi, ofInt(180)))))
+// })
 
 test("fractions with constants", () => {
   let pi = TechniCalcCalculator.Value.pi

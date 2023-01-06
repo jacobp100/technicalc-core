@@ -35,7 +35,7 @@ let reduce = (state, element, (i, i') as range) => {
     switch state {
     | {numBase: None, numString: "", numSup: None, magSup: None} =>
       Some(Ok({...state, range, numBase: Some(numBase)}))
-    | _ => Some(Error(Some(i')))
+    | _ => Some(Error(i'))
     }
   | Fold_Digit({nucleus, superscript}) =>
     switch state {
@@ -43,18 +43,18 @@ let reduce = (state, element, (i, i') as range) => {
       let numString = state.numString ++ nucleus
       let numSup = Belt.Option.mapU(superscript, superscriptBodyU)
       Some(Ok({...state, range, numString, numSup}))
-    | _ => Some(Error(Some(i')))
+    | _ => Some(Error(i'))
     }
   | Fold_DecimalSeparator =>
     switch state {
     | {numHasDecimal: false, numSup: None, magSup: None} =>
       Some(Ok({...state, range, numString: state.numString ++ ".", numHasDecimal: true}))
-    | _ => Some(Error(Some(i')))
+    | _ => Some(Error(i'))
     }
   | Fold_Magnitude({value}) =>
     switch state {
     | {magSup: None} if state.numString != "" => Some(Ok({...state, range, magSup: Some(value)}))
-    | _ => Some(Error(Some(i')))
+    | _ => Some(Error(i'))
     }
   | _ => None
   }
@@ -76,7 +76,7 @@ let toNode = state =>
       magSup
       ->Belt.Option.mapU((. x) => Node.Pow(OfInt(10), x))
       ->Belt.Option.mapWithDefaultU(out, (. x) => Mul(out, x))
-    Some((out, Belt.Option.getExn(state.range)))
+    Some(out)
   }
 
 let range = state => state.range

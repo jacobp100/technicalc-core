@@ -1,5 +1,13 @@
 open AST
-open Tex_Util
+
+%%private(
+  let stringOfBase = base =>
+    switch base {
+    | Base_Bin => "\\rm{0b}"
+    | Base_Oct => "\\rm{0o}"
+    | Base_Hex => "\\rm{0x}"
+    }
+)
 
 %%private(let withSpaces = body => ` ${body} `)
 
@@ -13,7 +21,43 @@ open Tex_Util
 
 %%private(let removeBraces = body => StringUtil.slice(body, 1, -1)->StringUtil.trim)
 
-%%private(let sumProduct = (symbol, start, end) => `${symbol}_{x=${removeBraces(start)}}^${end}`)
+%%private(
+  let functionTex = x =>
+    switch x {
+    | Fn_Sin => "\\sin"
+    | Fn_Asin => "\\arcsin"
+    | Fn_Cosec => "\\cosec"
+    | Fn_Sinh => "\\sinh"
+    | Fn_Asinh => "\\arcsinh"
+    | Fn_Cos => "\\cos"
+    | Fn_Acos => "\\arccos"
+    | Fn_Sec => "\\sec"
+    | Fn_Cosh => "\\cosh"
+    | Fn_Acosh => "\\arccosh"
+    | Fn_Tan => "\\tan"
+    | Fn_Atan => "\\arctan"
+    | Fn_Cot => "\\cot"
+    | Fn_Tanh => "\\tanh"
+    | Fn_Atanh => "\\arctanh"
+    | Fn_Deg => "\\deg"
+    | Fn_Grad => "\\grad"
+    | Fn_Rad => "\\rm{rad}"
+    | Fn_Log => "\\log"
+    | Fn_Re => "\\rm{re}"
+    | Fn_Im => "\\rm{im}"
+    | Fn_Rref => "\\rm{rref}"
+    | Fn_Trace => "\\rm{trace}"
+    | Fn_Gamma => "\\Gamma"
+    | Fn_NLog({base}) => `\\log_${base}`
+    | Fn_Sum({from, to})
+    | Fn_Product({from, to}) =>
+      let symbol = switch x {
+      | Fn_Sum(_) => "\\sum"
+      | _ => "\\prod"
+      }
+      `${symbol}_{x=${removeBraces(from)}}^${to}`
+    }
+)
 
 %%private(
   let fn2 = (name, a, b, superscript) =>
@@ -80,15 +124,14 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Variable({symbol, superscript})
   | Fold_Constant({symbol, superscript}) =>
     Tex_Symbol.toTex(symbol)->withSuperscript(superscript)->Tex_Accum.append(. accum, _)
-  | Fold_CaptureGroupPlaceholder({placeholder, superscript}) =>
+  | Fold_Placeholder({placeholder, superscript}) =>
     let placeholder = switch placeholder {
     | Some(placeholder) => Tex_Symbol.toTex(placeholder)
     | None => "{}"
     }
     withSuperscript(placeholder, superscript)->Tex_Accum.append(. accum, _)
-  | Fold_Placeholder(_superscript) => "{}"->Tex_Accum.append(. accum, _)
   | Fold_Function({fn, resultSuperscript: superscript}) =>
-    stringOfFunction(fn)
+    functionTex(fn)
     ->withSuperscript(superscript)
     ->withSpaces
     ->Tex_Accum.appendOperatorOrFunction(. accum, _)
@@ -106,7 +149,6 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     withSuperscript(`\\sqrt[${degree}]${radicand}`, superscript)
     ->withSpaces
     ->Tex_Accum.append(. accum, _)
-  | Fold_NLog({base}) => `\\log_${base}`->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Abs({arg, superscript}) =>
     withSuperscript(`\\left|${arg}\\right|`, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Floor({arg, superscript}) =>
@@ -134,9 +176,6 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     ->Tex_Accum.append(. accum, _)
   | Fold_Integral({from, to, body}) =>
     `\\int_${from}^${to} ${body} dx`->withSpaces->Tex_Accum.append(. accum, _)
-  | Fold_Sum({from, to}) => sumProduct("\\sum", from, to)->withSpaces->Tex_Accum.append(. accum, _)
-  | Fold_Product({from, to}) =>
-    sumProduct("\\prod", from, to)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
     table(~numRows, ~numColumns, elements, superscript)->withSpaces->Tex_Accum.append(. accum, _)
   }

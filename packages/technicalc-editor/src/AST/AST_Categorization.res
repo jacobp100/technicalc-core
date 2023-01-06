@@ -2,7 +2,7 @@ type base =
   | Base_Bin
   | Base_Oct
   | Base_Hex
-type fn =
+type fn<'a> =
   | Fn_Acos
   | Fn_Acosh
   | Fn_Asin
@@ -28,6 +28,10 @@ type fn =
   | Fn_Sinh
   | Fn_Tan
   | Fn_Tanh
+  /* Function-like */
+  | Fn_NLog({base: 'a})
+  | Fn_Sum({from: 'a, to: 'a})
+  | Fn_Product({from: 'a, to: 'a})
 type angle =
   | Angle_Radian
   | Angle_Degree

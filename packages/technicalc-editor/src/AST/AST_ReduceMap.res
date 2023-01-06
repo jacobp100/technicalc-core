@@ -11,10 +11,6 @@ type foldState<'a> =
   | Fold_Add
   | Fold_Angle(angle)
   | Fold_Base(base)
-  | Fold_CaptureGroupPlaceholder({
-      placeholder: option<Symbol.t>,
-      superscript: option<superscript<'a>>,
-    })
   | Fold_Ceil({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_CloseBracket(option<superscript<'a>>)
   | Fold_Conj
@@ -29,7 +25,7 @@ type foldState<'a> =
   | Fold_Factorial
   | Fold_Floor({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_Frac({num: 'a, den: 'a, superscript: option<superscript<'a>>})
-  | Fold_Function({fn: fn, resultSuperscript: option<superscript<'a>>})
+  | Fold_Function({fn: fn<'a>, resultSuperscript: option<superscript<'a>>})
   | Fold_Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_ImaginaryUnit(option<superscript<'a>>)
   | Fold_Integral({from: 'a, to: 'a, body: 'a})
@@ -39,19 +35,16 @@ type foldState<'a> =
   | Fold_Min({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Mul
   | Fold_NCR({n: 'a, r: 'a})
-  | Fold_NLog({base: 'a})
   | Fold_NPR({n: 'a, r: 'a})
   | Fold_NRoot({degree: 'a, radicand: 'a, superscript: option<superscript<'a>>})
   | Fold_OpenBracket
   | Fold_Percent
-  | Fold_Placeholder(option<superscript<'a>>)
-  | Fold_Product({from: 'a, to: 'a})
+  | Fold_Placeholder({placeholder: option<Symbol.t>, superscript: option<superscript<'a>>})
   | Fold_Rand(option<superscript<'a>>)
   | Fold_RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
   | Fold_Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
   | Fold_Sub
-  | Fold_Sum({from: 'a, to: 'a})
   | Fold_Table({
       elements: array<'a>,
       numRows: int,
@@ -106,7 +99,7 @@ let reduceMapU = (
       | Some(CaptureGroupEndS) =>
         let i' = i + 2
         let (superscript, i') = readSuperscript(i')
-        Node(Fold_CaptureGroupPlaceholder({placeholder, superscript}), i, i')
+        Node(Fold_Placeholder({placeholder, superscript}), i, i')
       | _ => Empty
       }
     | CaptureGroupEndS => Empty
@@ -148,6 +141,17 @@ let reduceMapU = (
     | CosecS => fnS(i, Fn_Cosec)
     | SecS => fnS(i, Fn_Sec)
     | CotS => fnS(i, Fn_Cot)
+    | NLog1 =>
+      let (base, i') = readArg(i + 1)
+      Node(Fold_Function({fn: Fn_NLog({base: base}), resultSuperscript: None}), i, i')
+    | Product2 =>
+      let (from, i') = readArg(i + 1)
+      let (to, i') = readArg(i')
+      Node(Fold_Function({fn: Fn_Product({from, to}), resultSuperscript: None}), i, i')
+    | Sum2 =>
+      let (from, i') = readArg(i + 1)
+      let (to, i') = readArg(i')
+      Node(Fold_Function({fn: Fn_Sum({from, to}), resultSuperscript: None}), i, i')
     | RadianUnit => Node(Fold_Angle(Angle_Radian), i, i + 1)
     | DegreeUnit => Node(Fold_Angle(Angle_Degree), i, i + 1)
     | ArcMinuteUnit => Node(Fold_Angle(Angle_ArcMinute), i, i + 1)
@@ -197,10 +201,7 @@ let reduceMapU = (
     | Superscript1 =>
       let (superscriptBody, i') = readArg(i + 1)
       let superscript = Some({superscriptBody, index: i + 1})
-      Node(Fold_Placeholder(superscript), i, i')
-    | NLog1 =>
-      let (base, i') = readArg(i + 1)
-      Node(Fold_NLog({base: base}), i, i')
+      Node(Fold_Placeholder({placeholder: None, superscript}), i, i')
     | Abs1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
@@ -233,14 +234,6 @@ let reduceMapU = (
       let (n, i') = readArg(i + 1)
       let (r, i') = readArg(i')
       Node(Fold_NPR({n, r}), i, i')
-    | Product2 =>
-      let (from, i') = readArg(i + 1)
-      let (to, i') = readArg(i')
-      Node(Fold_Product({from, to}), i, i')
-    | Sum2 =>
-      let (from, i') = readArg(i + 1)
-      let (to, i') = readArg(i')
-      Node(Fold_Sum({from, to}), i, i')
     | Frac2S =>
       let (num, i') = readArg(i + 1)
       let (den, i') = readArg(i')
