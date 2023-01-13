@@ -36,6 +36,9 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   | MinusI => Value.minusI
   | Pi => Value.pi
   | E => Value.e
+  | XUnit => Value.xUnit
+  | YUnit => Value.yUnit
+  | ZUnit => Value.zUnit
   | OfInt(a) => Value.ofInt(a)
   | OfFloat(a) => Value.ofFloat(a)
   | OfString(a) => Formatting.ofString(a)->Belt.Option.getWithDefault(Value.nan)

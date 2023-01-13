@@ -5,6 +5,10 @@ open Vector_Types
 let empty: t = []
 let isEmpty = (x: t) => size(x) == 0
 
+let xUnit: t = [#Real(Real.one), #Zero, #Zero]
+let yUnit: t = [#Zero, #Real(Real.one), #Zero]
+let zUnit: t = [#Zero, #Zero, #Real(Real.one)]
+
 let eq = (a: t, b: t) =>
   size(a) == size(b) &&
     Belt.Array.every2U(a, b, (. a, b) => {

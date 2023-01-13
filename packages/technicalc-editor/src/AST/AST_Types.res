@@ -73,6 +73,9 @@ type t =
   | TanS
   | ConstantS({symbol: Symbol.t, value: string})
   | VariableS({id: string, symbol: Symbol.t})
+  | XUnitS
+  | YUnitS
+  | ZUnitS
   /* Atom1 */
   | Magnitude1
   | NLog1
@@ -189,7 +192,10 @@ let argCountExn = (arg: t) =>
   | SinS
   | TanhS
   | TanS
-  | VariableS(_) => 0
+  | VariableS(_)
+  | XUnitS
+  | YUnitS
+  | ZUnitS => 0
   /* Atom1 */
   | Magnitude1
   | NLog1

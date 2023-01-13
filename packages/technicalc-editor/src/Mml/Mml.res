@@ -64,6 +64,16 @@ let map = (. accum, range) => {
   }
 )
 
+%%private(
+  let hat = (~superscript=?, ~range, x) =>
+    element(
+      ~superscript?,
+      ~range,
+      "mover",
+      element("mi", x) ++ element(~attributes=list{(#stretchy, "false")}, "mo", "^"),
+    )
+)
+
 %%private(let xSetRow = value => element("mrow", element("mi", "x") ++ element("mo", "=") ++ value))
 
 %%private(
@@ -199,7 +209,11 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     let body = element("mo", "&#x00D7;") ++ element("mn", "10")
     let body = element("mrow", body)
     element(~range, "msup", body ++ value)->Mml_Accum.append(. accum, _)
-  | Fold_X(superscript) => element(~superscript?, ~range, "mi", "x")->Mml_Accum.append(. accum, _)
+  | Fold_IterationX(superscript) =>
+    element(~superscript?, ~range, "mi", "x")->Mml_Accum.append(. accum, _)
+  | Fold_XUnit(superscript) => hat(~superscript?, ~range, "x")->Mml_Accum.append(. accum, _)
+  | Fold_YUnit(superscript) => hat(~superscript?, ~range, "y")->Mml_Accum.append(. accum, _)
+  | Fold_ZUnit(superscript) => hat(~superscript?, ~range, "z")->Mml_Accum.append(. accum, _)
   | Fold_ConstPi(superscript) =>
     element(~superscript?, ~range, "mi", "&#x03C0;")->Mml_Accum.append(. accum, _)
   | Fold_ConstE(superscript) =>

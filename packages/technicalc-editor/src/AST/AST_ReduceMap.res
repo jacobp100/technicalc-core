@@ -29,6 +29,7 @@ type foldState<'a> =
   | Fold_Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_ImaginaryUnit(option<superscript<'a>>)
   | Fold_Integral({from: 'a, to: 'a, body: 'a})
+  | Fold_IterationX(option<superscript<'a>>)
   | Fold_Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Magnitude({value: 'a})
   | Fold_Max({a: 'a, b: 'a, superscript: option<superscript<'a>>})
@@ -53,7 +54,9 @@ type foldState<'a> =
     })
   | Fold_Transpose
   | Fold_Variable({id: string, symbol: Symbol.t, superscript: option<superscript<'a>>})
-  | Fold_X(option<superscript<'a>>)
+  | Fold_XUnit(option<superscript<'a>>)
+  | Fold_YUnit(option<superscript<'a>>)
+  | Fold_ZUnit(option<superscript<'a>>)
 
 type range = (int, int)
 
@@ -186,7 +189,7 @@ let reduceMapU = (
     | IterationXS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
-      Node(Fold_X(superscript), i, i')
+      Node(Fold_IterationX(superscript), i, i')
     | RandS =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
@@ -195,6 +198,18 @@ let reduceMapU = (
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Variable({id, symbol, superscript}), i, i')
+    | XUnitS =>
+      let i' = i + 1
+      let (superscript, i') = readSuperscript(i')
+      Node(Fold_XUnit(superscript), i, i')
+    | YUnitS =>
+      let i' = i + 1
+      let (superscript, i') = readSuperscript(i')
+      Node(Fold_YUnit(superscript), i, i')
+    | ZUnitS =>
+      let i' = i + 1
+      let (superscript, i') = readSuperscript(i')
+      Node(Fold_ZUnit(superscript), i, i')
     | Magnitude1 =>
       let (value, i') = readArg(i + 1)
       Node(Fold_Magnitude({value: value}), i, i')

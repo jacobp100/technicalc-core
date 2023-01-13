@@ -16,6 +16,9 @@ type rec t =
   | MinusI
   | Pi
   | E
+  | XUnit
+  | YUnit
+  | ZUnit
   | OfInt(int)
   | OfFloat(float)
   | OfString(string)

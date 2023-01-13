@@ -35,6 +35,9 @@ let keys = {
   "base2": One(Bin),
   "base8": One(Oct),
   "base16": One(Hex),
+  "square": Many([Superscript1, N2_S, Arg]),
+  "cube": Many([Superscript1, N3_S, Arg]),
+  "inverse": Many([Superscript1, Sub, N1_S, Arg]),
   "sqrt": One(Sqrt1S),
   "cuberoot": Many([NRoot2S, N3_S, Arg, Arg]),
   "nroot": One(NRoot2S),
@@ -92,8 +95,7 @@ let keys = {
   "trace": One(Trace),
   "transpose": One(Transpose),
   "rref": One(Rref),
-  // Not used (yet)
-  // "deg": One(DegFunction),
-  // "rad": One(RadFunction),
-  // "grad": One(GradFunction),
+  "xunit": One(XUnitS),
+  "yunit": One(YUnitS),
+  "zunit": One(ZUnitS),
 }

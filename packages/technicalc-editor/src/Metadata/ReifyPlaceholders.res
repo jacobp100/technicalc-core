@@ -82,6 +82,9 @@ open AST
     | TanS
     | ConstantS(_)
     | VariableS(_)
+    | XUnitS
+    | YUnitS
+    | ZUnitS
     | Abs1S
     | Ceil1S
     | Floor1S

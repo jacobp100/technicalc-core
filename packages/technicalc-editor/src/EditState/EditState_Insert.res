@@ -91,6 +91,9 @@ type skipMode =
     | NF_S
     | RandS
     | VariableS(_)
+    | XUnitS
+    | YUnitS
+    | ZUnitS
     | Magnitude1
     | Superscript1
     | Abs1S

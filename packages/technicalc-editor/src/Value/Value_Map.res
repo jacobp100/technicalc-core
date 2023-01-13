@@ -52,7 +52,10 @@ let parse = {
     | Fold_Table({elements, numRows, numColumns, superscript}) =>
       Some(withSuperscript(Matrix({numRows, numColumns, elements}), superscript))
     | Fold_Variable({id, superscript}) => Some(withSuperscript(Variable(id), superscript))
-    | Fold_X(superscript) => Some(withSuperscript(X, superscript))
+    | Fold_IterationX(superscript) => Some(withSuperscript(X, superscript))
+    | Fold_XUnit(superscript) => Some(withSuperscript(XUnit, superscript))
+    | Fold_YUnit(superscript) => Some(withSuperscript(YUnit, superscript))
+    | Fold_ZUnit(superscript) => Some(withSuperscript(ZUnit, superscript))
 
     // Handled in Value
     | Fold_Placeholder(_) => None

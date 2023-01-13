@@ -48,6 +48,9 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | NF_S
   | RandS
   | VariableS(_)
+  | XUnitS
+  | YUnitS
+  | ZUnitS
   | Magnitude1
   | NLog1
   | Superscript1

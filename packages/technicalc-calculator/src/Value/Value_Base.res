@@ -9,6 +9,10 @@ let pi: t = (Scalar.pi :> t)
 let e: t = (Scalar.e :> t)
 let nan: t = (Scalar.nan :> t)
 
+let xUnit: t = #Vect(Vector.xUnit)
+let yUnit: t = #Vect(Vector.yUnit)
+let zUnit: t = #Vect(Vector.zUnit)
+
 let isNaN = (x: t) => x == #NaNN
 
 let eq = (a: t, b: t): bool =>

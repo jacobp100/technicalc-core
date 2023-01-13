@@ -102,6 +102,10 @@
     | Rref => 91
     | Trace => 92
     | Transpose => 93
+    /* 7th set elements */
+    | XUnitS => 94
+    | YUnitS => 95
+    | ZUnitS => 96
     /* Custom handling */
     | ConstantS(_)
     | VariableS(_)
@@ -111,8 +115,8 @@
     }
 )
 
-%%private(let numIntElements = 86)
-%%private(let maxUintValue = 93)
+%%private(let numIntElements = 90)
+%%private(let maxUintValue = 96)
 let mapping = Belt.Array.make(numIntElements + 1, 0)
 let reverseMapping = Belt.Array.make(maxUintValue + 1, AST.Arg)
 for i in 0 to numIntElements {
