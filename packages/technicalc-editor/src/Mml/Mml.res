@@ -225,10 +225,15 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     let phantom = element(~attributes=list{selection(~start=fst(range) + 1, ())}, "mphantom", "")
     let symbol = switch placeholder {
     | Some(placeholder) => Mml_Symbol.toMml(placeholder)
-    | None => element(Mml_Placeholder.tag, Mml_Placeholder.body)
+    | None =>
+      element(
+        ~attributes=list{(#mathvariant, Mml_Placeholder.mathvariant)},
+        Mml_Placeholder.tag,
+        Mml_Placeholder.body,
+      )
     }
     element(
-      ~attributes=Mml_Placeholder.attributes,
+      ~attributes=list{(#class, Mml_Placeholder.class)},
       ~superscript?,
       ~range,
       "mrow",
