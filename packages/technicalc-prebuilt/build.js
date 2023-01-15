@@ -134,7 +134,7 @@ const build = async ({ outfile, format, globalName, ...rest }) => {
 
 const execFile = util.promisify(childProcess.execFile);
 const runNodeScript = async (filename, args) => {
-  const run = async () =>
+  const run = () =>
     execFile("node", [filename, ...args.map((arg) => arg.pathname)]);
 
   if (fast) {
