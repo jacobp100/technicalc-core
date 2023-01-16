@@ -40,14 +40,17 @@ let ofInt = n => {
 }
 
 %%private(
-  let rationalGcd = (n, d, c) => {
-    let n = d >= 0 ? n : -n
-    let d = IntUtil.abs(d)
-    let gcd = IntUtil.gcd(IntUtil.abs(n), d)
-    let n = n / gcd
-    let d = d / gcd
-    Rational(n, d, c)
-  }
+  let rationalGcd = (n, d, c) =>
+    if n != 0 {
+      let n = d >= 0 ? n : -n
+      let d = IntUtil.abs(d)
+      let gcd = IntUtil.gcd(IntUtil.abs(n), d)
+      let n = n / gcd
+      let d = d / gcd
+      Rational(n, d, c)
+    } else {
+      zero
+    }
 )
 
 let ofRational = (n, d, c) =>

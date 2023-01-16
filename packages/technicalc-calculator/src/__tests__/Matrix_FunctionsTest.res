@@ -67,4 +67,37 @@ test("rref", () => {
   )
 
   expect(rref(rref(matrix)))->toEqual(rref(matrix))
+
+  // Bug report
+  let matrix = make(
+    ~numRows=3,
+    ~numColumns=3,
+    {
+      open Scalar
+      [
+        ofInt(-2) * sqrt(ofInt(2)),
+        ofInt(-1),
+        zero,
+        ofInt(-4),
+        ofInt(-2) * sqrt(ofInt(2)),
+        ofInt(-4),
+        zero,
+        ofInt(-1),
+        ofInt(-2) * sqrt(ofInt(2)),
+      ]
+    },
+  )
+
+  expect(rref(matrix))->toEqual(
+    make(
+      ~numRows=3,
+      ~numColumns=3,
+      {
+        open Scalar
+        [ofInt(1), zero, ofInt(-1), zero, ofInt(1), ofInt(2) * sqrt(ofInt(2)), zero, zero, zero]
+      },
+    ),
+  )
+
+  expect(rref(rref(matrix)))->toEqual(rref(matrix))
 })
