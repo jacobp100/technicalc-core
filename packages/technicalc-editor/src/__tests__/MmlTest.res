@@ -32,7 +32,7 @@ test("formats numbers", () => {
 
   create([Hex, N2_S, N3_S, N4_S, N5_S, N6_S, N7_S])
   ->expect
-  ->toEqual(`<mrow><mn id="0:1">0x</mn><mn id="1:2">2</mn><mn id="2:3">3</mn><mn id="3:4">4</mn><mn id="4:5">5</mn><mn id="5:6">6</mn><mn id="6:7">7</mn></mrow>`)
+  ->toEqual(`<mrow><mn id=\"0:1\">0x</mn><mn id=\"1:2\">2</mn><mn id=\"2:3\">3</mn><mn>,</mn><mn id=\"3:4\">4</mn><mn id=\"4:5\">5</mn><mn id=\"5:6\">6</mn><mn id=\"6:7\">7</mn></mrow>`)
 })
 
 test("superscripts", () => {

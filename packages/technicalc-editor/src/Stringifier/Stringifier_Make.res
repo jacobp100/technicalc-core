@@ -32,7 +32,7 @@ module Make = (M: Config): {
       | GroupingDisabled
       | Normal
       | SkipGrouping // After decimal points etc.
-      | GroupingDigits({numbersRev: list<string>})
+      | GroupingDigits({groupSize: int, numbersRev: list<string>})
 
     type t = {
       format: format,
@@ -53,20 +53,21 @@ module Make = (M: Config): {
     let lastElementType = x => x.lastElementType
 
     %%private(
-      let flattenDigits = (v, ~numbersRev) => {
+      let flattenDigits = (v, ~groupSize, ~numbersRev) => {
         let groupingSeparator = M.groupingSeparatorU(. v.format.groupingSeparator)
-        let rec iter = (~formattedNumbers, ~numbersRev) =>
-          switch numbersRev {
-          | list{c, b, a, ...tail} if tail != list{} =>
-            iter(
-              ~formattedNumbers=list{groupingSeparator, a, b, c, ...formattedNumbers},
-              ~numbersRev=tail,
-            )
-          | list{number, ...tail} =>
-            iter(~formattedNumbers=list{number, ...formattedNumbers}, ~numbersRev=tail)
-          | list{} => Belt.List.reverseConcat(formattedNumbers, v.bodyRev)
+        let rec iter = (~formattedNumbersFwd, ~numbersRev) =>
+          switch Belt.List.splitAt(numbersRev, groupSize) {
+          | Some((groupRev, numbersRev)) if numbersRev != list{} =>
+            let formattedNumbersFwd = list{
+              groupingSeparator,
+              ...Belt.List.reverseConcat(groupRev, formattedNumbersFwd),
+            }
+            iter(~formattedNumbersFwd, ~numbersRev)
+          | _ =>
+            let bodyFwd = Belt.List.reverseConcat(numbersRev, formattedNumbersFwd)
+            Belt.List.reverseConcat(bodyFwd, v.bodyRev)
           }
-        iter(~formattedNumbers=list{}, ~numbersRev)
+        iter(~formattedNumbersFwd=list{}, ~numbersRev)
       }
     )
 
@@ -77,7 +78,7 @@ module Make = (M: Config): {
         | Normal
         | SkipGrouping =>
           v.bodyRev
-        | GroupingDigits({numbersRev}) => flattenDigits(v, ~numbersRev)
+        | GroupingDigits({groupSize, numbersRev}) => flattenDigits(v, ~groupSize, ~numbersRev)
         }
       }
     )
@@ -116,16 +117,12 @@ module Make = (M: Config): {
       | (GroupingDisabled | SkipGrouping) as digitGroupingState =>
         appendWith(~digitGroupingState, v, element)
       | (Normal | GroupingDigits(_)) as digitGroupingState =>
-        let numbersRev = switch digitGroupingState {
-        | GroupingDigits({numbersRev}) => numbersRev
-        | _ => list{}
+        let digitGroupingState = switch digitGroupingState {
+        | GroupingDigits({groupSize, numbersRev}) =>
+          GroupingDigits({groupSize, numbersRev: list{element, ...numbersRev}})
+        | _ => GroupingDigits({groupSize: 3, numbersRev: list{element}})
         }
-        {
-          format: v.format,
-          bodyRev: v.bodyRev,
-          digitGroupingState: GroupingDigits({numbersRev: list{element, ...numbersRev}}),
-          lastElementType: Other,
-        }
+        {format: v.format, bodyRev: v.bodyRev, digitGroupingState, lastElementType: Other}
       }
 
     let appendDecimalSeparator = (v, range) => {
@@ -137,7 +134,9 @@ module Make = (M: Config): {
 
     let appendBasePrefix = (v, element) => {
       let digitGroupingState =
-        v.digitGroupingState == GroupingDisabled ? GroupingDisabled : SkipGrouping
+        v.digitGroupingState == GroupingDisabled
+          ? GroupingDisabled
+          : GroupingDigits({groupSize: 4, numbersRev: list{}})
       appendWith(~digitGroupingState, v, element)
     }
 

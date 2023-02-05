@@ -17,7 +17,7 @@ test("formats numbers", () => {
   ->expect
   ->toEqual(`0.1234567`)
 
-  create([Hex, N2_S, N3_S, N4_S, N5_S, N6_S, N7_S])->expect->toEqual(`\\rm{0x}234567`)
+  create([Hex, N2_S, N3_S, N4_S, N5_S, N6_S, N7_S])->expect->toEqual(`\\rm{0x}23,4567`)
 })
 
 test("superscripts", () => {
