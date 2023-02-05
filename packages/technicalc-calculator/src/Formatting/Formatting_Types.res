@@ -9,17 +9,14 @@ type style =
   | Decimal
   | Engineering
 
-type locale =
-  | English
-  | European
-
 type format = {
   mode: mode,
   style: style,
-  locale: locale,
+  decimalSeparator: string,
+  groupingSeparator: string,
+  digitGrouping: bool,
   base: int,
   precision: int,
-  digitGrouping: bool,
   decimalMinMagnitude: int,
   decimalMaxMagnitude: int,
 }
@@ -27,10 +24,11 @@ type format = {
 let defaultFormat = {
   mode: String,
   style: Natural({mixedFractions: false}),
-  locale: English,
+  decimalSeparator: ".",
+  groupingSeparator: ",",
+  digitGrouping: true,
   base: 10,
   precision: 12,
-  digitGrouping: true,
   decimalMinMagnitude: -3,
   decimalMaxMagnitude: 8,
 }

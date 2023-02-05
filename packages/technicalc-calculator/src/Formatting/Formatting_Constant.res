@@ -2,11 +2,17 @@ open Formatting_Types
 
 %%private(
   let f = (format, v) => {
-    let {locale, base, digitGrouping} = switch format {
+    let {decimalSeparator, groupingSeparator, base, digitGrouping} = switch format {
     | Some(format) => format
     | None => defaultFormat
     }
-    Formatting_Number.formatInteger(~locale, ~base, ~digitGrouping, Decimal.ofInt(v))
+    Formatting_Number.formatInteger(
+      ~decimalSeparator,
+      ~groupingSeparator,
+      ~base,
+      ~digitGrouping,
+      Decimal.ofInt(v),
+    )
   }
 )
 

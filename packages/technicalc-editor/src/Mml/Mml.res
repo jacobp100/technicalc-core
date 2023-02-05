@@ -3,9 +3,8 @@ open Mml_Builders
 
 %%private(let invalidAttributes = list{(#class, "invalid"), (#stretchy, "false")})
 module Mml_Accum = Stringifier.Make({
-  let groupingSeparatorU = (. locale) => element("mn", Stringifier.groupingSeparator(locale))
-  let decimalSeparatorU = (. locale, range) =>
-    element(~range, "mn", Stringifier.decimalSeparator(locale))
+  let groupingSeparatorU = (. groupingSeparator) => element("mn", groupingSeparator)
+  let decimalSeparatorU = (. decimalSeparator, range) => element(~range, "mn", decimalSeparator)
 
   let unpairedOpenBracketU = (. range) => element(~attributes=invalidAttributes, ~range, "mo", "(")
   let unpairedCloseBracketU = (. superscript, range) =>
@@ -296,9 +295,9 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     table(~numRows, ~numColumns, elements, superscript, range)->Mml_Accum.append(. accum, _)
   }
 
-let create = (~locale=Stringifier.English, ~digitGrouping=true, ~inline=false, elements) => {
+let create = (~format, ~inline=false, elements) => {
   let body = if Belt.Array.length(elements) != 0 {
-    AST.reduceMapU(elements, ~reduce, ~map, ~initial=Mml_Accum.make(. locale, digitGrouping))
+    AST.reduceMapU(elements, ~reduce, ~map, ~initial=Mml_Accum.make(. format))
   } else {
     ""
   }

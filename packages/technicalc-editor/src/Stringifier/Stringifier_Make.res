@@ -6,8 +6,8 @@ type lastElementType =
   | Other
 
 module type Config = {
-  let groupingSeparatorU: (. locale) => string
-  let decimalSeparatorU: (. locale, (int, int)) => string
+  let groupingSeparatorU: (. string) => string
+  let decimalSeparatorU: (. string, (int, int)) => string
   let bracketRangeU: (. option<AST.superscript<string>>, string, (int, int), (int, int)) => string
   let unpairedOpenBracketU: (. (int, int)) => string
   let unpairedCloseBracketU: (. option<AST.superscript<string>>, (int, int)) => string
@@ -15,7 +15,7 @@ module type Config = {
 
 module Make = (M: Config): {
   type t
-  let make: (. locale, bool) => t
+  let make: (. format) => t
   let lastElementType: (. t) => lastElementType
   let append: (. t, string) => t
   let appendOperatorOrFunction: (. t, string) => t
@@ -35,27 +35,26 @@ module Make = (M: Config): {
       | GroupingDigits({numbersRev: list<string>})
 
     type t = {
-      locale: locale,
+      format: format,
       bodyRev: list<string>,
       digitGroupingState: digitGroupingState,
       lastElementType: lastElementType,
     }
 
-    let make = (~locale, ~digitGrouping) => {
-      locale,
+    let make = (~format) => {
+      format,
       bodyRev: list{},
-      digitGroupingState: digitGrouping ? Normal : GroupingDisabled,
+      digitGroupingState: format.digitGrouping ? Normal : GroupingDisabled,
       lastElementType: NoElement,
     }
 
-    let clear = x =>
-      make(~locale=x.locale, ~digitGrouping=x.digitGroupingState === GroupingDisabled)
+    let clear = x => make(~format=x.format)
 
     let lastElementType = x => x.lastElementType
 
     %%private(
       let flattenDigits = (v, ~numbersRev) => {
-        let groupingSeparator = M.groupingSeparatorU(. v.locale)
+        let groupingSeparator = M.groupingSeparatorU(. v.format.groupingSeparator)
         let rec iter = (~formattedNumbers, ~numbersRev) =>
           switch numbersRev {
           | list{c, b, a, ...tail} if tail != list{} =>
@@ -96,10 +95,10 @@ module Make = (M: Config): {
         | Some(digitGroupingState) => digitGroupingState
         | None => defaultDigitGroupingState(v)
         }
-        let {locale} = v
+        let {format} = v
         let bodyRev = list{element, ...bodyRev(v)}
         {
-          locale,
+          format,
           bodyRev,
           digitGroupingState,
           lastElementType,
@@ -122,7 +121,7 @@ module Make = (M: Config): {
         | _ => list{}
         }
         {
-          locale: v.locale,
+          format: v.format,
           bodyRev: v.bodyRev,
           digitGroupingState: GroupingDigits({numbersRev: list{element, ...numbersRev}}),
           lastElementType: Other,
@@ -132,7 +131,7 @@ module Make = (M: Config): {
     let appendDecimalSeparator = (v, range) => {
       let digitGroupingState =
         v.digitGroupingState == GroupingDisabled ? GroupingDisabled : SkipGrouping
-      let decimalSeparator = M.decimalSeparatorU(. v.locale, range)
+      let decimalSeparator = M.decimalSeparatorU(. v.format.decimalSeparator, range)
       appendWith(~digitGroupingState, v, decimalSeparator)
     }
 
@@ -142,13 +141,13 @@ module Make = (M: Config): {
       appendWith(~digitGroupingState, v, element)
     }
 
-    let modifyLastU = ({locale} as v, fn) => {
+    let modifyLastU = ({format} as v, fn) => {
       let bodyRev = switch bodyRev(v) {
       | list{last, ...rest} => list{fn(. Some(last)), ...rest}
       | list{} => list{fn(. None)}
       }
       {
-        locale,
+        format,
         bodyRev,
         digitGroupingState: Normal,
         lastElementType: Other,
@@ -168,8 +167,8 @@ module Make = (M: Config): {
       @as("tl") bracketGroups: list<bracketGroup>,
     }
 
-    let make = (~locale, ~digitGrouping) => {
-      level0Body: DigitSeparators.make(~locale, ~digitGrouping),
+    let make = (~format) => {
+      level0Body: DigitSeparators.make(~format),
       bracketGroups: list{},
     }
 
@@ -232,7 +231,7 @@ module Make = (M: Config): {
   }
 
   type t = BracketGroups.t
-  let make = (. locale, digitGrouping) => BracketGroups.make(~locale, ~digitGrouping)
+  let make = (. format) => BracketGroups.make(~format)
   let lastElementType = (. body) => DigitSeparators.lastElementType(BracketGroups.body(body))
   let append = (. body, element) =>
     BracketGroups.transformCurrentGroupWithArgU(body, element, (. a, b) => {

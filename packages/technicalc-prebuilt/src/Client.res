@@ -13,10 +13,11 @@ type config = {angleMode: option<string>}
 type format = {
   mode: option<string>,
   style: option<string>,
-  locale: option<string>,
+  decimalSeparator: option<string>,
+  groupingSeparator: option<string>,
+  digitGrouping: option<bool>,
   base: option<int>,
   precision: option<int>,
-  digitGrouping: option<bool>,
   decimalMinMagnitude: option<int>,
   decimalMaxMagnitude: option<int>,
 }
@@ -26,7 +27,8 @@ type format = {
 let emptyFormat = {
   mode: None,
   style: None,
-  locale: None,
+  decimalSeparator: None,
+  groupingSeparator: None,
   base: None,
   precision: None,
   digitGrouping: None,
@@ -48,14 +50,6 @@ let emptyFormat = {
 )
 %%private(
   @inline
-  let formatLocale = f =>
-    switch f.locale {
-    | Some("european") => TechniCalcCalculator.Formatting.European
-    | _ => defaultFormat.locale
-    }
-)
-%%private(
-  @inline
   let formatBase = f =>
     switch f.base {
     | Some(base) => base
@@ -68,6 +62,22 @@ let emptyFormat = {
     switch f.precision {
     | Some(precision) => precision
     | None => defaultFormat.precision
+    }
+)
+%%private(
+  @inline
+  let formatDecimalSeparator = f =>
+    switch f.decimalSeparator {
+    | Some(decimalSeparator) => decimalSeparator
+    | None => defaultFormat.decimalSeparator
+    }
+)
+%%private(
+  @inline
+  let formatGroupingSeparator = f =>
+    switch f.groupingSeparator {
+    | Some(groupingSeparator) => groupingSeparator
+    | None => defaultFormat.groupingSeparator
     }
 )
 %%private(
@@ -104,41 +114,29 @@ module Elements = {
   let decode = Encoding.decode
 
   %%private(
-    let locale = maybeFormat => {
-      let locale = switch maybeFormat {
-      | Some(format) => formatLocale(format)
-      | None => defaultFormat.locale
-      }
-      switch locale {
-      | English => Stringifier.English
-      | European => European
-      }
-    }
-  )
-
-  %%private(
-    let digitGrouping = maybeFormat => {
+    let getFormat = (maybeFormat): TechniCalcEditor.Stringifier.format =>
       switch maybeFormat {
-      | Some(format) => formatDigitGrouping(format)
-      | None => defaultFormat.digitGrouping
+      | Some(format) => {
+          decimalSeparator: formatDecimalSeparator(format),
+          groupingSeparator: formatGroupingSeparator(format),
+          digitGrouping: formatDigitGrouping(format),
+        }
+      | None => TechniCalcEditor.Stringifier.defaultFormat
       }
-    }
   )
 
   let toMml = (x, maybeFormat, maybeInline) => {
-    let locale = locale(maybeFormat)
-    let digitGrouping = digitGrouping(maybeFormat)
+    let format = getFormat(maybeFormat)
     let inline = switch maybeInline {
     | Some(inline) => inline
     | None => false
     }
-    Mml.create(~locale, ~digitGrouping, ~inline, x)
+    Mml.create(~format, ~inline, x)
   }
 
   let toTex = (x, maybeFormat) => {
-    let locale = locale(maybeFormat)
-    let digitGrouping = digitGrouping(maybeFormat)
-    Tex.create(~locale, ~digitGrouping, x)
+    let format = getFormat(maybeFormat)
+    Tex.create(~format, x)
   }
 
   let parse = elements => Value.parse(elements)->toJsResult
@@ -248,10 +246,11 @@ module Value = {
       | Some(format) => {
           mode,
           style: formatStyle(format),
-          locale: formatLocale(format),
+          decimalSeparator: formatDecimalSeparator(format),
+          groupingSeparator: formatGroupingSeparator(format),
+          digitGrouping: formatDigitGrouping(format),
           base: formatBase(format),
           precision: formatPrecision(format),
-          digitGrouping: formatDigitGrouping(format),
           decimalMinMagnitude: formatDecimalMinMagnitude(format),
           decimalMaxMagnitude: formatDecimalMaxMagnitude(format),
         }

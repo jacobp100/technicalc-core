@@ -35,13 +35,19 @@ open Formatting_Util
 
 %%private(
   let formatConstantMultiple = (~formatAsRow, n, c, format): string => {
-    let {locale, base, digitGrouping} = switch format {
+    let {decimalSeparator, groupingSeparator, base, digitGrouping} = switch format {
     | Some(format) => format
     | None => defaultFormat
     }
 
     switch (
-      Decimal.ofInt(n)->Formatting_Number.formatInteger(~locale, ~base, ~digitGrouping, _),
+      Decimal.ofInt(n)->Formatting_Number.formatInteger(
+        ~decimalSeparator,
+        ~groupingSeparator,
+        ~base,
+        ~digitGrouping,
+        _,
+      ),
       Formatting_Constant.toString(~format, c),
     ) {
     | ("1", "") => formatNumber("1", format)
@@ -55,7 +61,7 @@ open Formatting_Util
 
 %%private(
   let formatReal = (re, format): string => {
-    let {locale, base, digitGrouping} = switch format {
+    let {decimalSeparator, groupingSeparator, base, digitGrouping} = switch format {
     | Some(format) => format
     | None => defaultFormat
     }
@@ -78,7 +84,13 @@ open Formatting_Util
           integer == 0
             ? ""
             : Decimal.ofInt(integer)
-              ->Formatting_Number.formatInteger(~locale, ~base, ~digitGrouping, _)
+              ->Formatting_Number.formatInteger(
+                ~decimalSeparator,
+                ~groupingSeparator,
+                ~base,
+                ~digitGrouping,
+                _,
+              )
               ->formatNumber(format)
         (before, remainder)
       } else {
@@ -89,7 +101,13 @@ open Formatting_Util
 
       let bottom =
         Decimal.ofInt(d)
-        ->Formatting_Number.formatInteger(~locale, ~base, ~digitGrouping, _)
+        ->Formatting_Number.formatInteger(
+          ~decimalSeparator,
+          ~groupingSeparator,
+          ~base,
+          ~digitGrouping,
+          _,
+        )
         ->formatNumber(format)
 
       switch mode {
@@ -114,7 +132,8 @@ open Formatting_Util
 
       if insideMagnitudeThreshold {
         Formatting_Number.formatDecimal(
-          ~locale,
+          ~decimalSeparator,
+          ~groupingSeparator,
           ~base,
           ~digitGrouping,
           ~maxDecimalPlaces=precision,
@@ -122,7 +141,8 @@ open Formatting_Util
         )->formatNumber(format)
       } else {
         Formatting_Number.formatExponential(
-          ~locale,
+          ~decimalSeparator,
+          ~groupingSeparator,
           ~base,
           ~exponent=magnitude,
           ~maxDecimalPlaces=precision,
@@ -139,7 +159,8 @@ open Formatting_Util
       }
 
       Formatting_Number.formatExponential(
-        ~locale,
+        ~decimalSeparator,
+        ~groupingSeparator,
         ~base,
         ~exponent,
         ~minDecimalPlaces=precision,

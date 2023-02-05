@@ -1,6 +1,6 @@
 open Jest
 
-let create = Tex.create
+let create = elements => Tex.create(~format=Stringifier.defaultFormat, elements)
 
 test("formats numbers", () => {
   create([N1_S])->expect->toEqual(`1`)

@@ -1,23 +1,3 @@
-open Formatting_Types
-
-%%private(
-  @inline
-  let decimalSeparator = locale =>
-    switch locale {
-    | English => "."
-    | European => ","
-    }
-)
-
-%%private(
-  @inline
-  let groupingSeparator = locale =>
-    switch locale {
-    | English => ","
-    | European => "."
-    }
-)
-
 %%private(
   @inline
   let basePrefixExn = base =>
@@ -30,9 +10,7 @@ open Formatting_Types
 )
 
 %%private(
-  let getSliceIndex = (~locale, ~startIndex, ~endIndex, string) => {
-    let decimalSeparator = decimalSeparator(locale)
-
+  let getSliceIndex = (~decimalSeparator, ~startIndex, ~endIndex, string) => {
     let rec iter = sliceIndex =>
       if sliceIndex >= startIndex {
         switch StringUtil.stringCharAtUnsafe(string, sliceIndex) {
@@ -47,9 +25,9 @@ open Formatting_Types
   }
 )
 %%private(
-  let trimTraillingZeros = (~locale, ~startIndex=0, ~endIndex=?, string) => {
+  let trimTraillingZeros = (~decimalSeparator, ~startIndex=0, ~endIndex=?, string) => {
     let endIndex = endIndex->Belt.Option.getWithDefault(String.length(string) - 1)
-    let sliceIndex = getSliceIndex(~locale, ~startIndex, ~endIndex, string)
+    let sliceIndex = getSliceIndex(~decimalSeparator, ~startIndex, ~endIndex, string)
 
     StringUtil.slice(string, 0, sliceIndex + 1) ++
     StringUtil.slice(string, endIndex + 1, String.length(string))
@@ -58,12 +36,10 @@ open Formatting_Types
 
 %%private(
   @inline
-  let adddigitGrouping = (~locale, ~startIndex=0, ~endIndex=?, string) => {
+  let adddigitGrouping = (~groupingSeparator, ~startIndex=0, ~endIndex=?, string) => {
     let endIndex = endIndex->Belt.Option.getWithDefault(String.length(string))
     let baseStr = ref(string)
     let index = ref(endIndex - 3)
-
-    let groupingSeparator = groupingSeparator(locale)
 
     while index.contents > startIndex {
       let len = String.length(baseStr.contents)
@@ -78,7 +54,7 @@ open Formatting_Types
 )
 
 %%private(
-  let decimalToString = (~locale, ~base, num) => {
+  let decimalToString = (~decimalSeparator, ~base, num) => {
     let str = switch base {
     | 2 => Decimal.toBinary(num)->Js.String.sliceToEnd(_, ~from=2)
     | 8 => Decimal.toOctal(num)->Js.String.sliceToEnd(_, ~from=2)
@@ -86,17 +62,17 @@ open Formatting_Types
     | 16 => Decimal.toHexadecimal(num)->Js.String.sliceToEnd(_, ~from=2)->Js.String.toUpperCase
     | _ => assert false
     }
-    switch decimalSeparator(locale) {
+    switch decimalSeparator {
     | "." => str
     | s => StringUtil.replaceFirst(str, ".", s)
     }
   }
 )
 
-let formatInteger = (~locale, ~base, ~digitGrouping, num) => {
-  let str = decimalToString(~locale, ~base, num)
+let formatInteger = (~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, num) => {
+  let str = decimalToString(~decimalSeparator, ~base, num)
   let str = if digitGrouping {
-    adddigitGrouping(~locale, ~startIndex=Decimal.lt(num, Decimal.zero) ? 1 : 0, str)
+    adddigitGrouping(~groupingSeparator, ~startIndex=Decimal.lt(num, Decimal.zero) ? 1 : 0, str)
   } else {
     str
   }
@@ -104,7 +80,8 @@ let formatInteger = (~locale, ~base, ~digitGrouping, num) => {
 }
 
 let formatDecimal = (
-  ~locale,
+  ~decimalSeparator,
+  ~groupingSeparator,
   ~base,
   ~digitGrouping,
   ~minDecimalPlaces=0,
@@ -115,7 +92,13 @@ let formatDecimal = (
   let integerPart = Decimal.trunc(absNum)
   let decimalPart = Decimal.sub(absNum, integerPart)
 
-  let integer = formatInteger(~locale, ~base, ~digitGrouping, integerPart)
+  let integer = formatInteger(
+    ~decimalSeparator,
+    ~groupingSeparator,
+    ~base,
+    ~digitGrouping,
+    integerPart,
+  )
   let integer = Decimal.gte(num, Decimal.zero) ? integer : "-" ++ integer
 
   let decimal = if maxDecimalPlaces == 0 {
@@ -127,13 +110,12 @@ let formatDecimal = (
       open Decimal
       trunc(decimalPart * ofInt(base) ** ofInt(maxDecimalPlaces))
     }
-    let baseStr = decimalToString(~locale, ~base, decimalAsInteger)
+    let baseStr = decimalToString(~decimalSeparator, ~base, decimalAsInteger)
     let str = StringUtil.make(maxDecimalPlaces - String.length(baseStr), '0') ++ baseStr
-    trimTraillingZeros(~locale, ~startIndex=minDecimalPlaces, str)
+    trimTraillingZeros(~decimalSeparator, ~startIndex=minDecimalPlaces, str)
   }
 
   if decimal != "" {
-    let decimalSeparator = decimalSeparator(locale)
     integer ++ decimalSeparator ++ decimal
   } else {
     integer
@@ -141,7 +123,8 @@ let formatDecimal = (
 }
 
 let formatExponential = (
-  ~locale,
+  ~decimalSeparator,
+  ~groupingSeparator,
   ~base,
   ~exponent=?,
   ~minDecimalPlaces=0,
@@ -153,7 +136,8 @@ let formatExponential = (
   | None => DecimalUtil.magnitude(num)
   }
   let decimalPart = formatDecimal(
-    ~locale,
+    ~decimalSeparator,
+    ~groupingSeparator,
     ~base,
     ~digitGrouping=false,
     ~minDecimalPlaces,

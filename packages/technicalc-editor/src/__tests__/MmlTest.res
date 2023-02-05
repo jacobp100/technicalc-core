@@ -4,7 +4,10 @@ let openTag = `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
 let closeTag = `</math>`
 
 let create = elements =>
-  Mml.create(elements)->StringUtil.slice(String.length(openTag), -String.length(closeTag))
+  Mml.create(~format=Stringifier.defaultFormat, elements)->StringUtil.slice(
+    String.length(openTag),
+    -String.length(closeTag),
+  )
 
 test("formats numbers", () => {
   create([N1_S])->expect->toEqual(`<mrow><mn id="0:1">1</mn></mrow>`)

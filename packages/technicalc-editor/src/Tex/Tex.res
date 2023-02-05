@@ -79,8 +79,8 @@ open AST
 )
 
 module Tex_Accum = Stringifier.Make({
-  let groupingSeparatorU = (. locale) => Stringifier.groupingSeparator(locale)
-  let decimalSeparatorU = (. locale, _) => Stringifier.decimalSeparator(locale)
+  let groupingSeparatorU = (. groupingSeparator) => groupingSeparator
+  let decimalSeparatorU = (. decimalSeparator, _) => decimalSeparator
 
   let unpairedOpenBracketU = (. _) => " ( "
   let unpairedCloseBracketU = (. superscript, _) => withSuperscript(" ) ", superscript)
@@ -186,14 +186,9 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     table(~numRows, ~numColumns, elements, superscript)->withSpaces->Tex_Accum.append(. accum, _)
   }
 
-let create = (~locale=Stringifier.English, ~digitGrouping=true, elements) =>
+let create = (~format, elements) =>
   if Belt.Array.length(elements) != 0 {
-    AST.reduceMapU(
-      elements,
-      ~reduce,
-      ~map,
-      ~initial=Tex_Accum.make(. locale, digitGrouping),
-    )->removeBraces
+    AST.reduceMapU(elements, ~reduce, ~map, ~initial=Tex_Accum.make(. format))->removeBraces
   } else {
     ""
   }

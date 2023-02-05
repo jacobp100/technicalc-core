@@ -11,7 +11,9 @@ type format = {
   @optional
   style: string,
   @optional
-  locale: string,
+  decimalSeparator: string,
+  @optional
+  groupingSeparator: string,
   @optional
   base: int,
   @optional
@@ -43,10 +45,12 @@ let toString = (x, maybeFormat) => {
     | Some("natural-mixed") => Natural({mixedFractions: true})
     | _ => defaultFormat.style
     },
-    locale: switch localeGet(f) {
-    | Some("european") => European
-    | _ => defaultFormat.locale
-    },
+    decimalSeparator: decimalSeparatorGet(f)->Belt.Option.getWithDefault(
+      Formatting_Types.defaultFormat.decimalSeparator,
+    ),
+    groupingSeparator: groupingSeparatorGet(f)->Belt.Option.getWithDefault(
+      Formatting_Types.defaultFormat.groupingSeparator,
+    ),
     base: baseGet(f)->Belt.Option.getWithDefault(Formatting_Types.defaultFormat.base),
     precision: precisionGet(f)->Belt.Option.getWithDefault(
       Formatting_Types.defaultFormat.precision,
