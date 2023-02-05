@@ -4,6 +4,7 @@ type mmlNames = [
   | #mathvariant
   | #stretchy
   | #align
+  | #width
 ]
 
 type customNames = [#id | #class]

@@ -3,7 +3,10 @@ open Mml_Builders
 
 %%private(let invalidAttributes = list{(#class, "invalid"), (#stretchy, "false")})
 module Mml_Accum = Stringifier.Make({
-  let groupingSeparatorU = (. groupingSeparator) => element("mn", groupingSeparator)
+  let groupingSeparatorU = (. groupingSeparator) =>
+    groupingSeparator == " "
+      ? element(~attributes=list{(#width, "4px")}, "mspace", "")
+      : element("mn", groupingSeparator)
   let decimalSeparatorU = (. decimalSeparator, range) => element(~range, "mn", decimalSeparator)
 
   let unpairedOpenBracketU = (. range) => element(~attributes=invalidAttributes, ~range, "mo", "(")

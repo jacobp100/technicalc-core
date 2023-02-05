@@ -79,7 +79,8 @@ open AST
 )
 
 module Tex_Accum = Stringifier.Make({
-  let groupingSeparatorU = (. groupingSeparator) => groupingSeparator
+  let groupingSeparatorU = (. groupingSeparator) =>
+    groupingSeparator == " " ? `\\,` : groupingSeparator
   let decimalSeparatorU = (. decimalSeparator, _) => decimalSeparator
 
   let unpairedOpenBracketU = (. _) => " ( "
