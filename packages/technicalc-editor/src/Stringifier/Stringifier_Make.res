@@ -32,7 +32,7 @@ module Make = (M: Config): {
       | GroupingDisabled
       | Normal
       | SkipGrouping // After decimal points etc.
-      | GroupingDigits({groupSize: int, numbersRev: list<string>})
+      | GroupingDigits({groupingSize: int, numbersRev: list<string>})
 
     type t = {
       format: format,
@@ -53,10 +53,10 @@ module Make = (M: Config): {
     let lastElementType = x => x.lastElementType
 
     %%private(
-      let flattenDigits = (v, ~groupSize, ~numbersRev) => {
+      let flattenDigits = (v, ~groupingSize, ~numbersRev) => {
         let groupingSeparator = M.groupingSeparatorU(. v.format.groupingSeparator)
         let rec iter = (~formattedNumbersFwd, ~numbersRev) =>
-          switch Belt.List.splitAt(numbersRev, groupSize) {
+          switch Belt.List.splitAt(numbersRev, groupingSize) {
           | Some((groupRev, numbersRev)) if numbersRev != list{} =>
             let formattedNumbersFwd = list{
               groupingSeparator,
@@ -78,7 +78,7 @@ module Make = (M: Config): {
         | Normal
         | SkipGrouping =>
           v.bodyRev
-        | GroupingDigits({groupSize, numbersRev}) => flattenDigits(v, ~groupSize, ~numbersRev)
+        | GroupingDigits({groupingSize, numbersRev}) => flattenDigits(v, ~groupingSize, ~numbersRev)
         }
       }
     )
@@ -118,9 +118,9 @@ module Make = (M: Config): {
         appendWith(~digitGroupingState, v, element)
       | (Normal | GroupingDigits(_)) as digitGroupingState =>
         let digitGroupingState = switch digitGroupingState {
-        | GroupingDigits({groupSize, numbersRev}) =>
-          GroupingDigits({groupSize, numbersRev: list{element, ...numbersRev}})
-        | _ => GroupingDigits({groupSize: 3, numbersRev: list{element}})
+        | GroupingDigits({groupingSize, numbersRev}) =>
+          GroupingDigits({groupingSize, numbersRev: list{element, ...numbersRev}})
+        | _ => GroupingDigits({groupingSize: 3, numbersRev: list{element}})
         }
         {format: v.format, bodyRev: v.bodyRev, digitGroupingState, lastElementType: Other}
       }
@@ -136,7 +136,7 @@ module Make = (M: Config): {
       let digitGroupingState =
         v.digitGroupingState == GroupingDisabled
           ? GroupingDisabled
-          : GroupingDigits({groupSize: 4, numbersRev: list{}})
+          : GroupingDigits({groupingSize: 4, numbersRev: list{}})
       appendWith(~digitGroupingState, v, element)
     }
 

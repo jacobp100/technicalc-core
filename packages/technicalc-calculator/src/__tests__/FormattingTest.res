@@ -98,7 +98,7 @@ test("formats numbers where the exponent is larger than a 32 bit integer", () =>
 test("formats other bases", () => {
   let format = base => {...defaultFormat, base}
 
-  expect(stringOfFloat(100., format(2)))->toBe("0b1,100,100")
+  expect(stringOfFloat(100., format(2)))->toBe("0b110,0100")
   expect(stringOfFloat(100., format(8)))->toBe("0o144")
   expect(stringOfFloat(100., format(16)))->toBe("0x64")
 })

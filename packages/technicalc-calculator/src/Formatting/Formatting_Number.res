@@ -36,10 +36,16 @@
 
 %%private(
   @inline
-  let adddigitGrouping = (~groupingSeparator, ~startIndex=0, ~endIndex=?, string) => {
+  let adddigitGrouping = (
+    ~groupingSeparator,
+    ~groupingSize,
+    ~startIndex=0,
+    ~endIndex=?,
+    string,
+  ) => {
     let endIndex = endIndex->Belt.Option.getWithDefault(String.length(string))
     let baseStr = ref(string)
-    let index = ref(endIndex - 3)
+    let index = ref(endIndex - groupingSize)
 
     while index.contents > startIndex {
       let len = String.length(baseStr.contents)
@@ -47,7 +53,7 @@
         StringUtil.slice(baseStr.contents, 0, index.contents) ++
         groupingSeparator ++
         StringUtil.slice(baseStr.contents, index.contents, len)
-      index := index.contents - 3
+      index := index.contents - groupingSize
     }
     baseStr.contents
   }
@@ -72,7 +78,13 @@
 let formatInteger = (~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, num) => {
   let str = decimalToString(~decimalSeparator, ~base, num)
   let str = if digitGrouping {
-    adddigitGrouping(~groupingSeparator, ~startIndex=Decimal.lt(num, Decimal.zero) ? 1 : 0, str)
+    let groupingSize = base == 10 ? 3 : 4
+    adddigitGrouping(
+      ~groupingSeparator,
+      ~groupingSize,
+      ~startIndex=Decimal.lt(num, Decimal.zero) ? 1 : 0,
+      str,
+    )
   } else {
     str
   }
