@@ -108,6 +108,7 @@ let encode = (value: Value_Types.t) =>
     encodeUint(numColumns) ++
     scalarElements(elements)->encodeArray(_, encodeScalar)
   | #Pcnt(scalar) => encodeUint(3) ++ Scalar_Finite.toScalar(scalar)->encodeScalar
+  | #Mesr({value, units}) => encodeUint(5) ++ encodeReal(value) ++ Encoding_Units.encodeUnits(units)
   }
 
 let read = (reader): option<Value_Types.t> =>
@@ -125,14 +126,18 @@ let read = (reader): option<Value_Types.t> =>
   | Some(2) =>
     switch (readUint(reader), readUint(reader), readArray(reader, readScalar)) {
     | (Some(numRows), Some(numColumns), Some(elements)) =>
-      let matrix = Matrix_Base.make(~numRows, ~numColumns, elements)->Value_Base.ofMatrix
-      Some(matrix)
+      Some(Matrix_Base.make(~numRows, ~numColumns, elements)->Value_Base.ofMatrix)
     | _ => None
     }
   | Some(3) =>
     switch readScalar(reader) {
     | Some(scalar) => Some(Value_Base.ofPercent(scalar))
     | None => None
+    }
+  | Some(5) =>
+    switch (readReal(reader), Encoding_Units.readUnits(reader)) {
+    | (Some(value), Some(units)) => Some(Measure_Base.ofReal(value, ~units)->Value_Base.ofMeasure)
+    | _ => None
     }
   // Old encoding
   | Some(4) => Some(Value_Base.nan)

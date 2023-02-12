@@ -1,4 +1,4 @@
-open TechniCalcCalculator.Unit_Types
+open Units_Types
 
 %%private(let makeSureThisIsTheLastIndex = 21)
 %%private(

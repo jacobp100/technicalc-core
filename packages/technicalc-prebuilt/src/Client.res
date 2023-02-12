@@ -279,7 +279,7 @@ module Value = {
     }
 
   let toString = (x, maybeFormat) => {
-    let format = getFormat(~mode=String, maybeFormat)
+    let format = getFormat(~mode=Ascii, maybeFormat)
     Formatting.toString(~format, x)
   }
 
@@ -360,8 +360,8 @@ module Units = {
   //     TechniCalcEditor.Encoding_Units.readUnitParts,
   //   );
 
-  let unitsCompatible = TechniCalcCalculator.Units_ConvertChecks.unitsCompatible
-  let compositeUnitsCompatible = TechniCalcCalculator.Units_ConvertChecks.compositeUnitsCompatible
+  let unitsCompatible = TechniCalcCalculator.Units.compatible
+  let compositeUnitsCompatible = TechniCalcCalculator.Units.compositeCompatible
 
   let toMml = TechniCalcEditor.Mml_Units.unitsMml
   let toString = Units_Util.toString

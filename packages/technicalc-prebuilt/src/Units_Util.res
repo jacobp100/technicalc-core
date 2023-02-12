@@ -1,4 +1,4 @@
-open TechniCalcCalculator.Unit_Types
+open TechniCalcCalculator.Units_Types
 
 let prefixes = [
   Unit,
@@ -51,7 +51,7 @@ let prefixToString = (prefix: prefix) =>
   | Exbi => Some("Exbi")
   }
 
-let unitTypeToString = (unit: unitType) =>
+let unitTypeToString = (unit: name) =>
   switch unit {
   | Second => "Second"
   | Minute => "Minute"
@@ -114,20 +114,20 @@ let unitTypeToString = (unit: unitType) =>
   | Fahrenheit => "Fahrenheit"
   }
 
-let unitTypeToStringPlural = (type_: unitType) =>
-  switch type_ {
+let unitTypeToStringPlural = (name: name) =>
+  switch name {
   | Century => "Centuries"
   | Inch => "Inches"
   | Foot => "Feet"
   | Celsius
   | Fahrenheit =>
-    unitTypeToString(type_)
-  | _ => unitTypeToString(type_) ++ "s"
+    unitTypeToString(name)
+  | _ => unitTypeToString(name) ++ "s"
   }
 
 %%private(
-  let unitToString = (~plural, {prefix, type_, power}: t) => {
-    let out = plural ? unitTypeToStringPlural(type_) : unitTypeToString(type_)
+  let unitToString = (~plural, {prefix, name, power}: t) => {
+    let out = plural ? unitTypeToStringPlural(name) : unitTypeToString(name)
 
     let out = switch prefixToString(prefix) {
     | Some(prefix) =>

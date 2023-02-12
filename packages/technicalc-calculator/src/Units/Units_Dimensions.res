@@ -1,4 +1,4 @@
-open Unit_Types
+open Units_Types
 
 type dimensions = {
   length: int,
@@ -23,7 +23,7 @@ type dimensions = {
 %%private(let memory = {...empty, memory: 1})
 %%private(let temperature = {...empty, temperature: 1})
 
-let ofUnit = (v: unitType) =>
+let ofUnit = (v: name) =>
   switch v {
   /* Time */
   | Second
@@ -98,8 +98,8 @@ let ofUnit = (v: unitType) =>
   | Fahrenheit => temperature
   }
 
-let ofUnit = ({type_, power}: t) => {
-  let dimensions = ofUnit(type_)
+let ofUnit = ({name, power}: t) => {
+  let dimensions = ofUnit(name)
   {
     length: dimensions.length * power,
     time: dimensions.time * power,

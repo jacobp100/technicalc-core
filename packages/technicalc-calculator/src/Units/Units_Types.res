@@ -26,7 +26,7 @@ type prefix =
  This would be much better as a polymorphic variant, but it meant any switch
  statement over values took over 1kb of JS to compile
  */
-type unitType =
+type name =
   /* Time */
   | Second
   | Minute
@@ -101,8 +101,6 @@ type unitType =
 
 type t = {
   prefix: prefix,
-  @as("type") type_: unitType,
+  name: name,
   power: int,
 }
-
-let eq = (a, b) => a.prefix == b.prefix && a.type_ == b.type_ && a.power == b.power

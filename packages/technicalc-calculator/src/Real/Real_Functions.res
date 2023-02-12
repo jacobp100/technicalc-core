@@ -26,6 +26,18 @@ let sqrt = a => {
   }
 }
 
+let logExn = (a: t) =>
+  switch a {
+  | Rational(1, 1, Exp(reExp)) => ofRational(reExp, 1, Unit)
+  | _ =>
+    let f = toDecimal(a)
+    if Decimal.gt(f, Decimal.zero) {
+      ofDecimal(Decimal.ln(f))
+    } else {
+      assert false
+    }
+  }
+
 %%private(
   let ofDecimalInt = f =>
     switch Decimal.toFloat(f)->FloatUtil.toInt {
@@ -34,6 +46,7 @@ let sqrt = a => {
     }
 )
 
+let trunc = a => toDecimal(a)->Decimal.trunc->ofDecimalInt
 let round = a => toDecimal(a)->Decimal.round->ofDecimalInt
 let floor = a => toDecimal(a)->Decimal.floor->ofDecimalInt
 let ceil = a => toDecimal(a)->Decimal.ceil->ofDecimalInt

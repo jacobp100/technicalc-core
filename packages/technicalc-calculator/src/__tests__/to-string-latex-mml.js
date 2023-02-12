@@ -9,7 +9,11 @@ import {
   i,
   nan,
 } from "../Value/Value";
-import { ofString, toString as toStringBase } from "../Formatting/Formatting";
+import {
+  defaultFormat,
+  ofString,
+  toString as toStringBase,
+} from "../Formatting/Formatting";
 import { toString, matrixOfFloats } from "../__test-util__/ValueTestUtil";
 
 const [three, minusThree, threeHalves, minusThreeHalves, half, minusHalf] = [
@@ -28,10 +32,10 @@ test("parses decimal strings", () => {
   expect(ofString("-.5")).toEqual(minusHalf);
 });
 
-test("formats exactly when not passing in a format", () => {
-  expect(toStringBase(undefined, false, div(one, pi))).toEqual(
-    "0.3183098861837906715377675267450287"
-  );
+test("formats large decimals", () => {
+  expect(
+    toStringBase({ ...defaultFormat, precision: 99 }, false, div(one, pi))
+  ).toEqual("0.31830988618379067153");
 });
 
 it.each([

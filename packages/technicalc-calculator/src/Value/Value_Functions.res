@@ -10,6 +10,8 @@ open Value_Base
       fn(. p)->ofPercent
     | #Matx(m) => Matrix.mapU(m, fn)->ofMatrix
     | #Vect(v) => Vector.mapU(v, fn)->ofVector
+    | #Mesr({value, units}) =>
+      Measure.ofReal(Scalar.ofReal(value)->fn(. _)->Scalar.toReal, ~units)->ofMeasure
     }
 )
 
@@ -28,6 +30,7 @@ let abs = (a: t): t =>
   | #Pcnt(p) =>
     let p = Scalar.Finite.toScalar(p)
     Scalar.abs(p)->ofPercent
+  | #Mesr({value, units}) => Measure.ofReal(Real.abs(value), ~units)->ofMeasure
   | #Matx(m) => Matrix.determinant(m)->ofScalar
   | #Vect(v) => Vector.magnitudeSquared(v)->Scalar.sqrt->ofScalar
   }

@@ -47,9 +47,10 @@ let sin = (x: t): t =>
   | #Cmpx(_) =>
     let iX = x * i
     i * (exp(-iX) - exp(iX)) / ofInt(2)
+  | #Pcnt(_)
   | #Vect(_)
   | #Matx(_)
-  | #Pcnt(_)
+  | #Mesr(_)
   | #NaNN => nan
   }
 
@@ -77,9 +78,10 @@ let asin = (x: t): t =>
       -i * log(i * x + sqrt(one - x * x))
     | NaN => nan
     }
-  | #Matx(_)
-  | #Vect(_)
   | #Pcnt(_)
+  | #Vect(_)
+  | #Matx(_)
+  | #Mesr(_)
   | #NaNN => nan
   }
 
@@ -109,9 +111,10 @@ let cos = (x: t): t =>
   | #Cmpx(_) =>
     let iX = x * i
     (exp(iX) + exp(-iX)) / ofInt(2)
+  | #Pcnt(_)
   | #Vect(_)
   | #Matx(_)
-  | #Pcnt(_)
+  | #Mesr(_)
   | #NaNN => nan
   }
 
@@ -139,9 +142,10 @@ let acos = (x: t): t =>
       ofReal(Real.ofRational(1, 2, Pi(1))) - asin(x)
     | NaN => nan
     }
-  | #Matx(_)
-  | #Vect(_)
   | #Pcnt(_)
+  | #Vect(_)
+  | #Matx(_)
+  | #Mesr(_)
   | #NaNN => nan
   }
 
@@ -197,9 +201,10 @@ let tan = (x: t): t =>
     let a = exp(iX)
     let b = exp(-iX)
     (a - b) / ((a + b) * i)
-  | #Matx(_)
-  | #Vect(_)
   | #Pcnt(_)
+  | #Vect(_)
+  | #Matx(_)
+  | #Mesr(_)
   | #NaNN => nan
   }
 
@@ -238,9 +243,10 @@ let atan = (a: t): t =>
     }
 
     ofComplex(-t1im / two, t1re / two)
-  | #Matx(_)
-  | #Vect(_)
   | #Pcnt(_)
+  | #Vect(_)
+  | #Matx(_)
+  | #Mesr(_)
   | #NaNN => nan
   }
 

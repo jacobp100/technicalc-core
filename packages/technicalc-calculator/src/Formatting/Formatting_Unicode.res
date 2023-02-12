@@ -2,6 +2,8 @@ let pi = `π`
 let sqrt = `√`
 let divide = `÷`
 let magnitude = `×10`
+let mu = `μ`
+let degree = `°`
 
 let formatSuperscriptNumbers = str =>
   Belt.Array.makeByU(String.length(str), (. i) =>

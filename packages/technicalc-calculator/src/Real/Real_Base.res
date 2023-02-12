@@ -34,6 +34,15 @@ let ofDecimal = f =>
     Decimal(f)
   }
 
+let ofFloat = f =>
+  if f == 0. {
+    zero
+  } else if !FloatUtil.isFinite(f) {
+    nan
+  } else {
+    Decimal.ofFloat(f)->ofDecimal
+  }
+
 let ofInt = n => {
   assert (n->Belt.Float.fromInt->Belt.Int.fromFloat == n)
   Rational(n, 1, Unit)
@@ -74,6 +83,8 @@ let toDecimal = a =>
   | Decimal(d) => d
   }
 
+let toFloat = a => toDecimal(a)->Decimal.toFloat
+
 let toInt = a =>
   switch a {
   | Rational(n, 1, Unit) => Some(n)
@@ -81,6 +92,7 @@ let toInt = a =>
   | Decimal(d) => Decimal.toFloat(d)->FloatUtil.toInt
   }
 
+let cmp = (a, b) => Decimal.cmp(toDecimal(a), toDecimal(b))
 let gt = (a, b) => Decimal.gt(toDecimal(a), toDecimal(b))
 let gte = (a, b) => Decimal.gte(toDecimal(a), toDecimal(b))
 let lt = (a, b) => Decimal.lt(toDecimal(a), toDecimal(b))

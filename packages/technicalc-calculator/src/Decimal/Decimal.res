@@ -5,8 +5,6 @@ type constructor
 external constructor: constructor = "default"
 @send external set: (constructor, 'a) => unit = "set"
 
-set(constructor, {"precision": 34})
-
 @new @module("decimal.js") external ofInt: int => t = "default"
 @new @module("decimal.js") external ofFloat: float => t = "default"
 @new @module("decimal.js") external ofString: string => t = "default"
@@ -14,7 +12,7 @@ set(constructor, {"precision": 34})
 @send external toBinary: t => string = "toBinary"
 @send external toOctal: t => string = "toOctal"
 @send external toHexadecimal: t => string = "toHexadecimal"
-@send external toString: t => string = "toString"
+@send external toString: t => string = "toFixed"
 let zero = ofInt(0)
 let one = ofInt(1)
 let minusOne = ofInt(-1)

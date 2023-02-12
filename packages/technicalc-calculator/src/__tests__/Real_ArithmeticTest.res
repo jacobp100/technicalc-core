@@ -41,16 +41,16 @@ test("add constants of equal type", () => {
   expect(ofRational(1, 4, Pi(1)) + ofRational(3, 4, Pi(1)))->toEqual(Rational(1, 1, Pi(1)))
 
   expect(ofRational(1, 1, Pi(1)) + ofRational(1, 1, Pi(2)))->toEqual(
-    ofDecimalString("13.01119705467915185729713438315566"),
+    ofDecimalString("13.011197054679151858"),
   )
   expect(ofRational(1, 1, Sqrt(2)) + ofRational(1, 1, Sqrt(3)))->toEqual(
-    ofDecimalString("3.14626436994197234232913506571557"),
+    ofDecimalString("3.1462643699419723423"),
   )
 })
 
 test("add constants of differing type", () => {
   expect(ofRational(1, 1, Pi(1)) + ofRational(1, 1, Unit))->toEqual(
-    ofDecimalString("4.141592653589793238462643383279503"),
+    ofDecimalString("4.1415926535897932385"),
   )
 })
 
@@ -59,7 +59,7 @@ test("add with integer overflows", () => {
     ofDecimalString("2147483648"),
   )
   expect(ofRational(lsl(1, 30), 1, Pi(1)) + ofRational(lsl(1, 30), 1, Pi(1)))->toEqual(
-    ofDecimalString("6746518852.26100947929949132444813"),
+    ofDecimalString("6746518852.2610094794"),
   )
 })
 
@@ -77,16 +77,16 @@ test("sub constants of equal type", () => {
   expect(ofRational(5, 4, Pi(1)) - ofRational(1, 4, Pi(1)))->toEqual(Rational(1, 1, Pi(1)))
 
   expect(ofRational(1, 1, Pi(1)) - ofRational(1, 1, Pi(2)))->toEqual(
-    ofDecimalString("-6.728011747499565380371847616596649"),
+    ofDecimalString("-6.7280117474995653806"),
   )
   expect(ofRational(1, 1, Sqrt(2)) - ofRational(1, 1, Sqrt(3)))->toEqual(
-    ofDecimalString("-0.317837245195782244725757617296174"),
+    ofDecimalString("-0.3178372451957822447"),
   )
 })
 
 test("sub constants of differing type", () => {
   expect(ofRational(1, 1, Pi(1)) - ofRational(1, 1, Unit))->toEqual(
-    ofDecimalString("2.141592653589793238462643383279503"),
+    ofDecimalString("2.1415926535897932385"),
   )
 })
 
@@ -95,7 +95,7 @@ test("sub with integer overflows", () => {
     ofDecimalString("-3221225472"),
   )
   expect(ofRational(lsl(1, 31), 1, Pi(1)) - ofRational(lsl(1, 30), 1, Pi(1)))->toEqual(
-    ofDecimalString("-10119778278.39151421894923698667219"),
+    ofDecimalString("-10119778278.391514219"),
   )
 })
 
@@ -125,31 +125,31 @@ test("mul with constants based on exponents", () => {
 
 test("mul with differing constants", () => {
   expect(ofRational(1, 1, Pi(1)) * ofRational(1, 1, Exp(1)))->toEqual(
-    ofDecimalString("8.539734222673567065463550869546573"),
+    ofDecimalString("8.5397342226735670657"),
   )
   expect(ofRational(1, 1, Pi(1)) * ofRational(1, 1, Sqrt(2)))->toEqual(
-    ofDecimalString("4.442882938158366247015880990060694"),
+    ofDecimalString("4.4428829381583662471"),
   )
   expect(ofRational(1, 1, Exp(1)) * ofRational(1, 1, Pi(1)))->toEqual(
-    ofDecimalString("8.539734222673567065463550869546573"),
+    ofDecimalString("8.5397342226735670657"),
   )
   expect(ofRational(1, 1, Exp(1)) * ofRational(1, 1, Sqrt(2)))->toEqual(
-    ofDecimalString("3.844231028159116824863671637426276"),
+    ofDecimalString("3.8442310281591168249"),
   )
   expect(ofRational(1, 1, Sqrt(2)) * ofRational(1, 1, Pi(1)))->toEqual(
-    ofDecimalString("4.442882938158366247015880990060694"),
+    ofDecimalString("4.4428829381583662471"),
   )
   expect(ofRational(1, 1, Sqrt(2)) * ofRational(1, 1, Exp(1)))->toEqual(
-    ofDecimalString("3.844231028159116824863671637426276"),
+    ofDecimalString("3.8442310281591168249"),
   )
 })
 
 test("mul with constant-based integer overflows", () => {
   expect(ofRational(1, 1, Pi(lsl(1, 30))) * ofRational(1, 1, Pi(lsl(1, 30))))->toEqual(
-    ofDecimalString("1.644122443189402456517264494595729e+1067621222"),
+    ofDecimalString("1.644122443231386251e+1067621222"),
   )
   expect(ofRational(1, 1, Exp(lsl(1, 30))) * ofRational(1, 1, Exp(lsl(1, 30))))->toEqual(
-    ofDecimalString("2.013099393068963956343718245436346e+932640298"),
+    ofDecimalString("2.0130993930689639565e+932640298"),
   )
   expect(ofRational(1, 1, Sqrt(lsl(1, 30))) * ofRational(1, 1, Sqrt(lsl(1, 30))))->toEqual(
     Rational(1073741824, 1, Unit),
@@ -158,16 +158,16 @@ test("mul with constant-based integer overflows", () => {
 
 test("mul with differing constants", () => {
   expect(ofRational(1, 1, Pi(1)) * ofRational(2, 1, Sqrt(2)))->toEqual(
-    ofDecimalString("8.885765876316732494031761980121387"),
+    ofDecimalString("8.8857658763167324941"),
   )
   expect(ofRational(1, 1, Sqrt(2)) * ofRational(2, 1, Pi(1)))->toEqual(
-    ofDecimalString("8.885765876316732494031761980121387"),
+    ofDecimalString("8.8857658763167324941"),
   )
   expect(ofRational(1, 1, Exp(1)) * ofRational(2, 1, Sqrt(2)))->toEqual(
-    ofDecimalString("7.688462056318233649727343274852552"),
+    ofDecimalString("7.6884620563182336498"),
   )
   expect(ofRational(2, 1, Sqrt(2)) * ofRational(1, 1, Exp(1)))->toEqual(
-    ofDecimalString("7.688462056318233649727343274852552"),
+    ofDecimalString("7.6884620563182336498"),
   )
 })
 
@@ -185,7 +185,7 @@ test("div", () => {
   expect(ofRational(1, 1, Unit) / ofRational(1, 1, Pi(1)))->toEqual(Rational(1, 1, Pi(-1)))
 
   expect(ofRational(1, 1, Pi(1)) / ofDecimalString("1"))->toEqual(
-    ofDecimalString("3.141592653589793238462643383279503"),
+    ofDecimalString("3.1415926535897932385"),
   )
 })
 
@@ -212,16 +212,16 @@ test("div with constants based on exponents", () => {
   expect(ofRational(1, 3, Unit) / ofRational(2, 3, Exp(1)))->toEqual(Rational(1, 2, Exp(-1)))
 
   expect(ofRational(1, 2, Exp(1)) / ofRational(1, 1, Pi(1)))->toEqual(
-    ofDecimalString("0.4326279897161325436088873948230447"),
+    ofDecimalString("0.4326279897161325436"),
   )
 })
 
 test("div with constant-based integer overflows", () => {
   expect(ofRational(1, 1, Pi(lsl(1, 31))) / ofRational(1, 1, Pi(lsl(1, 30))))->toEqual(
-    ofDecimalString("4.74349845415943269813061650923671e-1601431834"),
+    ofDecimalString("4.7434984539777399675e-1601431834"),
   )
   expect(ofRational(1, 1, Exp(lsl(1, 31))) / ofRational(1, 1, Exp(lsl(1, 30))))->toEqual(
-    ofDecimalString("3.50108111726730731270975056926549e-1398960448"),
+    ofDecimalString("3.5010811172673073127e-1398960448"),
   )
 })
 
@@ -232,22 +232,22 @@ test("div with sqrt", () => {
 
 test("div with differing constants", () => {
   expect(ofRational(1, 1, Pi(1)) / ofRational(1, 1, Exp(1)))->toEqual(
-    ofDecimalString("1.155727349790921717910093183312696"),
+    ofDecimalString("1.1557273497909217179"),
   )
   expect(ofRational(1, 1, Pi(1)) / ofRational(1, 1, Sqrt(2)))->toEqual(
-    ofDecimalString("2.221441469079183123507940495030347"),
+    ofDecimalString("2.2214414690791831235"),
   )
   expect(ofRational(1, 1, Exp(1)) / ofRational(1, 1, Pi(1)))->toEqual(
-    ofDecimalString("0.8652559794322650872177747896460894"),
+    ofDecimalString("0.86525597943226508721"),
   )
   expect(ofRational(1, 1, Exp(1)) / ofRational(1, 1, Sqrt(2)))->toEqual(
-    ofDecimalString("1.922115514079558412431835818713138"),
+    ofDecimalString("1.9221155140795584125"),
   )
   expect(ofRational(1, 1, Sqrt(2)) / ofRational(1, 1, Pi(1)))->toEqual(
-    ofDecimalString("0.4501581580785530347775995955033702"),
+    ofDecimalString("0.45015815807855303477"),
   )
   expect(ofRational(1, 1, Sqrt(2)) / ofRational(1, 1, Exp(1)))->toEqual(
-    ofDecimalString("0.5202600950228888963581524433163326"),
+    ofDecimalString("0.52026009502288889636"),
   )
 })
 
@@ -296,14 +296,14 @@ test("powInt with integer overflows", () => {
     ofDecimalString("1152921504606846976"),
   )
   expect(powInt(ofRational(lsl(1, 30), 1, Unit), 3))->toEqual(
-    ofDecimalString("1.237940039285380274899124224e+27"),
+    ofDecimalString("1.2379400392853802749e+27"),
   )
 
   expect(powInt(ofRational(lsl(1, 30), 1, Unit), -2))->toEqual(
-    ofDecimalString("8.673617379884035472059622406959534e-19"),
+    ofDecimalString("8.6736173798840354721e-19"),
   )
   expect(powInt(ofRational(lsl(1, 30), 1, Unit), -3))->toEqual(
-    ofDecimalString("8.077935669463160887416100508495731e-28"),
+    ofDecimalString("8.0779356694631608874e-28"),
   )
 })
 
@@ -314,23 +314,23 @@ test("powInt with constant-based integer overflows", () => {
   }
 
   expect(powInt(ofRational(1, 1, Pi(lsl(1, 31))), -1))->toEqual(
-    ofDecimalString("1.644122443189402456517264494595728e+1067621222"),
+    ofDecimalString("1.644122443231386251e+1067621222"),
   )
   expect(powInt(ofRational(1, 1, Exp(lsl(1, 31))), -1))->toEqual(
-    ofDecimalString("2.013099393068963956343718245436345e+932640298"),
+    ofDecimalString("2.0130993930689639563e+932640298"),
   )
   expect(powInt(ofRational(lsl(1, 30), 1, Sqrt(largeNumberNotSimplifiable)), -1))->toEqual(
-    ofDecimalString("2.842170949657845667019877891613702e-14"),
+    ofDecimalString("2.842170949657845667e-14"),
   )
 
   expect(powInt(ofRational(1, 1, Pi(lsl(1, 31))), -3))->toEqual(
-    ofDecimalString("4.444290852791888622739833035408304e+3202863666"),
+    ofDecimalString("4.4442908531323526699e+3202863666"),
   )
   expect(powInt(ofRational(1, 1, Exp(lsl(1, 31))), -3))->toEqual(
-    ofDecimalString("8.158224529198766973002604485250485e+2797920894"),
+    ofDecimalString("8.1582245291987669729e+2797920894"),
   )
   expect(powInt(ofRational(lsl(1, 30), 1, Sqrt(largeNumberNotSimplifiable)), -3))->toEqual(
-    ofDecimalString("2.295887419986368642899842101140575e-41"),
+    ofDecimalString("2.2958874199863686428e-41"),
   )
 })
 

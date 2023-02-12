@@ -69,6 +69,13 @@ let ofFloat = (v): t =>
     }
   }
 
+let toReal = (a: t): Real.t =>
+  switch a {
+  | #Zero => Real.zero
+  | #Real(re) => re
+  | _ => Real.nan
+  }
+
 let toDecimal = (a: t): Decimal.t =>
   switch a {
   | #Zero => Decimal.zero

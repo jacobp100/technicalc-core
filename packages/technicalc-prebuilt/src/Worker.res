@@ -24,19 +24,28 @@ type self<'output> = {
     | Work.Calculate(body) => (eval(~config, ~context, body): TechniCalcCalculator.Value.t)
     | Work.ConvertUnits({body, fromUnits, toUnits}) =>
       let value =
-        eval(~config, ~context, body)->TechniCalcCalculator.Units.convert(~fromUnits, ~toUnits)
+        eval(~config, ~context, body)
+        ->TechniCalcCalculator.Value.toReal
+        ->TechniCalcCalculator.Units.convert(~fromUnits, ~toUnits)
+        ->TechniCalcCalculator.Value.ofReal
+
       [(value, toUnits)]
     | Work.ConvertUnitsComposite({values, toUnits}) =>
       let res =
         Belt.Array.mapU(values, (. (body, unitPart)) => (
-          eval(~config, ~context, body),
+          eval(~config, ~context, body)->TechniCalcCalculator.Value.toReal,
           unitPart,
         ))->TechniCalcCalculator.Units.convertComposite(_, ~toUnits)
       switch res {
-      | Some(res) => Belt.Array.mapU(res, (. (value, unitPart)) => (value, [unitPart]))
+      | Some(res) =>
+        Belt.Array.mapU(res, (. (value, unitPart)) => (
+          TechniCalcCalculator.Value.ofReal(value),
+          [unitPart],
+        ))
       | None =>
-        let unitsSorted = TechniCalcCalculator.Units.compositeUnitsSorted(toUnits)
-        Belt.Array.mapU(unitsSorted, (. unitPart) => (#NaNN, [unitPart]))
+        // TODO - sort units (NB - this would have crashed on stuff like Celsius)
+        // let unitsSorted = TechniCalcCalculator.Units.compositeUnitsSorted(toUnits)
+        Belt.Array.mapU(toUnits, (. unitPart) => (#NaNN, [unitPart]))
       }
     | Work.SolveRoot({body, initialGuess}) => solveRoot(~config, ~context, body, initialGuess)
     | Work.Quadratic(a, b, c) => solveQuadratic(~config, ~context, a, b, c)

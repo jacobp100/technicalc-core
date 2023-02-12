@@ -1,7 +1,8 @@
-open Unit_Types
+open Units_Types
+open Units_Base
 
-let unitsCompatible = (~fromUnits, ~toUnits) => {
-  open Unit_Dimensions
+let compatible = (~fromUnits, ~toUnits) => {
+  open Units_Dimensions
   eq(ofUnits(fromUnits), ofUnits(toUnits))
 }
 
@@ -26,15 +27,15 @@ let unitsCompatible = (~fromUnits, ~toUnits) => {
   }
 )
 
-let compositeUnitsCompatible = (~fromUnits, ~toUnits) =>
+let compositeCompatible = (~fromUnits, ~toUnits) =>
   switch Belt.Array.get(fromUnits, 0) {
   | Some(unit) if Belt.Array.length(toUnits) != 0 =>
-    let baseDimensions = Unit_Dimensions.ofUnit(unit)
+    let baseDimensions = Units_Dimensions.ofUnit(unit)
     let unitValid = (. unit) =>
-      unit.power == 1 && Unit_Dimensions.eq(Unit_Dimensions.ofUnit(unit), baseDimensions)
+      unit.power == 1 && Units_Dimensions.eq(Units_Dimensions.ofUnit(unit), baseDimensions)
 
     baseDimensions.temperature == 0 &&
-    Unit_Dimensions.size(baseDimensions) == 1 &&
+    Units_Dimensions.size(baseDimensions) == 1 &&
     Belt.Array.everyU(fromUnits, unitValid) &&
     Belt.Array.everyU(toUnits, unitValid) &&
     unitsUnique(toUnits)

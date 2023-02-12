@@ -60,7 +60,7 @@
 )
 
 %%private(
-  let decimalToString = (~decimalSeparator, ~base, num) => {
+  let decimalString = (~decimalSeparator, ~base, num) => {
     let str = switch base {
     | 2 => Decimal.toBinary(num)->Js.String.sliceToEnd(_, ~from=2)
     | 8 => Decimal.toOctal(num)->Js.String.sliceToEnd(_, ~from=2)
@@ -76,7 +76,7 @@
 )
 
 let formatInteger = (~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, num) => {
-  let str = decimalToString(~decimalSeparator, ~base, num)
+  let str = decimalString(~decimalSeparator, ~base, num)
   let str = if digitGrouping {
     let groupingSize = base == 10 ? 3 : 4
     adddigitGrouping(
@@ -122,8 +122,10 @@ let formatDecimal = (
       open Decimal
       trunc(decimalPart * ofInt(base) ** ofInt(maxDecimalPlaces))
     }
-    let baseStr = decimalToString(~decimalSeparator, ~base, decimalAsInteger)
-    let str = StringUtil.make(maxDecimalPlaces - String.length(baseStr), '0') ++ baseStr
+    let baseStr = decimalString(~decimalSeparator, ~base, decimalAsInteger)
+    let numZeros = maxDecimalPlaces - String.length(baseStr)
+    let numZeros = max(numZeros, 0)
+    let str = StringUtil.make(numZeros, '0') ++ baseStr
     trimTraillingZeros(~decimalSeparator, ~startIndex=minDecimalPlaces, str)
   }
 

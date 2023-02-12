@@ -139,8 +139,6 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
       evalAt(~config, ~context, ~x, from),
       evalAt(~config, ~context, ~x, to),
     )
-  | Convert({body, fromUnits, toUnits}) =>
-    Units.convert(evalAt(~config, ~context, ~x, body), ~fromUnits, ~toUnits)
   }
 and createEvalAtFnU = (~config, ~context, body) => {
   let fn = (. x) => evalAt(~config, ~context, ~x, body)

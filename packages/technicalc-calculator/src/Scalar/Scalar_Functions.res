@@ -36,24 +36,10 @@ let exp = (a: t): t =>
   }
 )
 
-%%private(
-  let logReal = (a: Real.t) =>
-    switch a {
-    | Real.Rational(1, 1, Exp(reExp)) => Real.ofRational(reExp, 1, Unit)
-    | _ =>
-      let f = Real.toDecimal(a)
-      if Decimal.gt(f, Decimal.zero) {
-        Real.ofDecimal(Decimal.ln(f))
-      } else {
-        assert false
-      }
-    }
-)
-
 let log = (a: t): t =>
   switch a {
   | #Zero => nan
-  | #Real(gtZero) if Real.gt(gtZero, Real.zero) => ofReal(logReal(gtZero))
+  | #Real(gtZero) if Real.gt(gtZero, Real.zero) => ofReal(Real.logExn(gtZero))
   | #Real(Rational(-1, 1, Unit)) => mul(pi, i)
   | (#Real(_) | #Imag(_) | #Cmpx(_)) as vV =>
     let re = switch vV {
@@ -61,7 +47,7 @@ let log = (a: t): t =>
     | #Imag(im) => Real.mul(im, im)
     | #Cmpx(re, im) => Real.add(Real.mul(re, re), Real.mul(im, im))
     }
-    let re = Real.div(logReal(re), Real.ofInt(2))
+    let re = Real.div(Real.logExn(re), Real.ofInt(2))
     let im = arg(vV)
     ofComplex(re, im)
   | #NaNN => nan
@@ -72,7 +58,7 @@ let logBase = (~base: t, a: t) =>
   | (#Real(Rational(_, _, Unit) as base), #Real(Rational(_, _, Unit) as a))
     if Real.gt(a, Real.zero) =>
     open Real
-    let real = logReal(a) / logReal(base)
+    let real = logExn(a) / logExn(base)
 
     // Attempt to recover from precision loss
     let decimal = toDecimal(real)

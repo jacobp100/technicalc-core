@@ -1,6 +1,6 @@
 type node = TechniCalcCalculator.AST_Types.t
 type value = TechniCalcCalculator.Value.t
-type units = array<TechniCalcCalculator.Unit_Types.t>
+type units = array<TechniCalcCalculator.Units_Types.t>
 type unitsResult = array<(value, units)>
 
 type context = array<(string, string)>
@@ -9,12 +9,12 @@ type rec input<'output> =
   | Calculate(node): input<value>
   | ConvertUnits({
       body: node,
-      fromUnits: array<TechniCalcCalculator.Unit_Types.t>,
-      toUnits: array<TechniCalcCalculator.Unit_Types.t>,
+      fromUnits: array<TechniCalcCalculator.Units_Types.t>,
+      toUnits: array<TechniCalcCalculator.Units_Types.t>,
     }): input<unitsResult>
   | ConvertUnitsComposite({
-      values: array<(node, TechniCalcCalculator.Unit_Types.t)>,
-      toUnits: array<TechniCalcCalculator.Unit_Types.t>,
+      values: array<(node, TechniCalcCalculator.Units_Types.t)>,
+      toUnits: array<TechniCalcCalculator.Units_Types.t>,
     }): input<unitsResult>
   | SolveRoot({body: node, initialGuess: node}): input<value>
   | Quadratic(node, node, node): input<(value, value)>
@@ -33,23 +33,23 @@ type t<'output> = {
 }
 
 %%private(
-  let encodeUnit = ({prefix, type_, power}: TechniCalcCalculator.Unit_Types.t) => {
+  let encodeUnit = ({prefix, name, power}: TechniCalcCalculator.Units_Types.t) => {
     UrlSafeEncoding.encodeInt(Obj.magic(prefix)) ++
-    UrlSafeEncoding.encodeInt(Obj.magic(type_)) ++
+    UrlSafeEncoding.encodeInt(Obj.magic(name)) ++
     UrlSafeEncoding.encodeInt(power)
   }
 )
 %%private(
-  let readUnit = (reader): option<TechniCalcCalculator.Unit_Types.t> =>
+  let readUnit = (reader): option<TechniCalcCalculator.Units_Types.t> =>
     switch (
       UrlSafeEncoding.readInt(reader),
       UrlSafeEncoding.readInt(reader),
       UrlSafeEncoding.readInt(reader),
     ) {
-    | (Some(prefix), Some(type_), Some(power)) =>
+    | (Some(prefix), Some(name), Some(power)) =>
       Some({
         prefix: Obj.magic(prefix),
-        type_: Obj.magic(type_),
+        name: Obj.magic(name),
         power,
       })
     | _ => None

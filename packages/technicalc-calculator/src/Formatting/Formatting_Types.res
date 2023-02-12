@@ -1,5 +1,5 @@
 type mode =
-  | String
+  | Ascii
   | Unicode
   | Tex
   | MathML
@@ -22,8 +22,8 @@ type format = {
 }
 
 let defaultFormat = {
-  mode: String,
-  style: Natural({mixedFractions: false}),
+  mode: Ascii,
+  style: Decimal,
   decimalSeparator: ".",
   groupingSeparator: ",",
   digitGrouping: true,

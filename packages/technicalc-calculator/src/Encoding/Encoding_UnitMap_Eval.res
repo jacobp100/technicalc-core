@@ -1,8 +1,8 @@
-open TechniCalcCalculator.Unit_Types
+open Units_Types
 
 %%private(let makeSureThisIsTheLastIndex = 58)
 %%private(
-  let toUint = (element: unitType) =>
+  let toUint = (element: name) =>
     switch element {
     | Second => 0
     | Minute => 1
@@ -70,7 +70,7 @@ open TechniCalcCalculator.Unit_Types
 let mapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, 0)
 let reverseMapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, Second)
 for i in 0 to makeSureThisIsTheLastIndex {
-  let unit: unitType = Obj.magic(i)
+  let unit: name = Obj.magic(i)
   let index = toUint(unit)
   assert Belt.Array.set(mapping, i, index)
   assert Belt.Array.set(reverseMapping, index, unit)

@@ -1,12 +1,19 @@
-open TechniCalcCalculator.Units_Types
+open Formatting_Types
+open Units_Types
 
 %%private(
-  let prefixMmlSymbol = (prefix: prefix) =>
+  let formatPrefix = (~format, prefix: prefix) =>
     switch prefix {
     | Femto => "f"
     | Pico => "p"
     | Nano => "n"
-    | Micro => "&#x3BC;"
+    | Micro =>
+      switch format.mode {
+      | MathML => "&#x3BC;"
+      | Tex => `\\micro`
+      | Ascii => "u"
+      | Unicode => Formatting_Unicode.mu
+      }
     | Milli => "m"
     | Centi => "c"
     | Deci => "d"
@@ -29,7 +36,17 @@ open TechniCalcCalculator.Units_Types
 )
 
 %%private(
-  let nameMmlSymbol = (unit: name) =>
+  let deg = (~format) =>
+    switch format.mode {
+    | MathML => "&#x00B0;"
+    | Tex => `{}^{\\circ}`
+    | Ascii => "deg "
+    | Unicode => Formatting_Unicode.degree
+    }
+)
+
+%%private(
+  let formatName = (~format, unit: name) =>
     switch unit {
     | Second => "s"
     | Minute => "min"
@@ -50,7 +67,7 @@ open TechniCalcCalculator.Units_Types
     | ScandinavianMile => "mil"
     | LightYear => "ly"
     | Parsec => "pc"
-    | Angstrom => "&#x212B;"
+    | Angstrom => "A" // "&#x212B;"
 
     | Gram => "g"
     | Tonne => "T"
@@ -99,30 +116,33 @@ open TechniCalcCalculator.Units_Types
     | Byte => "B"
 
     | Kelvin => "K"
-    | Celsius => "&#x00B0;C"
-    | Fahrenheit => "&#x00B0;F"
+    | Celsius => deg(~format) ++ "C"
+    | Fahrenheit => deg(~format) ++ "F"
     }
 )
 
 %%private(
-  let prefixUnitMml = (prefix: prefix, name: name) => {
-    let unitMml = switch name {
-    | Angstrom => "A"
-    | _ => nameMmlSymbol(name)
+  let formatUnit = (~format, prefix: prefix, name: name) => {
+    let body = formatPrefix(~format, prefix) ++ formatName(~format, name)
+    switch format.mode {
+    | MathML => `<mi mathvariant="normal">${body}</mi>`
+    | _ => body
     }
-    `<mi mathvariant="normal">${prefixMmlSymbol(prefix)}${unitMml}</mi>`
   }
 )
 
-%%private(
-  let unitMml = (. {prefix, name, power}: t) =>
-    switch power {
-    | 1 => prefixUnitMml(prefix, name)
-    | _ =>
-      let powerMml = `<mn>${Belt.Int.toString(power)}</mn>`
-      `<msup>${prefixUnitMml(prefix, name)}${powerMml}</msup>`
-    }
-)
+let toString = (~format, {prefix, name, power}: t) => {
+  let formattedUnit = formatUnit(~format, prefix, name)
 
-let unitsMml = (units: array<t>) =>
-  Belt.Array.mapU(units, unitMml)->StringUtil.joinWith("<mspace width=\"0.1em\" />")
+  switch power {
+  | 1 => formattedUnit
+  | _ =>
+    let power = Belt.Int.toString(power)
+    switch format.mode {
+    | MathML => `<msup>${formattedUnit}${power}</msup>`
+    | Tex => `${formattedUnit}^{${power}}`
+    | Ascii => `${formattedUnit}^${power}`
+    | Unicode => `${formattedUnit}^${Formatting_Unicode.formatSuperscriptNumbers(power)}`
+    }
+  }
+}

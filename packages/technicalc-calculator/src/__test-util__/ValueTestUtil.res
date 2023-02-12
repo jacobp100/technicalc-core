@@ -34,7 +34,7 @@ let toString = (x, maybeFormat) => {
   | Some("tex") => (Tex, false)
   | Some("mathml") => (MathML, false)
   | Some("mathml-inline") => (MathML, true)
-  | _ => (String, false)
+  | _ => (Ascii, false)
   }
 
   let format = {
@@ -42,8 +42,9 @@ let toString = (x, maybeFormat) => {
     style: switch styleGet(f) {
     | Some("decimal") => Decimal
     | Some("engineering") => Engineering
+    | Some("natural") => Natural({mixedFractions: false})
     | Some("natural-mixed") => Natural({mixedFractions: true})
-    | _ => defaultFormat.style
+    | _ => Natural({mixedFractions: false})
     },
     decimalSeparator: decimalSeparatorGet(f)->Belt.Option.getWithDefault(
       Formatting_Types.defaultFormat.decimalSeparator,

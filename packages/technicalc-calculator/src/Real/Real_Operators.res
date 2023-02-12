@@ -6,6 +6,7 @@ let \"+" = add
 let \"-" = sub
 let \"*" = mul
 let \"/" = div
+let \"**" = pow
 let \"=" = eq
 let \"<>" = (a, b) => !(a == b)
 let \">" = gt

@@ -8,7 +8,7 @@ type matrixFormat = {
   compactVectorFormat: bool,
 }
 
-let formatString = {
+let formatAscii = {
   matrixOpen: "{",
   matrixClose: "}",
   rowOpen: "{",
@@ -56,7 +56,7 @@ let toString = (~format, matrix: Matrix.t, tableFormat) => {
         out := out.contents ++ tableFormat.elementSeparator
       }
 
-      let element = Matrix.getExn(matrix, ~row, ~column)->Formatting_Scalar.toString(~format?, _)
+      let element = Matrix.getExn(matrix, ~row, ~column)->Formatting_Scalar.toString(~format, _)
       out := out.contents ++ element
     }
 

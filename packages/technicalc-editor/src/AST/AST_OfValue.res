@@ -55,4 +55,5 @@ let ofValue = (a: TechniCalcCalculator.Value.t) =>
     Belt.Array.reduceU(elements, [TableNS({numRows, numColumns})], (. accum, element) => {
       Belt.Array.concatMany([accum, ofFinite(element), [Arg]])
     })
+  | #Mesr(_) => assert false
   }
