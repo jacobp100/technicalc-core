@@ -79,7 +79,8 @@ let parse = {
     | Fold_OpenBracket
     | Fold_Percent
     | Fold_Sub
-    | Fold_Transpose =>
+    | Fold_Transpose
+    | Fold_Unit(_) =>
       None
     }
 
@@ -90,6 +91,13 @@ let parse = {
       | Some((Fold_Conj, _)) => iter(Conj(accum), i + 1)
       | Some((Fold_Transpose, _)) => iter(Transpose(accum), i + 1)
       | Some((Fold_Percent, _)) => iter(Percent(accum), i + 1)
+      | Some((Fold_Unit({prefix, name, superscript}), _)) =>
+        // TODO - handle consecutive units - in same place as angles
+        let power = switch superscript {
+        | Some({superscriptBody}) => superscriptBody
+        | None => OfInt(1)
+        }
+        iter(Measure(accum, [{prefix, name, power}]), i + 1)
       | _ => (i, accum)
       }
 

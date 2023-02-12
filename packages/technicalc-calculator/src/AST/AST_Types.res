@@ -27,6 +27,7 @@ type rec t =
   | Vector(array<t>)
   | Matrix({numRows: int, numColumns: int, elements: array<t>})
   | Percent(t)
+  | Measure(t, array<unitsType>)
   | Variable(string)
   | Add(t, t)
   | Sub(t, t)
@@ -88,3 +89,8 @@ type rec t =
   | Integral({from: t, to: t, body: t})
   | Sum({from: t, to: t, body: t})
   | Product({from: t, to: t, body: t})
+and unitsType = {
+  prefix: Units_Types.prefix,
+  name: Units_Types.name,
+  power: t,
+}

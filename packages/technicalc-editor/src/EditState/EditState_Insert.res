@@ -70,7 +70,6 @@ type skipMode =
     | CloseBracketS
     | ConstES
     | ConstPiS
-    | ConstantS(_)
     | ImaginaryUnitS
     | IterationXS
     | N0_S
@@ -90,10 +89,12 @@ type skipMode =
     | NE_S
     | NF_S
     | RandS
-    | VariableS(_)
     | XUnitS
     | YUnitS
     | ZUnitS
+    | ConstantS(_)
+    | UnitS(_)
+    | VariableS(_)
     | Magnitude1
     | Superscript1
     | Abs1S

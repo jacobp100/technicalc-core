@@ -225,6 +225,8 @@ module Keys = {
       value: TechniCalcCalculator.Encoding.encode(value),
     })->Keys.One
 
+  let unit = (~prefix, ~name) => Keys.One(UnitS({prefix, name}))
+
   let table = (~numRows, ~numColumns) => Keys.One(TableNS({numRows, numColumns}))
 
   let captureGroup = (~placeholder) => Keys.Many([
@@ -363,13 +365,13 @@ module Units = {
   let unitsCompatible = TechniCalcCalculator.Units.compatible
   let compositeUnitsCompatible = TechniCalcCalculator.Units.compositeCompatible
 
-  let toMml = TechniCalcEditor.Mml_Units.unitsMml
+  let toMml = v => TechniCalcCalculator.Formatting_Units.toString(~mode=MathML, v)
   let toString = Units_Util.toString
 
   let prefixes = Units_Util.prefixes
 
   let prefixToString = Units_Util.prefixToString
-  let unitTypeToString = Units_Util.unitTypeToString
+  let nameToString = Units_Util.nameToString
 
   let prefixToMml = Units_Util.prefixToMml
 }

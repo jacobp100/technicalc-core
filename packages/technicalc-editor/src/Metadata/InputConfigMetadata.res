@@ -27,7 +27,6 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | Transpose
   | CloseBracketS
   | ConstES
-  | ConstantS(_)
   | ImaginaryUnitS
   | IterationXS
   | N0_S
@@ -47,10 +46,12 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | NE_S
   | NF_S
   | RandS
-  | VariableS(_)
   | XUnitS
   | YUnitS
   | ZUnitS
+  | ConstantS(_)
+  | UnitS(_)
+  | VariableS(_)
   | Magnitude1
   | NLog1
   | Superscript1

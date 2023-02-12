@@ -53,6 +53,11 @@ type foldState<'a> =
       superscript: option<superscript<'a>>,
     })
   | Fold_Transpose
+  | Fold_Unit({
+      prefix: TechniCalcCalculator.Units.prefix,
+      name: TechniCalcCalculator.Units.name,
+      superscript: option<superscript<'a>>,
+    })
   | Fold_Variable({id: string, symbol: Symbol.t, superscript: option<superscript<'a>>})
   | Fold_XUnit(option<superscript<'a>>)
   | Fold_YUnit(option<superscript<'a>>)
@@ -290,6 +295,10 @@ let reduceMapU = (
       let (body, i') = readArg(i')
       Node(Fold_Integral({from, to, body}), i, i')
     | TableNS({numRows, numColumns}) => tableS(i, ~numRows, ~numColumns)
+    | UnitS({prefix, name}) =>
+      let i' = i + 1
+      let (superscript, i') = readSuperscript(i')
+      Node(Fold_Unit({prefix, name, superscript}), i, i')
     | Arg => assert false
     }
   and readArg = (~accum=initial, ~start=?, i) => {

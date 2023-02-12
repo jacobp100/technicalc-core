@@ -208,6 +208,12 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     Mml_Accum.append(accum, ~range, "mrow", pre ++ body ++ post)
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
     appendTable(accum, ~numRows, ~numColumns, elements, superscript, range)
+  | Fold_Unit({prefix, name, superscript}) =>
+    let attributes = list{(#mathvariant, "normal")}
+    let body =
+      TechniCalcCalculator.Formatting_Units.formatPrefix(~mode=MathML, prefix) ++
+      TechniCalcCalculator.Formatting_Units.formatName(~mode=MathML, name)
+    Mml_Accum.append(accum, ~attributes, ~superscript?, ~range, "mi", body)
   }
 
 let create = (~format, ~inline=false, elements) => {

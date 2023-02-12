@@ -51,8 +51,8 @@ let prefixToString = (prefix: prefix) =>
   | Exbi => Some("Exbi")
   }
 
-let unitTypeToString = (unit: name) =>
-  switch unit {
+let nameToString = (name: name) =>
+  switch name {
   | Second => "Second"
   | Minute => "Minute"
   | Hour => "Hour"
@@ -114,20 +114,20 @@ let unitTypeToString = (unit: name) =>
   | Fahrenheit => "Fahrenheit"
   }
 
-let unitTypeToStringPlural = (name: name) =>
+let nameToStringPlural = (name: name) =>
   switch name {
   | Century => "Centuries"
   | Inch => "Inches"
   | Foot => "Feet"
   | Celsius
   | Fahrenheit =>
-    unitTypeToString(name)
-  | _ => unitTypeToString(name) ++ "s"
+    nameToString(name)
+  | _ => nameToString(name) ++ "s"
   }
 
 %%private(
   let unitToString = (~plural, {prefix, name, power}: t) => {
-    let out = plural ? unitTypeToStringPlural(name) : unitTypeToString(name)
+    let out = plural ? nameToStringPlural(name) : nameToString(name)
 
     let out = switch prefixToString(prefix) {
     | Some(prefix) =>

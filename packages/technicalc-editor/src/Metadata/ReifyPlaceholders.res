@@ -81,6 +81,7 @@ open AST
     | TanhS
     | TanS
     | ConstantS(_)
+    | UnitS(_)
     | VariableS(_)
     | XUnitS
     | YUnitS

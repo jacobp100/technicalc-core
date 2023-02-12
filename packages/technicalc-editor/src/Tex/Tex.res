@@ -185,6 +185,11 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     `\\int_${from}^${to} ${body} dx`->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
     table(~numRows, ~numColumns, elements, superscript)->withSpaces->Tex_Accum.append(. accum, _)
+  | Fold_Unit({prefix, name, superscript}) =>
+    let body =
+      TechniCalcCalculator.Formatting_Units.formatPrefix(~mode=Tex, prefix) ++
+      TechniCalcCalculator.Formatting_Units.formatName(~mode=Tex, name)
+    withSuperscript(body, superscript)->withSpaces->Tex_Accum.append(. accum, _)
   }
 
 let create = (~format, elements) =>

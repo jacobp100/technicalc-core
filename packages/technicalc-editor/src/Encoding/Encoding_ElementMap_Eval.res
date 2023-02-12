@@ -107,9 +107,10 @@
     | YUnitS => 95
     | ZUnitS => 96
     /* Custom handling */
-    | ConstantS(_)
-    | VariableS(_)
     | CaptureGroupStart(_)
+    | ConstantS(_)
+    | UnitS(_)
+    | VariableS(_)
     | TableNS(_) =>
       assert false
     }

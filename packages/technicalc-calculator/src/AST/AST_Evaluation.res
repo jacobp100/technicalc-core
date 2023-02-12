@@ -26,6 +26,26 @@ open AST_Types
     }
 )
 
+%%private(
+  let mapAllU = (array, iterateeU) => {
+    let out = Belt.Array.makeUninitializedUnsafe(Belt.Array.length(array))
+
+    let rec iter = i =>
+      if i >= Belt.Array.length(out) {
+        Some(out)
+      } else {
+        switch Belt.Array.getUnsafe(array, i)->iterateeU(. _) {
+        | Some(value) =>
+          Belt.Array.setUnsafe(out, i, value)
+          iter(i + 1)
+        | None => None
+        }
+      }
+
+    iter(0)
+  }
+)
+
 let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   switch node {
   | NaN => Value.nan
@@ -56,6 +76,18 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
       evalAt(~config, ~context, ~x, a)->toScalarOrNan
     })
     Value.ofMatrix(matrix)
+  | Measure(value, units) =>
+    let value = evalAt(~config, ~context, ~x, value)->Value.toReal
+    let units = mapAllU(units, (. {prefix, name, power}): option<Units.t> => {
+      switch evalAt(~config, ~context, ~x, power)->Value.toInt {
+      | Some(power) => Some({prefix, name, power})
+      | None => None
+      }
+    })
+    switch units {
+    | Some(units) => Measure.ofReal(value, ~units)->Value.ofMeasure
+    | None => Value.nan
+    }
   | OfEncoded(a) => Encoding.decode(a)->Belt.Option.getWithDefault(Value.nan)
   | Variable(ident) => AST_Context.get(context, ident)->Belt.Option.getWithDefault(Value.nan)
   | Add(a, b) => Value.add(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
