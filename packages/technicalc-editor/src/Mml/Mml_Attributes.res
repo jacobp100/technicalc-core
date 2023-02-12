@@ -13,9 +13,9 @@ type name = [mmlNames | customNames]
 type value = string
 type t = (name, value)
 
-let toString = (~includeCustomTags=true, (name, value): t) => {
+let toString = (~metadata=true, (name, value): t) => {
   let skip =
-    includeCustomTags == false &&
+    metadata == false &&
       switch name {
       | #...customNames => true
       | _ => false

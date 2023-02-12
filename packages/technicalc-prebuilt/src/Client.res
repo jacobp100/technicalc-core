@@ -114,28 +114,33 @@ module Elements = {
   let decode = Encoding.decode
 
   %%private(
-    let getFormat = (maybeFormat): TechniCalcEditor.Stringifier.format =>
+    let getFormat = (maybeFormat, ~metadata): TechniCalcEditor.Stringifier.format =>
       switch maybeFormat {
       | Some(format) => {
           decimalSeparator: formatDecimalSeparator(format),
           groupingSeparator: formatGroupingSeparator(format),
           digitGrouping: formatDigitGrouping(format),
+          metadata,
         }
       | None => TechniCalcEditor.Stringifier.defaultFormat
       }
   )
 
-  let toMml = (x, maybeFormat, maybeInline) => {
-    let format = getFormat(maybeFormat)
+  let toMml = (x, maybeFormat, maybeInline, maybeMetadata) => {
     let inline = switch maybeInline {
     | Some(inline) => inline
     | None => false
     }
+    let metadata = switch maybeMetadata {
+    | Some(metadata) => metadata
+    | None => false
+    }
+    let format = getFormat(maybeFormat, ~metadata)
     Mml.create(~format, ~inline, x)
   }
 
   let toTex = (x, maybeFormat) => {
-    let format = getFormat(maybeFormat)
+    let format = getFormat(maybeFormat, ~metadata=false)
     Tex.create(~format, x)
   }
 

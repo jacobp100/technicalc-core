@@ -4,7 +4,7 @@ let openTag = `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
 let closeTag = `</math>`
 
 let create = elements =>
-  Mml.create(~format=Stringifier.defaultFormat, elements)->StringUtil.slice(
+  Mml.create(~format={...Stringifier.defaultFormat, metadata: true}, elements)->StringUtil.slice(
     String.length(openTag),
     -String.length(closeTag),
   )

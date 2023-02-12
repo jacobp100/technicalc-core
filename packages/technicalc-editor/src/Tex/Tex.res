@@ -81,12 +81,12 @@ open AST
 module Tex_Accum = Stringifier.Make({
   let groupingSeparatorU = (. groupingSeparator) =>
     groupingSeparator == " " ? `\\,` : groupingSeparator
-  let decimalSeparatorU = (. decimalSeparator, _) => decimalSeparator
+  let decimalSeparatorU = (. decimalSeparator, _, _) => decimalSeparator
 
-  let unpairedOpenBracketU = (. _) => " ( "
-  let unpairedCloseBracketU = (. superscript, _) => withSuperscript(" ) ", superscript)
+  let unpairedOpenBracketU = (. _, _) => " ( "
+  let unpairedCloseBracketU = (. superscript, _, _) => withSuperscript(" ) ", superscript)
 
-  let bracketRangeU = (. superscript, body, _, _) =>
+  let bracketRangeU = (. superscript, body, _, _, _) =>
     withSpaces(`\\left( ${body} \\right)`)->withSuperscript(superscript)
 })
 
