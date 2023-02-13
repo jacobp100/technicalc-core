@@ -19,22 +19,18 @@ open Units_Types
     Belt.Array.get(Encoding_PrefixMap_Eval.reverseMapping, index)
 )
 
-%%private(
-  let encodeUnit = ({prefix, name, power}: t) =>
-    prefixToUint(prefix)->encodeUint ++ unitTypeToUint(name)->encodeUint ++ encodeInt(power)
-)
+let encodeUnit = ({prefix, name, power}: t) =>
+  prefixToUint(prefix)->encodeUint ++ unitTypeToUint(name)->encodeUint ++ encodeInt(power)
 
-%%private(
-  let readUnit = (reader): option<t> =>
-    switch (readUint(reader), readUint(reader), readInt(reader)) {
-    | (Some(prefix), Some(name), Some(power)) =>
-      switch (prefixOfUint(prefix), unitTypeOfUint(name)) {
-      | (Some(prefix), Some(name)) => Some({prefix, name, power})
-      | _ => None
-      }
+let readUnit = (reader): option<t> =>
+  switch (readUint(reader), readUint(reader), readInt(reader)) {
+  | (Some(prefix), Some(name), Some(power)) =>
+    switch (prefixOfUint(prefix), unitTypeOfUint(name)) {
+    | (Some(prefix), Some(name)) => Some({prefix, name, power})
     | _ => None
     }
-)
+  | _ => None
+  }
 
 let encodeUnits = units => encodeArray(units, encodeUnit)
 

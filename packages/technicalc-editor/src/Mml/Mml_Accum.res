@@ -87,19 +87,22 @@ include Stringifier.Make({
     }
 })
 
-let append = (v, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range=?, tag, body) =>
+let appendSpace = (x, ~width) =>
+  isEmpty(. x) ? x : append(. x, mml(~attributes=list{(#width, width)}, "mspace", ""))
+
+let append = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range=?, tag, body) =>
   element(
-    ~metadata=format(. v).metadata,
+    ~metadata=format(. x).metadata,
     ~avoidsSelection?,
     ~attributes?,
     ~superscript?,
     ~range?,
     tag,
     body,
-  )->append(. v, _)
+  )->append(. x, _)
 
 let appendOperatorOrFunction = (
-  v,
+  x,
   ~avoidsSelection=?,
   ~attributes=?,
   ~superscript=?,
@@ -108,39 +111,39 @@ let appendOperatorOrFunction = (
   body,
 ) =>
   element(
-    ~metadata=format(. v).metadata,
+    ~metadata=format(. x).metadata,
     ~avoidsSelection?,
     ~attributes?,
     ~superscript?,
     ~range,
     tag,
     body,
-  )->appendOperatorOrFunction(. v, _)
+  )->appendOperatorOrFunction(. x, _)
 
-let appendDigit = (v, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range, tag, body) =>
+let appendDigit = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range, tag, body) =>
   element(
-    ~metadata=format(. v).metadata,
+    ~metadata=format(. x).metadata,
     ~avoidsSelection?,
     ~attributes?,
     ~superscript?,
     ~range,
     tag,
     body,
-  )->appendDigit(. v, _)
+  )->appendDigit(. x, _)
 
-let appendBasePrefix = (v, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range, tag, body) =>
+let appendBasePrefix = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range, tag, body) =>
   element(
-    ~metadata=format(. v).metadata,
+    ~metadata=format(. x).metadata,
     ~avoidsSelection?,
     ~attributes?,
     ~superscript?,
     ~range,
     tag,
     body,
-  )->appendBasePrefix(. v, _)
+  )->appendBasePrefix(. x, _)
 
-let appendPlaceholder = (v, ~range, ~superscript, placeholder) => {
-  let {metadata} = format(. v)
+let appendPlaceholder = (x, ~range, ~superscript, placeholder) => {
+  let {metadata} = format(. x)
   let phantom = element(
     ~metadata,
     ~attributes=list{selection(~start=fst(range) + 1, ())},
@@ -158,7 +161,7 @@ let appendPlaceholder = (v, ~range, ~superscript, placeholder) => {
     )
   }
   append(
-    v,
+    x,
     ~attributes=list{(#class, Mml_Placeholder.class)},
     ~superscript?,
     ~range,
@@ -167,9 +170,9 @@ let appendPlaceholder = (v, ~range, ~superscript, placeholder) => {
   )
 }
 
-let superscriptSuffix = (v, ~attributes=list{}, ~range, tag, body) =>
-  modifyLastU(.v, (. last) => {
-    let {metadata} = format(. v)
+let superscriptSuffix = (x, ~attributes=list{}, ~range, tag, body) =>
+  modifyLastU(.x, (. last) => {
+    let {metadata} = format(. x)
     switch last {
     | Some(last) =>
       let (start, end) = range

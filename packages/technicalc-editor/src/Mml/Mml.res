@@ -209,13 +209,17 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Table({elements, superscript, numRows, numColumns}) =>
     appendTable(accum, ~numRows, ~numColumns, elements, superscript, range)
   | Fold_Unit({prefix, name, superscript}) =>
-    let attributes = list{(#mathvariant, "normal"), (#"data-mjx-texclass", "ORD")}
+    let attributes = list{(#mathvariant, "normal")}
     let body =
       TechniCalcCalculator.Formatting_Units.formatPrefix(~mode=MathML, prefix) ++
       TechniCalcCalculator.Formatting_Units.formatName(~mode=MathML, name)
     accum
-    ->Mml_Accum.append(~attributes=list{(#width, "0.1em")}, "mspace", "")
-    ->Mml_Accum.append(~attributes, ~superscript?, ~range, "mi", body)
+    ->Mml_Accum.appendSpace(~width="0.1666em")
+    // This should be mi
+    // By default, any mi with a length > 1 is treated as an operator
+    // MathJax has a way to disable this with data-mjx-texclass="ORD"
+    // But that is broken in 3.0.1
+    ->Mml_Accum.append(~attributes, ~superscript?, ~range, "mn", body)
   }
 
 let create = (~format, ~inline=false, elements) => {

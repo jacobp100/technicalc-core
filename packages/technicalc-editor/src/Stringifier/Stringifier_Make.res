@@ -23,6 +23,7 @@ module Make = (M: Config): {
   type t
   let make: (. format) => t
   let lastElementType: (. t) => lastElementType
+  let isEmpty: (. t) => bool
   let format: (. t) => format
   let append: (. t, string) => t
   let appendOperatorOrFunction: (. t, string) => t
@@ -52,10 +53,12 @@ module Make = (M: Config): {
       lastElementType: NoElement,
     }
 
+    let isEmpty = x => x.bodyRev == list{} && x.digitGroupingState == Normal
+
     let lastElementType = x => x.lastElementType
 
     %%private(
-      let flattenDigits = (~format, v, ~groupingSize, ~numbersRev) => {
+      let flattenDigits = (~format, x, ~groupingSize, ~numbersRev) => {
         let groupingSeparator = M.groupingSeparatorU(. format.groupingSeparator)
         let rec iter = (~formattedNumbersFwd, ~numbersRev) =>
           switch Belt.List.splitAt(numbersRev, groupingSize) {
@@ -67,70 +70,70 @@ module Make = (M: Config): {
             iter(~formattedNumbersFwd, ~numbersRev)
           | _ =>
             let bodyFwd = Belt.List.reverseConcat(numbersRev, formattedNumbersFwd)
-            Belt.List.reverseConcat(bodyFwd, v.bodyRev)
+            Belt.List.reverseConcat(bodyFwd, x.bodyRev)
           }
         iter(~formattedNumbersFwd=list{}, ~numbersRev)
       }
     )
 
     %%private(
-      let bodyRev = (~format, v) => {
-        switch v.digitGroupingState {
+      let bodyRev = (~format, x) => {
+        switch x.digitGroupingState {
         | Normal
         | SkipGrouping =>
-          v.bodyRev
+          x.bodyRev
         | GroupingDigits({groupingSize, numbersRev}) =>
-          flattenDigits(~format, v, ~groupingSize, ~numbersRev)
+          flattenDigits(~format, x, ~groupingSize, ~numbersRev)
         }
       }
     )
 
-    let toString = (v, ~format) =>
-      bodyRev(v, ~format)->Belt.List.toArray->ArrayUtil.reverseInPlace->StringUtil.join
+    let toString = (x, ~format) =>
+      bodyRev(x, ~format)->Belt.List.toArray->ArrayUtil.reverseInPlace->StringUtil.join
 
     %%private(
-      let appendWith = (~digitGroupingState=?, ~lastElementType=Other, ~format, v, element) => {
+      let appendWith = (~digitGroupingState=?, ~lastElementType=Other, ~format, x, element) => {
         let digitGroupingState = switch digitGroupingState {
         | Some(digitGroupingState) => digitGroupingState
         | None => Normal
         }
-        let bodyRev = list{element, ...bodyRev(v, ~format)}
+        let bodyRev = list{element, ...bodyRev(x, ~format)}
         {bodyRev, digitGroupingState, lastElementType}
       }
     )
 
-    let append = (~format, v, element) => appendWith(~format, v, element)
+    let append = (~format, x, element) => appendWith(~format, x, element)
 
-    let appendOperatorOrFunction = (~format, v, element) =>
-      appendWith(~lastElementType=OperatorOrFunction, ~format, v, element)
+    let appendOperatorOrFunction = (~format, x, element) =>
+      appendWith(~lastElementType=OperatorOrFunction, ~format, x, element)
 
-    let appendDigit = (~format, v, element) =>
-      switch v.digitGroupingState {
+    let appendDigit = (~format, x, element) =>
+      switch x.digitGroupingState {
       | (Normal | GroupingDigits(_)) as digitGroupingState if format.digitGrouping =>
         let digitGroupingState = switch digitGroupingState {
         | GroupingDigits({groupingSize, numbersRev}) =>
           GroupingDigits({groupingSize, numbersRev: list{element, ...numbersRev}})
         | _ => GroupingDigits({groupingSize: 3, numbersRev: list{element}})
         }
-        {bodyRev: v.bodyRev, digitGroupingState, lastElementType: Other}
-      | _ as digitGroupingState => appendWith(~digitGroupingState, ~format, v, element)
+        {bodyRev: x.bodyRev, digitGroupingState, lastElementType: Other}
+      | _ as digitGroupingState => appendWith(~digitGroupingState, ~format, x, element)
       }
 
-    let appendDecimalSeparator = (~format, v, range) => {
+    let appendDecimalSeparator = (~format, x, range) => {
       let digitGroupingState = SkipGrouping
       let decimalSeparator = M.decimalSeparatorU(. format.decimalSeparator, range, format.metadata)
-      appendWith(~digitGroupingState, ~format, v, decimalSeparator)
+      appendWith(~digitGroupingState, ~format, x, decimalSeparator)
     }
 
-    let appendBasePrefix = (~format, v, element) => {
+    let appendBasePrefix = (~format, x, element) => {
       let digitGroupingState = format.digitGrouping
         ? GroupingDigits({groupingSize: 4, numbersRev: list{}})
         : Normal
-      appendWith(~digitGroupingState, ~format, v, element)
+      appendWith(~digitGroupingState, ~format, x, element)
     }
 
-    let modifyLastU = (~format, v, fn) => {
-      let bodyRev = switch bodyRev(~format, v) {
+    let modifyLastU = (~format, x, fn) => {
+      let bodyRev = switch bodyRev(~format, x) {
       | list{last, ...rest} => list{fn(. Some(last)), ...rest}
       | list{} => list{fn(. None)}
       }
@@ -157,7 +160,9 @@ module Make = (M: Config): {
       bracketGroups: list{},
     }
 
-    let format = v => v.format
+    let isEmpty = x => x.bracketGroups == list{} && DigitSeparators.isEmpty(x.level0Body)
+
+    let format = x => x.format
 
     let body = ({level0Body, bracketGroups}) =>
       switch bracketGroups {
@@ -175,16 +180,16 @@ module Make = (M: Config): {
       | list{} => {format, level0Body: fn(. format, level0Body, arg), bracketGroups: list{}}
       }
 
-    let appendOpenBracket = (v, openBracketRange) => {
-      ...v,
-      bracketGroups: list{{openBracketRange, body: DigitSeparators.empty}, ...v.bracketGroups},
+    let appendOpenBracket = (x, openBracketRange) => {
+      ...x,
+      bracketGroups: list{{openBracketRange, body: DigitSeparators.empty}, ...x.bracketGroups},
     }
 
-    let appendCloseBracket = (v, closeBracketRange, superscript): t =>
-      switch v.bracketGroups {
+    let appendCloseBracket = (x, closeBracketRange, superscript): t =>
+      switch x.bracketGroups {
       | list{{openBracketRange, body}, ...nextBracketGroups} =>
-        let format = v.format
-        let v = {...v, bracketGroups: nextBracketGroups}
+        let format = x.format
+        let x = {...x, bracketGroups: nextBracketGroups}
         let bracketRange = M.bracketRangeU(.
           superscript,
           DigitSeparators.toString(~format, body),
@@ -192,41 +197,42 @@ module Make = (M: Config): {
           closeBracketRange,
           format.metadata,
         )
-        transformCurrentGroupWithArgU(v, bracketRange, (. format, a, b) => {
+        transformCurrentGroupWithArgU(x, bracketRange, (. format, a, b) => {
           DigitSeparators.append(~format, a, b)
         })
       | list{} =>
         let unpariedCloseBracket = M.unpairedCloseBracketU(.
           superscript,
           closeBracketRange,
-          v.format.metadata,
+          x.format.metadata,
         )
-        transformCurrentGroupWithArgU(v, unpariedCloseBracket, (. format, a, b) => {
+        transformCurrentGroupWithArgU(x, unpariedCloseBracket, (. format, a, b) => {
           DigitSeparators.append(~format, a, b)
         })
       }
 
-    let toString = v => {
+    let toString = x => {
       let rec iter = (~accum, ~bracketGroups) =>
         switch bracketGroups {
         | list{{openBracketRange, body}, ...tail} =>
-          let format = v.format
+          let format = x.format
           let body = DigitSeparators.toString(~format, body)
           iter(
             ~accum=M.unpairedOpenBracketU(. openBracketRange, format.metadata) ++ body ++ accum,
             ~bracketGroups=tail,
           )
         | list{} =>
-          let format = v.format
-          DigitSeparators.toString(~format, v.level0Body) ++ accum
+          let format = x.format
+          DigitSeparators.toString(~format, x.level0Body) ++ accum
         }
-      iter(~accum="", ~bracketGroups=v.bracketGroups)
+      iter(~accum="", ~bracketGroups=x.bracketGroups)
     }
   }
 
   type t = BracketGroups.t
   let make = (. format) => BracketGroups.make(~format)
   let lastElementType = (. body) => DigitSeparators.lastElementType(BracketGroups.body(body))
+  let isEmpty = (. body) => BracketGroups.isEmpty(body)
   let format = (. body) => BracketGroups.format(body)
   let append = (. body, element) =>
     BracketGroups.transformCurrentGroupWithArgU(body, element, (. format, a, b) => {

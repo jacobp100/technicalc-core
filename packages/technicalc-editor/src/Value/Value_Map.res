@@ -84,6 +84,29 @@ let parse = {
       None
     }
 
+  let applyUnits = (elements: elements, startIndex, value: TechniCalcEditor.Value_Types.node) => {
+    let rec iter = (accum: list<TechniCalcCalculator.AST_Types.unitsType>, i) =>
+      switch ArraySlice.get(elements, i) {
+      | Some((Fold_Unit({prefix, name, superscript}), _)) =>
+        // TODO - handle consecutive units - in same place as angles
+        let power = switch superscript {
+        | Some({superscriptBody}) => superscriptBody
+        | None => OfInt(1)
+        }
+        iter(list{{prefix, name, power}, ...accum}, i + 1)
+      | _ =>
+        let value = switch accum {
+        | list{} => value
+        | _ =>
+          let units = Belt.List.toArray(accum)->ArrayUtil.reverseInPlace
+          Measure(value, units)
+        }
+        (i, value)
+      }
+
+    iter(list{}, startIndex)
+  }
+
   let applyPostFixes = (elements: elements, startIndex, value) => {
     let rec iter = (accum: TechniCalcEditor.Value_Types.node, i) =>
       switch ArraySlice.get(elements, i) {
@@ -91,17 +114,20 @@ let parse = {
       | Some((Fold_Conj, _)) => iter(Conj(accum), i + 1)
       | Some((Fold_Transpose, _)) => iter(Transpose(accum), i + 1)
       | Some((Fold_Percent, _)) => iter(Percent(accum), i + 1)
-      | Some((Fold_Unit({prefix, name, superscript}), _)) =>
-        // TODO - handle consecutive units - in same place as angles
-        let power = switch superscript {
-        | Some({superscriptBody}) => superscriptBody
-        | None => OfInt(1)
-        }
-        iter(Measure(accum, [{prefix, name, power}]), i + 1)
       | _ => (i, accum)
       }
 
     iter(value, startIndex)
+  }
+
+  let applyTrailingElements = (elements, startIndex, value) => {
+    let (i, _) as postFixes = applyPostFixes(elements, startIndex, value)
+
+    if i != startIndex {
+      postFixes
+    } else {
+      applyUnits(elements, startIndex, value)
+    }
   }
 
   let applyBinaryOperator = (
@@ -301,7 +327,7 @@ let parse = {
       // Apply postfixes to leading number
       let (elements, current, continue) = switch continue ? current : None {
       | Some(value) =>
-        let (i, value) = applyPostFixes(elements, 0, value)
+        let (i, value) = applyTrailingElements(elements, 0, value)
         let elements = ArraySlice.sliceToEnd(elements, i)
         (elements, Some(value), true)
       | None => (elements, current, continue)

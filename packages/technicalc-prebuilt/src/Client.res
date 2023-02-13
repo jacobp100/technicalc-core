@@ -215,6 +215,12 @@ module Editor = {
 module Keys = {
   open TechniCalcEditor
 
+  type unitType = {
+    prefix: TechniCalcCalculator.Units.prefix,
+    name: TechniCalcCalculator.Units.name,
+    power: int,
+  }
+
   let keys = Keys.keys
 
   let variable = (~id, ~symbol) => Keys.One(VariableS({id, symbol}))
@@ -225,7 +231,31 @@ module Keys = {
       value: TechniCalcCalculator.Encoding.encode(value),
     })->Keys.One
 
-  let unit = (~prefix, ~name) => Keys.One(UnitS({prefix, name}))
+  %%private(
+    let keysU = (. key: string) =>
+      switch (Js.Dict.unsafeGet(Obj.magic(keys), key): Keys.t) {
+      | One(key) => [key]
+      | Many(keys) => keys
+      }
+  )
+  %%private(
+    let powers = power =>
+      power == 1
+        ? None
+        : Some(
+            Belt.Int.toString(power)->StringUtil.split(~separator="")->Belt.Array.flatMapU(keysU),
+          )
+  )
+  %%private(
+    let unitU = (. {prefix, name, power}): array<Keys.key> => {
+      let unit: Keys.key = UnitS({prefix, name})
+      switch powers(power) {
+      | Some(powers) => Belt.Array.concatMany([[unit, Superscript1], powers, [Arg]])
+      | None => [unit]
+      }
+    }
+  )
+  let units = (units: array<unitType>) => Keys.Many(Belt.Array.flatMapU(units, unitU))
 
   let table = (~numRows, ~numColumns) => Keys.One(TableNS({numRows, numColumns}))
 
@@ -361,11 +391,12 @@ module Units = {
   //     encoded,
   //     TechniCalcEditor.Encoding_Units.readUnitParts,
   //   );
+  let eq = TechniCalcCalculator.Units.eq
 
   let unitsCompatible = TechniCalcCalculator.Units.compatible
   let compositeUnitsCompatible = TechniCalcCalculator.Units.compositeCompatible
 
-  let toMml = v => TechniCalcCalculator.Formatting_Units.toString(~mode=MathML, v)
+  let toMml = v => TechniCalcCalculator.Formatting_Measure.formatUnits(~mode=MathML, v)
   let toString = Units_Util.toString
 
   let prefixes = Units_Util.prefixes

@@ -1,8 +1,8 @@
-open TechniCalcEditor.AST_Types
+type key = TechniCalcEditor.AST_Types.t
 
-type key =
-  | One(t)
-  | Many(array<t>)
+type t =
+  | One(key)
+  | Many(array<key>)
 
 let keys = {
   "0": One(N0_S),

@@ -54,6 +54,20 @@ open UrlSafeEncoding
 )
 
 %%private(
+  let encodeUnit = (~prefix, ~name) =>
+    // It's just easier to do this - adds one character to output
+    TechniCalcCalculator.Encoding_Units.encodeUnit({prefix, name, power: 0})
+)
+
+%%private(
+  let readUnit = reader =>
+    switch TechniCalcCalculator.Encoding_Units.readUnit(reader) {
+    | Some({prefix, name}) => AST.UnitS({prefix, name})->Some
+    | None => None
+    }
+)
+
+%%private(
   let encodeElement = (element: AST.t) =>
     switch element {
     | CaptureGroupStart({placeholder}) => encodeUint(260) ++ encodeCaptureGroup(~placeholder)
@@ -61,6 +75,7 @@ open UrlSafeEncoding
       encodeUint(262) ++ encodeUint(numRows) ++ encodeUint(numColumns)
     | ConstantS({symbol, value}) => encodeUint(263) ++ encodeConstant(~symbol, ~value)
     | VariableS({id, symbol}) => encodeUint(264) ++ encodeVariable(~id, ~symbol)
+    | UnitS({prefix, name}) => encodeUint(265) ++ encodeUnit(~prefix, ~name)
     | element => elementToUint(element)->encodeUint
     }
 )
@@ -78,6 +93,7 @@ open UrlSafeEncoding
       }
     | Some(263) => readConstant(reader)
     | Some(264) => readVariable(reader)
+    | Some(265) => readUnit(reader)
     /* Legacy table encodings */
     | Some(54) => Some(TableNS({numRows: 2, numColumns: 2}))
     | Some(55) => Some(TableNS({numRows: 3, numColumns: 3}))
