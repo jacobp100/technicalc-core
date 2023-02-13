@@ -6,12 +6,10 @@ open Measure_Base
     if Belt.Array.eqU(a.units, b.units, (. a, b) => Units.eq(a, b)) {
       Some((a.value, b.value, a.units))
     } else if Units.compatible(~fromUnits=a.units, ~toUnits=b.units) {
-      let aUnits = Belt.Array.flatMapU(a.units, (. u) => Units.toSi(u))
-      let bUnits = Belt.Array.flatMapU(b.units, (. u) => Units.toSi(u))
-      assert Units.compatible(~fromUnits=aUnits, ~toUnits=bUnits)
-      let aValue = Units.convert(~fromUnits=a.units, ~toUnits=aUnits, a.value)
-      let bValue = Units.convert(~fromUnits=b.units, ~toUnits=bUnits, b.value)
-      Some((aValue, bValue, aUnits))
+      let siUnits = Belt.Array.flatMapU(a.units, (. u) => Units.toSi(u))
+      let aValue = Units.convert(~fromUnits=a.units, ~toUnits=siUnits, a.value)
+      let bValue = Units.convert(~fromUnits=b.units, ~toUnits=siUnits, b.value)
+      Some((aValue, bValue, siUnits))
     } else {
       None
     }
