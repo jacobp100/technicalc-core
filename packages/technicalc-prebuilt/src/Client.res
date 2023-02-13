@@ -109,6 +109,7 @@ module Elements = {
   open TechniCalcEditor
 
   let ofString = AST.ofString
+  let ofValue = AST.ofValue
 
   let encode = Encoding.encode
   let decode = Encoding.decode
@@ -232,26 +233,13 @@ module Keys = {
     })->Keys.One
 
   %%private(
-    let keysU = (. key: string) =>
-      switch (Js.Dict.unsafeGet(Obj.magic(keys), key): Keys.t) {
-      | One(key) => [key]
-      | Many(keys) => keys
-      }
-  )
-  %%private(
-    let powers = power =>
-      power == 1
-        ? None
-        : Some(
-            Belt.Int.toString(power)->StringUtil.split(~separator="")->Belt.Array.flatMapU(keysU),
-          )
-  )
-  %%private(
     let unitU = (. {prefix, name, power}): array<Keys.key> => {
       let unit: Keys.key = UnitS({prefix, name})
-      switch powers(power) {
-      | Some(powers) => Belt.Array.concatMany([[unit, Superscript1], powers, [Arg]])
-      | None => [unit]
+      if power != 1 {
+        let power = Belt.Int.toString(power)->AST.ofString
+        Belt.Array.concatMany([[unit, Superscript1], power, [Arg]])
+      } else {
+        [unit]
       }
     }
   )
@@ -330,6 +318,12 @@ module Value = {
     let format = getFormat(~mode=Tex, maybeFormat)
     Formatting.toString(~format, x)
   }
+
+  let toMeasure = (x: Value.t) =>
+    switch x {
+    | #Mesr({value, units}) => Some({"value": Scalar.ofReal(value), "units": units})
+    | _ => None
+    }
 }
 
 module Work = {
