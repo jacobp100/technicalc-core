@@ -22,7 +22,7 @@ const em = 16;
 const ex = 8;
 const containerWidth = 80 * 16;
 
-export default (mml, display) => {
+export default (mml, display, metadata) => {
   const math = new html.options.MathItem(mml, inputMml, display);
   math.setMetrics(em, ex, containerWidth, 100000, 1);
   math.compile(html);
@@ -39,6 +39,25 @@ export default (mml, display) => {
 
   const rootNode = math.typesetRoot.children[0];
 
+  // eslint-disable-next-line no-use-before-define
+  const positionMap = metadata ? getPositionMap({ rootNode, wrapper }) : null;
+
+  const buildSvg = (element, index) => {
+    const { children } = element;
+    return transformElement(
+      element,
+      children != null && children.length > 0 ? children.map(buildSvg) : null,
+      index
+    );
+  };
+  const svg = buildSvg(rootNode);
+
+  const { width, height, ascent } = parseViewbox(rootNode.attributes.viewBox);
+
+  return { width, height, ascent, positionMap, svg };
+};
+
+const getPositionMap = ({ rootNode, wrapper }) => {
   const bboxes = new Map();
   const advanceWidths = new Map();
   const setBboxes = (wrappedNode) => {
@@ -132,17 +151,5 @@ export default (mml, display) => {
   };
   setPositions(rootNode, { s: 1, tX: 0, tY: 0 });
 
-  const buildSvg = (element, index) => {
-    const { children } = element;
-    return transformElement(
-      element,
-      children != null && children.length > 0 ? children.map(buildSvg) : null,
-      index
-    );
-  };
-  const svg = buildSvg(rootNode);
-
-  const { width, height, ascent } = parseViewbox(rootNode.attributes.viewBox);
-
-  return { width, height, ascent, positionMap, svg };
+  return positionMap;
 };

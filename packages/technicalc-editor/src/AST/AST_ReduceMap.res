@@ -40,7 +40,11 @@ type foldState<'a> =
   | Fold_NRoot({degree: 'a, radicand: 'a, superscript: option<superscript<'a>>})
   | Fold_OpenBracket
   | Fold_Percent
-  | Fold_Placeholder({placeholder: option<Symbol.t>, superscript: option<superscript<'a>>})
+  | Fold_Placeholder({
+      placeholder: option<Symbol.t>,
+      superscript: option<superscript<'a>>,
+      captureGroupIndex: option<int>,
+    })
   | Fold_Rand(option<superscript<'a>>)
   | Fold_RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
   | Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
@@ -105,9 +109,10 @@ let reduceMapU = (
     | CaptureGroupStart({placeholder}) =>
       switch Belt.Array.get(input, i + 1) {
       | Some(CaptureGroupEndS) =>
+        let captureGroupIndex = Some(i + 1)
         let i' = i + 2
         let (superscript, i') = readSuperscript(i')
-        Node(Fold_Placeholder({placeholder, superscript}), i, i')
+        Node(Fold_Placeholder({placeholder, superscript, captureGroupIndex}), i, i')
       | _ => Empty
       }
     | CaptureGroupEndS => Empty
@@ -221,7 +226,7 @@ let reduceMapU = (
     | Superscript1 =>
       let (superscriptBody, i') = readArg(i + 1)
       let superscript = Some({superscriptBody, index: i + 1})
-      Node(Fold_Placeholder({placeholder: None, superscript}), i, i')
+      Node(Fold_Placeholder({placeholder: None, superscript, captureGroupIndex: None}), i, i')
     | Abs1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')

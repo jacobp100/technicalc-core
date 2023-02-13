@@ -46,7 +46,7 @@ test("superscripts on numbers", () => {
 })
 
 test("magnitudes", () => {
-  parse([N1_S, Magnitude1, N3_S, Arg])->asString->expect->toEqual(Ok("1000"))
+  parse([N1_S, Magnitude1, N3_S, Arg])->asString->expect->toEqual(Ok("1,000"))
 
   parse([N2_S, Superscript1, N2_S, Arg, Magnitude1, N3_S, Arg])->expect->toEqual(Ok(ofInt(4000)))
 })

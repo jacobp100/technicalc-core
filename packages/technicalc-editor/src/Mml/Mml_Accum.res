@@ -142,14 +142,13 @@ let appendBasePrefix = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~r
     body,
   )->appendBasePrefix(. x, _)
 
-let appendPlaceholder = (x, ~range, ~superscript, placeholder) => {
+let appendPlaceholder = (x, ~range, ~superscript, ~captureGroupIndex, placeholder) => {
   let {metadata} = format(. x)
-  let phantom = element(
-    ~metadata,
-    ~attributes=list{selection(~start=fst(range) + 1, ())},
-    "mphantom",
-    "",
-  )
+  let phantom = switch captureGroupIndex {
+  | Some(start) =>
+    element(~metadata, ~attributes=list{selection(~avoid=true, ~start, ())}, "mphantom", "")
+  | None => ""
+  }
   let symbol = switch placeholder {
   | Some(placeholder) => Mml_Symbol.toMml(placeholder)
   | None =>
