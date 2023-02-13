@@ -43,7 +43,14 @@ let ofMml = (mml: string): Symbol.t => {
 %%private(
   let encodeEntities = %raw(`
     function(base) {
-      return Array.from(base, x => '&#x' + x.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ';');
+      return Array.from(base, x => {
+        const charCode = x.charCodeAt(0);
+        if (charCode >= 128) {
+          return '&#x' + x.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ';';
+        } else {
+          return x;
+        }
+      }).join('');
     }
   `)
 )
