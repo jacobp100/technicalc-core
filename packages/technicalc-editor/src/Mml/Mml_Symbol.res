@@ -40,6 +40,14 @@ let ofMml = (mml: string): Symbol.t => {
   {bold, italic, base, subscript, superscript}
 }
 
+%%private(
+  let encodeEntities = %raw(`
+    function(base) {
+      return Array.from(base, x => '&#x' + x.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ';');
+    }
+  `)
+)
+
 let toMml = (x: Symbol.t) => {
   let style = switch x {
   | {bold: false, italic: false} => "normal"
@@ -48,13 +56,14 @@ let toMml = (x: Symbol.t) => {
   | {bold: true, italic: true} => "bold-italic"
   }
 
+  let base = encodeEntities(x.base)
   let base =
-    x.base != ""
-      ? `<mi mathvariant="${style}">${x.base}</mi>`
+    base != ""
+      ? `<mi mathvariant="${style}">${base}</mi>`
       : `<mi mathvariant="normal" class="placeholder">${Mml_Placeholder.body}</mi>`
 
-  let superscript = `<mi mathvariant="normal">${x.superscript}</mi>`
-  let subscript = `<mi mathvariant="normal">${x.subscript}</mi>`
+  let superscript = `<mi mathvariant="normal">${encodeEntities(x.superscript)}</mi>`
+  let subscript = `<mi mathvariant="normal">${encodeEntities(x.subscript)}</mi>`
 
   switch x {
   | {superscript: "", subscript: ""} => base

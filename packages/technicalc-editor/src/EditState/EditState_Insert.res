@@ -49,6 +49,7 @@ type skipMode =
     | Sub
     | TanhS
     | TanS
+    | UnitS(_)
     | NLog1
     | Differential2
     | Product2
@@ -93,7 +94,6 @@ type skipMode =
     | YUnitS
     | ZUnitS
     | ConstantS(_)
-    | UnitS(_)
     | VariableS(_)
     | Magnitude1
     | Superscript1

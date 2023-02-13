@@ -5,9 +5,10 @@ type mmlNames = [
   | #stretchy
   | #align
   | #width
+  | #lspace
 ]
 
-type customNames = [#id | #class]
+type customNames = [#id | #class | #"data-mjx-texclass"]
 
 type name = [mmlNames | customNames]
 type value = string

@@ -87,13 +87,13 @@ include Stringifier.Make({
     }
 })
 
-let append = (v, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range, tag, body) =>
+let append = (v, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range=?, tag, body) =>
   element(
     ~metadata=format(. v).metadata,
     ~avoidsSelection?,
     ~attributes?,
     ~superscript?,
-    ~range,
+    ~range?,
     tag,
     body,
   )->append(. v, _)
