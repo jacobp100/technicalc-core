@@ -338,7 +338,7 @@ let json = [
         {units: [{prefix: Micro, name: Watt, power: 1}], primary: false},
         {units: [{prefix: Milli, name: Watt, power: 1}], primary: false},
         {units: [{prefix: Unit, name: Watt, power: 1}], primary: true},
-        {units: [{prefix: Kilo, name: Watt, power: 1}], primary: false},
+        {units: [{prefix: Kilo, name: Watt, power: 1}], primary: true},
         {units: [{prefix: Mega, name: Watt, power: 1}], primary: false},
         {units: [{prefix: Giga, name: Watt, power: 1}], primary: false},
       ],
