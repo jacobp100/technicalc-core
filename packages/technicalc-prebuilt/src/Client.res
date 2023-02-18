@@ -389,6 +389,7 @@ module Units = {
   let compositeUnitsCompatible = TechniCalcCalculator.Units.compositeCompatible
 
   let toMml = v => TechniCalcCalculator.Formatting_Measure.formatUnits(~mode=MathML, v)
+  let toUnicode = v => TechniCalcCalculator.Formatting_Measure.formatUnits(~mode=Unicode, v)
   let toString = Units_Util.toString
 
   let prefixes = Units_Util.prefixes

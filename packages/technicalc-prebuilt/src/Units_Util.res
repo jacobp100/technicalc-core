@@ -107,6 +107,17 @@ let nameToString = (name: name) =>
   | Watt => "Watt"
   | Horsepower => "Horsepower"
   | MetricHorsepower => "Metric Horsepower"
+  | Volt => "Volt"
+  | Ampere => "Ampere"
+  | Ohm => "Ohm"
+  | Coulomb => "Coulomb"
+  | Farad => "Farad"
+  | Weber => "Weber"
+  | Tesla => "Tesla"
+  | Henry => "Henry"
+  | Siemens => "Siemens"
+  | Mole => "Mole"
+  | Hertz => "Hertz"
   | Bit => "Bit"
   | Byte => "Byte"
   | Kelvin => "Kelvin"
@@ -119,8 +130,12 @@ let nameToStringPlural = (name: name) =>
   | Century => "Centuries"
   | Inch => "Inches"
   | Foot => "Feet"
+  | Henry => "Henries"
+  | Siemens
+  | Hertz
   | Celsius
-  | Fahrenheit =>
+  | Fahrenheit
+  | Kelvin =>
     nameToString(name)
   | _ => nameToString(name) ++ "s"
   }

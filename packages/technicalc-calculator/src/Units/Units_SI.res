@@ -69,6 +69,28 @@ let toSi = (a: t) =>
   | Watt
   | Horsepower
   | MetricHorsepower => [{prefix: Unit, name: Watt, power: a.power}]
+  /* Voltage */
+  | Volt => [{prefix: Unit, name: Volt, power: a.power}]
+  /* Ampere */
+  | Ampere => [{prefix: Unit, name: Ampere, power: a.power}]
+  /* Resistance */
+  | Ohm => [{prefix: Unit, name: Ohm, power: a.power}]
+  /* Charge */
+  | Coulomb => [{prefix: Unit, name: Coulomb, power: a.power}]
+  /* Capacitance */
+  | Farad => [{prefix: Unit, name: Farad, power: a.power}]
+  /* Flux */
+  | Weber => [{prefix: Unit, name: Weber, power: a.power}]
+  /* Flux density */
+  | Tesla => [{prefix: Unit, name: Tesla, power: a.power}]
+  /* Inductance */
+  | Henry => [{prefix: Unit, name: Henry, power: a.power}]
+  /* Conductance */
+  | Siemens => [{prefix: Unit, name: Siemens, power: a.power}]
+  /* Substance */
+  | Mole => [{prefix: Unit, name: Mole, power: a.power}]
+  /* Frequency */
+  | Hertz => [{prefix: Unit, name: Hertz, power: a.power}]
   /* Memory */
   | Bit
   | Byte => [{prefix: Unit, name: Byte, power: a.power}]

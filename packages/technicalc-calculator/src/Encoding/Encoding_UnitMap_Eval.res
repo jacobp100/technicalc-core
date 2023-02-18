@@ -1,6 +1,5 @@
 open Units_Types
 
-%%private(let makeSureThisIsTheLastIndex = 58)
 %%private(
   let toUint = (element: name) =>
     switch element {
@@ -62,16 +61,30 @@ open Units_Types
     | Kelvin => 55
     | Celsius => 56
     | Fahrenheit => 57
-    /* 1st additions */
-    | ScandinavianMile => makeSureThisIsTheLastIndex
+    /* 2nd additions */
+    | ScandinavianMile => 58
+    /* 3rd additions */
+    | Volt => 59
+    | Ampere => 60
+    | Ohm => 61
+    | Coulomb => 62
+    | Farad => 63
+    | Weber => 64
+    | Tesla => 65
+    | Henry => 66
+    | Siemens => 67
+    | Mole => 68
+    | Hertz => 69
     }
 )
 
-let mapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, 0)
-let reverseMapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, Second)
-for i in 0 to makeSureThisIsTheLastIndex {
-  let unit: name = Obj.magic(i)
-  let index = toUint(unit)
+%%private(let numIntElements = 69)
+%%private(let maxUintValue = 69)
+let mapping = Belt.Array.make(numIntElements + 1, 0)
+let reverseMapping = Belt.Array.make(maxUintValue + 1, Second)
+for i in 0 to numIntElements {
+  let element: name = Obj.magic(i)
+  let index = toUint(element)
   assert Belt.Array.set(mapping, i, index)
-  assert Belt.Array.set(reverseMapping, index, unit)
+  assert Belt.Array.set(reverseMapping, index, element)
 }

@@ -95,6 +95,28 @@ let linearValueExn = (name: name) =>
     | Horsepower => "745.7"
     | MetricHorsepower => "735.5"
 
+    | Volt => "1"
+
+    | Ampere => "1"
+
+    | Ohm => "1"
+
+    | Coulomb => "1"
+
+    | Farad => "1"
+
+    | Weber => "1"
+
+    | Tesla => "1"
+
+    | Henry => "1"
+
+    | Siemens => "1"
+
+    | Mole => "1"
+
+    | Hertz => "1"
+
     | Bit => "1"
     | Byte => "8"
 

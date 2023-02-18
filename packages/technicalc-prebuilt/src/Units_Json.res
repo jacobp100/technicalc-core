@@ -14,6 +14,19 @@ type section = {
 
 let json = [
   {
+    title: "Temperature",
+    data: [
+      [{units: [{prefix: Unit, name: Kelvin, power: 1}], primary: true}],
+      [{units: [{prefix: Unit, name: Celsius, power: 1}], primary: true}],
+      [
+        {
+          units: [{prefix: Unit, name: Fahrenheit, power: 1}],
+          primary: true,
+        },
+      ],
+    ],
+  },
+  {
     title: "Time",
     data: [
       [
@@ -38,6 +51,15 @@ let json = [
       [{units: [{prefix: Unit, name: Year, power: 1}], primary: true}],
       [{units: [{prefix: Unit, name: Decade, power: 1}], primary: true}],
       [{units: [{prefix: Unit, name: Century, power: 1}], primary: true}],
+      [
+        {units: [{prefix: Nano, name: Hertz, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Hertz, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Hertz, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Hertz, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Hertz, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Hertz, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Hertz, power: 1}], primary: false},
+      ],
     ],
   },
   {
@@ -282,16 +304,85 @@ let json = [
     ],
   },
   {
-    title: "Power",
+    title: "Electricity & Power",
     data: [
       [
-        {units: [{prefix: Nano, name: Joule, power: 1}], primary: false},
-        {units: [{prefix: Micro, name: Joule, power: 1}], primary: false},
-        {units: [{prefix: Milli, name: Joule, power: 1}], primary: false},
+        {units: [{prefix: Nano, name: Volt, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Volt, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Volt, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Volt, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Volt, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Volt, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Volt, power: 1}], primary: false},
+      ],
+      [
+        {units: [{prefix: Nano, name: Ampere, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Ampere, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Ampere, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Ampere, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Ampere, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Ampere, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Ampere, power: 1}], primary: false},
+      ],
+      [
+        {units: [{prefix: Nano, name: Ohm, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Ohm, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Ohm, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Ohm, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Ohm, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Ohm, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Ohm, power: 1}], primary: false},
+      ],
+      [
+        {units: [{prefix: Nano, name: Watt, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Watt, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Watt, power: 1}], primary: false},
         {units: [{prefix: Unit, name: Watt, power: 1}], primary: true},
-        {units: [{prefix: Kilo, name: Joule, power: 1}], primary: false},
-        {units: [{prefix: Mega, name: Joule, power: 1}], primary: false},
-        {units: [{prefix: Giga, name: Joule, power: 1}], primary: false},
+        {units: [{prefix: Kilo, name: Watt, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Watt, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Watt, power: 1}], primary: false},
+      ],
+      [
+        {units: [{prefix: Nano, name: Farad, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Farad, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Farad, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Farad, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Farad, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Farad, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Farad, power: 1}], primary: false},
+      ],
+    ],
+  },
+  {
+    title: "Science",
+    data: [
+      [{units: [{prefix: Unit, name: Mole, power: 1}], primary: true}],
+      [
+        {units: [{prefix: Nano, name: Coulomb, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Coulomb, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Coulomb, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Coulomb, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Coulomb, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Coulomb, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Coulomb, power: 1}], primary: false},
+      ],
+      [
+        {units: [{prefix: Nano, name: Tesla, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Tesla, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Tesla, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Tesla, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Tesla, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Tesla, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Tesla, power: 1}], primary: false},
+      ],
+      [
+        {units: [{prefix: Nano, name: Henry, power: 1}], primary: false},
+        {units: [{prefix: Micro, name: Henry, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Henry, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Henry, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Henry, power: 1}], primary: false},
+        {units: [{prefix: Mega, name: Henry, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Henry, power: 1}], primary: false},
       ],
     ],
   },
@@ -327,19 +418,6 @@ let json = [
         {units: [{prefix: Tera, name: Bit, power: 1}], primary: false},
         {units: [{prefix: Peta, name: Bit, power: 1}], primary: false},
         {units: [{prefix: Exa, name: Bit, power: 1}], primary: false},
-      ],
-    ],
-  },
-  {
-    title: "Temperature",
-    data: [
-      [{units: [{prefix: Unit, name: Kelvin, power: 1}], primary: true}],
-      [{units: [{prefix: Unit, name: Celsius, power: 1}], primary: true}],
-      [
-        {
-          units: [{prefix: Unit, name: Fahrenheit, power: 1}],
-          primary: true,
-        },
       ],
     ],
   },

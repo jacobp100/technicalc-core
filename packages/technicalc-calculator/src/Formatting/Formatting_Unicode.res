@@ -3,6 +3,7 @@ let sqrt = `√`
 let divide = `÷`
 let magnitude = `×10`
 let mu = `μ`
+let omegaUpper = `Ω`
 let degree = `°`
 
 let formatSuperscriptNumbers = str =>

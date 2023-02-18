@@ -34,6 +34,17 @@ let formatPrefix = (~mode, prefix: prefix) =>
   }
 
 %%private(
+  let ohm = (~mode) => {
+    switch mode {
+    | MathML => "&#x3A9;"
+    | Tex => `\\omega`
+    | Ascii => "ohm"
+    | Unicode => Formatting_Unicode.omegaUpper
+    }
+  }
+)
+
+%%private(
   let deg = (~mode) =>
     switch mode {
     | MathML => "&#x00B0;"
@@ -109,6 +120,28 @@ let formatName = (~mode, unit: name) =>
   | Horsepower => "hp"
   | MetricHorsepower => "PS"
 
+  | Volt => "V"
+
+  | Ampere => "A"
+
+  | Ohm => ohm(~mode)
+
+  | Coulomb => "C"
+
+  | Farad => "F"
+
+  | Weber => "Wb"
+
+  | Tesla => "T"
+
+  | Henry => "H"
+
+  | Siemens => "S"
+
+  | Mole => "mol"
+
+  | Hertz => "Hz"
+
   | Bit => "b"
   | Byte => "B"
 
@@ -138,7 +171,7 @@ let toString = (~mode, {prefix, name, power}: t) => {
     | MathML => `<msup>${formattedUnit}<mn>${power}</mn></msup>`
     | Tex => `${formattedUnit}^{${power}}`
     | Ascii => `${formattedUnit}^${power}`
-    | Unicode => `${formattedUnit}^${Formatting_Unicode.formatSuperscriptNumbers(power)}`
+    | Unicode => `${formattedUnit}${Formatting_Unicode.formatSuperscriptNumbers(power)}`
     }
   }
 }

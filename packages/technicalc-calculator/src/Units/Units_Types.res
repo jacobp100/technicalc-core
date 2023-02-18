@@ -91,6 +91,28 @@ type name =
   | Watt
   | Horsepower
   | MetricHorsepower
+  /* Voltage */
+  | Volt
+  /* Amps */
+  | Ampere
+  /* Resistance */
+  | Ohm
+  /* Capacitance */
+  | Farad
+  /* Flux */
+  | Weber
+  /* Flux density */
+  | Tesla
+  /* Inductance */
+  | Henry
+  /* Conductance */
+  | Siemens
+  /* Charge */
+  | Coulomb
+  /* Substance */
+  | Mole
+  /* Frequency */
+  | Hertz
   /* Memory */
   | Bit
   | Byte
