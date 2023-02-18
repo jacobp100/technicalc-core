@@ -26,104 +26,12 @@ let prefixes = [
 ]
 
 let prefixToString = (prefix: prefix) =>
-  switch prefix {
-  | Femto => Some("Femto")
-  | Pico => Some("Pico")
-  | Nano => Some("Nano")
-  | Micro => Some("Micro")
-  | Milli => Some("Milli")
-  | Centi => Some("Centi")
-  | Deci => Some("Deci")
-  | Unit => None
-  | Deca => Some("Deca")
-  | Hecto => Some("Hecto")
-  | Kilo => Some("Kilo")
-  | Mega => Some("Mega")
-  | Giga => Some("Giga")
-  | Tera => Some("Tera")
-  | Peta => Some("Peta")
-  | Exa => Some("Exa")
-  | Kibi => Some("Kibi")
-  | Mebi => Some("Mebi")
-  | Gibi => Some("Gibi")
-  | Tebi => Some("Tebi")
-  | Pebi => Some("Pebi")
-  | Exbi => Some("Exbi")
+  switch Belt.Array.getExn(Units_Util_Eval.prefixes, Obj.magic(prefix)) {
+  | "" => None
+  | prefix => Some(prefix)
   }
 
-let nameToString = (name: name) =>
-  switch name {
-  | Second => "Second"
-  | Minute => "Minute"
-  | Hour => "Hour"
-  | Day => "Day"
-  | Week => "Week"
-  | Month => "Month"
-  | Year => "Year"
-  | Decade => "Decade"
-  | Century => "Century"
-  | Meter => "Meter"
-  | Inch => "Inch"
-  | Foot => "Foot"
-  | Yard => "Yard"
-  | Mile => "Mile"
-  | NauticalMile => "Nautical Mile"
-  | ScandinavianMile => "Scandinavian Mile"
-  | LightYear => "Light Year"
-  | Parsec => "Parsec"
-  | Angstrom => "Angstrom"
-  | Gram => "Gram"
-  | Tonne => "Tonne"
-  | Ounce => "Ounce"
-  | Pound => "Pound"
-  | Stone => "Stone"
-  | Acre => "Acre"
-  | Hectare => "Hectare"
-  | Liter => "Liter"
-  | Gallon => "Gallon"
-  | USGallon => "US Gallon"
-  | Quart => "Quart"
-  | USQuart => "US Quart"
-  | Cup => "Cup"
-  | USCup => "US Cup"
-  | Pint => "Pint"
-  | USPint => "US Pint"
-  | Teaspoon => "Teaspoon"
-  | USTeaspoon => "US Teaspoon"
-  | Tablespoon => "Tablespoon"
-  | USTablespoon => "US Tablespoon"
-  | FluidOunce => "Fluid Ounce"
-  | Knot => "Knot"
-  | Newton => "Newton"
-  | PoundForce => "Pound Force"
-  | Pascal => "Pascal"
-  | Atmosphere => "Atmosphere"
-  | Bar => "Bar"
-  | Joule => "Joule"
-  | Calorie => "Calorie"
-  | ElectronVolt => "Electron Volt"
-  | BTU => "BTU"
-  | Therm => "Therm"
-  | Watt => "Watt"
-  | Horsepower => "Horsepower"
-  | MetricHorsepower => "Metric Horsepower"
-  | Volt => "Volt"
-  | Ampere => "Ampere"
-  | Ohm => "Ohm"
-  | Coulomb => "Coulomb"
-  | Farad => "Farad"
-  | Weber => "Weber"
-  | Tesla => "Tesla"
-  | Henry => "Henry"
-  | Siemens => "Siemens"
-  | Mole => "Mole"
-  | Hertz => "Hertz"
-  | Bit => "Bit"
-  | Byte => "Byte"
-  | Kelvin => "Kelvin"
-  | Celsius => "Celsius"
-  | Fahrenheit => "Fahrenheit"
-  }
+let nameToString = (name: name) => Belt.Array.getExn(Units_Util_Eval.names, Obj.magic(name))
 
 let nameToStringPlural = (name: name) =>
   switch name {

@@ -3,9 +3,6 @@ open Units_Types
 
 let formatPrefix = (~mode, prefix: prefix) =>
   switch prefix {
-  | Femto => "f"
-  | Pico => "p"
-  | Nano => "n"
   | Micro =>
     switch mode {
     | MathML => "&#x3BC;"
@@ -13,24 +10,7 @@ let formatPrefix = (~mode, prefix: prefix) =>
     | Ascii => "u"
     | Unicode => Formatting_Unicode.mu
     }
-  | Milli => "m"
-  | Centi => "c"
-  | Deci => "d"
-  | Unit => ""
-  | Deca => "da"
-  | Hecto => "h"
-  | Kilo => "k"
-  | Mega => "M"
-  | Giga => "G"
-  | Tera => "T"
-  | Peta => "P"
-  | Exa => "E"
-  | Kibi => "Ki"
-  | Mebi => "Mi"
-  | Gibi => "Gi"
-  | Tebi => "Ti"
-  | Pebi => "Pi"
-  | Exbi => "Ei"
+  | _ => Belt.Array.getExn(Formatting_Units_Eval.prefixes, Obj.magic(prefix))
   }
 
 %%private(
@@ -56,98 +36,10 @@ let formatPrefix = (~mode, prefix: prefix) =>
 
 let formatName = (~mode, unit: name) =>
   switch unit {
-  | Second => "s"
-  | Minute => "min"
-  | Hour => "h"
-  | Day => "d"
-  | Week => "week"
-  | Month => "month"
-  | Year => "year"
-  | Decade => "decade"
-  | Century => "century"
-
-  | Meter => "m"
-  | Inch => "in"
-  | Foot => "ft"
-  | Yard => "yd"
-  | Mile => "mi"
-  | NauticalMile => "NM"
-  | ScandinavianMile => "mil"
-  | LightYear => "ly"
-  | Parsec => "pc"
-  | Angstrom => "A" // "&#x212B;"
-
-  | Gram => "g"
-  | Tonne => "T"
-  | Ounce => "oz"
-  | Pound => "lb"
-  | Stone => "st"
-
-  | Acre => "acre"
-  | Hectare => "ha"
-
-  | Liter => "l"
-  | Gallon => "Gal"
-  | USGallon => "US Gal"
-  | Quart => "qt"
-  | USQuart => "US qt"
-  | Cup => "cup"
-  | USCup => "US cup"
-  | Pint => "pt"
-  | USPint => "US pt"
-  | Teaspoon => "tsp"
-  | USTeaspoon => "US tsp"
-  | Tablespoon => "tbsp"
-  | USTablespoon => "US tbsp"
-  | FluidOunce => "fl oz"
-
-  | Knot => "kn"
-
-  | Newton => "N"
-  | PoundForce => "lbf"
-
-  | Pascal => "Pa"
-  | Atmosphere => "atm"
-  | Bar => "bar"
-
-  | Joule => "J"
-  | Calorie => "cal"
-  | ElectronVolt => "eV"
-  | BTU => "Btu"
-  | Therm => "thm"
-
-  | Watt => "W"
-  | Horsepower => "hp"
-  | MetricHorsepower => "PS"
-
-  | Volt => "V"
-
-  | Ampere => "A"
-
   | Ohm => ohm(~mode)
-
-  | Coulomb => "C"
-
-  | Farad => "F"
-
-  | Weber => "Wb"
-
-  | Tesla => "T"
-
-  | Henry => "H"
-
-  | Siemens => "S"
-
-  | Mole => "mol"
-
-  | Hertz => "Hz"
-
-  | Bit => "b"
-  | Byte => "B"
-
-  | Kelvin => "K"
   | Celsius => deg(~mode) ++ "C"
   | Fahrenheit => deg(~mode) ++ "F"
+  | _ => Belt.Array.getExn(Formatting_Units_Eval.prefixes, Obj.magic(unit))
   }
 
 %%private(
