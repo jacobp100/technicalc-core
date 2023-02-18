@@ -323,9 +323,11 @@ module Value = {
     Formatting.toString(~format, x)
   }
 
+  let ofMeasure = (x: Value.t, units: array<Units.t>) =>
+    Value_Base.toReal(x)->Measure_Base.ofReal(~units)->Value_Base.ofMeasure
   let toMeasure = (x: Value.t) =>
     switch x {
-    | #Mesr({value, units}) => Some({"value": Scalar.ofReal(value), "units": units})
+    | #Mesr({value, units}) => Some({"value": Scalar_Base.ofReal(value), "units": units})
     | _ => None
     }
 }
@@ -383,13 +385,15 @@ module Work = {
 }
 
 module Units = {
-  let eq = TechniCalcCalculator.Units.eq
+  open TechniCalcCalculator
 
-  let unitsCompatible = TechniCalcCalculator.Units.compatible
-  let compositeUnitsCompatible = TechniCalcCalculator.Units.compositeCompatible
+  let eq = Units_Base.eq
 
-  let toMml = v => TechniCalcCalculator.Formatting_Measure.formatUnits(~mode=MathML, v)
-  let toUnicode = v => TechniCalcCalculator.Formatting_Measure.formatUnits(~mode=Unicode, v)
+  let unitsCompatible = Units_Compatibility.compatible
+  let compositeUnitsCompatible = Units_Compatibility.compositeCompatible
+
+  let toMml = v => Formatting_Measure.formatUnits(~mode=MathML, v)
+  let toUnicode = v => Formatting_Measure.formatUnits(~mode=Unicode, v)
   let toString = Units_Util.toString
 
   let prefixes = Units_Util.prefixes
@@ -401,15 +405,17 @@ module Units = {
 }
 
 module Symbol = {
-  let empty = TechniCalcEditor.Symbol.empty
-  let ofString = TechniCalcEditor.Symbol.ofString
+  open TechniCalcEditor
 
-  let isEmpty = TechniCalcEditor.Symbol.isEmpty
-  let isValid = TechniCalcEditor.Symbol.isValid
+  let empty = Symbol.empty
+  let ofString = Symbol.ofString
 
-  let encode = TechniCalcEditor.Encoding_Symbol.encode
-  let decode = string => UrlSafeEncoding.read(string, TechniCalcEditor.Encoding_Symbol.read)
+  let isEmpty = Symbol.isEmpty
+  let isValid = Symbol.isValid
 
-  let toMml = TechniCalcEditor.Mml_Symbol.toMml
-  let ofMml = TechniCalcEditor.Mml_Symbol.ofMml
+  let encode = Encoding_Symbol.encode
+  let decode = string => UrlSafeEncoding.read(string, Encoding_Symbol.read)
+
+  let toMml = Mml_Symbol.toMml
+  let ofMml = Mml_Symbol.ofMml
 }
