@@ -112,7 +112,11 @@ module Elements = {
   let ofValue = AST.ofValue
 
   let encode = Encoding.encode
-  let decode = Encoding.decode
+  let decode = x =>
+    switch Encoding.decode(x) {
+    | Some(ast) => Some(AST.normalize(ast))
+    | None => None
+    }
 
   %%private(
     let getFormat = (maybeFormat, ~metadata): TechniCalcEditor.Stringifier.format =>
@@ -379,12 +383,6 @@ module Work = {
 }
 
 module Units = {
-  // let encodeUnitParts = TechniCalcEditor.Encoding_Units.encodeUnitParts;
-  // let decodeUnitParts = encoded =>
-  //   TechniCalcCalculator.Encoding.read(
-  //     encoded,
-  //     TechniCalcEditor.Encoding_Units.readUnitParts,
-  //   );
   let eq = TechniCalcCalculator.Units.eq
 
   let unitsCompatible = TechniCalcCalculator.Units.compatible

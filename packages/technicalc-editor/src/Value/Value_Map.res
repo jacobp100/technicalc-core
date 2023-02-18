@@ -84,29 +84,6 @@ let parse = {
       None
     }
 
-  let applyUnits = (elements: elements, startIndex, value: TechniCalcEditor.Value_Types.node) => {
-    let rec iter = (accum: list<TechniCalcCalculator.AST_Types.unitsType>, i) =>
-      switch ArraySlice.get(elements, i) {
-      | Some((Fold_Unit({prefix, name, superscript}), _)) =>
-        // TODO - handle consecutive units - in same place as angles
-        let power = switch superscript {
-        | Some({superscriptBody}) => superscriptBody
-        | None => OfInt(1)
-        }
-        iter(list{{prefix, name, power}, ...accum}, i + 1)
-      | _ =>
-        let value = switch accum {
-        | list{} => value
-        | _ =>
-          let units = Belt.List.toArray(accum)->ArrayUtil.reverseInPlace
-          Measure(value, units)
-        }
-        (i, value)
-      }
-
-    iter(list{}, startIndex)
-  }
-
   let applyPostFixes = (elements: elements, startIndex, value) => {
     let rec iter = (accum: TechniCalcEditor.Value_Types.node, i) =>
       switch ArraySlice.get(elements, i) {
@@ -120,13 +97,43 @@ let parse = {
     iter(value, startIndex)
   }
 
+  let applyUnits = (elements: elements, startIndex, value: TechniCalcEditor.Value_Types.node) => {
+    let rec iter = (accum: list<TechniCalcCalculator.AST_Types.unitsType>, i) =>
+      switch ArraySlice.get(elements, i) {
+      | Some((Fold_Unit({prefix, name, superscript}), _)) =>
+        // TODO - handle consecutive units - in same place as angles
+        let power = switch superscript {
+        | Some({superscriptBody}) => superscriptBody
+        | None => OfInt(1)
+        }
+        iter(list{{prefix, name, power}, ...accum}, i + 1)
+      | _ =>
+        let value = if accum == list{} {
+          value
+        } else {
+          let units = Belt.List.toArray(accum)->ArrayUtil.reverseInPlace
+          Measure(value, units)
+        }
+        (i, value)
+      }
+
+    iter(list{}, startIndex)
+  }
+
   let applyTrailingElements = (elements, startIndex, value) => {
     let (i, _) as postFixes = applyPostFixes(elements, startIndex, value)
 
     if i != startIndex {
-      postFixes
+      Ok(postFixes)
     } else {
-      applyUnits(elements, startIndex, value)
+      let (i, value) = applyUnits(elements, startIndex, value)
+
+      // Ensure no units were parsed, or ALL units were parsed
+      if i == startIndex || i == ArraySlice.length(elements) {
+        Ok((i, value))
+      } else {
+        Error(i)
+      }
     }
   }
 
@@ -305,10 +312,24 @@ let parse = {
         | Error(_) as e => e
         }
       | Some((element, (_, r'))) =>
+        let parseUnits = switch element {
+        | Fold_Constant(_)
+        | Fold_ConstE(_)
+        | Fold_ConstPi(_)
+        | Fold_Variable(_) => true
+        | _ => false
+        }
         switch handleElement(element) {
         | Some(value) =>
-          let (i, value) = applyPostFixes(elements, i + 1, value)
-          iter(mul(accum, value), i)
+          let parseResult = if parseUnits {
+            applyTrailingElements(elements, i + 1, value)
+          } else {
+            Ok(applyPostFixes(elements, i + 1, value))
+          }
+          switch parseResult {
+          | Ok((i, value)) => iter(mul(accum, value), i)
+          | Error(_) as e => e
+          }
         | None => Error(r')
         }
       }
@@ -320,19 +341,24 @@ let parse = {
 
     let next = parseRemaining
 
-    switch readNumber(elements) {
+    let readNumberState = switch readNumber(elements) {
     | Ok((elements, current)) =>
-      let continue = true
-
-      // Apply postfixes to leading number
-      let (elements, current, continue) = switch continue ? current : None {
+      switch current {
       | Some(value) =>
-        let (i, value) = applyTrailingElements(elements, 0, value)
-        let elements = ArraySlice.sliceToEnd(elements, i)
-        (elements, Some(value), true)
-      | None => (elements, current, continue)
+        // Apply postfixes to leading number
+        switch applyTrailingElements(elements, 0, value) {
+        | Ok((i, value)) =>
+          let elements = ArraySlice.sliceToEnd(elements, i)
+          Ok((elements, Some(value), true))
+        | Error(_) as e => e
+        }
+      | None => Ok((elements, None, true))
       }
+    | Error(_) as e => e
+    }
 
+    switch readNumberState {
+    | Ok((elements, current, continue)) =>
       // Handle mixed/lone fractions
       let (elements, current, continue) = switch (
         current,

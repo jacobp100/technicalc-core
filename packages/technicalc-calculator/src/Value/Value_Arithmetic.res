@@ -65,8 +65,9 @@ let div = (a: t, b: t) =>
     ofScalar(s / (one + percentToNumerical(p)))
   | (#Vect(v), #...Scalar.t as s) => Vector.divScalar(v, s)->ofVector
   | (#Matx(m), #...Scalar.t as s) => Matrix.divScalar(m, s)->ofMatrix
-  | (#Mesr(aM), #Mesr(bM)) => Measure.mul(aM, bM)->ofMeasure
+  | (#Mesr(aM), #Mesr(bM)) => Measure.div(aM, bM)->ofMeasure
   | (#Mesr(aM), #Real(bR)) => Measure.divReal(aM, bR)->ofMeasure
+  | (#Real(bR), #Mesr(aM)) => Measure.divReal(aM, bR)->ofMeasure
   | _ => nan
   }
 

@@ -24,17 +24,14 @@ type skipMode =
     | Asinh
     | Atan
     | Atanh
-    | DegFunction
     | DegreeUnit
     | Div
     | Dot
     | Gamma
-    | GradFunction
     | GradianUnit
     | Im
     | Log
     | Mul
-    | RadFunction
     | RadianUnit
     | Re
     | Rref

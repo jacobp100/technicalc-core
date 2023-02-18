@@ -31,7 +31,7 @@ let sub = (a: t, b: t): t =>
   }
 
 let mul = (a: t, b: t): t =>
-  ofReal(Real.mul(a.value, b.value), ~units=Belt.Array.concat(a.units, b.units)->Units.flatten)
+  ofReal(Real.mul(a.value, b.value), ~units=Belt.Array.concat(a.units, b.units))
 
 %%private(
   let mulUnitPowers = (units: array<Units.t>, power: int) =>
@@ -39,9 +39,6 @@ let mul = (a: t, b: t): t =>
 )
 
 let div = (a: t, b: t): t =>
-  ofReal(
-    Real.mul(a.value, b.value),
-    ~units=Belt.Array.concat(a.units, mulUnitPowers(b.units, -1))->Units.flatten,
-  )
+  ofReal(Real.div(a.value, b.value), ~units=Belt.Array.concat(a.units, mulUnitPowers(b.units, -1)))
 
 let powInt = (a: t, b: int) => ofReal(Real.powInt(a.value, b), ~units=mulUnitPowers(a.units, b))

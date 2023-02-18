@@ -87,13 +87,13 @@
     | CosecS => 80
     | SecS => 81
     | CotS => 82
-    | DegFunction => 83
-    | GradFunction => 84
+    // REMOVED | DegFunction => 83
+    // REMOVED | GradFunction => 84
     /* 3rd set elements */
     // REMOVED | MFrac3S => 85
     /* 4th set elements */
     | CaptureGroupEndS => 86
-    | RadFunction => 87
+    // REMOVED | RadFunction => 87
     | RadianUnit => 88
     | IterationXS => 89
     /* 5th set elements */
@@ -116,7 +116,7 @@
     }
 )
 
-%%private(let numIntElements = 90)
+%%private(let numIntElements = 87)
 %%private(let maxUintValue = 96)
 let mapping = Belt.Array.make(numIntElements + 1, 0)
 let reverseMapping = Belt.Array.make(maxUintValue + 1, AST.Arg)

@@ -17,13 +17,11 @@ open AST
     | Bin
     | Conj
     | DecimalSeparator
-    | DegFunction
     | DegreeUnit
     | Div
     | Dot
     | Factorial
     | Gamma
-    | GradFunction
     | GradianUnit
     | Hex
     | Im
@@ -32,7 +30,6 @@ open AST
     | Oct
     | OpenBracket
     | Percent
-    | RadFunction
     | RadianUnit
     | Re
     | Rref

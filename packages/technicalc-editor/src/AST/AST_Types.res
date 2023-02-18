@@ -17,13 +17,11 @@ type t =
   | Bin
   | Conj
   | DecimalSeparator
-  | DegFunction
   | DegreeUnit
   | Div
   | Dot
   | Factorial
   | Gamma
-  | GradFunction
   | GradianUnit
   | Hex
   | Im
@@ -32,7 +30,6 @@ type t =
   | Oct
   | OpenBracket
   | Percent
-  | RadFunction
   | RadianUnit
   | Re
   | Rref
@@ -139,13 +136,11 @@ let argCountExn = (arg: t) =>
   | Bin
   | Conj
   | DecimalSeparator
-  | DegFunction
   | DegreeUnit
   | Div
   | Dot
   | Factorial
   | Gamma
-  | GradFunction
   | GradianUnit
   | Hex
   | Im
@@ -154,7 +149,6 @@ let argCountExn = (arg: t) =>
   | Oct
   | OpenBracket
   | Percent
-  | RadFunction
   | RadianUnit
   | Re
   | Rref
