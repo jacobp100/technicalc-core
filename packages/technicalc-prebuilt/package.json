@@ -9,14 +9,14 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "esbuild": "^0.15.13",
+    "esbuild": "^0.17.8",
     "mathjax-full": "3.0.1",
     "node-fetch": "^2.6.1",
     "opentype.js": "^1.3.4",
-    "rescript": "^10.0.1",
+    "rescript": "^10.1.2",
     "technicalc-calculator": "0.0.1",
     "technicalc-editor": "0.0.1",
-    "terser": "^5.15.1"
+    "terser": "^5.16.4"
   },
   "dependencies": {
     "url-safe-encoding": "0.0.1"

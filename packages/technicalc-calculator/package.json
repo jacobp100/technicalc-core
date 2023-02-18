@@ -12,10 +12,10 @@
     "cartesian": "^1.0.1",
     "lodash": "^4.17.21",
     "mathjs": "^11.3.3",
-    "rescript": "^10.0.1"
+    "rescript": "^10.1.2"
   },
   "dependencies": {
-    "decimal.js": "^10.4.2",
+    "decimal.js": "^10.4.3",
     "url-safe-encoding": "0.0.1"
   }
 }

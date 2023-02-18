@@ -18,6 +18,24 @@ try {
   // Directory already exists
 }
 
+const evalPlugin = {
+  name: "evalPlugin",
+  setup(build) {
+    build.onLoad({ filter: /_Eval\.mjs/ }, async (args) => {
+      const out = await import(args.path);
+      const contents = Object.entries(out)
+        .map(([key, value]) => {
+          const valueJson = JSON.stringify(value);
+          const valueFast = `JSON.parse('${valueJson.replace(/'/g, "\\'")}')`;
+          return `export const ${key} = ${valueFast}`;
+        })
+        .join("\n");
+      return { contents };
+    });
+  },
+};
+
+// Must come after evalPlugin
 const renameTagsPlugin = {
   name: "renameTagsPlugin",
   setup(build) {
@@ -32,27 +50,10 @@ const renameTagsPlugin = {
   },
 };
 
-const evalPlugin = {
-  name: "evalPlugin",
-  setup(build) {
-    build.onLoad({ filter: /_Eval/ }, async (args) => {
-      const out = await import(args.path);
-      const contents = Object.entries(out)
-        .map(([key, value]) => {
-          const valueJson = JSON.stringify(value);
-          const valueFast = `JSON.parse('${valueJson.replace(/'/g, "\\'")}')`;
-          return `export const ${key} = ${valueFast}`;
-        })
-        .join("\n");
-      return { contents };
-    });
-  },
-};
-
 const minifyDecimalJsPlugin = {
   name: "minifyDecimalJsPlugin",
   setup(build) {
-    build.onLoad({ filter: /decimal\.js$/ }, async (args) => {
+    build.onLoad({ filter: /decimal\.mjs$/ }, async (args) => {
       const text = await fs.readFile(args.path, "utf8");
       const contents = text.replace(/(\d\.\d{99})\d+/g, "$1");
       return { contents };
@@ -157,14 +158,14 @@ build({
   outfile: new URL("client.js", dist),
   format: "umd",
   globalName: "Client",
-  plugins: [renameTagsPlugin, minifyDecimalJsPlugin, evalPlugin],
+  plugins: [evalPlugin, renameTagsPlugin, minifyDecimalJsPlugin],
 });
 build({
   entryPoints: [new URL("src/Worker.mjs", import.meta.url).pathname],
   outfile: new URL("worker.js", dist),
   format: "umd",
   globalName: "Worker",
-  plugins: [renameTagsPlugin, minifyDecimalJsPlugin],
+  plugins: [evalPlugin, renameTagsPlugin, minifyDecimalJsPlugin],
 });
 
 runNodeScript("scripts/fonts", [
