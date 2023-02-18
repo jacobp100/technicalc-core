@@ -53,7 +53,7 @@ let ofMatrix = (a: Matrix.t): t =>
   | _ => #Matx(a)
   }
 let ofMeasure = (a: Measure.t): t =>
-  if Belt.Array.length(a.units) == 0 {
+  if Units.isEmpty(a.units) {
     ofReal(a.value)
   } else {
     #Mesr(a)

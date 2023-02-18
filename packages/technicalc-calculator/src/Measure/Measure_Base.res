@@ -1,6 +1,5 @@
 open Measure_Types
 
-let nan = {value: Real.nan, units: []}
+let nan = {value: Real.nan, units: Units.empty}
 
-let ofReal = (value: Real.t, ~units: array<Units.t>) =>
-  !Real.isNaN(value) ? {value, units} : {value, units: []}
+let ofReal = (value: Real.t, ~units: Units.t) => !Real.isNaN(value) ? {value, units} : nan

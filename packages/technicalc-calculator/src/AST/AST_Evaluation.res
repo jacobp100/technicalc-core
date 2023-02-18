@@ -78,14 +78,16 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
     Value.ofMatrix(matrix)
   | Measure(value, units) =>
     let value = evalAt(~config, ~context, ~x, value)->Value.toReal
-    let units = mapAllU(units, (. {prefix, name, power}): option<Units.t> => {
+    let units = mapAllU(units, (. {prefix, name, power}): option<Unit.t> => {
       switch evalAt(~config, ~context, ~x, power)->Value.toInt {
       | Some(power) => Some({prefix, name, power})
       | None => None
       }
     })
     switch units {
-    | Some(units) => Measure.ofReal(value, ~units)->Value.ofMeasure
+    | Some(units) =>
+      let units = Units.ofArray(units)
+      Measure.ofReal(value, ~units)->Value.ofMeasure
     | None => Value.nan
     }
   | OfEncoded(a) => Encoding.decode(a)->Belt.Option.getWithDefault(Value.nan)

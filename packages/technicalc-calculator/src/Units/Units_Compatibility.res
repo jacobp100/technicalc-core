@@ -1,22 +1,21 @@
 open Units_Types
-open Units_Base
 
 let compatible = (~fromUnits, ~toUnits) => {
   open Units_Dimensions
-  eq(ofUnits(fromUnits), ofUnits(toUnits))
+  Unit.dimensionsEq(dimensions(fromUnits), dimensions(toUnits))
 }
 
 %%private(
-  let unitsUnique = units => {
+  let unitsUnique = x => {
     let rec iter = (currentUnitIndex, previousUnitIndex) =>
-      if currentUnitIndex >= Belt.Array.length(units) {
+      if currentUnitIndex >= Belt.Array.length(x.units) {
         true
       } else if previousUnitIndex >= currentUnitIndex {
         iter(currentUnitIndex + 1, 0)
       } else if (
-        !eq(
-          Belt.Array.getUnsafe(units, currentUnitIndex),
-          Belt.Array.getUnsafe(units, previousUnitIndex),
+        !Unit.eq(
+          Belt.Array.getUnsafe(x.units, currentUnitIndex),
+          Belt.Array.getUnsafe(x.units, previousUnitIndex),
         )
       ) {
         iter(currentUnitIndex, previousUnitIndex + 1)
@@ -28,16 +27,16 @@ let compatible = (~fromUnits, ~toUnits) => {
 )
 
 let compositeCompatible = (~fromUnits, ~toUnits) =>
-  switch Belt.Array.get(fromUnits, 0) {
-  | Some(unit) if Belt.Array.length(toUnits) != 0 =>
-    let baseDimensions = Units_Dimensions.ofUnit(unit)
-    let unitValid = (. unit) =>
-      unit.power == 1 && Units_Dimensions.eq(Units_Dimensions.ofUnit(unit), baseDimensions)
+  switch Belt.Array.get(fromUnits.units, 0) {
+  | Some(unit) if Belt.Array.length(toUnits.units) != 0 =>
+    let baseDimensions = Unit.dimensions(unit)
+    let unitValid = (. unit: Unit.t) =>
+      unit.power == 1 && Unit.dimensionsEq(Unit.dimensions(unit), baseDimensions)
 
     baseDimensions.temperature == 0 &&
-    Units_Dimensions.size(baseDimensions) == 1 &&
-    Belt.Array.everyU(fromUnits, unitValid) &&
-    Belt.Array.everyU(toUnits, unitValid) &&
+    Unit.dimensionsSize(baseDimensions) == 1 &&
+    Belt.Array.everyU(fromUnits.units, unitValid) &&
+    Belt.Array.everyU(toUnits.units, unitValid) &&
     unitsUnique(toUnits)
   | _ => false
   }

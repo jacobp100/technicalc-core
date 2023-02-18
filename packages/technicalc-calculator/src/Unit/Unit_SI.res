@@ -1,4 +1,4 @@
-open Units_Types
+open Unit_Types
 
 let toSi = (a: t) =>
   switch a.name {

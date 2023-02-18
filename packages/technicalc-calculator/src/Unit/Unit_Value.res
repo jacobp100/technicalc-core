@@ -1,4 +1,4 @@
-open Units_Types
+open Unit_Types
 
 let prefixValue = (prefix: prefix) =>
   Decimal.ofString(

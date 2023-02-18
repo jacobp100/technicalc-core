@@ -7,9 +7,11 @@ let formatUnits = (~mode, units) => {
   | Ascii | Unicode => " "
   }
 
-  Belt.Array.mapU(units, (. unit) => {
-    Formatting_Units.toString(~mode, unit)
-  })->StringUtil.joinWith(unitsSeparator)
+  Units_Base.toArray(units)
+  ->Belt.Array.mapU((. unit) => {
+    Formatting_Unit.toString(~mode, unit)
+  })
+  ->StringUtil.joinWith(unitsSeparator)
 }
 
 let toString = (~format, {value, units}: Measure.t) => {

@@ -5,22 +5,22 @@ test("converts simple units", () => {
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Unit, name: Meter, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Inch, power: 1}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Meter, power: 1}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Inch, power: 1}]),
     )->Real.toFloat,
   )->toBeCloseTo(39.37)
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Unit, name: Inch, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Meter, power: 1}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Inch, power: 1}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Meter, power: 1}]),
     )->Real.toFloat,
   )->toBeCloseTo(0.0254)
   expect(
     convert(
       Real.ofInt(2),
-      ~fromUnits=[{prefix: Unit, name: Meter, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Inch, power: 1}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Meter, power: 1}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Inch, power: 1}]),
     )->Real.toFloat,
   )->toBeCloseTo(78.74)
 })
@@ -29,16 +29,16 @@ test("converts temperatures", () => {
   expect(
     convert(
       Real.ofInt(50),
-      ~fromUnits=[{prefix: Unit, name: Celsius, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Fahrenheit, power: 1}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Celsius, power: 1}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Fahrenheit, power: 1}]),
     )->Real.toFloat,
   )->toBeCloseTo(122.)
 
   expect(
     convert(
       Real.ofInt(50),
-      ~fromUnits=[{prefix: Unit, name: Fahrenheit, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Celsius, power: 1}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Fahrenheit, power: 1}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Celsius, power: 1}]),
     )->Real.toFloat,
   )->toBeCloseTo(10.)
 })
@@ -47,15 +47,15 @@ test("converts exponentiated units", () => {
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Unit, name: Meter, power: 2}],
-      ~toUnits=[{prefix: Unit, name: Inch, power: 2}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Meter, power: 2}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Inch, power: 2}]),
     )->Real.toFloat,
   )->toBeCloseTo(1550.)
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Unit, name: Inch, power: 2}],
-      ~toUnits=[{prefix: Unit, name: Meter, power: 2}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Inch, power: 2}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Meter, power: 2}]),
     )->Real.toFloat,
   )->toBeCloseTo(6.452e-4)
 })
@@ -64,15 +64,15 @@ test("converts exponentiated units with prefixes", () => {
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Milli, name: Meter, power: 2}],
-      ~toUnits=[{prefix: Unit, name: Meter, power: 2}],
+      ~fromUnits=ofArray([{prefix: Milli, name: Meter, power: 2}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Meter, power: 2}]),
     )->Real.toFloat,
   )->toBeCloseTo(1e-6)
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Kilo, name: Meter, power: 2}],
-      ~toUnits=[{prefix: Unit, name: Meter, power: 2}],
+      ~fromUnits=ofArray([{prefix: Kilo, name: Meter, power: 2}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Meter, power: 2}]),
     )->Real.toFloat,
   )->toBeCloseTo(1e6)
 })
@@ -81,8 +81,14 @@ test("compound units", () => {
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Unit, name: Meter, power: 1}, {prefix: Unit, name: Second, power: -2}],
-      ~toUnits=[{prefix: Unit, name: Inch, power: 1}, {prefix: Unit, name: Hour, power: -2}],
+      ~fromUnits=ofArray([
+        {prefix: Unit, name: Meter, power: 1},
+        {prefix: Unit, name: Second, power: -2},
+      ]),
+      ~toUnits=ofArray([
+        {prefix: Unit, name: Inch, power: 1},
+        {prefix: Unit, name: Hour, power: -2},
+      ]),
     )->Real.toFloat,
   )->toBeCloseTo(510236220.47244096)
 })
@@ -91,15 +97,15 @@ test("converts between different dimensions", () => {
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Unit, name: Acre, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Meter, power: 2}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Acre, power: 1}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Meter, power: 2}]),
     )->Real.toFloat,
   )->toBeCloseTo(4047.)
   expect(
     convert(
       Real.one,
-      ~fromUnits=[{prefix: Unit, name: Liter, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Meter, power: 3}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Liter, power: 1}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Meter, power: 3}]),
     )->Real.toFloat,
   )->toBeCloseTo(0.001)
 })
@@ -108,8 +114,8 @@ test("incompatible units", () => {
   expect(
     convert(
       Real.ofInt(50),
-      ~fromUnits=[{prefix: Unit, name: Celsius, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Second, power: 1}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Celsius, power: 1}]),
+      ~toUnits=ofArray([{prefix: Unit, name: Second, power: 1}]),
     ),
   )->toBe(Real.nan)
 })
@@ -148,8 +154,11 @@ test("composite with incompatible units", () => {
 test("composite units compatible for duplicate units", () => {
   expect(
     compositeCompatible(
-      ~fromUnits=[{prefix: Unit, name: Meter, power: 1}],
-      ~toUnits=[{prefix: Unit, name: Foot, power: 1}, {prefix: Unit, name: Foot, power: 1}],
+      ~fromUnits=ofArray([{prefix: Unit, name: Meter, power: 1}]),
+      ~toUnits=ofArray([
+        {prefix: Unit, name: Foot, power: 1},
+        {prefix: Unit, name: Foot, power: 1},
+      ]),
     ),
   )->toBe(false)
 })

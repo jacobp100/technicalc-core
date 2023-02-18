@@ -90,7 +90,7 @@ type rec t =
   | Sum({from: t, to: t, body: t})
   | Product({from: t, to: t, body: t})
 and unitsType = {
-  prefix: Units_Types.prefix,
-  name: Units_Types.name,
+  prefix: Unit_Types.prefix,
+  name: Unit_Types.name,
   power: t,
 }

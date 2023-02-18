@@ -3,10 +3,13 @@ open Measure_Base
 
 %%private(
   let toCompatibleUnits2 = (a, b) => {
-    if Belt.Array.eqU(a.units, b.units, (. a, b) => Units.eq(a, b)) {
+    let aUnits = Units.toArray(a.units)
+    let bUnits = Units.toArray(b.units)
+
+    if Belt.Array.eqU(aUnits, bUnits, (. a, b) => Unit.eq(a, b)) {
       Some((a.value, b.value, a.units))
     } else if Units.compatible(~fromUnits=a.units, ~toUnits=b.units) {
-      let siUnits = Belt.Array.flatMapU(a.units, (. u) => Units.toSi(u))
+      let siUnits = Belt.Array.flatMapU(aUnits, (. u) => Unit.toSi(u))->Units.ofArray
       let aValue = Units.convert(~fromUnits=a.units, ~toUnits=siUnits, a.value)
       let bValue = Units.convert(~fromUnits=b.units, ~toUnits=siUnits, b.value)
       Some((aValue, bValue, siUnits))
@@ -31,17 +34,24 @@ let sub = (a: t, b: t): t =>
   }
 
 let mul = (a: t, b: t): t =>
-  ofReal(Real.mul(a.value, b.value), ~units=Belt.Array.concat(a.units, b.units)->Units.flatten)
+  ofReal(
+    Real.mul(a.value, b.value),
+    ~units=Belt.Array.concat(Units.toArray(a.units), Units.toArray(b.units))->Units.ofArray,
+  )
 
 %%private(
-  let mulUnitPowers = (units: array<Units.t>, power: int) =>
-    Belt.Array.mapU(units, (. u: Units.t) => {...u, power: u.power * power})
+  let mulUnitPowers = (units: array<Unit.t>, power: int) =>
+    Belt.Array.mapU(units, (. u) => {...u, power: u.power * power})
 )
 
 let div = (a: t, b: t): t =>
   ofReal(
     Real.mul(a.value, b.value),
-    ~units=Belt.Array.concat(a.units, mulUnitPowers(b.units, -1))->Units.flatten,
+    ~units=Belt.Array.concat(
+      Units.toArray(a.units),
+      mulUnitPowers(Units.toArray(b.units), -1),
+    )->Units.ofArray,
   )
 
-let powInt = (a: t, b: int) => ofReal(Real.powInt(a.value, b), ~units=mulUnitPowers(a.units, b))
+let powInt = (a: t, b: int) =>
+  ofReal(Real.powInt(a.value, b), ~units=Units.toArray(a.units)->mulUnitPowers(b)->Units.ofArray)

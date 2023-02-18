@@ -1,5 +1,5 @@
 open Formatting_Types
-open Units_Types
+open Unit_Types
 
 let formatPrefix = (~mode, prefix: prefix) =>
   switch prefix {
