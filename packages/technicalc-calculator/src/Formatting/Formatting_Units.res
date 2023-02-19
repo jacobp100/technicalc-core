@@ -34,12 +34,12 @@ let formatPrefix = (~mode, prefix: prefix) =>
     }
 )
 
-let formatName = (~mode, unit: name) =>
-  switch unit {
+let formatName = (~mode, name: name) =>
+  switch name {
   | Ohm => ohm(~mode)
   | Celsius => deg(~mode) ++ "C"
   | Fahrenheit => deg(~mode) ++ "F"
-  | _ => Belt.Array.getExn(Formatting_Units_Eval.prefixes, Obj.magic(unit))
+  | _ => Belt.Array.getExn(Formatting_Units_Eval.names, Obj.magic(name))
   }
 
 %%private(
