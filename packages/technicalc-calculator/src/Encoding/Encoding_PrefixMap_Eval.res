@@ -1,6 +1,5 @@
 open Units_Types
 
-%%private(let makeSureThisIsTheLastIndex = 21)
 %%private(
   let toUint = (element: prefix) =>
     switch element {
@@ -26,13 +25,15 @@ open Units_Types
     | Pebi => 19
     // Set 2 additions
     | Exa => 20
-    | Exbi => makeSureThisIsTheLastIndex
+    | Exbi => 21
     }
 )
 
-let mapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, 0)
-let reverseMapping = Belt.Array.make(makeSureThisIsTheLastIndex + 1, Kilo)
-for i in 0 to makeSureThisIsTheLastIndex {
+%%private(let numIntElements = 21)
+%%private(let maxUintValue = 21)
+let mapping = Belt.Array.make(numIntElements + 1, 0)
+let reverseMapping = Belt.Array.make(maxUintValue + 1, Unit)
+for i in 0 to numIntElements {
   let prefix: prefix = Obj.magic(i)
   let index = toUint(prefix)
   assert Belt.Array.set(mapping, i, index)

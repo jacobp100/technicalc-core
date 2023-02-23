@@ -165,8 +165,8 @@ module Elements = {
     | Some(Value({symbol, value})) =>
       Some(Obj.magic({"type": "Value", "symbol": symbol, "value": value}))
     | Some(Variable({id})) => Some(Obj.magic({"type": "Variable", "id": id}))
-    | Some(CaptureGroup({placeholder})) =>
-      Some(Obj.magic({"type": "CaptureGroup", "placeholder": placeholder}))
+    | Some(CaptureGroup({placeholder, isEmpty})) =>
+      Some(Obj.magic({"type": "CaptureGroup", "placeholder": placeholder, "isEmpty": isEmpty}))
     | None => None
     }
 
@@ -406,6 +406,8 @@ module Units = {
 
 module Symbol = {
   open TechniCalcEditor
+
+  let eq = Symbol.eq
 
   let empty = Symbol.empty
   let ofString = Symbol.ofString

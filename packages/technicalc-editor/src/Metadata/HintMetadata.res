@@ -3,7 +3,7 @@ open AST_Types
 type hint =
   | Value({symbol: Symbol.t, value: string})
   | Variable({id: string})
-  | CaptureGroup({placeholder: Symbol.t})
+  | CaptureGroup({placeholder: Symbol.t, isEmpty: bool})
 
 %%private(
   let captureGroupHintAtIndex = (elements: array<t>, index: int) => {
@@ -11,15 +11,12 @@ type hint =
     let rec iter = index =>
       switch Belt.Array.get(elements, index) {
       | Some(CaptureGroupEndS) => None
-      | Some(CaptureGroupStart({placeholder})) =>
+      | Some(CaptureGroupStart({placeholder: Some(placeholder)})) =>
         let isEmpty = switch Belt.Array.get(elements, index + 1) {
         | Some(CaptureGroupEndS) => true
         | _ => false
         }
-        switch placeholder {
-        | Some(placeholder) if !isEmpty => Some(CaptureGroup({placeholder: placeholder}))
-        | _ => None
-        }
+        Some(CaptureGroup({placeholder, isEmpty}))
       | Some(_) => iter(index - 1)
       | None => None
       }
