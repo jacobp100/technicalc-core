@@ -163,7 +163,7 @@ build({
 build({
   entryPoints: [new URL("src/Worker.mjs", import.meta.url).pathname],
   outfile: new URL("worker.js", dist),
-  format: "umd",
+  format: "iife",
   globalName: "Worker",
   plugins: [evalPlugin, renameTagsPlugin, minifyDecimalJsPlugin],
 });

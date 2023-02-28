@@ -374,13 +374,13 @@ module Work = {
       },
     },
     context: switch context {
-    | Some(context) =>
-      jsDictEntries(context)->Belt.Array.mapU((. (key, value)) => (key, Value.encode(value)))
+    | Some(context) => jsDictEntries(context)
     | None => []
     },
     input,
   }
 
+  let encodeInput = Work.encodeInput
   let decodeOutput = Work.decodeOutput
 }
 

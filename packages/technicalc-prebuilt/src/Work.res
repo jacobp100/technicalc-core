@@ -3,7 +3,8 @@ type value = TechniCalcCalculator.Value.t
 type units = array<TechniCalcCalculator.Units_Types.t>
 type unitsResult = array<(value, units)>
 
-type context = array<(string, string)>
+type contextEntry = (string, TechniCalcCalculator.Value.t)
+type context = array<contextEntry>
 
 type rec input<'output> =
   | Calculate(node): input<value>
@@ -31,6 +32,43 @@ type t<'output> = {
   context: context,
   input: input<'output>,
 }
+
+%%private(
+  let encodeContextElementU = (. (key, value): contextEntry) => (
+    key,
+    TechniCalcCalculator.Encoding.encode(value),
+  )
+)
+%%private(
+  let decodeContextElementU = (. (key, value)) => (
+    key,
+    TechniCalcCalculator.Encoding.decode(value)->Belt.Option.getWithDefault(
+      TechniCalcCalculator.Value_Base.nan,
+    ),
+  )
+)
+
+%%private(let encodeContext = context => Belt.Array.mapU(context, encodeContextElementU))
+
+%%private(let decodeContext = encoding => Belt.Array.mapU(encoding, decodeContextElementU))
+
+let encodeInput = (work: t<node>) =>
+  Obj.magic({
+    "config": work.config,
+    "context": encodeContext(work.context),
+    "input": work.input,
+  })->Js_json.stringify
+
+let decodeInput = (encoded: string): option<t<node>> =>
+  try {
+    let encoded = Obj.magic(Js_json.parseExn(encoded))
+    let config = encoded["config"]
+    let context = decodeContext(encoded["context"])
+    let input = encoded["input"]
+    Some({config, context, input})
+  } catch {
+  | _ => None
+  }
 
 %%private(
   let encodeUnit = ({prefix, name, power}: TechniCalcCalculator.Units_Types.t) => {

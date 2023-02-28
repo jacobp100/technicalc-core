@@ -1,17 +1,16 @@
-type onMessageEvent<'output> = {data: Work.t<'output>}
+type onMessageEvent = {data: string}
 
-type self<'output> = {
-  mutable onmessage: option<onMessageEvent<'output> => unit>,
+type self = {
+  mutable onmessage: onMessageEvent => unit,
   postMessage: (. string) => unit,
 }
+
+@val external self: self = "self"
 
 %%private(
   let decodeContext = context =>
     Belt.Array.reduceU(context, TechniCalcCalculator.AST_Context.empty, (. accum, (key, value)) => {
-      open TechniCalcCalculator
-      Encoding.decode(value)
-      ->Belt.Option.getWithDefault(Value_Base.nan)
-      ->TechniCalcCalculator.AST_Context.set(accum, key, _)
+      TechniCalcCalculator.AST_Context.set(accum, key, value)
     })
 )
 
@@ -57,13 +56,12 @@ type self<'output> = {
   }
 )
 
-let make = self => {
-  let callback = e => {
-    let work = e.data
+self.onmessage = e => {
+  switch Work.decodeInput(e.data) {
+  | Some(work) =>
     let res = compute(work)
     let encoded = Work.encodeOutput(work, res)
     self.postMessage(. encoded)
+  | None => ()
   }
-
-  self.onmessage = Some(callback)
 }
