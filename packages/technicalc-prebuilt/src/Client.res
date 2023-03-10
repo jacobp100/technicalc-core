@@ -44,6 +44,7 @@ let emptyFormat = {
     switch f.style {
     | Some("decimal") => TechniCalcCalculator.Formatting.Decimal
     | Some("engineering") => Engineering
+    | Some("natural") => Natural({mixedFractions: false})
     | Some("natural-mixed") => Natural({mixedFractions: true})
     | _ => defaultFormat.style
     }
