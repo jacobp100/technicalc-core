@@ -102,12 +102,20 @@ open AST
 
 %%private(
   let placeholderIndicesListRev = (elements: array<t>) => {
-    let rec iter = (~indicesRev, ~lastWasFunctionOrArg, i) =>
+    let rec iter = (~indicesRev, ~functionStack, i) =>
       switch Belt.Array.get(elements, i) {
-      | Some(Arg) if lastWasFunctionOrArg =>
-        let indicesRev = list{i, ...indicesRev}
-        iter(~indicesRev, ~lastWasFunctionOrArg=true, i + 1)
-      | Some(Arg) => iter(~indicesRev, ~lastWasFunctionOrArg=true, i + 1)
+      | Some(Arg) =>
+        let (indicesRev, functionStack) = switch functionStack {
+        | list{(index, argCount), ...functionStack} =>
+          let lastFunctionWasEmpty = index == i - 1
+          let indicesRev = lastFunctionWasEmpty ? list{i, ...indicesRev} : indicesRev
+          let nextArgCount = argCount - 1
+          let functionStack =
+            nextArgCount != 0 ? list{(i, nextArgCount), ...functionStack} : functionStack
+          (indicesRev, functionStack)
+        | list{} => (indicesRev, functionStack)
+        }
+        iter(~indicesRev, ~functionStack, i + 1)
       | Some(Superscript1) =>
         let needsPlaceholder = switch advanceScopeIndex(~direction=Backwards, elements, i - 1) {
         | Some(index) =>
@@ -116,14 +124,16 @@ open AST
         | None => true
         }
         let indicesRev = needsPlaceholder ? list{i, ...indicesRev} : indicesRev
-        iter(~indicesRev, ~lastWasFunctionOrArg=true, i + 1)
+        let functionStack = list{(i, 1), ...functionStack}
+        iter(~indicesRev, ~functionStack, i + 1)
       | Some(element) =>
-        let lastWasFunctionOrArg = argCountExn(element) != 0
-        iter(~indicesRev, ~lastWasFunctionOrArg, i + 1)
+        let argCount = argCountExn(element)
+        let functionStack = argCount != 0 ? list{(i, argCount), ...functionStack} : functionStack
+        iter(~indicesRev, ~functionStack, i + 1)
       | None => indicesRev
       }
 
-    iter(~indicesRev=list{}, ~lastWasFunctionOrArg=false, 0)
+    iter(~indicesRev=list{}, ~functionStack=list{}, 0)
   }
 )
 

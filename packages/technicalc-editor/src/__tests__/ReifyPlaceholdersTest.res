@@ -77,3 +77,9 @@ test("superscript", () => {
     Arg,
   ])
 })
+
+test("multiple functions", () => {
+  reifyPlaceholders([Sqrt1S, Frac2S, N1_S, Arg, N2_S, Arg, Arg])
+  ->expect
+  ->toEqual([Sqrt1S, Frac2S, N1_S, Arg, N2_S, Arg, Arg])
+})
