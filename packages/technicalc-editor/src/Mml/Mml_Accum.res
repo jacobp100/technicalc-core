@@ -87,6 +87,9 @@ include Stringifier.Make({
     }
 })
 
+let toString = (~attributes, x) =>
+  element(~metadata=format(. x).metadata, ~attributes, "mrow", toString(. x))
+
 let appendSpace = (x, ~width) =>
   isEmpty(. x) ? x : append(. x, mml(~attributes=list{(#width, width)}, "mspace", ""))
 

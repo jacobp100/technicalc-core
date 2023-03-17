@@ -3,7 +3,7 @@ open Mml_Builders
 
 let map = (. accum, isPlaceholder) => {
   let attributes = isPlaceholder ? list{(#class, "placeholder")} : list{}
-  mml(~attributes, "mrow", Mml_Accum.toString(. accum))
+  Mml_Accum.toString(~attributes, accum)
 }
 
 %%private(
