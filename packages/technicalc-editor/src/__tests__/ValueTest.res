@@ -17,6 +17,7 @@ let asString = x =>
   | Error(i) => Error(i)
   }
 
+let ofMatrix = TechniCalcCalculator.Value.ofMatrix
 let ofInt = TechniCalcCalculator.Value.ofInt
 
 test("numbers", () => {
@@ -238,4 +239,14 @@ test("selects extraneous bracket elements", () => {
 
 test("log 0", () => {
   parse([Log, N0_S])->asString->expect->toEqual(Ok("NaN"))
+})
+
+test("tables default to zero", () => {
+  let matrix = {
+    open TechniCalcCalculator
+    Matrix.make(~numRows=2, ~numColumns=2, [#Real(Real.one), #Zero, #Zero, #Real(Real.one)])
+  }
+  parse([TableNS({numRows: 2, numColumns: 2}), N1_S, Arg, Arg, Arg, N1_S, Arg])
+  ->expect
+  ->toEqual(Ok(ofMatrix(matrix)))
 })

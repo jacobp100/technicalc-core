@@ -1,19 +1,9 @@
 open AST
 open Mml_Builders
 
-let map = (. accum, range) => {
-  let row = Mml_Accum.toString(. accum)
-  if row == "" {
-    Mml_Accum.appendPlaceholder(
-      accum,
-      ~range,
-      ~superscript=None,
-      ~captureGroupIndex=None,
-      None,
-    )->Mml_Accum.toString(. _)
-  } else {
-    `<mrow>${row}</mrow>`
-  }
+let map = (. accum, isPlaceholder) => {
+  let attributes = isPlaceholder ? list{(#class, "placeholder")} : list{}
+  mml(~attributes, "mrow", Mml_Accum.toString(. accum))
 }
 
 %%private(
@@ -173,8 +163,15 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Constant({symbol, superscript})
   | Fold_Variable({symbol, superscript}) =>
     Mml_Accum.append(accum, ~superscript?, ~range, "mrow", Mml_Symbol.toMml(symbol))
-  | Fold_Placeholder({placeholder, superscript, captureGroupIndex}) =>
-    Mml_Accum.appendPlaceholder(accum, ~range, ~superscript, ~captureGroupIndex, placeholder)
+  | Fold_Placeholder({implicit, placeholder, superscript, captureGroupIndex}) =>
+    Mml_Accum.appendPlaceholder(
+      accum,
+      ~range,
+      ~superscript,
+      ~implicit,
+      ~captureGroupIndex,
+      placeholder,
+    )
   | Fold_Function({fn, resultSuperscript: superscript}) =>
     appendFunctionMml(accum, ~superscript?, ~range, fn)
   | Fold_Factorial => Mml_Accum.append(accum, ~range, "mo", "!")

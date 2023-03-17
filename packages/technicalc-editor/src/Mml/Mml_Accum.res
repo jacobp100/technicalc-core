@@ -142,7 +142,7 @@ let appendBasePrefix = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~r
     body,
   )->appendBasePrefix(. x, _)
 
-let appendPlaceholder = (x, ~range, ~superscript, ~captureGroupIndex, placeholder) => {
+let appendPlaceholder = (x, ~range, ~superscript, ~implicit, ~captureGroupIndex, placeholder) => {
   let {metadata} = format(. x)
   let phantom = switch captureGroupIndex {
   | Some(start) =>
@@ -159,14 +159,8 @@ let appendPlaceholder = (x, ~range, ~superscript, ~captureGroupIndex, placeholde
       Mml_Placeholder.body,
     )
   }
-  append(
-    x,
-    ~attributes=list{(#class, Mml_Placeholder.class)},
-    ~superscript?,
-    ~range,
-    "mrow",
-    phantom ++ symbol,
-  )
+  let attributes = implicit ? list{} : list{(#class, Mml_Placeholder.class)}
+  append(x, ~attributes, ~superscript?, ~range, "mrow", phantom ++ symbol)
 }
 
 let superscriptSuffix = (x, ~attributes=list{}, ~range, tag, body) =>

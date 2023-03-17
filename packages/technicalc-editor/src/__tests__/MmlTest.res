@@ -154,6 +154,12 @@ test("tables", () => {
   ->toEqual(`<mrow><mrow id=\"0:9\"><mo>[</mo><mtable><mtr><mtd><mrow><mn id=\"1:2\">1</mn></mrow></mtd><mtd><mrow><mn id=\"3:4\">2</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn id=\"5:6\">3</mn></mrow></mtd><mtd><mrow><mn id=\"7:8\">4</mn></mrow></mtd></mtr></mtable><mo>]</mo></mrow></mrow>`)
 })
 
+test("tables default to zero", () => {
+  create([TableNS({numRows: 2, numColumns: 2}), N1_S, Arg, Arg, Arg, N1_S, Arg])
+  ->expect
+  ->toEqual(`<mrow><mrow id="0:7"><mo>[</mo><mtable><mtr><mtd><mrow><mn id="1:2">1</mn></mrow></mtd><mtd><mrow class="placeholder"><mn id="3:3">0</mn></mrow></mtd></mtr><mtr><mtd><mrow class="placeholder"><mn id="4:4">0</mn></mrow></mtd><mtd><mrow><mn id="5:6">1</mn></mrow></mtd></mtr></mtable><mo>]</mo></mrow></mrow>`)
+})
+
 test("operators", () => {
   create([N1_S, Add, N2_S])
   ->expect

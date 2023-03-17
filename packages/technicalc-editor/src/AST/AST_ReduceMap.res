@@ -41,6 +41,7 @@ type foldState<'a> =
   | Fold_OpenBracket
   | Fold_Percent
   | Fold_Placeholder({
+      implicit: bool,
       placeholder: option<Symbol.t>,
       superscript: option<superscript<'a>>,
       captureGroupIndex: option<int>,
@@ -94,6 +95,15 @@ let superscriptBodyU = (. superscript) => superscript.superscriptBody
     }
 )
 
+%%private(
+  let defaultEmptyArg = Fold_Placeholder({
+    implicit: true,
+    placeholder: None,
+    superscript: None,
+    captureGroupIndex: None,
+  })
+)
+
 type readResult<'a> =
   | Node(foldState<'a>, int, int)
   | Empty
@@ -101,7 +111,7 @@ type readResult<'a> =
 let reduceMapU = (
   input: array<t>,
   ~reduce: (. 'accum, foldState<'a>, range) => 'accum,
-  ~map: (. 'accum, range) => 'value,
+  ~map: (. 'accum, bool) => 'value,
   ~initial: 'accum,
 ): 'value => {
   let rec readNodeExn = (i): readResult<'a> =>
@@ -109,10 +119,11 @@ let reduceMapU = (
     | CaptureGroupStart({placeholder}) =>
       switch Belt.Array.get(input, i + 1) {
       | Some(CaptureGroupEndS) =>
+        let implicit = false
         let captureGroupIndex = Some(i + 1)
         let i' = i + 2
         let (superscript, i') = readSuperscript(i')
-        Node(Fold_Placeholder({placeholder, superscript, captureGroupIndex}), i, i')
+        Node(Fold_Placeholder({implicit, placeholder, superscript, captureGroupIndex}), i, i')
       | _ => Empty
       }
     | CaptureGroupEndS => Empty
@@ -221,9 +232,12 @@ let reduceMapU = (
       let (value, i') = readArg(i + 1)
       Node(Fold_Magnitude({value: value}), i, i')
     | Superscript1 =>
+      let implicit = false
+      let placeholder = None
+      let captureGroupIndex = None
       let (superscriptBody, i') = readArg(i + 1)
       let superscript = Some({superscriptBody, index: i + 1})
-      Node(Fold_Placeholder({placeholder: None, superscript, captureGroupIndex: None}), i, i')
+      Node(Fold_Placeholder({implicit, placeholder, superscript, captureGroupIndex}), i, i')
     | Abs1S =>
       let (arg, i') = readArg(i + 1)
       let (superscript, i') = readSuperscript(i')
@@ -303,19 +317,28 @@ let reduceMapU = (
       Node(Fold_Unit({prefix, name, superscript}), i, i')
     | Arg => assert false
     }
-  and readArg = (~accum=initial, ~start=?, i) => {
-    let start = Belt.Option.getWithDefault(start, i)
-    switch Belt.Array.get(input, i) {
-    | None => assert false
-    | Some(Arg) =>
-      let i' = i
-      (map(. accum, (start, i')), i' + 1)
-    | Some(_) =>
-      switch readNodeExn(i) {
-      | Node(node, i, i') => readArg(~accum=reduce(. accum, node, (i, i')), i')
-      | Empty => readArg(~accum, i + 1)
+  and readArg = (~emptyArg=defaultEmptyArg, i) => {
+    let rec iter = (~accum: option<'accum>, i) => {
+      switch Belt.Array.get(input, i) {
+      | None => assert false
+      | Some(Arg) =>
+        let i' = i
+        let isPlaceholder = accum == None
+        let accum = switch accum {
+        | Some(accum) => accum
+        | None => reduce(. initial, emptyArg, (i, i'))
+        }
+        (map(. accum, isPlaceholder), i' + 1)
+      | Some(_) =>
+        switch readNodeExn(i) {
+        | Node(node, i, i') =>
+          let accum = Belt.Option.getWithDefault(accum, initial)
+          iter(~accum=reduce(. accum, node, (i, i'))->Some, i')
+        | Empty => iter(~accum, i + 1)
+        }
       }
     }
+    iter(~accum=None, i)
   }
   and readSuperscript = superscriptIndex => {
     let rec iter = i =>
@@ -342,9 +365,10 @@ let reduceMapU = (
     Node(Fold_Function({fn, resultSuperscript}), i, i')
   }
   and tableS = (i, ~numRows, ~numColumns) => {
+    let emptyArg = Fold_Digit({nucleus: "0", superscript: None})
     let i' = i + 1
     let (i', elements) = ArrayUtil.foldMakeU(numRows * numColumns, i', (. s, _) => {
-      let (element, index) = readArg(s)
+      let (element, index) = readArg(~emptyArg, s)
       (index, element)
     })
     let (superscript, i') = readSuperscript(i')
@@ -360,16 +384,20 @@ let reduceMapU = (
     )
   }
 
-  let rec readUntilEnd = (~accum=initial, i) =>
-    switch Belt.Array.get(input, i) {
-    | None => map(. accum, (0, i))
-    | Some(Arg) => assert false
-    | Some(_) =>
-      switch readNodeExn(i) {
-      | Node(node, i, i') => readUntilEnd(~accum=reduce(. accum, node, (i, i')), i')
-      | Empty => readUntilEnd(~accum, i + 1)
+  let readUntilEnd = () => {
+    let rec iter = (~accum, i) =>
+      switch Belt.Array.get(input, i) {
+      | None => map(. accum, false)
+      | Some(Arg) => assert false
+      | Some(_) =>
+        switch readNodeExn(i) {
+        | Node(node, i, i') => iter(~accum=reduce(. accum, node, (i, i')), i')
+        | Empty => iter(~accum, i + 1)
+        }
       }
-    }
 
-  readUntilEnd(0)
+    iter(~accum=initial, 0)
+  }
+
+  readUntilEnd()
 }
