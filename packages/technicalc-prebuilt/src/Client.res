@@ -180,6 +180,9 @@ module Elements = {
   let iterationRanges = IterationMetadata.iterationRanges
   let insideIterator = IterationMetadata.insideIterator
 
+  let tableRanges = TableMetadata.tableRanges
+  let insideTable = TableMetadata.insideTable
+
   let reifyPlaceholders = ReifyPlaceholders.reifyPlaceholders
 
   let renameVariables = RenameVariables.renameVariables

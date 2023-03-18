@@ -49,28 +49,30 @@ let classify = element =>
   }
 )
 
-let noTableRanges = validityStackReducer((. validityStack, element) =>
+let noTablePermittedRanges = validityStackReducer((. validityStack, element) =>
   switch element {
   | AST_Types.Frac2S => list{/* num */ true, /* den */ false, ...validityStack}
   | Abs1S
   | Floor1S
   | Ceil1S
-  | Round1S =>
-    list{true, ...validityStack}
+  | Round1S
+  | TableNS(_) =>
+    let argCount = AST_Types.argCountExn(element)
+    validityStack->ListUtil.prependMany(argCount, true)
   | _ =>
     let argCount = AST_Types.argCountExn(element)
     validityStack->ListUtil.prependMany(argCount, false)
   }
 )
 
-let noIterationRanges = validityStackReducer((. validityStack, element) => {
+let noIterationPermittedRanges = validityStackReducer((. validityStack, element) => {
   let argCount = AST_Types.argCountExn(element)
   validityStack->ListUtil.prependMany(argCount, classify(element) != Iterator)
 })
 
 let elementIsValid = (ast: array<AST_Types.t>, element: AST_Types.t, index) =>
   switch classify(element) {
-  | Iterator => !(noIterationRanges(ast)->Ranges.contains(index))
-  | Table => !(noTableRanges(ast)->Ranges.contains(index))
+  | Iterator => !(noIterationPermittedRanges(ast)->Ranges.contains(index))
+  | Table => !(noTablePermittedRanges(ast)->Ranges.contains(index))
   | Other => true
   }
