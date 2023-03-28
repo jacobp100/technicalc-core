@@ -143,6 +143,8 @@ test("unary operators", () => {
   parse([Sub, Sub, Sub, N2_S])->asString->expect->toEqual(Ok("-2"))
 
   parse([N1_S, Sub, Sub, Sub, N2_S])->asString->expect->toEqual(Ok("-1"))
+
+  parse([N1_S, Sub, CosS, Sub, ConstPiS])->asString->expect->toEqual(Ok("2"))
 })
 
 test("percent and mod", () => {

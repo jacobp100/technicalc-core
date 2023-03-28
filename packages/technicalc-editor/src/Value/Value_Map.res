@@ -399,9 +399,6 @@ let parse = {
     | _ => next(~angleRequirement, ~rangeEnd, elements)
     }
   }
-  // It's hard to unify parsing mul/div and add/sub since one has prefixes
-  // and the other postfixes, and it would be more effort to make a generic
-  // implementation that handled both
   and parseMulDiv = (~angleRequirement, ~rangeEnd, elements: elements) => {
     noinline(parseMulDiv)
 
@@ -410,22 +407,28 @@ let parse = {
     let nextU = (. angleRequirement, rangeEnd, elements) =>
       parseUnary(~angleRequirement, ~rangeEnd, elements)
 
-    let rec iter = (~bracketLevel, ~inPostFixPosition, i) =>
+    @inline
+    let inPostfixPosition = i =>
+      switch ArraySlice.get(elements, i + 1) {
+      | None => true
+      | _ => false
+      }
+
+    let rec iter = (~bracketLevel, i) =>
       switch ArraySlice.get(elements, i) {
-      | Some((Fold_OpenBracket, _)) =>
-        iter(~bracketLevel=bracketLevel + 1, ~inPostFixPosition, i - 1)
-      | Some((Fold_CloseBracket(_), _)) =>
-        iter(~bracketLevel=bracketLevel - 1, ~inPostFixPosition, i - 1)
+      | Some((Fold_OpenBracket, _)) => iter(~bracketLevel=bracketLevel + 1, i - 1)
+      | Some((Fold_CloseBracket(_), _)) => iter(~bracketLevel=bracketLevel - 1, i - 1)
       | Some(((Fold_Mul | Fold_Div | Fold_Dot) as op, range)) if bracketLevel == 0 =>
         // These operators are never post fixes
         applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
-      | Some((Fold_Percent as op, range)) if bracketLevel == 0 && !inPostFixPosition =>
+      | Some((Fold_Percent as op, range)) if bracketLevel == 0 && !inPostfixPosition(i) =>
+        // Mod operator
         applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
-      | Some(_) => iter(~bracketLevel, ~inPostFixPosition=false, i - 1)
+      | Some(_) => iter(~bracketLevel, i - 1)
       | None => nextU(. angleRequirement, rangeEnd, elements)
       }
 
-    iter(~bracketLevel=0, ~inPostFixPosition=true, ArraySlice.length(elements) - 1)
+    iter(~bracketLevel=0, ArraySlice.length(elements) - 1)
   }
   and parseAddSub = (~angleRequirement, ~rangeEnd, elements: elements) => {
     noinline(parseAddSub)
@@ -435,26 +438,26 @@ let parse = {
     let nextU = (. angleRequirement, rangeEnd, elements) =>
       parseMulDiv(~angleRequirement, ~rangeEnd, elements)
 
-    let rec iter = (~bracketLevel, ~inPrefixPosition, accum, i) =>
-      switch ArraySlice.get(elements, i) {
-      | Some((Fold_OpenBracket, _)) =>
-        iter(~bracketLevel=bracketLevel + 1, ~inPrefixPosition, accum, i + 1)
-      | Some((Fold_CloseBracket(_), _)) =>
-        iter(~bracketLevel=bracketLevel - 1, ~inPrefixPosition, accum, i + 1)
-      | Some(((Fold_Add | Fold_Sub) as op, range)) if bracketLevel == 0 =>
-        // Both + and - can be prefixes
-        let nextAccum = !inPrefixPosition ? Some((i, op, range)) : accum
-        iter(~bracketLevel, ~inPrefixPosition=true, nextAccum, i + 1)
-      | Some(_) => iter(~bracketLevel, ~inPrefixPosition=false, accum, i + 1)
-      | None =>
-        switch accum {
-        | Some((i, op, range)) =>
-          applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
-        | None => nextU(. angleRequirement, rangeEnd, elements)
-        }
+    @inline
+    let inPrefixPosition = i =>
+      switch ArraySlice.get(elements, i - 1) {
+      | Some((Fold_Function(_), _))
+      | Some((Fold_Add | Fold_Sub, _))
+      | None => true
+      | _ => false
       }
 
-    iter(~bracketLevel=0, ~inPrefixPosition=true, None, 0)
+    let rec iter = (~bracketLevel, i) =>
+      switch ArraySlice.get(elements, i) {
+      | Some((Fold_OpenBracket, _)) => iter(~bracketLevel=bracketLevel + 1, i - 1)
+      | Some((Fold_CloseBracket(_), _)) => iter(~bracketLevel=bracketLevel - 1, i - 1)
+      | Some(((Fold_Add | Fold_Sub) as op, range)) if bracketLevel == 0 && !inPrefixPosition(i) =>
+        applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
+      | Some(_) => iter(~bracketLevel, i - 1)
+      | None => nextU(. angleRequirement, rangeEnd, elements)
+      }
+
+    iter(~bracketLevel=0, ArraySlice.length(elements) - 1)
   }
   and parse = (~angleRequirement, ~rangeEnd, elements) =>
     parseAddSub(~angleRequirement, ~rangeEnd, elements)

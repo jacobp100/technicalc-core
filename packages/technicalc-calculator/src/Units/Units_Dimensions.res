@@ -60,7 +60,11 @@ let ofUnit = (v: name) =>
   | NauticalMile
   | LightYear
   | Parsec
-  | Angstrom => length
+  | Angstrom
+  | Furlong
+  | Chain
+  | Link
+  | Rod => length
   /* Mass */
   | Gram
   | Tonne

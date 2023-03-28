@@ -53,6 +53,10 @@ let names = Belt.Array.makeByU(69 + 1, (. i) => {
   | LightYear => "ly"
   | Parsec => "pc"
   | Angstrom => "A" // "&#x212B;"
+  | Furlong => "furlong"
+  | Chain => "chain"
+  | Link => "link"
+  | Rod => "rod"
 
   | Gram => "g"
   | Tonne => "T"

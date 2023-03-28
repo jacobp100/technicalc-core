@@ -48,6 +48,10 @@ type name =
   | LightYear
   | Parsec
   | Angstrom
+  | Furlong
+  | Chain
+  | Link
+  | Rod
   /* Mass */
   | Gram
   | Tonne

@@ -22,7 +22,11 @@ let toSi = (a: t) =>
   | ScandinavianMile
   | LightYear
   | Parsec
-  | Angstrom => [{prefix: Unit, name: Meter, power: a.power}]
+  | Angstrom
+  | Furlong
+  | Chain
+  | Link
+  | Rod => [{prefix: Unit, name: Meter, power: a.power}]
   /* Mass */
   | Gram
   | Tonne

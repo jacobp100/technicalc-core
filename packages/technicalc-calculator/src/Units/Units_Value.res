@@ -51,6 +51,10 @@ let linearValueExn = (name: name) =>
     | LightYear => "9460730472580800"
     | Parsec => "3.086e16"
     | Angstrom => "1e-10"
+    | Furlong => "201.1680"
+    | Chain => "20.1168"
+    | Link => "0.201168"
+    | Rod => "5.0292"
 
     | Gram => "1e-3"
     | Tonne => "1e3"

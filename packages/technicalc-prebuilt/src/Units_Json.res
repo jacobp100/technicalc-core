@@ -18,12 +18,7 @@ let json = [
     data: [
       [{units: [{prefix: Unit, name: Kelvin, power: 1}], primary: true}],
       [{units: [{prefix: Unit, name: Celsius, power: 1}], primary: true}],
-      [
-        {
-          units: [{prefix: Unit, name: Fahrenheit, power: 1}],
-          primary: true,
-        },
-      ],
+      [{units: [{prefix: Unit, name: Fahrenheit, power: 1}], primary: true}],
     ],
   },
   {
@@ -31,16 +26,10 @@ let json = [
     data: [
       [
         {units: [{prefix: Milli, name: Second, power: 1}], primary: true},
-        {
-          units: [{prefix: Femto, name: Second, power: 1}],
-          primary: false,
-        },
+        {units: [{prefix: Femto, name: Second, power: 1}], primary: false},
         {units: [{prefix: Pico, name: Second, power: 1}], primary: false},
         {units: [{prefix: Nano, name: Second, power: 1}], primary: false},
-        {
-          units: [{prefix: Micro, name: Second, power: 1}],
-          primary: false,
-        },
+        {units: [{prefix: Micro, name: Second, power: 1}], primary: false},
         {units: [{prefix: Unit, name: Second, power: 1}], primary: true},
       ],
       [{units: [{prefix: Unit, name: Minute, power: 1}], primary: true}],
@@ -82,27 +71,17 @@ let json = [
       [{units: [{prefix: Unit, name: Yard, power: 1}], primary: true}],
       [{units: [{prefix: Unit, name: Mile, power: 1}], primary: true}],
       [
-        {
-          units: [{prefix: Unit, name: ScandinavianMile, power: 1}],
-          primary: true,
-        },
-        {
-          units: [{prefix: Unit, name: NauticalMile, power: 1}],
-          primary: true,
-        },
+        {units: [{prefix: Unit, name: ScandinavianMile, power: 1}], primary: true},
+        {units: [{prefix: Unit, name: NauticalMile, power: 1}], primary: true},
       ],
-      [
-        {
-          units: [{prefix: Unit, name: LightYear, power: 1}],
-          primary: true,
-        },
-      ],
+      [{units: [{prefix: Unit, name: LightYear, power: 1}], primary: true}],
       [{units: [{prefix: Unit, name: Parsec, power: 1}], primary: true}],
+      [{units: [{prefix: Unit, name: Angstrom, power: 1}], primary: true}],
       [
-        {
-          units: [{prefix: Unit, name: Angstrom, power: 1}],
-          primary: true,
-        },
+        {units: [{prefix: Unit, name: Furlong, power: 1}], primary: true},
+        {units: [{prefix: Unit, name: Chain, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Link, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Rod, power: 1}], primary: false},
       ],
     ],
   },
@@ -157,10 +136,7 @@ let json = [
       ],
       [
         {units: [{prefix: Unit, name: Gallon, power: 1}], primary: true},
-        {
-          units: [{prefix: Unit, name: USGallon, power: 1}],
-          primary: true,
-        },
+        {units: [{prefix: Unit, name: USGallon, power: 1}], primary: true},
       ],
       [
         {units: [{prefix: Unit, name: Quart, power: 1}], primary: true},
@@ -175,29 +151,12 @@ let json = [
         {units: [{prefix: Unit, name: USPint, power: 1}], primary: true},
       ],
       [
-        {
-          units: [{prefix: Unit, name: Teaspoon, power: 1}],
-          primary: true,
-        },
-        {
-          units: [{prefix: Unit, name: Tablespoon, power: 1}],
-          primary: true,
-        },
-        {
-          units: [{prefix: Unit, name: USTeaspoon, power: 1}],
-          primary: true,
-        },
-        {
-          units: [{prefix: Unit, name: USTablespoon, power: 1}],
-          primary: true,
-        },
+        {units: [{prefix: Unit, name: Teaspoon, power: 1}], primary: true},
+        {units: [{prefix: Unit, name: Tablespoon, power: 1}], primary: true},
+        {units: [{prefix: Unit, name: USTeaspoon, power: 1}], primary: true},
+        {units: [{prefix: Unit, name: USTablespoon, power: 1}], primary: true},
       ],
-      [
-        {
-          units: [{prefix: Unit, name: FluidOunce, power: 1}],
-          primary: true,
-        },
-      ],
+      [{units: [{prefix: Unit, name: FluidOunce, power: 1}], primary: true}],
     ],
   },
   {
@@ -227,49 +186,27 @@ let json = [
     data: [
       [
         {units: [{prefix: Unit, name: Newton, power: 1}], primary: true},
-        {
-          units: [{prefix: Femto, name: Newton, power: 1}],
-          primary: false,
-        },
+        {units: [{prefix: Femto, name: Newton, power: 1}], primary: false},
         {units: [{prefix: Pico, name: Newton, power: 1}], primary: false},
         {units: [{prefix: Nano, name: Newton, power: 1}], primary: false},
-        {
-          units: [{prefix: Micro, name: Newton, power: 1}],
-          primary: false,
-        },
-        {
-          units: [{prefix: Milli, name: Newton, power: 1}],
-          primary: false,
-        },
+        {units: [{prefix: Micro, name: Newton, power: 1}], primary: false},
+        {units: [{prefix: Milli, name: Newton, power: 1}], primary: false},
         {units: [{prefix: Kilo, name: Newton, power: 1}], primary: false},
         {units: [{prefix: Mega, name: Newton, power: 1}], primary: false},
         {units: [{prefix: Giga, name: Newton, power: 1}], primary: false},
         {units: [{prefix: Tera, name: Newton, power: 1}], primary: false},
         {units: [{prefix: Peta, name: Newton, power: 1}], primary: false},
       ],
-      [
-        {
-          units: [{prefix: Unit, name: PoundForce, power: 1}],
-          primary: true,
-        },
-      ],
+      [{units: [{prefix: Unit, name: PoundForce, power: 1}], primary: true}],
     ],
   },
   {
     title: "Pressure",
     data: [
-      [
-        {
-          units: [{prefix: Unit, name: Atmosphere, power: 1}],
-          primary: true,
-        },
-      ],
+      [{units: [{prefix: Unit, name: Atmosphere, power: 1}], primary: true}],
       [
         {units: [{prefix: Unit, name: Pascal, power: 1}], primary: true},
-        {
-          units: [{prefix: Hecto, name: Pascal, power: 1}],
-          primary: false,
-        },
+        {units: [{prefix: Hecto, name: Pascal, power: 1}], primary: false},
         {units: [{prefix: Kilo, name: Pascal, power: 1}], primary: false},
       ],
       [
@@ -279,7 +216,7 @@ let json = [
     ],
   },
   {
-    title: "Energy",
+    title: "Energy & Power",
     data: [
       [{units: [{prefix: Unit, name: Joule, power: 1}], primary: true}],
       [
@@ -292,19 +229,24 @@ let json = [
           primary: true,
         },
       ],
-      [{units: [{prefix: Unit, name: Calorie, power: 1}], primary: true}],
       [
-        {
-          units: [{prefix: Unit, name: ElectronVolt, power: 1}],
-          primary: true,
-        },
+        {units: [{prefix: Unit, name: Calorie, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Calorie, power: 1}], primary: true},
       ],
+      [{units: [{prefix: Unit, name: ElectronVolt, power: 1}], primary: true}],
       [{units: [{prefix: Unit, name: BTU, power: 1}], primary: true}],
       [{units: [{prefix: Unit, name: Therm, power: 1}], primary: true}],
+      [
+        {units: [{prefix: Milli, name: Watt, power: 1}], primary: false},
+        {units: [{prefix: Unit, name: Watt, power: 1}], primary: true},
+        {units: [{prefix: Kilo, name: Watt, power: 1}], primary: true},
+        {units: [{prefix: Mega, name: Watt, power: 1}], primary: false},
+        {units: [{prefix: Giga, name: Watt, power: 1}], primary: false},
+      ],
     ],
   },
   {
-    title: "Electricity & Power",
+    title: "Electricity",
     data: [
       [
         {units: [{prefix: Nano, name: Volt, power: 1}], primary: false},
@@ -334,15 +276,6 @@ let json = [
         {units: [{prefix: Giga, name: Ohm, power: 1}], primary: false},
       ],
       [
-        {units: [{prefix: Nano, name: Watt, power: 1}], primary: false},
-        {units: [{prefix: Micro, name: Watt, power: 1}], primary: false},
-        {units: [{prefix: Milli, name: Watt, power: 1}], primary: false},
-        {units: [{prefix: Unit, name: Watt, power: 1}], primary: true},
-        {units: [{prefix: Kilo, name: Watt, power: 1}], primary: true},
-        {units: [{prefix: Mega, name: Watt, power: 1}], primary: false},
-        {units: [{prefix: Giga, name: Watt, power: 1}], primary: false},
-      ],
-      [
         {units: [{prefix: Nano, name: Farad, power: 1}], primary: false},
         {units: [{prefix: Micro, name: Farad, power: 1}], primary: false},
         {units: [{prefix: Milli, name: Farad, power: 1}], primary: false},
@@ -351,12 +284,6 @@ let json = [
         {units: [{prefix: Mega, name: Farad, power: 1}], primary: false},
         {units: [{prefix: Giga, name: Farad, power: 1}], primary: false},
       ],
-    ],
-  },
-  {
-    title: "Science",
-    data: [
-      [{units: [{prefix: Unit, name: Mole, power: 1}], primary: true}],
       [
         {units: [{prefix: Nano, name: Coulomb, power: 1}], primary: false},
         {units: [{prefix: Micro, name: Coulomb, power: 1}], primary: false},
@@ -385,6 +312,10 @@ let json = [
         {units: [{prefix: Giga, name: Henry, power: 1}], primary: false},
       ],
     ],
+  },
+  {
+    title: "Science",
+    data: [[{units: [{prefix: Unit, name: Mole, power: 1}], primary: true}]],
   },
   {
     title: "Memory",

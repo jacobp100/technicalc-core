@@ -64,22 +64,26 @@ open Units_Types
     /* 2nd additions */
     | ScandinavianMile => 58
     /* 3rd additions */
-    | Volt => 59
-    | Ampere => 60
-    | Ohm => 61
-    | Coulomb => 62
-    | Farad => 63
-    | Weber => 64
-    | Tesla => 65
-    | Henry => 66
-    | Siemens => 67
-    | Mole => 68
-    | Hertz => 69
+    | Furlong => 59
+    | Chain => 60
+    | Link => 61
+    | Rod => 62
+    | Volt => 63
+    | Ampere => 64
+    | Ohm => 65
+    | Coulomb => 66
+    | Farad => 67
+    | Weber => 68
+    | Tesla => 69
+    | Henry => 70
+    | Siemens => 71
+    | Mole => 72
+    | Hertz => 73
     }
 )
 
-%%private(let numIntElements = 69)
-%%private(let maxUintValue = 69)
+%%private(let numIntElements = 73)
+%%private(let maxUintValue = 73)
 let mapping = Belt.Array.make(numIntElements + 1, 0)
 let reverseMapping = Belt.Array.make(maxUintValue + 1, Second)
 for i in 0 to numIntElements {
