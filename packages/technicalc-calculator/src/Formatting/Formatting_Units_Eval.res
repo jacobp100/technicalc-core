@@ -29,7 +29,7 @@ let prefixes = Belt.Array.makeByU(21 + 1, (. i) => {
   }
 })
 
-let names = Belt.Array.makeByU(69 + 1, (. i) => {
+let names = Belt.Array.makeByU(73 + 1, (. i) => {
   let unit = Obj.magic(i)
 
   switch unit {
