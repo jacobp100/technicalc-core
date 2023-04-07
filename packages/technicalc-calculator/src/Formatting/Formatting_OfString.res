@@ -146,7 +146,7 @@ type token =
     | list{Dot, Integer(dec), ...rest} => ("0", Some(dec), Some(rest))
     | _ => ("", None, None)
     }
-    let (exp10MagnitudeAscii, tokens) = switch tokens {
+    let (expMagnitudeAscii, tokens) = switch tokens {
     | Some(list{E, Integer(int), ...rest})
     | Some(list{E, Plus, Integer(int), ...rest}) => (Some(int), Some(rest))
     | Some(list{E, Minus, Integer(int), ...rest}) => (Some("-" ++ int), Some(rest))
@@ -169,10 +169,10 @@ type token =
         )
       | None => (ofString(basePrefix ++ integerStr), one)
       }
-      let exp10Magnitude = Belt.Option.mapWithDefault(exp10MagnitudeAscii, zero, ofString)
-      switch cmp(exp10Magnitude, zero) {
-      | 1 => (num * ofInt(10) ** exp10Magnitude, den)
-      | -1 => (num, den * ofInt(10) ** abs(exp10Magnitude))
+      let expMagnitude = Belt.Option.mapWithDefault(expMagnitudeAscii, zero, ofString)
+      switch cmp(expMagnitude, zero) {
+      | 1 => (num * ofInt(base) ** expMagnitude, den)
+      | -1 => (num, den * ofInt(base) ** abs(expMagnitude))
       | _ => (num, den)
       }
     } else {

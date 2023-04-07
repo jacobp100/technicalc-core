@@ -10,16 +10,19 @@ open Formatting_Util
 )
 
 %%private(
-  let formatExponential = (~format, (base, exponent)) =>
+  let formatExponential = (~format, (decimal, base, exponent)) =>
     switch format.mode {
-    | Ascii => `${base}e${exponent}`
+    | Ascii => `${decimal}e${exponent}`
     | Unicode =>
-      base ++ Formatting_Unicode.magnitude ++ Formatting_Unicode.formatSuperscriptNumbers(exponent)
-    | Tex => `${base}*10*{${exponent}}`
+      decimal ++
+      Formatting_Unicode.multiply ++
+      base ++
+      Formatting_Unicode.formatSuperscriptNumbers(exponent)
+    | Tex => `${decimal}*${base}^{${exponent}}`
     | MathML =>
-      let base = formatNumber(~format, base)
+      let decimal = formatNumber(~format, decimal)
       let exponent = formatNumber(~format, exponent)
-      `${base}<mo>&#xD7;</mo><msup><mn>10</mn>${exponent}</msup>`
+      `${decimal}<mo>&#xD7;</mo><msup><mn>${base}</mn>${exponent}</msup>`
     }
 )
 
@@ -123,7 +126,7 @@ let toString = (~format, re): string => {
     }
   | (_, Natural(_) | Decimal) =>
     let f = Real.toDecimal(re)
-    let magnitude = DecimalUtil.magnitude(f)
+    let magnitude = DecimalUtil.magnitude(~base, f)
     let insideMagnitudeThreshold = {
       open Decimal
       magnitude >= ofInt(decimalMinMagnitude) && magnitude <= ofInt(decimalMaxMagnitude)
@@ -150,11 +153,12 @@ let toString = (~format, re): string => {
     }
   | (_, Engineering) =>
     let f = Real.toDecimal(re)
-    let magnitude = DecimalUtil.magnitude(f)
+    let magnitude = DecimalUtil.magnitude(~base, f)
 
+    let rounding = base == 10 ? 3 : 4
     let exponent = {
       open Decimal
-      floor(magnitude / ofInt(3)) * ofInt(3)
+      floor(magnitude / ofInt(rounding)) * ofInt(rounding)
     }
 
     Formatting_Number.formatExponential(

@@ -1,8 +1,8 @@
 open Decimal
 
-let magnitude = f =>
+let magnitude = (~base, f) =>
   if f != zero {
-    abs(f)->log10->floor
+    abs(f)->logBase(_, ofInt(base))->floor
   } else {
     zero
   }

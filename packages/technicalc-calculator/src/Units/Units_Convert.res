@@ -88,12 +88,22 @@ let convert = (value: Real.t, ~fromUnits, ~toUnits) =>
 
 let convertComposite = (values: array<(Real.t, t)>, ~toUnits: array<t>) => {
   let fromUnits = Belt.Array.mapU(values, (. (_, unitPart)) => unitPart)
+  let valueSi = Belt.Array.reduceU(values, Real.zero, (. accum, (value, unitPart)) => {
+    open Real
+    accum + value * conversionFactorExn(~powerMultiplier=1, unitPart)->Real.ofDecimal
+  })
 
-  if Units_Compatibility.compositeCompatible(~fromUnits, ~toUnits) {
-    let valueSi = Belt.Array.reduceU(values, Real.zero, (. accum, (value, unitPart)) => {
-      open Real
-      accum + value * conversionFactorExn(~powerMultiplier=1, unitPart)->Real.ofDecimal
-    })
+  if !Units_Compatibility.compositeCompatible(~fromUnits, ~toUnits) {
+    None
+  } else if Belt.Array.length(toUnits) == 1 {
+    // Don't truncate value
+    let unitPart = Belt.Array.getExn(toUnits, 0)
+    let value = Real.mul(
+      valueSi,
+      conversionFactorExn(~powerMultiplier=-1, unitPart)->Real.ofDecimal,
+    )
+    Some([(value, unitPart)])
+  } else {
     let toUnits = compositeSorted(toUnits)
     let remainderSi = ref(valueSi)
     let output = Belt.Array.mapU(toUnits, (. unitPart) => {
@@ -111,7 +121,5 @@ let convertComposite = (values: array<(Real.t, t)>, ~toUnits: array<t>) => {
       (value, unitPart)
     })
     Some(output)
-  } else {
-    None
   }
 }

@@ -147,7 +147,7 @@ let formatExponential = (
 ) => {
   let exponent = switch exponent {
   | Some(exponent) => exponent
-  | None => DecimalUtil.magnitude(num)
+  | None => DecimalUtil.magnitude(~base, num)
   }
   let decimalPart = formatDecimal(
     ~decimalSeparator,
@@ -158,9 +158,10 @@ let formatExponential = (
     ~maxDecimalPlaces,
     {
       open Decimal
-      num / ofInt(10) ** exponent
+      num / ofInt(base) ** exponent
     },
   )
+  let basePart = Belt.Int.toString(base)
   let exponentPart = Decimal.toString(exponent)
-  (decimalPart, exponentPart)
+  (decimalPart, basePart, exponentPart)
 }
