@@ -139,6 +139,16 @@ let ofUnit = (v: name) =>
   | Fahrenheit => temperature
   }
 
+let combine = (a, b) => {
+  length: a.length + b.length,
+  time: a.time + b.time,
+  mass: a.mass + b.mass,
+  ampere: a.ampere + b.ampere,
+  substance: a.substance + b.substance,
+  memory: a.memory + b.memory,
+  temperature: a.temperature + b.temperature,
+}
+
 let ofUnit = ({name, power}: t) => {
   let dimensions = ofUnit(name)
   {
@@ -153,17 +163,8 @@ let ofUnit = ({name, power}: t) => {
 }
 
 let ofUnits = (units: array<t>) =>
-  Belt.Array.reduceU(units, empty, (. comdinedDimensions, t) => {
-    let dimensions = ofUnit(t)
-    {
-      length: comdinedDimensions.length + dimensions.length,
-      time: comdinedDimensions.time + dimensions.time,
-      mass: comdinedDimensions.mass + dimensions.mass,
-      ampere: comdinedDimensions.ampere + dimensions.ampere,
-      substance: comdinedDimensions.substance + dimensions.substance,
-      memory: comdinedDimensions.memory + dimensions.memory,
-      temperature: comdinedDimensions.temperature + dimensions.temperature,
-    }
+  Belt.Array.reduceU(units, empty, (. combinedDimensions, t) => {
+    combine(combinedDimensions, ofUnit(t))
   })
 
 let size = (a: dimensions) =>
