@@ -424,4 +424,6 @@ module Symbol = {
 
   let toMml = Mml_Symbol.toMml
   let ofMml = Mml_Symbol.ofMml
+
+  let alias = Symbol.alias
 }
