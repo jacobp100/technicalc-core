@@ -392,6 +392,10 @@ module Units = {
   open TechniCalcCalculator
 
   let eq = Units_Base.eq
+  let ofName = (name): Units.t => {prefix: Unit, name, power: 1}
+
+  let encode = Encoding.encodeUnits
+  let decode = Encoding.decodeUnits
 
   let unitsCompatible = Units_Compatibility.compatible
   let compositeUnitsCompatible = Units_Compatibility.compositeCompatible
