@@ -32,8 +32,8 @@ test("mul", () => {
     ),
   )->toEqual(
     ofReal(
-      Real.one,
-      ~units=[{prefix: Unit, name: Foot, power: 1}, {prefix: Unit, name: Inch, power: 1}],
+      Real.ofDecimal(Decimal.ofString("0.00774192")),
+      ~units=[{prefix: Unit, name: Meter, power: 2}],
     ),
   )
 })
