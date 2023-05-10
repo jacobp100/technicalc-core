@@ -99,42 +99,43 @@ let formatDecimal = (
   ~minDecimalPlaces=0,
   ~maxDecimalPlaces,
   num,
-) => {
-  let absNum = Decimal.abs(num)
-  let integerPart = Decimal.trunc(absNum)
-  let decimalPart = Decimal.sub(absNum, integerPart)
-
-  let integer = formatInteger(
-    ~decimalSeparator,
-    ~groupingSeparator,
-    ~base,
-    ~digitGrouping,
-    integerPart,
-  )
-  let integer = Decimal.gte(num, Decimal.zero) ? integer : "-" ++ integer
-
-  let decimal = if maxDecimalPlaces == 0 {
-    ""
-  } else if Decimal.eq(decimalPart, Decimal.zero) {
-    StringUtil.make(minDecimalPlaces, '0')
+) =>
+  if maxDecimalPlaces == 0 {
+    formatInteger(~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, Decimal.round(num))
   } else {
-    let decimalAsInteger = {
-      open Decimal
-      trunc(decimalPart * ofInt(base) ** ofInt(maxDecimalPlaces))
+    let absNum = Decimal.abs(num)
+    let integerPart = Decimal.trunc(absNum)
+    let decimalPart = Decimal.sub(absNum, integerPart)
+
+    let integer = formatInteger(
+      ~decimalSeparator,
+      ~groupingSeparator,
+      ~base,
+      ~digitGrouping,
+      integerPart,
+    )
+    let integer = Decimal.gte(num, Decimal.zero) ? integer : "-" ++ integer
+
+    let decimal = if Decimal.eq(decimalPart, Decimal.zero) {
+      StringUtil.make(minDecimalPlaces, '0')
+    } else {
+      let decimalAsInteger = {
+        open Decimal
+        round(decimalPart * ofInt(base) ** ofInt(maxDecimalPlaces))
+      }
+      let baseStr = decimalString(~decimalSeparator, ~base, decimalAsInteger)
+      let numZeros = maxDecimalPlaces - String.length(baseStr)
+      let numZeros = max(numZeros, 0)
+      let str = StringUtil.make(numZeros, '0') ++ baseStr
+      trimTraillingZeros(~decimalSeparator, ~startIndex=minDecimalPlaces, str)
     }
-    let baseStr = decimalString(~decimalSeparator, ~base, decimalAsInteger)
-    let numZeros = maxDecimalPlaces - String.length(baseStr)
-    let numZeros = max(numZeros, 0)
-    let str = StringUtil.make(numZeros, '0') ++ baseStr
-    trimTraillingZeros(~decimalSeparator, ~startIndex=minDecimalPlaces, str)
-  }
 
-  if decimal != "" {
-    integer ++ decimalSeparator ++ decimal
-  } else {
-    integer
+    if decimal != "" {
+      integer ++ decimalSeparator ++ decimal
+    } else {
+      integer
+    }
   }
-}
 
 let formatExponential = (
   ~decimalSeparator,
