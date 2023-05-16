@@ -84,7 +84,6 @@ const getPositionMap = ({ rootNode, wrapper }) => {
     const {
       id,
       transform: cssTransform,
-      "data-mml-node": kind,
       "data-transform-x": transformX,
       "data-transform-y": transformY,
       "data-transform-scale": transformScale,
@@ -114,11 +113,7 @@ const getPositionMap = ({ rootNode, wrapper }) => {
     }
 
     if (id != null) {
-      const {
-        avoidsSelection: manualAvoidsSelection,
-        current,
-        after,
-      } = parseId(id);
+      const { avoidsSelection, current, after } = parseId(id);
       // eslint-disable-next-line prefer-const
       let { tX: x, tY: y, s: scale } = transform;
       x *= 1e-3;
@@ -128,8 +123,6 @@ const getPositionMap = ({ rootNode, wrapper }) => {
       const width = (bbox?.w ?? 0) * scale;
       const ascent = (bbox?.h ?? 0) * scale;
       const descent = (bbox?.d ?? 0) * scale;
-
-      const avoidsSelection = manualAvoidsSelection || kind === "mo";
 
       if (current != null && !(avoidsSelection && positionMap.has(current))) {
         const position = { x, y, scale, width, ascent, descent };
