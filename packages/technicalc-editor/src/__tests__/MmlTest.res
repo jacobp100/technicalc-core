@@ -163,7 +163,7 @@ test("tables default to zero", () => {
 test("operators", () => {
   create([N1_S, Add, N2_S])
   ->expect
-  ->toEqual(`<mrow><mn id="0:1">1</mn><mo id="1:2">+</mo><mn id="2:3">2</mn></mrow>`)
+  ->toEqual(`<mrow><mn id="0:1">1</mn><mo id="~1:2">+</mo><mn id="2:3">2</mn></mrow>`)
 })
 
 test("differentials", () => {

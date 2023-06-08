@@ -133,3 +133,18 @@ test("formatting decimal number between -1 and 0", () => {
 
   expect(toString(~format=defaultFormat, aDecimalNumber))->toBe("-0.274653072167")
 })
+
+test("formats 0.9r", () => {
+  expect(
+    toString(
+      ~format=Formatting.defaultFormat,
+      ofDecimal(Decimal.ofString("0.99999999999999999999")),
+    ),
+  )->toBe("1")
+  expect(
+    toString(
+      ~format=Formatting.defaultFormat,
+      ofDecimal(Decimal.ofString("1.99999999999999999999")),
+    ),
+  )->toBe("2")
+})

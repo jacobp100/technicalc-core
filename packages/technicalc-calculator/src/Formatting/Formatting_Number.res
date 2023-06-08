@@ -91,6 +91,21 @@ let formatInteger = (~decimalSeparator, ~groupingSeparator, ~base, ~digitGroupin
   basePrefixExn(base) ++ StringUtil.toUpperCase(str)
 }
 
+%%private(
+  @inline
+  let decimalPartAsIngegerBase = (~base, ~maxDecimalPlaces) => {
+    open Decimal
+    ofInt(base) ** ofInt(maxDecimalPlaces)
+  }
+)
+%%private(
+  @inline
+  let decimalPartAsInteger = (~base, ~maxDecimalPlaces, decimal) => {
+    open Decimal
+    round(decimal * decimalPartAsIngegerBase(~base, ~maxDecimalPlaces))
+  }
+)
+
 let formatDecimal = (
   ~decimalSeparator,
   ~groupingSeparator,
@@ -103,9 +118,20 @@ let formatDecimal = (
   if maxDecimalPlaces == 0 {
     formatInteger(~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, Decimal.round(num))
   } else {
-    let absNum = Decimal.abs(num)
-    let integerPart = Decimal.trunc(absNum)
-    let decimalPart = Decimal.sub(absNum, integerPart)
+    open Decimal
+    let absNum = abs(num)
+    let integerPart = trunc(absNum)
+    let decimalPart = sub(absNum, integerPart)
+
+    // Handle 0.9999999 rounding
+    let (integerPart, decimalPart) = if (
+      decimalPartAsInteger(~base, ~maxDecimalPlaces, decimalPart) >=
+      decimalPartAsIngegerBase(~base, ~maxDecimalPlaces)
+    ) {
+      (integerPart + one, zero)
+    } else {
+      (integerPart, decimalPart)
+    }
 
     let integer = formatInteger(
       ~decimalSeparator,
@@ -114,23 +140,20 @@ let formatDecimal = (
       ~digitGrouping,
       integerPart,
     )
-    let integer = Decimal.gte(num, Decimal.zero) ? integer : "-" ++ integer
+    let integer = gte(num, zero) ? integer : "-" ++ integer
 
-    let decimal = if Decimal.eq(decimalPart, Decimal.zero) {
+    let decimal = if decimalPart == zero {
       StringUtil.make(minDecimalPlaces, '0')
     } else {
-      let decimalAsInteger = {
-        open Decimal
-        round(decimalPart * ofInt(base) ** ofInt(maxDecimalPlaces))
-      }
-      let baseStr = decimalString(~decimalSeparator, ~base, decimalAsInteger)
-      let numZeros = maxDecimalPlaces - String.length(baseStr)
+      let decimalPartAsInteger = decimalPartAsInteger(~base, ~maxDecimalPlaces, decimalPart)
+      let baseStr = decimalString(~decimalSeparator, ~base, decimalPartAsInteger)
+      let numZeros = Pervasives.\"-"(maxDecimalPlaces, String.length(baseStr))
       let numZeros = max(numZeros, 0)
       let str = StringUtil.make(numZeros, '0') ++ baseStr
       trimTraillingZeros(~decimalSeparator, ~startIndex=minDecimalPlaces, str)
     }
 
-    if decimal != "" {
+    if Pervasives.\"!="(decimal, "") {
       integer ++ decimalSeparator ++ decimal
     } else {
       integer
