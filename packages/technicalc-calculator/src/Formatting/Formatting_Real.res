@@ -35,11 +35,12 @@ open Formatting_Util
 )
 
 %%private(
-  let formatConstantMultiple = (~format, ~formatAsRow, n, c): string => {
+  let formatConstantMultiple = (~omitBasePrefix=?, ~format, ~formatAsRow, n, c): string => {
     let {decimalSeparator, groupingSeparator, base, digitGrouping} = format
 
     switch (
       Decimal.ofInt(n)->Formatting_Number.formatInteger(
+        ~omitBasePrefix?,
         ~decimalSeparator,
         ~groupingSeparator,
         ~base,
@@ -88,6 +89,7 @@ let toString = (~format, re): string => {
           ? ""
           : Decimal.ofInt(integer)
             ->Formatting_Number.formatInteger(
+              ~omitBasePrefix=true,
               ~decimalSeparator,
               ~groupingSeparator,
               ~base,
@@ -100,11 +102,13 @@ let toString = (~format, re): string => {
       ("", n)
     }
 
-    let top = formatConstantMultiple(~format, ~formatAsRow=true, n, c)
+    let basePrefix = Formatting_Number.basePrefixExn(format.base)
+    let top = formatConstantMultiple(~omitBasePrefix=true, ~format, ~formatAsRow=true, n, c)
 
     let bottom =
       Decimal.ofInt(d)
       ->Formatting_Number.formatInteger(
+        ~omitBasePrefix=true,
         ~decimalSeparator,
         ~groupingSeparator,
         ~base,
@@ -119,10 +123,11 @@ let toString = (~format, re): string => {
       let divide = mode == Ascii ? "/" : Formatting_Unicode.divide
       let out = top ++ divide ++ bottom
       let out = before != "" ? `${before}+${out}` : out
+      let out = `${basePrefix}${out}`
       let out = before != "" && minus != "" ? `${minus}(${out})` : minus ++ out
       out
-    | Tex => `${minus}${before}\\frac{${top}}{${bottom}}`
-    | MathML => `${minus}${before}<mfrac>${top}${bottom}</mfrac>`
+    | Tex => `${minus}${basePrefix}${before}\\frac{${top}}{${bottom}}`
+    | MathML => `${minus}${basePrefix}${before}<mfrac>${top}${bottom}</mfrac>`
     }
   | (_, Natural(_) | Decimal) =>
     let f = Real.toDecimal(re)

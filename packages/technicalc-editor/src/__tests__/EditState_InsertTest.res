@@ -1,6 +1,22 @@
 open Jest
 open EditState
 
+test("should move items into superscript", () => {
+  let {index, elements} =
+    make(~index=1, ~elements=[N1_S, N2_S], ~formatCaptureGroups=false)->insert(Superscript1)
+
+  expect(elements)->toEqual([N1_S, Superscript1, N2_S, Arg])
+  expect(index)->toEqual(2)
+})
+
+test("should not move items when superscripting function", () => {
+  let {index, elements} =
+    make(~index=1, ~elements=[SinS, N1_S], ~formatCaptureGroups=false)->insert(Superscript1)
+
+  expect(elements)->toEqual([SinS, Superscript1, Arg, N1_S])
+  expect(index)->toEqual(2)
+})
+
 test("should insert fraction consuming characters", () => {
   let {index, elements} =
     make(~index=1, ~elements=[N1_S, N2_S], ~formatCaptureGroups=false)->insert(Frac2S)

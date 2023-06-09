@@ -177,10 +177,120 @@ type skipMode =
 )
 
 %%private(
+  let isTrigonometricFunction = (element: AST.t) =>
+    switch element {
+    | Acos
+    | Acosh
+    | Asin
+    | Asinh
+    | Atan
+    | Atanh
+    | CosecS
+    | CoshS
+    | CosS
+    | CotS
+    | SecS
+    | SinhS
+    | SinS
+    | TanhS
+    | TanS => true
+    | Arg
+    | CaptureGroupStart(_)
+    | CaptureGroupEndS
+    | Add
+    | ArcMinuteUnit
+    | ArcSecondUnit
+    | Bin
+    | Conj
+    | DecimalSeparator
+    | DegreeUnit
+    | Div
+    | Dot
+    | Factorial
+    | Gamma
+    | GradianUnit
+    | Hex
+    | Im
+    | Log
+    | Mul
+    | Oct
+    | OpenBracket
+    | Percent
+    | RadianUnit
+    | Re
+    | Rref
+    | Sub
+    | Trace
+    | Transpose
+    | CloseBracketS
+    | ConstES
+    | ConstPiS
+    | ImaginaryUnitS
+    | IterationXS
+    | N0_S
+    | N1_S
+    | N2_S
+    | N3_S
+    | N4_S
+    | N5_S
+    | N6_S
+    | N7_S
+    | N8_S
+    | N9_S
+    | NA_S
+    | NB_S
+    | NC_S
+    | ND_S
+    | NE_S
+    | NF_S
+    | RandS
+    | XUnitS
+    | YUnitS
+    | ZUnitS
+    | ConstantS(_)
+    | UnitS(_)
+    | VariableS(_)
+    | Magnitude1
+    | NLog1
+    | Superscript1
+    | Abs1S
+    | Ceil1S
+    | Floor1S
+    | Round1S
+    | Sqrt1S
+    | Differential2
+    | NCR2
+    | NPR2
+    | Product2
+    | Sum2
+    | Frac2S
+    | GCD2S
+    | LCM2S
+    | Max2S
+    | Min2S
+    | NRoot2S
+    | RandInt2S
+    | Integral3
+    | TableNS(_) => false
+    }
+)
+
+%%private(
+  @inline
+  let superscriptingTrigonometricFunction = (elements, element, index) => {
+    element == AST.Superscript1 &&
+      switch Belt.Array.get(elements, index - 1) {
+      | Some(previousElement) => isTrigonometricFunction(previousElement)
+      | None => false
+      }
+  }
+)
+
+%%private(
   let insertElement = (elements, element, index) =>
     switch element {
     | AST.Superscript1
-    | Sqrt1S =>
+    | Sqrt1S if !superscriptingTrigonometricFunction(elements, element, index) =>
       let e = countMovableElements(elements, ~from=index, ~direction=Forwards)
       let (elements, arg) = ArrayUtil.splice(elements, ~offset=index, ~len=e)
       let combined = Belt.Array.concatMany([[element], arg, [Arg]])

@@ -30,6 +30,18 @@ test("formats mixed fractions", () => {
   expect(toString(~format, ofInt(-4) * pi / ofInt(3)))->toBe("-4pi/3")
 })
 
+test("formats fractions in other bases", () => {
+  expect(
+    stringOfFloat(1.5, {...defaultFormat, style: Natural({mixedFractions: false}), base: 2}),
+  )->toBe("0b11/10")
+})
+
+test("formats mixed fractions in other bases", () => {
+  expect(
+    stringOfFloat(1.5, {...defaultFormat, style: Natural({mixedFractions: true}), base: 2}),
+  )->toBe("0b1+1/10")
+})
+
 test("only adds commas for values greater than 999", () => {
   let format = {...defaultFormat, style: Decimal}
 
@@ -101,6 +113,9 @@ test("formats other bases", () => {
   expect(stringOfFloat(100., format(2)))->toBe("0b110,0100")
   expect(stringOfFloat(100., format(8)))->toBe("0o144")
   expect(stringOfFloat(100., format(16)))->toBe("0x64")
+  expect(stringOfFloat(-100., format(2)))->toBe("-0b110,0100")
+  expect(stringOfFloat(-100., format(8)))->toBe("-0o144")
+  expect(stringOfFloat(-100., format(16)))->toBe("-0x64")
 })
 
 test("formats various numbers correctly", () => {
