@@ -19,20 +19,23 @@ open AST_OfString
   let ofReal = (a: TechniCalcCalculator.Real.t) =>
     switch a {
     | Rational(n, d, c) =>
-      let out = Belt.Int.toString(n)
-      let (negative, out) = if StringUtil.startsWith(out, "-") {
-        (true, StringUtil.sliceToEnd(out, 1))
+      let out = if c != Unit && (n == 1 || n == -1) {
+        ofConstant(c)
       } else {
-        (false, out)
+        let intString = Belt.Int.toString(n)
+        let intString = if StringUtil.startsWith(intString, "-") {
+          StringUtil.sliceToEnd(intString, 1)
+        } else {
+          intString
+        }
+        Belt.Array.concat(ofString(intString), ofConstant(c))
       }
-      let out = ofString(out)
-      let out = c != Unit ? Belt.Array.concat(out, ofConstant(c)) : out
       let out = if d != 1 {
         Belt.Array.concatMany([[Frac2S], out, [Arg], Belt.Int.toString(d)->ofString, [Arg]])
       } else {
         out
       }
-      if negative {
+      if n < 0 {
         Belt.Array.concat([Sub], out)
       } else {
         out
