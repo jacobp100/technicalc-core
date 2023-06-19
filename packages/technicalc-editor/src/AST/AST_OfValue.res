@@ -46,13 +46,13 @@ open AST_OfString
     switch a {
     | #Zero => [N0_S]
     | #Real(re) => ofReal(re)
-    | #Imag(im) => ofReal(im)
+    | #Imag(im) => Belt.Array.concat(ofReal(im), [ImaginaryUnitS])
     | #Cmpx(re, im) =>
       let imLtZero = TechniCalcCalculator.Decimal.lt(
         TechniCalcCalculator.Real_Base.toDecimal(im),
         TechniCalcCalculator.Decimal.zero,
       )
-      Belt.Array.concatMany([ofReal(re), imLtZero ? [] : [Add], ofReal(im)])
+      Belt.Array.concatMany([ofReal(re), imLtZero ? [] : [Add], ofReal(im), [ImaginaryUnitS]])
     | #NaNN => [N0_S, Div, N0_S]
     }
 )
