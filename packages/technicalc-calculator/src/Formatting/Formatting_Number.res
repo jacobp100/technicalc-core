@@ -1,13 +1,10 @@
-%%private(
-  @inline
-  let basePrefixExn = base =>
-    switch base {
-    | 2 => "0b"
-    | 8 => "0o"
-    | 16 => "0x"
-    | _ => ""
-    }
-)
+let basePrefixExn = base =>
+  switch base {
+  | 2 => "0b"
+  | 8 => "0o"
+  | 16 => "0x"
+  | _ => ""
+  }
 
 %%private(
   let getSliceIndex = (~decimalSeparator, ~startIndex, ~endIndex, string) => {
@@ -75,7 +72,14 @@
   }
 )
 
-let formatInteger = (~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, num) => {
+let formatInteger = (
+  ~omitBasePrefix=false,
+  ~decimalSeparator,
+  ~groupingSeparator,
+  ~base,
+  ~digitGrouping,
+  num,
+) => {
   let str = decimalString(~decimalSeparator, ~base, num)
   let str = if digitGrouping {
     let groupingSize = base == 10 ? 3 : 4
@@ -88,7 +92,8 @@ let formatInteger = (~decimalSeparator, ~groupingSeparator, ~base, ~digitGroupin
   } else {
     str
   }
-  basePrefixExn(base) ++ StringUtil.toUpperCase(str)
+  let basePrefix = !omitBasePrefix ? basePrefixExn(base) : ""
+  basePrefix ++ StringUtil.toUpperCase(str)
 }
 
 %%private(
@@ -107,6 +112,7 @@ let formatInteger = (~decimalSeparator, ~groupingSeparator, ~base, ~digitGroupin
 )
 
 let formatDecimal = (
+  ~omitBasePrefix=?,
   ~decimalSeparator,
   ~groupingSeparator,
   ~base,
@@ -116,7 +122,14 @@ let formatDecimal = (
   num,
 ) =>
   if maxDecimalPlaces == 0 {
-    formatInteger(~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, Decimal.round(num))
+    formatInteger(
+      ~omitBasePrefix?,
+      ~decimalSeparator,
+      ~groupingSeparator,
+      ~base,
+      ~digitGrouping,
+      Decimal.round(num),
+    )
   } else {
     open Decimal
     let absNum = abs(num)
@@ -134,6 +147,7 @@ let formatDecimal = (
     }
 
     let integer = formatInteger(
+      ~omitBasePrefix?,
       ~decimalSeparator,
       ~groupingSeparator,
       ~base,
@@ -161,6 +175,7 @@ let formatDecimal = (
   }
 
 let formatExponential = (
+  ~omitBasePrefix=?,
   ~decimalSeparator,
   ~groupingSeparator,
   ~base,
@@ -174,6 +189,7 @@ let formatExponential = (
   | None => DecimalUtil.magnitude(~base, num)
   }
   let decimalPart = formatDecimal(
+    ~omitBasePrefix?,
     ~decimalSeparator,
     ~groupingSeparator,
     ~base,
