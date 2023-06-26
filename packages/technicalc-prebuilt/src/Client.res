@@ -157,7 +157,7 @@ module Elements = {
   let bracketRanges = BracketMetadata.bracketRanges
   let bracketRange = BracketMetadata.bracketRange
 
-  let captureGroups = CaptureGroupMetadata.captureGroups
+  let placeholders = PlaceholderMetadata.placeholders
 
   let getDependencies = DependencyMetadata.getDependencies
 
