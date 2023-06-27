@@ -33,7 +33,7 @@ export const parseTransform = (str) => {
   return out;
 };
 
-const idRegExp = /^(~)?(\d*)?:(\d*)?$/;
+const idRegExp = /^(~)?(\d*)?:(!)?(\d*)?$/;
 
 export const parseId = (id) => {
   const idMatch = id != null ? id.match(idRegExp) : null;
@@ -46,10 +46,16 @@ export const parseId = (id) => {
     };
   }
 
-  const { 1: avoidsSelection, 2: current, 3: after } = idMatch;
+  const {
+    1: avoidsStartSelection,
+    2: current,
+    3: prefersEndSelection,
+    4: after,
+  } = idMatch;
 
   return {
-    avoidsSelection: avoidsSelection != null,
+    avoidsStartSelection: avoidsStartSelection != null,
+    prefersEndSelection: prefersEndSelection != null,
     current: current != null ? Number(current) : undefined,
     after: after != null ? Number(after) : undefined,
   };

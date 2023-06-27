@@ -79,6 +79,7 @@ const getPositionMap = ({ rootNode, wrapper }) => {
   setBboxes(wrapper);
 
   const positionMap = new Map();
+  const prefersEndSelections = new Set();
   const setPositions = (element, inputTransform) => {
     const { attributes = {}, children } = element;
     const {
@@ -113,7 +114,8 @@ const getPositionMap = ({ rootNode, wrapper }) => {
     }
 
     if (id != null) {
-      const { avoidsSelection, current, after } = parseId(id);
+      const { avoidsStartSelection, prefersEndSelection, current, after } =
+        parseId(id);
       // eslint-disable-next-line prefer-const
       let { tX: x, tY: y, s: scale } = transform;
       x *= 1e-3;
@@ -124,17 +126,25 @@ const getPositionMap = ({ rootNode, wrapper }) => {
       const ascent = (bbox?.h ?? 0) * scale;
       const descent = (bbox?.d ?? 0) * scale;
 
-      if (current != null && !(avoidsSelection && positionMap.has(current))) {
+      if (
+        current != null &&
+        !(avoidsStartSelection && positionMap.has(current)) &&
+        !prefersEndSelections.has(current)
+      ) {
         const position = { x, y, scale, width, ascent, descent };
         positionMap.set(current, position);
       }
 
-      if (after != null && !positionMap.has(after)) {
+      if (after != null && (prefersEndSelection || !positionMap.has(after))) {
         const advanceWidth = advanceWidths.get(after);
         if (advanceWidth == null) throw new Error(`No width for ${after}`);
         const positionX = x + advanceWidth * scale;
         const position = { x: positionX, y, scale, width: 0, ascent, descent };
         positionMap.set(after, position);
+
+        if (prefersEndSelection) {
+          prefersEndSelections.add(after);
+        }
       }
     }
 

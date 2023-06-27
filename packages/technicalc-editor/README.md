@@ -149,7 +149,7 @@ MathML will attach these indices to certain MathML elements in the form `id="sta
 
 This may seem like duplication, but we don't always have the start index. For example, the index after the last element is only representable by an `endIndex`.
 
-By default, one element's `startIndex` has priority after another elements `endIndex`. However, for `mo` elements, we prefer to use any other available indices, and use the `mo`'s indices as a last resort. This is so expressions like `1 + 2` have the cursor stick to the numbers rather than the operator. It's also possible to apply this behaviour to other elements by prefixing the id with `~`.
+By default, one element's `startIndex` has priority after another elements `endIndex`. However, for `mo` elements, we prefer to use any other available indices, and use the `mo`'s indices as a last resort. This is so expressions like `1 + 2` have the cursor stick to the numbers rather than the operator. This is done by changing the priority of indices: you can add `~` before an index to lower its priority, and a `!` to raise its priority. For now, we only support lowering the priority of start index, and raising the priority of the end index.
 
 There are also times where a different MathML element will recieve the indices than the obvious element. For a digit on `1`, we would normally write this as `<mn id="(i):(i')">...</mn>`. However, for a digit of `1` with a superscript of `2` applied, we create am outer `<msup>` element takes the indicies instead of the `<mn>` element. (The `2` in the superscript behaves as normal).
 

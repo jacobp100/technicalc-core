@@ -135,10 +135,11 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_OpenBracket => Mml_Accum.appendOpenBracket(. accum, range)
   | Fold_CloseBracket(superscript) => Mml_Accum.appendCloseBracket(. accum, range, superscript)
   | Fold_Digit({nucleus, superscript}) =>
-    Mml_Accum.appendDigit(accum, ~superscript?, ~range, "mn", nucleus)
+    // Prefer end selection for digit grouping
+    Mml_Accum.appendDigit(accum, ~prefersEndSelection=true, ~superscript?, ~range, "mn", nucleus)
   | Fold_DecimalSeparator => Mml_Accum.appendDecimalSeparator(. accum, range)
   | Fold_Base(base) => Mml_Accum.appendBasePrefix(accum, ~range, "mn", stringOfBase(base))
-  | Fold_Percent => Mml_Accum.append(accum, ~avoidsSelection=true, ~range, "mo", "%")
+  | Fold_Percent => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "%")
   | Fold_Angle(Angle_Degree) => Mml_Accum.append(accum, ~range, "mo", "&#x00B0;")
   | Fold_Angle(Angle_ArcMinute) => Mml_Accum.superscriptSuffix(accum, ~range, "mo", "&#x2032;")
   | Fold_Angle(Angle_ArcSecond) => Mml_Accum.superscriptSuffix(accum, ~range, "mo", "&#x2033;")
@@ -174,15 +175,17 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     )
   | Fold_Function({fn, resultSuperscript: superscript}) =>
     appendFunctionMml(accum, ~superscript?, ~range, fn)
-  | Fold_Factorial => Mml_Accum.append(accum, ~avoidsSelection=true, ~range, "mo", "!")
-  | Fold_Add => Mml_Accum.appendOperatorOrFunction(accum, ~avoidsSelection=true, ~range, "mo", "+")
-  | Fold_Sub => Mml_Accum.appendOperatorOrFunction(accum, ~avoidsSelection=true, ~range, "mo", "-")
+  | Fold_Factorial => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "!")
+  | Fold_Add =>
+    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "+")
+  | Fold_Sub =>
+    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "-")
   | Fold_Mul =>
-    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsSelection=true, ~range, "mo", "&#x00D7;")
+    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "&#x00D7;")
   | Fold_Div =>
-    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsSelection=true, ~range, "mo", "&#x00F7;")
+    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "&#x00F7;")
   | Fold_Dot =>
-    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsSelection=true, ~range, "mo", "&#xb7;")
+    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "&#xb7;")
   | Fold_Frac({num, den, superscript}) =>
     Mml_Accum.append(accum, ~superscript?, ~range, "mfrac", num ++ den)
   | Fold_Sqrt({radicand, superscript}) =>

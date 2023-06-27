@@ -9,16 +9,27 @@ open Mml_Builders
 )
 
 %%private(
-  let selection = (~avoid=false, ~start=?, ~end=?, ()): Mml_Attributes.t => (
+  let selection = (
+    ~avoidsStart=false,
+    ~prefersEnd=false,
+    ~start=?,
+    ~end=?,
+    (),
+  ): Mml_Attributes.t => (
     #id,
-    (avoid ? "~" : "") ++ optionNumberToString(start) ++ ":" ++ optionNumberToString(end),
+    (avoidsStart ? "~" : "") ++
+    optionNumberToString(start) ++
+    ":" ++
+    (prefersEnd ? "!" : "") ++
+    optionNumberToString(end),
   )
 )
 
 %%private(
   let element = (
     ~metadata,
-    ~avoidsSelection=?,
+    ~avoidsStartSelection=?,
+    ~prefersEndSelection=?,
     ~attributes=list{},
     ~superscript=?,
     ~range=?,
@@ -26,7 +37,16 @@ open Mml_Builders
     body,
   ) => {
     let selectionAttribute: option<Mml_Attributes.t> = switch range {
-    | Some((start, end)) => Some(selection(~avoid=?avoidsSelection, ~start, ~end, ()))
+    | Some((start, end)) =>
+      Some(
+        selection(
+          ~avoidsStart=?avoidsStartSelection,
+          ~prefersEnd=?prefersEndSelection,
+          ~start,
+          ~end,
+          (),
+        ),
+      )
     | None => None
     }
 
@@ -93,10 +113,20 @@ let toString = (~attributes, x) =>
 let appendSpace = (x, ~width) =>
   isEmpty(. x) ? x : append(. x, mml(~attributes=list{(#width, width)}, "mspace", ""))
 
-let append = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range=?, tag, body) =>
+let append = (
+  x,
+  ~avoidsStartSelection=?,
+  ~prefersEndSelection=?,
+  ~attributes=?,
+  ~superscript=?,
+  ~range=?,
+  tag,
+  body,
+) =>
   element(
     ~metadata=format(. x).metadata,
-    ~avoidsSelection?,
+    ~avoidsStartSelection?,
+    ~prefersEndSelection?,
     ~attributes?,
     ~superscript?,
     ~range?,
@@ -106,7 +136,8 @@ let append = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range=?, ta
 
 let appendOperatorOrFunction = (
   x,
-  ~avoidsSelection=?,
+  ~avoidsStartSelection=?,
+  ~prefersEndSelection=?,
   ~attributes=?,
   ~superscript=?,
   ~range,
@@ -115,7 +146,8 @@ let appendOperatorOrFunction = (
 ) =>
   element(
     ~metadata=format(. x).metadata,
-    ~avoidsSelection?,
+    ~avoidsStartSelection?,
+    ~prefersEndSelection?,
     ~attributes?,
     ~superscript?,
     ~range,
@@ -123,10 +155,20 @@ let appendOperatorOrFunction = (
     body,
   )->appendOperatorOrFunction(. x, _)
 
-let appendDigit = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range, tag, body) =>
+let appendDigit = (
+  x,
+  ~avoidsStartSelection=?,
+  ~prefersEndSelection=?,
+  ~attributes=?,
+  ~superscript=?,
+  ~range,
+  tag,
+  body,
+) =>
   element(
     ~metadata=format(. x).metadata,
-    ~avoidsSelection?,
+    ~avoidsStartSelection?,
+    ~prefersEndSelection?,
     ~attributes?,
     ~superscript?,
     ~range,
@@ -134,10 +176,20 @@ let appendDigit = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range,
     body,
   )->appendDigit(. x, _)
 
-let appendBasePrefix = (x, ~avoidsSelection=?, ~attributes=?, ~superscript=?, ~range, tag, body) =>
+let appendBasePrefix = (
+  x,
+  ~avoidsStartSelection=?,
+  ~prefersEndSelection=?,
+  ~attributes=?,
+  ~superscript=?,
+  ~range,
+  tag,
+  body,
+) =>
   element(
     ~metadata=format(. x).metadata,
-    ~avoidsSelection?,
+    ~avoidsStartSelection?,
+    ~prefersEndSelection?,
     ~attributes?,
     ~superscript?,
     ~range,
@@ -149,7 +201,7 @@ let appendPlaceholder = (x, ~range, ~superscript, ~implicit, ~captureGroupIndex,
   let {metadata} = format(. x)
   let phantom = switch captureGroupIndex {
   | Some(start) =>
-    element(~metadata, ~attributes=list{selection(~avoid=true, ~start, ())}, "mphantom", "")
+    element(~metadata, ~attributes=list{selection(~avoidsStart=true, ~start, ())}, "mphantom", "")
   | None => ""
   }
   let symbol = switch placeholder {
@@ -179,7 +231,7 @@ let superscriptSuffix = (x, ~attributes=list{}, ~range, tag, body) =>
         mml("mrow", last) ++
         element(
           ~metadata,
-          ~attributes=list{selection(~avoid=true, ~start, ()), ...attributes},
+          ~attributes=list{selection(~avoidsStart=true, ~start, ()), ...attributes},
           tag,
           body,
         ),
