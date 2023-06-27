@@ -366,8 +366,6 @@ let parse = {
       ) {
       | (Some(value), Some((elements, fraction, superscript))) =>
         // Mixed fraction - don't continue
-        // FIXME - the mixed fraction output in other bases will be something
-        // like 0xf f/f. If we parse that, it won't work.
         let value: node = Add(value, fraction)->withSuperscript(superscript)
         (elements, Some(value), false)
       | (None, Some((elements, fraction, superscript))) =>

@@ -72,14 +72,7 @@ let basePrefixExn = base =>
   }
 )
 
-let formatInteger = (
-  ~omitBasePrefix=false,
-  ~decimalSeparator,
-  ~groupingSeparator,
-  ~base,
-  ~digitGrouping,
-  num,
-) => {
+let formatInteger = (~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, num) => {
   let str = decimalString(~decimalSeparator, ~base, num)
   let str = if digitGrouping {
     let groupingSize = base == 10 ? 3 : 4
@@ -92,7 +85,7 @@ let formatInteger = (
   } else {
     str
   }
-  let basePrefix = !omitBasePrefix ? basePrefixExn(base) : ""
+  let basePrefix = basePrefixExn(base)
   basePrefix ++ StringUtil.toUpperCase(str)
 }
 
@@ -112,7 +105,6 @@ let formatInteger = (
 )
 
 let formatDecimal = (
-  ~omitBasePrefix=?,
   ~decimalSeparator,
   ~groupingSeparator,
   ~base,
@@ -122,14 +114,7 @@ let formatDecimal = (
   num,
 ) =>
   if maxDecimalPlaces == 0 {
-    formatInteger(
-      ~omitBasePrefix?,
-      ~decimalSeparator,
-      ~groupingSeparator,
-      ~base,
-      ~digitGrouping,
-      Decimal.round(num),
-    )
+    formatInteger(~decimalSeparator, ~groupingSeparator, ~base, ~digitGrouping, Decimal.round(num))
   } else {
     open Decimal
     let absNum = abs(num)
@@ -147,7 +132,6 @@ let formatDecimal = (
     }
 
     let integer = formatInteger(
-      ~omitBasePrefix?,
       ~decimalSeparator,
       ~groupingSeparator,
       ~base,
@@ -175,7 +159,6 @@ let formatDecimal = (
   }
 
 let formatExponential = (
-  ~omitBasePrefix=?,
   ~decimalSeparator,
   ~groupingSeparator,
   ~base,
@@ -189,7 +172,6 @@ let formatExponential = (
   | None => DecimalUtil.magnitude(~base, num)
   }
   let decimalPart = formatDecimal(
-    ~omitBasePrefix?,
     ~decimalSeparator,
     ~groupingSeparator,
     ~base,

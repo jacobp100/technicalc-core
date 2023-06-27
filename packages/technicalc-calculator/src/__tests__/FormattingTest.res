@@ -33,13 +33,13 @@ test("formats mixed fractions", () => {
 test("formats fractions in other bases", () => {
   expect(
     stringOfFloat(1.5, {...defaultFormat, style: Natural({mixedFractions: false}), base: 2}),
-  )->toBe("0b11/10")
+  )->toBe("0b11/0b10")
 })
 
 test("formats mixed fractions in other bases", () => {
   expect(
     stringOfFloat(1.5, {...defaultFormat, style: Natural({mixedFractions: true}), base: 2}),
-  )->toBe("0b1+1/10")
+  )->toBe("0b1+0b1/0b10")
 })
 
 test("only adds commas for values greater than 999", () => {
