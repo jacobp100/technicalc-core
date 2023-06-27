@@ -397,8 +397,8 @@ module Units = {
   let encode = Encoding.encodeUnits
   let decode = Encoding.decodeUnits
 
-  let unitsCompatible = Units_Compatibility.compatible
-  let compositeUnitsCompatible = Units_Compatibility.compositeCompatible
+  let compatible = Units_Compatibility.compatible
+  let compositeCompatible = Units_Compatibility.compositeCompatible
 
   let toMml = v => Formatting_Measure.formatUnits(~mode=MathML, v)
   let toUnicode = v => Formatting_Measure.formatUnits(~mode=Unicode, v)
