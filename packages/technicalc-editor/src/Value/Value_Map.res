@@ -442,7 +442,7 @@ let parse = {
     let inPrefixPosition = i =>
       switch ArraySlice.get(elements, i - 1) {
       | Some((Fold_Function(_), _))
-      | Some((Fold_Add | Fold_Sub, _))
+      | Some((Fold_Add | Fold_Sub | Fold_Mul | Fold_Div | Fold_Dot, _))
       | None => true
       | _ => false
       }
