@@ -213,9 +213,9 @@ module Editor = {
   let moveUp = EditState.moveUp
   let moveDown = EditState.moveDown
 
-  let insert = (editState, key) =>
+  let insert = (editState, key, config) =>
     switch key {
-    | Keys.One(element) => EditState.insert(editState, element)
+    | Keys.One(element) => EditState.insert(~config?, editState, element)
     | Many(elements) => EditState.insertArray(editState, elements)
     }
   let delete = EditState.delete

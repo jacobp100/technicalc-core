@@ -66,46 +66,43 @@ open AST_Types
     | list{_, ...rest} => iter(~didInsertHex, ~elementsRev, rest)
     | list{} => elementsRev
     }
-  and parseArg = (~elementsRev, input) =>
-    switch input {
-    | list{'(', ...rest} => parseUntilCloseBracket(~elementsRev, rest)
-    | _ => parseUntilOperator(~elementsRev, input)
-    }
-  and parseUntilCloseBracket = (~stackRev=list{}, ~bracketLevel=1, ~elementsRev, input) => {
-    let bracketLevel = switch input {
-    | list{')', ..._} => bracketLevel - 1
-    | list{'(', ..._} => bracketLevel + 1
-    | _ => bracketLevel
-    }
-    switch input {
-    | list{_, ...rest} if bracketLevel == 0 =>
-      let elementsRev = iterStackRev(~stackRev, ~elementsRev)
-      iter(~elementsRev, rest)
-    | list{} =>
-      let elementsRev = iterStackRev(~stackRev, ~elementsRev)
-      elementsRev
-    | list{char, ...rest} =>
-      parseUntilCloseBracket(~stackRev=list{char, ...stackRev}, ~bracketLevel, ~elementsRev, rest)
-    }
+  and parseArg = (~elementsRev, input) => {
+    let next = iter
+
+    let rec iter = (~inUnaryPosition, ~bracketLevel, ~stackRev, input) =>
+      switch input {
+      | list{('+' | '-' | '*' | '/') as char, ...rest}
+        if bracketLevel == 0 && !(inUnaryPosition && (char == '+' || char == '-')) =>
+        let elementsRev = iterStackRev(~stackRev, ~elementsRev)
+        let elementsRev = list{elementExn(char), ...elementsRev}
+        next(~elementsRev, rest)
+      | list{')', ..._} as rest if bracketLevel == 0 =>
+        let elementsRev = iterStackRev(~stackRev, ~elementsRev)
+        next(~elementsRev, rest)
+      | list{} as rest =>
+        let elementsRev = iterStackRev(~stackRev, ~elementsRev)
+        next(~elementsRev, rest)
+      | list{'(' as char, ...rest} =>
+        iter(
+          ~inUnaryPosition=false,
+          ~bracketLevel=bracketLevel + 1,
+          // Don't put top-level brackets
+          ~stackRev=bracketLevel != 0 ? list{char, ...stackRev} : stackRev,
+          rest,
+        )
+      | list{')' as char, ...rest} =>
+        iter(
+          ~inUnaryPosition=false,
+          ~bracketLevel=bracketLevel - 1,
+          ~stackRev=bracketLevel != 1 ? list{char, ...stackRev} : stackRev,
+          rest,
+        )
+      | list{char, ...rest} =>
+        iter(~inUnaryPosition=false, ~bracketLevel, ~stackRev=list{char, ...stackRev}, rest)
+      }
+
+    iter(~inUnaryPosition=true, ~bracketLevel=0, ~stackRev=list{}, input)
   }
-  and parseUntilOperator = (~inUnaryPosition=true, ~stackRev=list{}, ~elementsRev, input) =>
-    switch input {
-    | list{('+' | '-' | '*' | '/') as char, ...rest}
-      if !(inUnaryPosition && (char == '+' || char == '-')) =>
-      let elementsRev = iterStackRev(~stackRev, ~elementsRev)
-      let elementsRev = list{elementExn(char), ...elementsRev}
-      iter(~elementsRev, rest)
-    | list{} =>
-      let elementsRev = iterStackRev(~stackRev, ~elementsRev)
-      elementsRev
-    | list{char, ...rest} =>
-      parseUntilOperator(
-        ~inUnaryPosition=false,
-        ~stackRev=list{char, ...stackRev},
-        ~elementsRev,
-        rest,
-      )
-    }
   and iterStackRev = (~stackRev, ~elementsRev) => {
     let argInput = Belt.List.reverse(stackRev)
     let elementsRev = iter(~elementsRev, argInput)

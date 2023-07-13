@@ -10,6 +10,12 @@ type skipMode =
   | TopLevelFixed
   | FunctionFixed
 
+type insertConfig = {forceCollectFraction: bool}
+
+let defaultConfig = {
+  forceCollectFraction: false,
+}
+
 %%private(
   let skipMode = (element: AST.t) =>
     switch element {
@@ -287,7 +293,7 @@ type skipMode =
 )
 
 %%private(
-  let insertElement = (elements, element, index) =>
+  let insertElement = (~config=defaultConfig, elements, element, index) =>
     switch element {
     | AST.Superscript1
     | Sqrt1S if !superscriptingTrigonometricFunction(elements, element, index) =>
@@ -305,17 +311,17 @@ type skipMode =
     | Frac2S =>
       let s = countMovableElements(elements, ~from=index - 1, ~direction=Backwards)
       let e = countMovableElements(elements, ~from=index, ~direction=Forwards)
-      if s == 0 || e == 0 {
-        let frac = [element, Arg, Arg]
-        let elements = ArrayUtil.insertArray(elements, frac, index)
-        (elements, index + 1)
-      } else {
+      if config.forceCollectFraction || (s != 0 && e != 0) {
         let (elements, den) = ArrayUtil.splice(elements, ~offset=index, ~len=e)
         let (elements, num) = ArrayUtil.splice(elements, ~offset=index - s, ~len=s)
         let frac = Belt.Array.concatMany([[element], num, [Arg], den, [Arg]])
         let elements = ArrayUtil.insertArray(elements, frac, index - s)
         let nextIndex = s > 0 ? index + 2 : index + 1
         (elements, nextIndex)
+      } else {
+        let frac = [element, Arg, Arg]
+        let elements = ArrayUtil.insertArray(elements, frac, index)
+        (elements, index + 1)
       }
     | OpenBracket =>
       let isAtEndOfScope = switch Belt.Array.get(elements, index) {
@@ -433,7 +439,7 @@ type parentTable = {
   }
 )
 
-let insert = ({index, elements, formatCaptureGroups} as editState, element: AST.t) => {
+let insert = (~config=?, {index, elements, formatCaptureGroups} as editState, element: AST.t) => {
   let elements = AST.normalize(elements)
 
   // Avoid parent table lookup if element is not a table
@@ -461,7 +467,7 @@ let insert = ({index, elements, formatCaptureGroups} as editState, element: AST.
 
     make(~index, ~elements, ~formatCaptureGroups)
   | _ if AST_NormalizationContext.elementIsValid(elements, element, index) =>
-    let (elements, index) = insertElement(elements, element, index)
+    let (elements, index) = insertElement(~config?, elements, element, index)
     make(~index, ~elements, ~formatCaptureGroups)
   | _ => editState
   }

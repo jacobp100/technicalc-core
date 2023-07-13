@@ -75,3 +75,38 @@ test("nested arguments with operator at end", () => {
     N1_S,
   ])
 })
+
+test("brackets", () => {
+  expect(ofString("(1e10)"))->toEqual([
+    OpenBracket,
+    N1_S,
+    Magnitude1,
+    N1_S,
+    N0_S,
+    Arg,
+    CloseBracketS,
+  ])
+  expect(ofString("(1e(10))"))->toEqual([
+    OpenBracket,
+    N1_S,
+    Magnitude1,
+    N1_S,
+    N0_S,
+    Arg,
+    CloseBracketS,
+  ])
+  expect(ofString("(1e(3*(2+1)))"))->toEqual([
+    OpenBracket,
+    N1_S,
+    Magnitude1,
+    N3_S,
+    Mul,
+    OpenBracket,
+    N2_S,
+    Add,
+    N1_S,
+    CloseBracketS,
+    Arg,
+    CloseBracketS,
+  ])
+})
