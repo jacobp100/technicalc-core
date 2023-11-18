@@ -154,6 +154,9 @@ module Elements = {
 
   let eq = (a, b) => Belt.Array.eqU(a, b, (. a, b) => AST.eq(a, b))
 
+  let baseRanges = BaseMetadata.baseRanges
+  let baseRange = BaseMetadata.baseRange
+
   let bracketRanges = BracketMetadata.bracketRanges
   let bracketRange = BracketMetadata.bracketRange
 
