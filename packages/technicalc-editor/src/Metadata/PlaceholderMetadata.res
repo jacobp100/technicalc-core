@@ -129,15 +129,18 @@ let placeholders = (elements: array<AST.t>): array<placeholder> => {
       }
     | Some(Arg) =>
       let (placeholdersRev, functionStack) = switch functionStack {
-      | list{(lastFunctionIndex, argCount), ...functionStack} =>
+      | list{(lastFunctionIndex, needsPopulating, argCount), ...functionStack} =>
         let lastFunctionWasEmpty = lastFunctionIndex == index - 1
-        let placeholder = Implicit({index: index})
-        let placeholdersRev = lastFunctionWasEmpty
-          ? list{placeholder, ...placeholdersRev}
-          : placeholdersRev
-        let nextArgCount = argCount - 1
-        let functionStack =
-          nextArgCount != 0 ? list{(index, nextArgCount), ...functionStack} : functionStack
+        let placeholdersRev = if lastFunctionWasEmpty && needsPopulating {
+          let placeholder = Implicit({index: index})
+          list{placeholder, ...placeholdersRev}
+        } else {
+          placeholdersRev
+        }
+        let functionStack = switch argCount - 1 {
+        | 0 => functionStack
+        | nextArgCount => list{(index, needsPopulating, nextArgCount), ...functionStack}
+        }
         (placeholdersRev, functionStack)
       | list{} => (placeholdersRev, functionStack)
       }
@@ -153,15 +156,17 @@ let placeholders = (elements: array<AST.t>): array<placeholder> => {
       let placeholdersRev = needsPlaceholder
         ? list{placeholder, ...placeholdersRev}
         : placeholdersRev
-      let functionStack = list{(index, 1), ...functionStack}
+      let functionStack = list{(index, true, 1), ...functionStack}
       iter(~functionStack, ~captureGroupStartStack, ~placeholdersRev, index + 1)
     | Some(element) =>
       let needsPopulating = switch element {
       | TableNS(_) => false
       | _ => true
       }
-      let argCount = needsPopulating ? argCountExn(element) : 0
-      let functionStack = argCount != 0 ? list{(index, argCount), ...functionStack} : functionStack
+      let functionStack = switch argCountExn(element) {
+      | 0 => functionStack
+      | argCount => list{(index, needsPopulating, argCount), ...functionStack}
+      }
       iter(~functionStack, ~captureGroupStartStack, ~placeholdersRev, index + 1)
     | None => Belt.List.toArray(placeholdersRev)->ArrayUtil.reverseInPlace
     }

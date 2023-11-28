@@ -31,13 +31,22 @@ let classify = element =>
     | rest => list{(i, i), ...rest}
     }
 )
+%%private(
+  let rec isValid = validityStack =>
+    switch validityStack {
+    | list{} => true
+    | list{false, ..._} => false
+    | list{_, ...rest} => isValid(rest)
+    }
+)
 
 %%private(
   let validityStackReducer = prependValidityStack => {
     let reducerFn = (. (range, validityStack), element, i) => {
-      let range = switch validityStack {
-      | list{false, ..._} => addSequentialIndex(range, i)
-      | _ => range
+      let range = if !isValid(validityStack) {
+        addSequentialIndex(range, i)
+      } else {
+        range
       }
       let validityStack = switch element {
       | AST_Types.Arg => tailOrEmpty(validityStack)
