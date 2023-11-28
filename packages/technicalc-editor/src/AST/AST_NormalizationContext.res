@@ -31,26 +31,18 @@ let classify = element =>
     | rest => list{(i, i), ...rest}
     }
 )
-%%private(
-  let rec isValid = validityStack =>
-    switch validityStack {
-    | list{} => true
-    | list{false, ..._} => false
-    | list{_, ...rest} => isValid(rest)
-    }
-)
 
 %%private(
   let validityStackReducer = prependValidityStack => {
     let reducerFn = (. (range, validityStack), element, i) => {
-      let range = if !isValid(validityStack) {
-        addSequentialIndex(range, i)
-      } else {
-        range
+      let isValid = switch validityStack {
+      | list{false, ..._} => false
+      | _ => true
       }
+      let range = !isValid ? addSequentialIndex(range, i) : range
       let validityStack = switch element {
       | AST_Types.Arg => tailOrEmpty(validityStack)
-      | e => prependValidityStack(. validityStack, e)
+      | e => prependValidityStack(. validityStack, e, isValid)
       }
       (range, validityStack)
     }
@@ -58,25 +50,25 @@ let classify = element =>
   }
 )
 
-let noTablePermittedRanges = validityStackReducer((. validityStack, element) =>
+let noTablePermittedRanges = validityStackReducer((. validityStack, element, isValid) =>
   switch element {
-  | AST_Types.Frac2S => list{/* num */ true, /* den */ false, ...validityStack}
+  | AST_Types.Frac2S => list{/* num */ isValid, /* den */ false, ...validityStack}
   | Abs1S
   | Floor1S
   | Ceil1S
   | Round1S
   | TableNS(_) =>
     let argCount = AST_Types.argCountExn(element)
-    validityStack->ListUtil.prependMany(argCount, true)
+    validityStack->ListUtil.prependMany(argCount, isValid)
   | _ =>
     let argCount = AST_Types.argCountExn(element)
     validityStack->ListUtil.prependMany(argCount, false)
   }
 )
 
-let noIterationPermittedRanges = validityStackReducer((. validityStack, element) => {
+let noIterationPermittedRanges = validityStackReducer((. validityStack, element, isValid) => {
   let argCount = AST_Types.argCountExn(element)
-  validityStack->ListUtil.prependMany(argCount, classify(element) != Iterator)
+  validityStack->ListUtil.prependMany(argCount, isValid && classify(element) != Iterator)
 })
 
 let elementIsValid = (ast: array<AST_Types.t>, element: AST_Types.t, index) =>
