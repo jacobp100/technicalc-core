@@ -86,7 +86,7 @@ let pow = (a: t, b: t): t =>
   | (_, #Vect(_)) => nan
 
   // Matrices
-  | (#Matx(m), #Real(Rational(-1, 1, Unit))) => Matrix.inverse(m)->ofMatrix
+  | (#Matx(m), #Real(Rational(-1, 1, Unit))) => Matrix.inv(m)->ofMatrix
   | (#Matx(m), #Zero) if m.numColumns == m.numRows => Matrix.identity(m.numRows)->ofMatrix
   | (#Matx(m), #Real(Rational(gtZero, 1, Unit))) if gtZero >= 0 =>
     Matrix.powInt(m, gtZero)->ofMatrix

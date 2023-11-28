@@ -5,6 +5,14 @@ open Value_Base
   let mapScalarU = (a: t, fn: (. Scalar.t) => Scalar.t): t =>
     switch a {
     | #...Scalar.t as t => fn(. t)->ofScalar
+    | _ => nan
+    }
+)
+
+%%private(
+  let mapScalarElementsU = (a: t, fn: (. Scalar.t) => Scalar.t): t =>
+    switch a {
+    | #...Scalar.t as t => fn(. t)->ofScalar
     | #Pcnt(p) =>
       let p = Scalar.Finite.toScalar(p)
       fn(. p)->ofPercent
@@ -21,7 +29,12 @@ let dot = (a: t, b: t): t =>
   | _ => Value_Arithmetic.mul(a, b)
   }
 
-let inv = a => mapScalarU(a, (. a) => Scalar.inv(a))
+let inv = a =>
+  switch (a: t) {
+  | #...Scalar.t as t => Scalar.inv(t)->ofScalar
+  | #Matx(m) => Matrix.inv(m)->ofMatrix
+  | _ => nan
+  }
 
 let abs = (a: t): t =>
   switch a {
@@ -39,23 +52,23 @@ let sqrt = a => mapScalarU(a, (. a) => Scalar.sqrt(a))
 let log = a => mapScalarU(a, (. a) => Scalar.log(a))
 let exp = a => mapScalarU(a, (. a) => Scalar.exp(a))
 
-let round = a => mapScalarU(a, (. a) => Scalar.round(a))
-let floor = a => mapScalarU(a, (. a) => Scalar.floor(a))
-let ceil = a => mapScalarU(a, (. a) => Scalar.ceil(a))
+let round = a => mapScalarElementsU(a, (. a) => Scalar.round(a))
+let floor = a => mapScalarElementsU(a, (. a) => Scalar.floor(a))
+let ceil = a => mapScalarElementsU(a, (. a) => Scalar.ceil(a))
 
-let ofDeg = a => mapScalarU(a, (. a) => Scalar.ofDeg(a))
-let ofArcMin = a => mapScalarU(a, (. a) => Scalar.ofArcMin(a))
-let ofArcSec = a => mapScalarU(a, (. a) => Scalar.ofArcSec(a))
-let ofGrad = a => mapScalarU(a, (. a) => Scalar.ofGrad(a))
+let ofDeg = a => mapScalarElementsU(a, (. a) => Scalar.ofDeg(a))
+let ofArcMin = a => mapScalarElementsU(a, (. a) => Scalar.ofArcMin(a))
+let ofArcSec = a => mapScalarElementsU(a, (. a) => Scalar.ofArcSec(a))
+let ofGrad = a => mapScalarElementsU(a, (. a) => Scalar.ofGrad(a))
 
-let toDeg = a => mapScalarU(a, (. a) => Scalar.toDeg(a))
-let toArcMinute = a => mapScalarU(a, (. a) => Scalar.toArcMinute(a))
-let toArcSecond = a => mapScalarU(a, (. a) => Scalar.toArcSecond(a))
-let toGrad = a => mapScalarU(a, (. a) => Scalar.toGrad(a))
+let toDeg = a => mapScalarElementsU(a, (. a) => Scalar.toDeg(a))
+let toArcMinute = a => mapScalarElementsU(a, (. a) => Scalar.toArcMinute(a))
+let toArcSecond = a => mapScalarElementsU(a, (. a) => Scalar.toArcSecond(a))
+let toGrad = a => mapScalarElementsU(a, (. a) => Scalar.toGrad(a))
 
-let re = a => mapScalarU(a, (. a) => Scalar.re(a))
-let im = a => mapScalarU(a, (. a) => Scalar.im(a))
-let conj = a => mapScalarU(a, (. a) => Scalar.conj(a))
+let re = a => mapScalarElementsU(a, (. a) => Scalar.re(a))
+let im = a => mapScalarElementsU(a, (. a) => Scalar.im(a))
+let conj = a => mapScalarElementsU(a, (. a) => Scalar.conj(a))
 
 %%private(
   let map2ScalarU = (a: t, b: t, fn: (. Scalar.t, Scalar.t) => Scalar.t): t =>

@@ -30,7 +30,7 @@ let transpose = (m: t) =>
     getExn(m, ~row=column, ~column=row)
   })
 
-let inverse = ({numRows, numColumns} as m: t): t =>
+let inv = ({numRows, numColumns} as m: t): t =>
   switch squareElements(m) {
   | Some([a, b, c, d]) =>
     open Scalar_Operators
