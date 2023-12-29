@@ -38,31 +38,31 @@ let map = (. accum, isPlaceholder) => {
 %%private(
   let appendFunctionMml = (accum, ~superscript=?, ~range, x) =>
     switch x {
-    | Fn_Sin => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "sin")
-    | Fn_Asin => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "arcsin")
-    | Fn_Cosec => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "cosec")
-    | Fn_Sinh => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "sinh")
-    | Fn_Asinh => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "arcsinh")
-    | Fn_Cos => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "cos")
-    | Fn_Acos => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "arccos")
-    | Fn_Sec => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "sec")
-    | Fn_Cosh => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "cosh")
-    | Fn_Acosh => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "arccosh")
-    | Fn_Tan => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "tan")
-    | Fn_Atan => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "arctan")
-    | Fn_Cot => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "cot")
-    | Fn_Tanh => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "tanh")
-    | Fn_Atanh => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "arctanh")
-    | Fn_Deg => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "deg")
-    | Fn_Grad => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "grad")
-    | Fn_Rad => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "rad")
-    | Fn_Log => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "log")
-    | Fn_Re => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "re")
-    | Fn_Im => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "im")
-    | Fn_Rref => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "rref")
-    | Fn_Trace => Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mi", "tr")
+    | Fn_Sin => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "sin")
+    | Fn_Asin => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "arcsin")
+    | Fn_Cosec => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "cosec")
+    | Fn_Sinh => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "sinh")
+    | Fn_Asinh => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "arcsinh")
+    | Fn_Cos => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "cos")
+    | Fn_Acos => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "arccos")
+    | Fn_Sec => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "sec")
+    | Fn_Cosh => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "cosh")
+    | Fn_Acosh => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "arccosh")
+    | Fn_Tan => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "tan")
+    | Fn_Atan => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "arctan")
+    | Fn_Cot => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "cot")
+    | Fn_Tanh => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "tanh")
+    | Fn_Atanh => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "arctanh")
+    | Fn_Deg => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "deg")
+    | Fn_Grad => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "grad")
+    | Fn_Rad => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "rad")
+    | Fn_Log => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "log")
+    | Fn_Re => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "re")
+    | Fn_Im => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "im")
+    | Fn_Rref => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "rref")
+    | Fn_Trace => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "tr")
     | Fn_Gamma =>
-      Mml_Accum.appendOperatorOrFunction(
+      Mml_Accum.append(
         accum,
         ~superscript?,
         ~range,
@@ -72,14 +72,14 @@ let map = (. accum, isPlaceholder) => {
       )
     | Fn_NLog({base}) =>
       let body = mml("mi", "log") ++ base
-      Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "msub", body)
+      Mml_Accum.append(accum, ~superscript?, ~range, "msub", body)
     | Fn_Sum({from, to}) | Fn_Product({from, to}) =>
       let symbol = switch x {
       | Fn_Sum(_) => "&#x2211;"
       | _ => "&#x220F;"
       }
       let body = mml("munderover", mml("mo", symbol) ++ xSetRow(from) ++ to)
-      Mml_Accum.appendOperatorOrFunction(accum, ~superscript?, ~range, "mrow", body)
+      Mml_Accum.append(accum, ~superscript?, ~range, "mrow", body)
     }
 )
 
@@ -130,11 +130,21 @@ let map = (. accum, isPlaceholder) => {
   }
 )
 
+%%private(
+  @inline
+  let lastWasUnit = accum =>
+    switch Mml_Accum.lastElementFlag(. accum) {
+    | Some(Unit) => true
+    | None => false
+    }
+)
+
 let reduce = (. accum, stateElement: foldState<string>, range) =>
   switch stateElement {
   | Fold_OpenBracket => Mml_Accum.appendOpenBracket(. accum, range)
   | Fold_CloseBracket(superscript) => Mml_Accum.appendCloseBracket(. accum, range, superscript)
   | Fold_Digit({nucleus, superscript}) =>
+    let accum = lastWasUnit(accum) ? Mml_Accum.appendSpace(~width="0.333em", accum) : accum
     // Prefer end selection for digit grouping
     Mml_Accum.appendDigit(accum, ~prefersEndSelection=true, ~superscript?, ~range, "mn", nucleus)
   | Fold_DecimalSeparator => Mml_Accum.appendDecimalSeparator(. accum, range)
@@ -176,16 +186,11 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Function({fn, resultSuperscript: superscript}) =>
     appendFunctionMml(accum, ~superscript?, ~range, fn)
   | Fold_Factorial => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "!")
-  | Fold_Add =>
-    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "+")
-  | Fold_Sub =>
-    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "-")
-  | Fold_Mul =>
-    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "&#x00D7;")
-  | Fold_Div =>
-    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "&#x00F7;")
-  | Fold_Dot =>
-    Mml_Accum.appendOperatorOrFunction(accum, ~avoidsStartSelection=true, ~range, "mo", "&#xb7;")
+  | Fold_Add => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "+")
+  | Fold_Sub => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "-")
+  | Fold_Mul => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "&#x00D7;")
+  | Fold_Div => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "&#x00F7;")
+  | Fold_Dot => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "&#xb7;")
   | Fold_Frac({num, den, superscript}) =>
     Mml_Accum.append(accum, ~superscript?, ~range, "mfrac", num ++ den)
   | Fold_Sqrt({radicand, superscript}) =>
@@ -228,7 +233,7 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     // By default, any mi with a length > 1 is treated as an operator
     // MathJax has a way to disable this with data-mjx-texclass="ORD"
     // But that is broken in 3.0.1
-    ->Mml_Accum.append(~attributes, ~superscript?, ~range, "mn", body)
+    ->Mml_Accum.append(~flag=Unit, ~attributes, ~superscript?, ~range, "mn", body)
   }
 
 let create = (~format, ~inline=false, elements) => {

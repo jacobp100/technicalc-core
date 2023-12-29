@@ -39,6 +39,7 @@ let nameToStringPlural = (name: name) =>
   | Inch => "Inches"
   | Foot => "Feet"
   | Henry => "Henries"
+  | PoundForce
   | Siemens
   | Hertz
   | Celsius
@@ -79,21 +80,19 @@ let nameToStringPlural = (name: name) =>
 
 let toString = (units: array<t>) =>
   Belt.Array.mapWithIndexU(units, (. index, unit) => {
-    let plural = switch unit.power {
-    | 1 =>
-      switch Belt.Array.get(units, index + 1) {
-      | Some(nextUnitPart) => nextUnitPart.power < 0
-      | None => false
-      }
-    | -1 => false
-    | _ => true
-    }
-    let out = unitToString(~plural, unit)
-
     if unit.power < 0 {
-      "per " ++ out
+      "per " ++ unitToString(~plural=false, unit)
     } else {
-      out
+      let plural = if unit.power == 1 {
+        switch Belt.Array.get(units, index + 1) {
+        | Some(nextUnitPart) => nextUnitPart.power < 0
+        | None => false
+        }
+      } else {
+        true
+      }
+
+      unitToString(~plural, unit)
     }
   })->Js.Array.joinWith(" ", _)
 

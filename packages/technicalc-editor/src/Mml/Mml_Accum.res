@@ -66,7 +66,10 @@ open Mml_Builders
 
 %%private(let invalidAttributes = list{(#class, "invalid"), (#stretchy, "false")})
 
+type elementFlag = Unit
+
 include Stringifier.Make({
+  type elementFlag = elementFlag
   let groupingSeparatorU = (. groupingSeparator) =>
     groupingSeparator == " "
       ? mml(~attributes=list{(#width, "4px")}, "mspace", "")
@@ -115,6 +118,7 @@ let appendSpace = (x, ~width) =>
 
 let append = (
   x,
+  ~flag=?,
   ~avoidsStartSelection=?,
   ~prefersEndSelection=?,
   ~attributes=?,
@@ -122,8 +126,8 @@ let append = (
   ~range=?,
   tag,
   body,
-) =>
-  element(
+) => {
+  let element = element(
     ~metadata=format(. x).metadata,
     ~avoidsStartSelection?,
     ~prefersEndSelection?,
@@ -132,28 +136,12 @@ let append = (
     ~range?,
     tag,
     body,
-  )->append(. x, _)
-
-let appendOperatorOrFunction = (
-  x,
-  ~avoidsStartSelection=?,
-  ~prefersEndSelection=?,
-  ~attributes=?,
-  ~superscript=?,
-  ~range,
-  tag,
-  body,
-) =>
-  element(
-    ~metadata=format(. x).metadata,
-    ~avoidsStartSelection?,
-    ~prefersEndSelection?,
-    ~attributes?,
-    ~superscript?,
-    ~range,
-    tag,
-    body,
-  )->appendOperatorOrFunction(. x, _)
+  )
+  switch flag {
+  | Some(flag) => appendWithFlag(. x, flag, element)
+  | None => append(. x, element)
+  }
+}
 
 let appendDigit = (
   x,

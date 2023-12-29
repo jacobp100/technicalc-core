@@ -403,6 +403,8 @@ module Units = {
   let compatible = Units_Compatibility.compatible
   let compositeCompatible = Units_Compatibility.compositeCompatible
 
+  let dimensions = Units_Dimensions.ofUnits
+
   let toMml = v => Formatting_Measure.formatUnits(~mode=MathML, v)
   let toUnicode = v => Formatting_Measure.formatUnits(~mode=Unicode, v)
   let toString = Units_Util.toString

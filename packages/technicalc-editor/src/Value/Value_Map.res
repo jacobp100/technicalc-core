@@ -101,7 +101,6 @@ let parse = {
     let rec iter = (accum: list<TechniCalcCalculator.AST_Types.unitsType>, i) =>
       switch ArraySlice.get(elements, i) {
       | Some((Fold_Unit({prefix, name, superscript}), _)) =>
-        // TODO - handle consecutive units - in same place as angles
         let power = switch superscript {
         | Some({superscriptBody}) => superscriptBody
         | None => OfInt(1)
@@ -118,23 +117,6 @@ let parse = {
       }
 
     iter(list{}, startIndex)
-  }
-
-  let applyTrailingElements = (elements, startIndex, value) => {
-    let (i, _) as postFixes = applyPostFixes(elements, startIndex, value)
-
-    if i != startIndex {
-      Ok(postFixes)
-    } else {
-      let (i, value) = applyUnits(elements, startIndex, value)
-
-      // Ensure no units were parsed, or ALL units were parsed
-      if i == startIndex || i == ArraySlice.length(elements) {
-        Ok((i, value))
-      } else {
-        Error(i)
-      }
-    }
   }
 
   let applyBinaryOperator = (
@@ -291,6 +273,21 @@ let parse = {
           }
         | None => Error(r')
         }
+      | Some((Fold_Unit(_), (_, r'))) =>
+        switch accum {
+        | Some(accum) =>
+          let (i, value) = applyUnits(elements, i, accum)
+          let after = ArraySlice.sliceToEnd(elements, i)
+          switch ArraySlice.get(after, ArraySlice.length(after) - 1) {
+          | None => Ok(value)
+          | Some((_, (r, _))) =>
+            switch parse(~angleRequirement, ~rangeEnd=r, after) {
+            | Ok(after) => Ok((Add(value, after): node))
+            | Error(_) as e => e
+            }
+          }
+        | None => Error(r')
+        }
       | Some((Fold_OpenBracket, openBracketRange)) =>
         switch parseUntilCloseBracket(~openBracketRange, elements, i + 1) {
         | Ok(i, value, superscript) =>
@@ -312,24 +309,10 @@ let parse = {
         | Error(_) as e => e
         }
       | Some((element, (_, r'))) =>
-        let parseUnits = switch element {
-        | Fold_Constant(_)
-        | Fold_ConstE(_)
-        | Fold_ConstPi(_)
-        | Fold_Variable(_) => true
-        | _ => false
-        }
         switch handleElement(element) {
         | Some(value) =>
-          let parseResult = if parseUnits {
-            applyTrailingElements(elements, i + 1, value)
-          } else {
-            Ok(applyPostFixes(elements, i + 1, value))
-          }
-          switch parseResult {
-          | Ok((i, value)) => iter(mul(accum, value), i)
-          | Error(_) as e => e
-          }
+          let (i, value) = applyPostFixes(elements, i + 1, value)
+          iter(mul(accum, value), i)
         | None => Error(r')
         }
       }
@@ -346,12 +329,9 @@ let parse = {
       switch current {
       | Some(value) =>
         // Apply postfixes to leading number
-        switch applyTrailingElements(elements, 0, value) {
-        | Ok((i, value)) =>
-          let elements = ArraySlice.sliceToEnd(elements, i)
-          Ok((elements, Some(value), true))
-        | Error(_) as e => e
-        }
+        let (i, value) = applyPostFixes(elements, 0, value)
+        let elements = ArraySlice.sliceToEnd(elements, i)
+        Ok((elements, Some(value), true))
       | None => Ok((elements, None, true))
       }
     | Error(_) as e => e

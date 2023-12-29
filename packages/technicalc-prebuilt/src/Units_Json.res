@@ -213,6 +213,15 @@ let json = [
         {units: [{prefix: Unit, name: Bar, power: 1}], primary: true},
         {units: [{prefix: Milli, name: Bar, power: 1}], primary: false},
       ],
+      [
+        {
+          units: [
+            {prefix: Unit, name: PoundForce, power: 1},
+            {prefix: Unit, name: Inch, power: -2},
+          ],
+          primary: true,
+        },
+      ],
     ],
   },
   {

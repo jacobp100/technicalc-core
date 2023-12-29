@@ -78,7 +78,10 @@ open AST
   }
 )
 
+type elementFlag = Never
+
 module Tex_Accum = Stringifier.Make({
+  type elementFlag = elementFlag
   let groupingSeparatorU = (. groupingSeparator) =>
     groupingSeparator == " " ? `\\,` : groupingSeparator
   let decimalSeparatorU = (. decimalSeparator, _, _) => decimalSeparator
@@ -138,16 +141,13 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     }
     withSuperscript(placeholder, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Function({fn, resultSuperscript: superscript}) =>
-    functionTex(fn)
-    ->withSuperscript(superscript)
-    ->withSpaces
-    ->Tex_Accum.appendOperatorOrFunction(. accum, _)
+    functionTex(fn)->withSuperscript(superscript)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Factorial => "!"->Tex_Accum.append(. accum, _)
-  | Fold_Add => withSpaces("+")->Tex_Accum.appendOperatorOrFunction(. accum, _)
-  | Fold_Sub => withSpaces("-")->Tex_Accum.appendOperatorOrFunction(. accum, _)
-  | Fold_Mul => withSpaces("\\times")->Tex_Accum.appendOperatorOrFunction(. accum, _)
-  | Fold_Div => withSpaces("\\div")->Tex_Accum.appendOperatorOrFunction(. accum, _)
-  | Fold_Dot => withSpaces("\\cdot")->Tex_Accum.appendOperatorOrFunction(. accum, _)
+  | Fold_Add => withSpaces("+")->Tex_Accum.append(. accum, _)
+  | Fold_Sub => withSpaces("-")->Tex_Accum.append(. accum, _)
+  | Fold_Mul => withSpaces("\\times")->Tex_Accum.append(. accum, _)
+  | Fold_Div => withSpaces("\\div")->Tex_Accum.append(. accum, _)
+  | Fold_Dot => withSpaces("\\cdot")->Tex_Accum.append(. accum, _)
   | Fold_Frac({num, den, superscript}) =>
     withSuperscript(`\\frac${num}${den}`, superscript)->withSpaces->Tex_Accum.append(. accum, _)
   | Fold_Sqrt({radicand, superscript}) =>
