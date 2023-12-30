@@ -18,6 +18,8 @@ type self = {
   let compute = (type output, {config, context, input}: Work.t<output>): output => {
     open TechniCalcCalculator.AST
 
+    TechniCalcCalculator.Decimal.resetInternalState()
+
     let context = decodeContext(context)
     switch input {
     | Work.Calculate(body) => (eval(~config, ~context, body): TechniCalcCalculator.Value.t)

@@ -72,6 +72,18 @@ external log10: t => t = "log10"
 // [@module "decimal.js"] [@scope "default"] [@variadic]
 // external min: array(t) => t = "min";
 
+// When using @jacobp100/react-native-webworker, it's possible to terminate
+// work in the middle of the function. All this code is pure, so that's not an
+// issue. However, decimal.js has some stateful flags that get set -
+// `external`, `inexact`, and `quadrant`. The latter two are only used to
+// simulate multiple return values - so should always be set before they're
+// used. The last is set and unset during some computations. This does need
+// resetting in case it gets set, then the execution terminated before it
+// unsets. Fortunately, the `sum` function will reset the value with almost
+// zero overhead.
+@module("decimal.js") @scope("default")
+external resetInternalState: unit => unit = "sum"
+
 @send external \"=": (t, t) => bool = "eq"
 let \"<>" = (a, b) => !(a == b)
 @send external \">": (t, t) => bool = "gt"
