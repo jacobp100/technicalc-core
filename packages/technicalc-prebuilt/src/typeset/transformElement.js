@@ -1,10 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React from "react";
-import Svg from "react-native-svg/lib/module/elements/Svg";
-import G from "react-native-svg/lib/module/elements/G";
-import Rect from "react-native-svg/lib/module/elements/Rect";
-import Path from "react-native-svg/lib/module/elements/Path";
-import Text from "react-native-svg/lib/module/elements/Text";
+import { Svg, G, Rect, Path, Text } from "react-native-svg";
 
 const opacities = {
   placeholder: 0.25,
