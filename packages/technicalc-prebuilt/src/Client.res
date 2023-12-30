@@ -405,6 +405,23 @@ module Units = {
 
   let dimensions = Units_Dimensions.ofUnits
 
+  let convert = (value, ~fromUnits, ~toUnits) =>
+    Value_Base.toReal(value)->Units_Convert.convert(~fromUnits, ~toUnits)->Value_Base.ofReal
+  let convertComposite = (measures, ~toUnits) => {
+    let composite = Belt.Array.mapU(measures, (. (value, fromUnits)) => {
+      let real = Value_Base.toReal(value)
+      (real, fromUnits)
+    })->Units_Convert.convertComposite(~toUnits)
+    switch composite {
+    | Some(composite) =>
+      Belt.Array.mapU(composite, (. (real, unitPart)) => {
+        let value = Value_Base.ofReal(real)
+        (value, unitPart)
+      })->Some
+    | None => None
+    }
+  }
+
   let toMml = v => Formatting_Measure.formatUnits(~mode=MathML, v)
   let toUnicode = v => Formatting_Measure.formatUnits(~mode=Unicode, v)
   let toString = Units_Util.toString
