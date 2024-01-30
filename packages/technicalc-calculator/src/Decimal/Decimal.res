@@ -79,10 +79,10 @@ external log10: t => t = "log10"
 // simulate multiple return values - so should always be set before they're
 // used. The last is set and unset during some computations. This does need
 // resetting in case it gets set, then the execution terminated before it
-// unsets. Fortunately, the `sum` function will reset the value with almost
+// unsets. Fortunately, the `hypot` function will reset the value with almost
 // zero overhead.
 @module("decimal.js") @scope("default")
-external resetInternalState: unit => unit = "sum"
+external resetInternalState: unit => unit = "hypot"
 
 @send external \"=": (t, t) => bool = "eq"
 let \"<>" = (a, b) => !(a == b)

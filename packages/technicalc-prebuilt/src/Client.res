@@ -350,6 +350,11 @@ module Work = {
     values,
     toUnits,
   })
+  let convertCurrency = (body, fromCurrency, toCurrency): Work.input<'a> => ConvertCurrency({
+    body,
+    fromCurrency,
+    toCurrency,
+  })
   let solveRoot = (lhs, rhs, initialGuess): Work.input<'a> => {
     let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs)
     SolveRoot({body, initialGuess})

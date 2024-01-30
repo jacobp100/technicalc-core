@@ -17,6 +17,7 @@ type rec input<'output> =
       values: array<(node, TechniCalcCalculator.Units_Types.t)>,
       toUnits: array<TechniCalcCalculator.Units_Types.t>,
     }): input<unitsResult>
+  | ConvertCurrency({body: node, fromCurrency: float, toCurrency: float}): input<value>
   | SolveRoot({body: node, initialGuess: node}): input<value>
   | Quadratic(node, node, node): input<(value, value)>
   | Cubic(node, node, node, node): input<(value, value, value)>
@@ -167,6 +168,7 @@ let encodeOutput = (type output, work: t<output>, output: output): string => {
   | Calculate(_) => encodeValue(output)
   | ConvertUnits(_) => encodeUnitsResult(output)
   | ConvertUnitsComposite(_) => encodeUnitsResult(output)
+  | ConvertCurrency(_) => encodeValue(output)
   | SolveRoot(_) => encodeValue(output)
   | Quadratic(_) => encode2Values(output)
   | Cubic(_) => encode3Values(output)
@@ -180,6 +182,7 @@ let decodeOutput = (type output, work: t<output>, encoded: string): option<outpu
   | Calculate(_) => decodeValue(encoded)
   | ConvertUnits(_) => decodeUnitsResult(encoded)
   | ConvertUnitsComposite(_) => decodeUnitsResult(encoded)
+  | ConvertCurrency(_) => decodeValue(encoded)
   | SolveRoot(_) => decodeValue(encoded)
   | Quadratic(_) => decode2Values(encoded)
   | Cubic(_) => decode3Values(encoded)
