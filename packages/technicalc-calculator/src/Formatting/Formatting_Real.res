@@ -66,7 +66,8 @@ let toString = (~format, re): string => {
     digitGrouping,
     decimalMinMagnitude,
     decimalMaxMagnitude,
-    precision,
+    minDecimalPlaces,
+    maxDecimalPlaces,
   } = format
 
   switch (re, format.style) {
@@ -138,7 +139,8 @@ let toString = (~format, re): string => {
         ~groupingSeparator,
         ~base,
         ~digitGrouping,
-        ~maxDecimalPlaces=precision,
+        ~minDecimalPlaces,
+        ~maxDecimalPlaces,
         f,
       )->formatNumber(~format)
     } else {
@@ -147,7 +149,8 @@ let toString = (~format, re): string => {
         ~groupingSeparator,
         ~base,
         ~exponent=magnitude,
-        ~maxDecimalPlaces=precision,
+        ~minDecimalPlaces,
+        ~maxDecimalPlaces,
         f,
       )->formatExponential(~format)
     }
@@ -166,8 +169,8 @@ let toString = (~format, re): string => {
       ~groupingSeparator,
       ~base,
       ~exponent,
-      ~minDecimalPlaces=precision,
-      ~maxDecimalPlaces=precision,
+      ~minDecimalPlaces=maxDecimalPlaces,
+      ~maxDecimalPlaces,
       f,
     )->formatExponential(~format)
   }

@@ -16,7 +16,8 @@ type format = {
   groupingSeparator: string,
   digitGrouping: bool,
   base: int,
-  precision: int,
+  minDecimalPlaces: int,
+  maxDecimalPlaces: int,
   decimalMinMagnitude: int,
   decimalMaxMagnitude: int,
 }
@@ -28,7 +29,8 @@ let defaultFormat = {
   groupingSeparator: ",",
   digitGrouping: true,
   base: 10,
-  precision: 12,
+  minDecimalPlaces: 0,
+  maxDecimalPlaces: 12,
   decimalMinMagnitude: -3,
   decimalMaxMagnitude: 8,
 }

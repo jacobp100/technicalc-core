@@ -17,7 +17,8 @@ type format = {
   groupingSeparator: option<string>,
   digitGrouping: option<bool>,
   base: option<int>,
-  precision: option<int>,
+  minDecimalPlaces: option<int>,
+  maxDecimalPlaces: option<int>,
   decimalMinMagnitude: option<int>,
   decimalMaxMagnitude: option<int>,
 }
@@ -30,7 +31,8 @@ let emptyFormat = {
   decimalSeparator: None,
   groupingSeparator: None,
   base: None,
-  precision: None,
+  minDecimalPlaces: None,
+  maxDecimalPlaces: None,
   digitGrouping: None,
   decimalMinMagnitude: None,
   decimalMaxMagnitude: None,
@@ -59,10 +61,18 @@ let emptyFormat = {
 )
 %%private(
   @inline
-  let formatPrecision = f =>
-    switch f.precision {
-    | Some(precision) => precision
-    | None => defaultFormat.precision
+  let formatMinDecimalPlaces = f =>
+    switch f.minDecimalPlaces {
+    | Some(minDecimalPlaces) => minDecimalPlaces
+    | None => defaultFormat.minDecimalPlaces
+    }
+)
+%%private(
+  @inline
+  let formatMaxDecimalPlaces = f =>
+    switch f.maxDecimalPlaces {
+    | Some(maxDecimalPlaces) => maxDecimalPlaces
+    | None => defaultFormat.maxDecimalPlaces
     }
 )
 %%private(
@@ -286,7 +296,8 @@ module Value = {
           groupingSeparator: formatGroupingSeparator(format),
           digitGrouping: formatDigitGrouping(format),
           base: formatBase(format),
-          precision: formatPrecision(format),
+          minDecimalPlaces: formatMinDecimalPlaces(format),
+          maxDecimalPlaces: formatMaxDecimalPlaces(format),
           decimalMinMagnitude: formatDecimalMinMagnitude(format),
           decimalMaxMagnitude: formatDecimalMaxMagnitude(format),
         }

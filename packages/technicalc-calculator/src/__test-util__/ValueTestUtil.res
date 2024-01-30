@@ -17,7 +17,9 @@ type format = {
   @optional
   base: int,
   @optional
-  precision: int,
+  minDecimalPlaces: int,
+  @optional
+  maxDecimalPlaces: int,
   @optional
   digitGrouping: bool,
   @optional
@@ -53,8 +55,11 @@ let toString = (x, maybeFormat) => {
       Formatting_Types.defaultFormat.groupingSeparator,
     ),
     base: baseGet(f)->Belt.Option.getWithDefault(Formatting_Types.defaultFormat.base),
-    precision: precisionGet(f)->Belt.Option.getWithDefault(
-      Formatting_Types.defaultFormat.precision,
+    minDecimalPlaces: minDecimalPlacesGet(f)->Belt.Option.getWithDefault(
+      Formatting_Types.defaultFormat.minDecimalPlaces,
+    ),
+    maxDecimalPlaces: maxDecimalPlacesGet(f)->Belt.Option.getWithDefault(
+      Formatting_Types.defaultFormat.maxDecimalPlaces,
     ),
     digitGrouping: digitGroupingGet(f)->Belt.Option.getWithDefault(
       Formatting_Types.defaultFormat.digitGrouping,
