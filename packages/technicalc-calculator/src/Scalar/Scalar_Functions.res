@@ -107,8 +107,16 @@ let pow = (a: t, b: t): t =>
   | (#NaNN, _) | (_, #NaNN) => nan
   }
 
+let abs = (x: t): t =>
+  switch x {
+  | #Zero => #Zero
+  | #Real(re) => #Real(re)
+  | #Imag(im) => #Real(im)
+  | #Cmpx(re, im) => #Real(Real.sqrt(Real.add(Real.mul(re, re), Real.mul(im, im))))
+  | #NaNN => nan
+  }
+
 let inv = mapU(_, (. x) => Real.inv(x))
-let abs = mapU(_, (. x) => Real.abs(x))
 let round = mapU(_, (. x) => Real.round(x))
 let floor = mapU(_, (. x) => Real.floor(x))
 let ceil = mapU(_, (. x) => Real.ceil(x))
