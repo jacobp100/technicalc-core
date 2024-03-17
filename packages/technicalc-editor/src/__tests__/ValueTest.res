@@ -220,9 +220,9 @@ test("functions", () => {
 })
 
 test("iteration operators", () => {
-  parse([Sum2, N0_S, Arg, N3_S, Arg, IterationXS, Add, N1_S])->asString->expect->toEqual(Ok("7"))
+  parse([Sum2, N0_S, Arg, N3_S, Arg, XS, Add, N1_S])->asString->expect->toEqual(Ok("7"))
 
-  parse([Sum2, N0_S, Arg, N3_S, Arg, OpenBracket, IterationXS, Add, N1_S, CloseBracketS])
+  parse([Sum2, N0_S, Arg, N3_S, Arg, OpenBracket, XS, Add, N1_S, CloseBracketS])
   ->asString
   ->expect
   ->toEqual(Ok("10"))

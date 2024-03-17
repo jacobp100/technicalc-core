@@ -95,7 +95,7 @@
     | CaptureGroupEndS => 86
     // REMOVED | RadFunction => 87
     | RadianUnit => 88
-    | IterationXS => 89
+    | XS => 89
     /* 5th set elements */
     // REMOVED | Rem => 90
     /* 6th set elements */
@@ -106,6 +106,9 @@
     | XUnitS => 94
     | YUnitS => 95
     | ZUnitS => 96
+    /* 8th set elements */
+    | YS => 97
+    | ZS => 98
     /* Custom handling */
     | CaptureGroupStart(_)
     | ConstantS(_)
@@ -116,8 +119,8 @@
     }
 )
 
-%%private(let numIntElements = 87)
-%%private(let maxUintValue = 96)
+%%private(let numIntElements = 89)
+%%private(let maxUintValue = 98)
 let mapping = Belt.Array.make(numIntElements + 1, 0)
 let reverseMapping = Belt.Array.make(maxUintValue + 1, AST.Arg)
 for i in 0 to numIntElements {

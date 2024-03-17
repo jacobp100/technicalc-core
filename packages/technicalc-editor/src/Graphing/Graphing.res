@@ -35,6 +35,7 @@ open TechniCalcCalculator.AST_Types
     | Pi => Some("pi")
     | E => Some("e")
     | X => Some("x")
+    | Y => Some("y")
     | OfInt(x) => Belt.Int.toFloat(x)->floatToMetalShader
     | OfFloat(x) => floatToMetalShader(x)
     | OfString(x) =>
@@ -161,6 +162,7 @@ open TechniCalcCalculator.AST_Types
     | Vector(_) => None
     | XUnit => None
     | YUnit => None
+    | Z => None
     | ZUnit => None
     }
   and fn = (~context, v: t, name: string) =>

@@ -122,7 +122,9 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Conj => supsrscriptSuffix(accum, "*")
   | Fold_Transpose => supsrscriptSuffix(accum, "T")
   | Fold_Magnitude({value}) => `\\times 10^${value}`->Tex_Accum.append(. accum, _)
-  | Fold_IterationX(superscript) => withSuperscript("x", superscript)->Tex_Accum.append(. accum, _)
+  | Fold_X(superscript) => withSuperscript("x", superscript)->Tex_Accum.append(. accum, _)
+  | Fold_Y(superscript) => withSuperscript("y", superscript)->Tex_Accum.append(. accum, _)
+  | Fold_Z(superscript) => withSuperscript("z", superscript)->Tex_Accum.append(. accum, _)
   | Fold_XUnit(superscript) =>
     withSuperscript("\\hat{x}", superscript)->Tex_Accum.append(. accum, _)
   | Fold_YUnit(superscript) =>

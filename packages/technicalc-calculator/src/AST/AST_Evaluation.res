@@ -148,6 +148,8 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   | Trace(a) => Value.trace(evalAt(~config, ~context, ~x, a))
   | Transpose(a) => Value.transpose(evalAt(~config, ~context, ~x, a))
   | X => x
+  | Y => Value.nan
+  | Z => Value.nan
   | Differential({at, body}) =>
     Value.differentiateU(
       createEvalAtFnU(~config, ~context, body),

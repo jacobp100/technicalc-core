@@ -85,6 +85,8 @@ type rec t =
   | Trace(t)
   | Transpose(t)
   | X
+  | Y
+  | Z
   | Differential({at: t, body: t})
   | Integral({from: t, to: t, body: t})
   | Sum({from: t, to: t, body: t})

@@ -45,7 +45,6 @@ type t =
   | CosS
   | CotS
   | ImaginaryUnitS
-  | IterationXS
   | N0_S
   | N1_S
   | N2_S
@@ -68,8 +67,11 @@ type t =
   | SinS
   | TanhS
   | TanS
+  | XS
   | XUnitS
+  | YS
   | YUnitS
+  | ZS
   | ZUnitS
   | ConstantS({symbol: Symbol.t, value: string})
   | UnitS({prefix: TechniCalcCalculator.Units.prefix, name: TechniCalcCalculator.Units.name})
@@ -163,7 +165,6 @@ let argCountExn = (arg: t) =>
   | CosS
   | CotS
   | ImaginaryUnitS
-  | IterationXS
   | N0_S
   | N1_S
   | N2_S
@@ -186,8 +187,11 @@ let argCountExn = (arg: t) =>
   | SinS
   | TanhS
   | TanS
+  | XS
   | XUnitS
+  | YS
   | YUnitS
+  | ZS
   | ZUnitS
   | ConstantS(_)
   | VariableS(_)

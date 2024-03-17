@@ -58,7 +58,7 @@ type placeholder =
     | CosS
     | CotS
     | ImaginaryUnitS
-    | IterationXS
+    | XS
     | N0_S
     | N1_S
     | N2_S

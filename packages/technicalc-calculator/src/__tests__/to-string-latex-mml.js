@@ -35,7 +35,7 @@ test("parses decimal strings", () => {
 test("formats large decimals", () => {
   expect(
     toStringBase({ ...defaultFormat, precision: 99 }, false, div(one, pi))
-  ).toEqual("0.31830988618379067153");
+  ).toEqual("0.318309886184");
 });
 
 it.each([

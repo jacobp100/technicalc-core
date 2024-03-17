@@ -165,7 +165,9 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_Magnitude({value}) =>
     let body = mml("mrow", mml("mo", "&#x00D7;") ++ mml("mn", "10"))
     Mml_Accum.append(accum, ~range, "msup", body ++ value)
-  | Fold_IterationX(superscript) => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "x")
+  | Fold_X(superscript) => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "x")
+  | Fold_Y(superscript) => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "y")
+  | Fold_Z(superscript) => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "z")
   | Fold_XUnit(superscript) => appendHat(accum, ~superscript?, ~range, "x")
   | Fold_YUnit(superscript) => appendHat(accum, ~superscript?, ~range, "y")
   | Fold_ZUnit(superscript) => appendHat(accum, ~superscript?, ~range, "z")

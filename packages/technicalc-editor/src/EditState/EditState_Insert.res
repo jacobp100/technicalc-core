@@ -75,7 +75,6 @@ let defaultConfig = {
     | ConstES
     | ConstPiS
     | ImaginaryUnitS
-    | IterationXS
     | N0_S
     | N1_S
     | N2_S
@@ -93,8 +92,11 @@ let defaultConfig = {
     | NE_S
     | NF_S
     | RandS
+    | XS
     | XUnitS
+    | YS
     | YUnitS
+    | ZS
     | ZUnitS
     | ConstantS(_)
     | VariableS(_)
@@ -232,7 +234,7 @@ let defaultConfig = {
     | ConstES
     | ConstPiS
     | ImaginaryUnitS
-    | IterationXS
+    | XS
     | N0_S
     | N1_S
     | N2_S
