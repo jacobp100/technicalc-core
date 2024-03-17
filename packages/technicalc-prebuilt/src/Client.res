@@ -469,3 +469,10 @@ module Symbol = {
 
   let alias = Symbol.alias
 }
+
+module Graphing = {
+  open TechniCalcEditor
+
+  let parseAsMetalShader = (~context, elements) =>
+    Graphing.parseAsMetalShader(~context, elements)->toJsResult
+}
