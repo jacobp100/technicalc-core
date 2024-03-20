@@ -33,10 +33,15 @@ let defaultConfig = {
     | DegreeUnit
     | Div
     | Dot
+    | Eq
     | Gamma
     | GradianUnit
+    | Gt
+    | Gte
     | Im
     | Log
+    | Lt
+    | Lte
     | Mul
     | RadianUnit
     | Re
@@ -214,12 +219,17 @@ let defaultConfig = {
     | DegreeUnit
     | Div
     | Dot
+    | Eq
     | Factorial
     | Gamma
     | GradianUnit
+    | Gt
+    | Gte
     | Hex
     | Im
     | Log
+    | Lt
+    | Lte
     | Mul
     | Oct
     | OpenBracket
@@ -234,7 +244,6 @@ let defaultConfig = {
     | ConstES
     | ConstPiS
     | ImaginaryUnitS
-    | XS
     | N0_S
     | N1_S
     | N2_S
@@ -252,8 +261,11 @@ let defaultConfig = {
     | NE_S
     | NF_S
     | RandS
+    | XS
     | XUnitS
+    | YS
     | YUnitS
+    | ZS
     | ZUnitS
     | ConstantS(_)
     | UnitS(_)

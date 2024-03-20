@@ -109,6 +109,11 @@
     /* 8th set elements */
     | YS => 97
     | ZS => 98
+    | Eq => 99
+    | Gt => 100
+    | Gte => 101
+    | Lt => 102
+    | Lte => 103
     /* Custom handling */
     | CaptureGroupStart(_)
     | ConstantS(_)
@@ -119,8 +124,8 @@
     }
 )
 
-%%private(let numIntElements = 89)
-%%private(let maxUintValue = 98)
+%%private(let numIntElements = 94)
+%%private(let maxUintValue = 103)
 let mapping = Belt.Array.make(numIntElements + 1, 0)
 let reverseMapping = Belt.Array.make(maxUintValue + 1, AST.Arg)
 for i in 0 to numIntElements {

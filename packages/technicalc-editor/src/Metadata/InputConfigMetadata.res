@@ -11,11 +11,16 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | DecimalSeparator
   | Div
   | Dot
+  | Eq
   | Factorial
   | Gamma
+  | Gt
+  | Gte
   | Hex
   | Im
   | Log
+  | Lt
+  | Lte
   | Mul
   | Oct
   | OpenBracket

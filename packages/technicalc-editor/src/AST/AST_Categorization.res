@@ -38,3 +38,4 @@ type angle =
   | Angle_ArcMinute
   | Angle_ArcSecond
   | Angle_Gradian
+type cmp = Cmp_Eq | Cmp_Gt | Cmp_Gte | Cmp_Lt | Cmp_Lte

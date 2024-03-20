@@ -9,6 +9,17 @@ open AST
     }
 )
 
+%%private(
+  let stringOfCmp = cmp =>
+    switch cmp {
+    | Cmp_Eq => "="
+    | Cmp_Gt => ">"
+    | Cmp_Gte => "\\geq"
+    | Cmp_Lt => "<"
+    | Cmp_Lte => "\\leq"
+    }
+)
+
 %%private(let withSpaces = body => ` ${body} `)
 
 %%private(
@@ -131,8 +142,9 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     withSuperscript("\\hat{y}", superscript)->Tex_Accum.append(. accum, _)
   | Fold_ZUnit(superscript) =>
     withSuperscript("\\hat{z}", superscript)->Tex_Accum.append(. accum, _)
-  | Fold_ConstPi(superscript) => withSuperscript("\\pi", superscript)->Tex_Accum.append(. accum, _)
+  | Fold_Comparison(cmp) => stringOfCmp(cmp)->Tex_Accum.append(. accum, _)
   | Fold_ConstE(superscript) => withSuperscript("e", superscript)->Tex_Accum.append(. accum, _)
+  | Fold_ConstPi(superscript) => withSuperscript("\\pi", superscript)->Tex_Accum.append(. accum, _)
   | Fold_Variable({symbol, superscript})
   | Fold_Constant({symbol, superscript}) =>
     Tex_Symbol.toTex(symbol)->withSuperscript(superscript)->Tex_Accum.append(. accum, _)

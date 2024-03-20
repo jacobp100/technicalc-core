@@ -24,12 +24,17 @@ type placeholder =
     | DegreeUnit
     | Div
     | Dot
+    | Eq
     | Factorial
     | Gamma
     | GradianUnit
+    | Gt
+    | Gte
     | Hex
     | Im
     | Log
+    | Lt
+    | Lte
     | Mul
     | Oct
     | OpenBracket
@@ -58,7 +63,6 @@ type placeholder =
     | CosS
     | CotS
     | ImaginaryUnitS
-    | XS
     | N0_S
     | N1_S
     | N2_S
@@ -81,12 +85,15 @@ type placeholder =
     | SinS
     | TanhS
     | TanS
+    | XS
+    | XUnitS
+    | YS
+    | YUnitS
+    | ZS
+    | ZUnitS
     | ConstantS(_)
     | UnitS(_)
     | VariableS(_)
-    | XUnitS
-    | YUnitS
-    | ZUnitS
     | Abs1S
     | Ceil1S
     | Floor1S

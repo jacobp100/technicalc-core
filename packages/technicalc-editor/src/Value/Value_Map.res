@@ -71,6 +71,7 @@ let parse = {
     | Fold_Add
     | Fold_Angle(_)
     | Fold_CloseBracket(_)
+    | Fold_Comparison(_)
     | Fold_Conj
     | Fold_Div
     | Fold_Dot
@@ -441,8 +442,22 @@ let parse = {
 
     iter(~bracketLevel=0, ArraySlice.length(elements) - 1)
   }
+  and parseComparisons = (~angleRequirement, ~rangeEnd, elements: elements) => {
+    noinline(parseComparisons)
+    let nextU = (. angleRequirement, rangeEnd, elements) =>
+      parseAddSub(~angleRequirement, ~rangeEnd, elements)
+
+    let rec iter = i =>
+      switch ArraySlice.get(elements, i) {
+      | Some((Fold_Comparison(_), (r, _))) => Error(r)
+      | Some(_) => iter(i + 1)
+      | None => nextU(. angleRequirement, rangeEnd, elements)
+      }
+
+    iter(0)
+  }
   and parse = (~angleRequirement, ~rangeEnd, elements) =>
-    parseAddSub(~angleRequirement, ~rangeEnd, elements)
+    parseComparisons(~angleRequirement, ~rangeEnd, elements)
 
   let parse = elements => {
     let rangeEnd = switch Belt.Array.get(elements, Belt.Array.length(elements) - 1) {

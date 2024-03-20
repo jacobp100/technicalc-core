@@ -16,6 +16,17 @@ let map = (. accum, isPlaceholder) => {
 )
 
 %%private(
+  let stringOfCmp = cmp =>
+    switch cmp {
+    | Cmp_Eq => "="
+    | Cmp_Gt => "&gt;"
+    | Cmp_Gte => "&ge;"
+    | Cmp_Lt => "&lt;"
+    | Cmp_Lte => "&le;"
+    }
+)
+
+%%private(
   let appendBracketGroup = (accum, leftBracket, rightBracket, arg, superscript, range) => {
     let body = mml("mo", leftBracket) ++ arg ++ mml("mo", rightBracket)
     Mml_Accum.append(accum, ~superscript?, ~range, "mrow", body)
@@ -171,8 +182,9 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
   | Fold_XUnit(superscript) => appendHat(accum, ~superscript?, ~range, "x")
   | Fold_YUnit(superscript) => appendHat(accum, ~superscript?, ~range, "y")
   | Fold_ZUnit(superscript) => appendHat(accum, ~superscript?, ~range, "z")
-  | Fold_ConstPi(superscript) => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "&#x03C0;")
+  | Fold_Comparison(cmp) => Mml_Accum.append(accum, ~range, "mo", stringOfCmp(cmp))
   | Fold_ConstE(superscript) => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "e")
+  | Fold_ConstPi(superscript) => Mml_Accum.append(accum, ~superscript?, ~range, "mi", "&#x03C0;")
   | Fold_Constant({symbol, superscript})
   | Fold_Variable({symbol, superscript}) =>
     Mml_Accum.append(accum, ~superscript?, ~range, "mrow", Mml_Symbol.toMml(symbol))

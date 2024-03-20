@@ -20,12 +20,17 @@ type t =
   | DegreeUnit
   | Div
   | Dot
+  | Eq
   | Factorial
   | Gamma
   | GradianUnit
+  | Gt
+  | Gte
   | Hex
   | Im
   | Log
+  | Lt
+  | Lte
   | Mul
   | Oct
   | OpenBracket
@@ -141,12 +146,17 @@ let argCountExn = (arg: t) =>
   | DegreeUnit
   | Div
   | Dot
+  | Eq
   | Factorial
   | Gamma
   | GradianUnit
+  | Gt
+  | Gte
   | Hex
   | Im
   | Log
+  | Lt
+  | Lte
   | Mul
   | Oct
   | OpenBracket
