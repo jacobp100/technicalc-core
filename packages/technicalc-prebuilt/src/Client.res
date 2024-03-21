@@ -473,6 +473,21 @@ module Symbol = {
 module Graphing = {
   open TechniCalcEditor
 
+  %%private(
+    let cmpToString = (v: TechniCalcEditor.AST_Categorization.cmp) => {
+      switch v {
+      | Cmp_Eq => "eq"
+      | Cmp_Gt => "gt"
+      | Cmp_Gte => "gte"
+      | Cmp_Lt => "lt"
+      | Cmp_Lte => "lte"
+      }
+    }
+  )
+
   let parseAsMetalShader = (~context, elements) =>
-    Graphing.parseAsMetalShader(~context, elements)->toJsResult
+    switch Graphing.parseAsMetalShader(~context, elements) {
+    | Ok((eqn, cmp)) => toJsResult(Ok((eqn, cmpToString(cmp))))
+    | Error(_) as e => toJsResult(e)
+    }
 }

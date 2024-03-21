@@ -1,5 +1,3 @@
-open TechniCalcCalculator.AST_Types
-
 %%private(
   let floatToMetalShader = (f: float) =>
     if TechniCalcCalculator.FloatUtil.isFinite(f) {
@@ -27,7 +25,7 @@ open TechniCalcCalculator.AST_Types
 )
 
 %%private(
-  let rec astToMetalShader = (~context, v: t): option<string> =>
+  let rec astToMetalShader = (~context, v: TechniCalcCalculator.AST_Types.t): option<string> =>
     switch v {
     | Zero => Some("0.0f")
     | One => Some("1.0f")
@@ -165,19 +163,65 @@ open TechniCalcCalculator.AST_Types
     | Z => None
     | ZUnit => None
     }
-  and fn = (~context, v: t, name: string) =>
+  and fn = (~context, v: TechniCalcCalculator.AST_Types.t, name: string) =>
     switch astToMetalShader(~context, v) {
     | Some(x) => Some(`${name}(${x})`)
     | None => None
     }
 )
 
+%%private(
+  let splitIndex = (v: array<AST.t>) => {
+    let rec splitIndex = (~comparison: option<(AST_Categorization.cmp, int)>=None, index) =>
+      switch Belt.Array.get(v, index) {
+      | Some(
+          Eq
+          | Gt
+          | Gte
+          | Lt
+          | Lte,
+        ) if comparison != None =>
+        Error(index)
+      | Some(Eq) => splitIndex(~comparison=Some((Cmp_Eq, index)), index + 1)
+      | Some(Gt) => splitIndex(~comparison=Some((Cmp_Gt, index)), index + 1)
+      | Some(Gte) => splitIndex(~comparison=Some((Cmp_Gte, index)), index + 1)
+      | Some(Lt) => splitIndex(~comparison=Some((Cmp_Lt, index)), index + 1)
+      | Some(Lte) => splitIndex(~comparison=Some((Cmp_Lte, index)), index + 1)
+      | Some(_) => splitIndex(~comparison, index + 1)
+      | None => Ok(comparison)
+      }
+    splitIndex(~comparison=None, 0)
+  }
+)
+
 let parseAsMetalShader = (~context, v: array<AST.t>) =>
-  switch Value.parse(v) {
-  | Ok(v) =>
-    switch astToMetalShader(~context, v) {
-    | Some(v) => Ok(`y - (${v})`)
-    | None => Error(None)
+  switch splitIndex(v) {
+  | Ok(Some((cmp, splitIndex))) =>
+    let before = Belt.Array.slice(v, ~offset=0, ~len=splitIndex)->Value.parse
+    let after = Belt.Array.sliceToEnd(v, splitIndex + 1)->Value.parse
+    switch (before, after) {
+    | (Ok(before), Ok(after)) =>
+      switch (astToMetalShader(~context, before), astToMetalShader(~context, after)) {
+      | (Some(before), Some(after)) =>
+        let eq = switch cmp {
+        | Cmp_Eq | Cmp_Gt | Cmp_Gte => `(${before}) - (${after})`
+        | Cmp_Lt | Cmp_Lte => `(${after}) - (${before})`
+        }
+        Ok((eq, cmp))
+      | _ => Error(None)
+      }
+    | (Error(i), _)
+    | (_, Error(i)) =>
+      Error(Some(i))
+    }
+  | Ok(None) =>
+    switch Value.parse(v) {
+    | Ok(v) =>
+      switch astToMetalShader(~context, v) {
+      | Some(v) => Ok((`y - (${v})`, Cmp_Eq))
+      | None => Error(None)
+      }
+    | Error(i) => Error(Some(i))
     }
   | Error(i) => Error(Some(i))
   }

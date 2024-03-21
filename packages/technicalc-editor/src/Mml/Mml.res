@@ -19,10 +19,10 @@ let map = (. accum, isPlaceholder) => {
   let stringOfCmp = cmp =>
     switch cmp {
     | Cmp_Eq => "="
-    | Cmp_Gt => "&gt;"
-    | Cmp_Gte => "&ge;"
-    | Cmp_Lt => "&lt;"
-    | Cmp_Lte => "&le;"
+    | Cmp_Gt => "&#x003e;"
+    | Cmp_Gte => "&#x2265;"
+    | Cmp_Lt => "&#x003c;"
+    | Cmp_Lte => "&#x2264;"
     }
 )
 
