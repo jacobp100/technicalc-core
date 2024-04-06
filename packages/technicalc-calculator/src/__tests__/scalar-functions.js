@@ -173,7 +173,7 @@ test("acosh", () => {
 
 test("atanh", () => {
   // Not sure why my implementation gets negative values here
-  // MathJS agrees with Wolfram Alpha as the convential value, but both answers are valid
+  // MathJS agrees with Wolfram Alpha as the conventional value, but both answers are valid
   const negateImaginaryValues = new Set(["2+0i", "3+0i", "4+0i", "5+0i"]);
 
   complexValues.forEach((v) => {
