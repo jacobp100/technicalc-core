@@ -110,8 +110,8 @@ let pow = (a: t, b: t): t =>
 let abs = (x: t): t =>
   switch x {
   | #Zero => #Zero
-  | #Real(re) => #Real(re)
-  | #Imag(im) => #Real(im)
+  | #Real(re) => #Real(Real.abs(re))
+  | #Imag(im) => #Real(Real.abs(im))
   | #Cmpx(re, im) => #Real(Real.sqrt(Real.add(Real.mul(re, re), Real.mul(im, im))))
   | #NaNN => nan
   }
