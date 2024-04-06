@@ -53,6 +53,22 @@ test("log", () => {
   });
 });
 
+test("exp", () => {
+  complexValues.forEach((v) => {
+    const actual = TechniCalc.exp(v.techniCalcValue);
+    const expected = mathjs.exp(v.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `exp(${v})`);
+  });
+});
+
+test("sqrt", () => {
+  complexValues.forEach((v) => {
+    const actual = TechniCalc.sqrt(v.techniCalcValue);
+    const expected = mathjs.sqrt(v.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `sqrt(${v})`);
+  });
+});
+
 test("sin", () => {
   complexValues.forEach((v) => {
     const actual = TechniCalc.sin(v.techniCalcValue);
