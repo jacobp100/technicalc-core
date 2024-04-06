@@ -31,10 +31,16 @@ const nist = fs
   .split("\n")
   .filter((l) => l)
   .map((l) => {
-    return l
-      .match(/^("[^"]+"|[^,]+),([^,]+)\s*,([^,]+)$/)
-      .slice(1)
-      .map((p) => p.replace(/^"/, "").replace(/"$/, "").trim());
+    const format = [
+      "alpha particle-electron mass ratio                          ".length,
+      "7294.299 541 42          ".length,
+      "0.000 000 24             ".length,
+    ];
+    return [
+      l.slice(0, format[0]).trim(),
+      l.slice(format[0], format[0] + format[1]).trim(),
+      l.slice(format[0] + format[1] + format[2]).trim(),
+    ];
   })
   .map(([title, valueUnformatted, unitsString]) => {
     if (valueUnformatted == null) throw new Error("Oh");
@@ -57,7 +63,7 @@ const nist = fs
 
         const unitReplacement = unitsReplacements[unitBase];
         if (unitReplacement == null) {
-          throw new Error("No unit defined");
+          throw new Error(`No unit defined for "${unitBase}"`);
         }
 
         unitReplacement.forEach((unit) => {
@@ -99,7 +105,7 @@ out = out
 
     const filter = titles.get(t.title);
     if (filter == null) {
-      throw new Error(`Missing filter for ${t.title}`);
+      throw new Error(`Missing filter for "${t.title}"`);
     }
 
     return filter;
@@ -107,7 +113,7 @@ out = out
 
 out.forEach((t) => {
   if (t.symbol == null) {
-    throw new Error(`Missing symbol for ${t.title}`);
+    throw new Error(`Missing symbol for "${t.title}"`);
   }
 });
 

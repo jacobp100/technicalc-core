@@ -25,6 +25,11 @@
     "tex": "$M({\\rm \\alpha}),M_{\\rm \\alpha}$"
   },
   {
+    "name": "aral",
+    "title": "alpha particle relative atomic mass",
+    "tex": "$A_{\\rm r}(\\alpha)$"
+  },
+  {
     "name": "malsme",
     "title": "alpha particle-electron mass ratio",
     "tex": "$m_{\\rm \\alpha}/m_{\\rm e}$"
@@ -34,10 +39,18 @@
     "title": "alpha particle-proton mass ratio",
     "tex": "$m_{\\rm \\alpha}/m_{\\rm p}$"
   },
-  { "name": "angstar", "title": "Angstrom star", "tex": "\\AA$^{\\ast}$" },
-  { "name": "u", "title": "atomic mass constant", "tex": "$m_{\\rm u}$" },
   {
-    "name": "tuj",
+    "name": "angstar",
+    "title": "Angstrom star",
+    "tex": "\\AA$^{\\ast}$"
+  },
+  {
+    "name": "u",
+    "title": "atomic mass constant",
+    "tex": "$m_{\\rm u}$"
+  },
+  {
+    "name": "uj",
     "title": "atomic mass constant energy equivalent",
     "tex": "$m_{\\rm u}c^2$"
   },
@@ -67,7 +80,7 @@
     "tex": "$(1 \\ {\\rm u})c/h$"
   },
   {
-    "name": "uj",
+    "name": "Ruj",
     "title": "atomic mass unit-joule relationship",
     "tex": "$(1 \\ {\\rm u})c^2$"
   },
@@ -77,7 +90,7 @@
     "tex": "$(1 \\ {\\rm u})c^2/k$"
   },
   {
-    "name": "ukg",
+    "name": "Rukg",
     "title": "atomic mass unit-kilogram relationship",
     "tex": "$1 \\ {\\rm u}$"
   },
@@ -91,8 +104,16 @@
     "title": "atomic unit of 2nd hyperpolarizability",
     "tex": "$e^4a_0^4/E_{\\rm h}^3$"
   },
-  { "name": "tthbar", "title": "atomic unit of action", "tex": "$\\hbar$" },
-  { "name": "te", "title": "atomic unit of charge", "tex": "$e$" },
+  {
+    "name": "Ahbar",
+    "title": "atomic unit of action",
+    "tex": "$\\hbar$"
+  },
+  {
+    "name": "Ae",
+    "title": "atomic unit of charge",
+    "tex": "$e$"
+  },
   {
     "name": "aucd",
     "title": "atomic unit of charge density",
@@ -133,13 +154,21 @@
     "title": "atomic unit of electric quadrupole moment",
     "tex": "$ea_0^2$"
   },
-  { "name": "thr", "title": "atomic unit of energy", "tex": "$E_{\\rm h}$" },
+  {
+    "name": "Ahr",
+    "title": "atomic unit of energy",
+    "tex": "$E_{\\rm h}$"
+  },
   {
     "name": "auforce",
     "title": "atomic unit of force",
     "tex": "$E_{\\rm h}/a_0$"
   },
-  { "name": "tbohrrada0", "title": "atomic unit of length", "tex": "$a_0$" },
+  {
+    "name": "Abohrrada0",
+    "title": "atomic unit of length",
+    "tex": "$a_0$"
+  },
   {
     "name": "aumdm",
     "title": "atomic unit of magnetic dipole moment",
@@ -155,7 +184,11 @@
     "title": "atomic unit of magnetizability",
     "tex": "$e^2a_0^2/m_{\\rm e}$"
   },
-  { "name": "ttme", "title": "atomic unit of mass", "tex": "$m_{\\rm e}$" },
+  {
+    "name": "Ame",
+    "title": "atomic unit of mass",
+    "tex": "$m_{\\rm e}$"
+  },
   {
     "name": "aumom",
     "title": "atomic unit of momentum",
@@ -176,8 +209,16 @@
     "title": "atomic unit of velocity",
     "tex": "$a_0E_{\\rm h}/\\hbar$"
   },
-  { "name": "na", "title": "Avogadro constant", "tex": "$N_{\\rm A},L$" },
-  { "name": "mub", "title": "Bohr magneton", "tex": "$\\mu_{\\rm B}$" },
+  {
+    "name": "na",
+    "title": "Avogadro constant",
+    "tex": "$N_{\\rm A}$"
+  },
+  {
+    "name": "mub",
+    "title": "Bohr magneton",
+    "tex": "$\\mu_{\\rm B}$"
+  },
   {
     "name": "mubev",
     "title": "Bohr magneton in eV/T",
@@ -190,7 +231,7 @@
   },
   {
     "name": "mubshcminv",
-    "title": "Bohr magneton in inverse meters per tesla",
+    "title": "Bohr magneton in inverse meter per tesla",
     "tex": "$\\mu_{\\rm B}/hc$"
   },
   {
@@ -198,13 +239,29 @@
     "title": "Bohr magneton in K/T",
     "tex": "$\\mu_{\\rm B}/k$"
   },
-  { "name": "bohrrada0", "title": "Bohr radius", "tex": "$a_{\\rm 0}$" },
-  { "name": "k", "title": "Boltzmann constant", "tex": "$k$" },
-  { "name": "tkev", "title": "Boltzmann constant in eV/K", "tex": "$k$" },
-  { "name": "kshhz", "title": "Boltzmann constant in Hz/K", "tex": "$k/h$" },
+  {
+    "name": "bohrrada0",
+    "title": "Bohr radius",
+    "tex": "$a_0$"
+  },
+  {
+    "name": "k",
+    "title": "Boltzmann constant",
+    "tex": "$k$"
+  },
+  {
+    "name": "kev",
+    "title": "Boltzmann constant in eV/K",
+    "tex": "$k$"
+  },
+  {
+    "name": "kshhz",
+    "title": "Boltzmann constant in Hz/K",
+    "tex": "$k/h$"
+  },
   {
     "name": "kshcminv",
-    "title": "Boltzmann constant in inverse meters per kelvin",
+    "title": "Boltzmann constant in inverse meter per kelvin",
     "tex": "$k/hc$"
   },
   {
@@ -212,34 +269,76 @@
     "title": "characteristic impedance of vacuum",
     "tex": "$Z_0$"
   },
-  { "name": "re", "title": "classical electron radius", "tex": "$r_{\\rm e}$" },
+  {
+    "name": "re",
+    "title": "classical electron radius",
+    "tex": "$r_{\\rm e}$"
+  },
   {
     "name": "ecomwl",
     "title": "Compton wavelength",
     "tex": "$\\lambda_{\\rm C}$"
   },
   {
-    "name": "ecomwlbar",
-    "title": "Compton wavelength over 2 pi",
-    "tex": "$\\lbar_{\\rm C}$"
+    "name": "conqu2e2sh",
+    "title": "conductance quantum",
+    "tex": "$G_0$"
   },
-  { "name": "conqu2e2sh", "title": "conductance quantum", "tex": "$G_0$" },
+  {
+    "name": "ampere90",
+    "title": "conventional value of ampere-90",
+    "tex": "$A_{90}$"
+  },
+  {
+    "name": "charge90",
+    "title": "conventional value of coulomb-90",
+    "tex": "$C_{90}$"
+  },
+  {
+    "name": "capacitance90",
+    "title": "conventional value of farad-90",
+    "tex": "$F_{90}$"
+  },
+  {
+    "name": "inductance90",
+    "title": "conventional value of henry-90",
+    "tex": "$H_{90}$"
+  },
   {
     "name": "kj90",
     "title": "conventional value of Josephson constant",
-    "tex": "$K_{\\rm J-90}$"
+    "tex": "$K_{{\\rm J}-90}$"
+  },
+  {
+    "name": "ohm90",
+    "title": "conventional value of ohm-90",
+    "tex": "${\\it \\Omega}_{90}$"
+  },
+  {
+    "name": "volt90",
+    "title": "conventional value of volt-90",
+    "tex": "$V_{90}$"
   },
   {
     "name": "rk90",
     "title": "conventional value of von Klitzing constant",
-    "tex": "$R_{\\rm K-90}$"
+    "tex": "$R_{{\\rm K}-90}$"
+  },
+  {
+    "name": "power90",
+    "title": "conventional value of watt-90",
+    "tex": "$W_{90}$"
   },
   {
     "name": "xucukalph1",
-    "title": "Cu x unit",
+    "title": "Copper x unit",
     "tex": "${\\rm xu}({\\rm CuK}\\alpha_{\\rm 1})$"
   },
-  { "name": "gdn", "title": "deuteron g factor", "tex": "$g_{\\rm d}$" },
+  {
+    "name": "gdn",
+    "title": "deuteron g factor",
+    "tex": "$g_{\\rm d}$"
+  },
   {
     "name": "mud",
     "title": "deuteron magnetic moment",
@@ -255,7 +354,11 @@
     "title": "deuteron magnetic moment to nuclear magneton ratio",
     "tex": "$\\mu_{\\rm d}/\\mu_{\\rm N}$"
   },
-  { "name": "md", "title": "deuteron mass", "tex": "$m_{\\rm d}$" },
+  {
+    "name": "md",
+    "title": "deuteron mass",
+    "tex": "$m_{\\rm d}$"
+  },
   {
     "name": "mdc2",
     "title": "deuteron mass energy equivalent",
@@ -266,11 +369,20 @@
     "title": "deuteron mass energy equivalent in MeV",
     "tex": "$m_{\\rm d}c^2$"
   },
-  { "name": "mdu", "title": "deuteron mass in u", "tex": "$m_{\\rm d}$" },
+  {
+    "name": "mdu",
+    "title": "deuteron mass in u",
+    "tex": "$m_{\\rm d}$"
+  },
   {
     "name": "mmd",
     "title": "deuteron molar mass",
     "tex": "$M({\\rm d}),M_{\\rm d}$"
+  },
+  {
+    "name": "ard",
+    "title": "deuteron relative atomic mass",
+    "tex": "$A_{\\rm r}({\\rm d})$"
   },
   {
     "name": "rd",
@@ -280,7 +392,7 @@
   {
     "name": "mudsmuem",
     "title": "deuteron-electron magnetic moment ratio",
-    "tex": "$\\mu_{\\rm d}/\\mu_{\\rm e}$"
+    "tex": "$\\mu_{\\rm d}/\\mu_{\\rm e^-}$"
   },
   {
     "name": "mdsme",
@@ -302,13 +414,16 @@
     "title": "deuteron-proton mass ratio",
     "tex": "$m_{\\rm d}/m_{\\rm p}$"
   },
-  { "name": "ep0", "title": "electric constant", "tex": "$\\varepsilon_0$" },
   {
     "name": "esme",
     "title": "electron charge to mass quotient",
     "tex": "$-e/m_{\\rm e}$"
   },
-  { "name": "gem", "title": "electron g factor", "tex": "$g_{\\rm e}$" },
+  {
+    "name": "gem",
+    "title": "electron g factor",
+    "tex": "$g_{\\rm e^-}$"
+  },
   {
     "name": "gammae",
     "title": "electron gyromagnetic ratio",
@@ -316,8 +431,8 @@
   },
   {
     "name": "gammaebar",
-    "title": "electron gyromagnetic ratio over 2 pi",
-    "tex": "$\\gamma_{\\rm e}/2\\pi$"
+    "title": "electron gyromagnetic ratio in MHz/T",
+    "tex": "$\\gamma_{\\rm e}$"
   },
   {
     "name": "muem",
@@ -339,7 +454,11 @@
     "title": "electron magnetic moment to nuclear magneton ratio",
     "tex": "$\\mu_{\\rm e}/\\mu_{\\rm N}$"
   },
-  { "name": "me", "title": "electron mass", "tex": "$m_{\\rm e}$" },
+  {
+    "name": "me",
+    "title": "electron mass",
+    "tex": "$m_{\\rm e}$"
+  },
   {
     "name": "mec2",
     "title": "electron mass energy equivalent",
@@ -350,11 +469,20 @@
     "title": "electron mass energy equivalent in MeV",
     "tex": "$m_{\\rm e}c^2$"
   },
-  { "name": "meu", "title": "electron mass in u", "tex": "$m_{\\rm e}$" },
+  {
+    "name": "meu",
+    "title": "electron mass in u",
+    "tex": "$m_{\\rm e}$"
+  },
   {
     "name": "mme",
     "title": "electron molar mass",
     "tex": "$M({\\rm e}),M_{\\rm e}$"
+  },
+  {
+    "name": "are",
+    "title": "electron relative atomic mass",
+    "tex": "$A_{\\rm r}({\\rm e})$"
   },
   {
     "name": "mesmalpha",
@@ -369,9 +497,13 @@
   {
     "name": "muemsmupp",
     "title": "electron to shielded proton magnetic moment ratio",
-    "tex": "$\\mu_{\\rm e}/\\mu^\\prime_{\\rm p}$"
+    "tex": "$\\mu_{\\rm e^-}/\\mu^\\prime_{\\rm p}$"
   },
-  { "name": "tevj", "title": "electron volt", "tex": "eV" },
+  {
+    "name": "evj",
+    "title": "electron volt",
+    "tex": "eV"
+  },
   {
     "name": "evu",
     "title": "electron volt-atomic mass unit relationship",
@@ -393,7 +525,7 @@
     "tex": "$(1 \\ {\\rm eV})/hc$"
   },
   {
-    "name": "evj",
+    "name": "Revj",
     "title": "electron volt-joule relationship",
     "tex": "$1 \\ {\\rm eV}$"
   },
@@ -430,7 +562,7 @@
   {
     "name": "mesmmu",
     "title": "electron-muon mass ratio",
-    "tex": "$m_{\\rm e}/m_{\\rm \\mu}$"
+    "tex": "$m_{\\rm e}/m_{\\rmssmu}$"
   },
   {
     "name": "muemsmunn",
@@ -445,7 +577,7 @@
   {
     "name": "muemsmup",
     "title": "electron-proton magnetic moment ratio",
-    "tex": "$\\mu_{\\rm e}/\\mu_{\\rm p}$"
+    "tex": "$\\mu_{\\rm e^-}/\\mu_{\\rm p}$"
   },
   {
     "name": "mesmp",
@@ -455,42 +587,65 @@
   {
     "name": "mesmtau",
     "title": "electron-tau mass ratio",
-    "tex": "$m_{\\rm e}/m_{\\rm \\tau}$"
+    "tex": "$m_{\\rm e}/m_{\\rmsstau}$"
   },
   {
     "name": "mesmt",
     "title": "electron-triton mass ratio",
     "tex": "$m_{\\rm e}/m_{\\rm t}$"
   },
-  { "name": "e", "title": "elementary charge", "tex": "$e$" },
-  { "name": "esh", "title": "elementary charge over h", "tex": "$e/h$" },
-  { "name": "f", "title": "Faraday constant", "tex": "$F$" },
   {
-    "name": "f90",
-    "title": "Faraday constant for conventional electric current",
-    "tex": "$F^*$"
+    "name": "e",
+    "title": "elementary charge",
+    "tex": "$e$"
+  },
+  {
+    "name": "eshbar",
+    "title": "elementary charge over h-bar",
+    "tex": "$e/\\hbar$"
+  },
+  {
+    "name": "f",
+    "title": "Faraday constant",
+    "tex": "$F$"
   },
   {
     "name": "gf",
     "title": "Fermi coupling constant",
     "tex": "$G_{\\rm F}/(\\hbar c)^3$"
   },
-  { "name": "alph", "title": "fine-structure constant", "tex": "$\\alpha$" },
-  { "name": "c11strc", "title": "first radiation constant", "tex": "$c_1$" },
+  {
+    "name": "alph",
+    "title": "fine-structure constant",
+    "tex": "$\\alpha$"
+  },
+  {
+    "name": "c11strc",
+    "title": "first radiation constant",
+    "tex": "$c_1$"
+  },
   {
     "name": "c1l",
     "title": "first radiation constant for spectral radiance",
     "tex": "$c_{1{\\rm L}}$"
   },
-  { "name": "hr", "title": "Hartree energy", "tex": "$E_{\\rm h}$" },
-  { "name": "threv", "title": "Hartree energy in eV", "tex": "$E_{\\rm h}$" },
+  {
+    "name": "hr",
+    "title": "Hartree energy",
+    "tex": "$E_{\\rm h}$"
+  },
+  {
+    "name": "hrev",
+    "title": "Hartree energy in eV",
+    "tex": "$E_{\\rm h}$"
+  },
   {
     "name": "hru",
     "title": "hartree-atomic mass unit relationship",
     "tex": "$(1 \\ E_{\\rm h})/c^2$"
   },
   {
-    "name": "hrev",
+    "name": "Rhrev",
     "title": "hartree-electron volt relationship",
     "tex": "$1 \\ E_{\\rm h}$"
   },
@@ -519,7 +674,11 @@
     "title": "hartree-kilogram relationship",
     "tex": "$(1 \\ E_{\\rm h})/c^2$"
   },
-  { "name": "ghn", "title": "helion g factor", "tex": "$g_{\\rm h}$" },
+  {
+    "name": "ghn",
+    "title": "helion g factor",
+    "tex": "$g_{\\rm h}$"
+  },
   {
     "name": "muh",
     "title": "helion magnetic moment",
@@ -535,7 +694,11 @@
     "title": "helion magnetic moment to nuclear magneton ratio",
     "tex": "$\\mu_{\\rm h}/\\mu_{\\rm N}$"
   },
-  { "name": "mh", "title": "helion mass", "tex": "$m_{\\rm h}$" },
+  {
+    "name": "mh",
+    "title": "helion mass",
+    "tex": "$m_{\\rm h}$"
+  },
   {
     "name": "mhc2",
     "title": "helion mass energy equivalent",
@@ -546,11 +709,25 @@
     "title": "helion mass energy equivalent in MeV",
     "tex": "$m_{\\rm h}c^2$"
   },
-  { "name": "mhu", "title": "helion mass in u", "tex": "$m_{\\rm h}$" },
+  {
+    "name": "mhu",
+    "title": "helion mass in u",
+    "tex": "$m_{\\rm h}$"
+  },
   {
     "name": "mmh",
     "title": "helion molar mass",
     "tex": "$M({\\rm h}),M_{\\rm h}$"
+  },
+  {
+    "name": "arh",
+    "title": "helion relative atomic mass",
+    "tex": "$A_{\\rm r}({\\rm h})$"
+  },
+  {
+    "name": "sigmah",
+    "title": "helion shielding shift",
+    "tex": "$\\sigma_h$"
   },
   {
     "name": "mhsme",
@@ -598,6 +775,11 @@
     "tex": "$(1 \\ {\\rm Hz})h/c^2$"
   },
   {
+    "name": "nucs",
+    "title": "hyperfine transition frequency of Cs-133",
+    "tex": "$\\Delta\\nu_{\\rm Cs}$"
+  },
+  {
     "name": "alphinv",
     "title": "inverse fine-structure constant",
     "tex": "$\\alpha^{-1}$"
@@ -642,14 +824,26 @@
     "title": "inverse of conductance quantum",
     "tex": "$G_0^{-1}$"
   },
-  { "name": "kjos", "title": "Josephson constant", "tex": "$K_{\\rm J}$" },
+  {
+    "name": "kjos",
+    "title": "Josephson constant",
+    "tex": "$K_{\\rm J}$"
+  },
   {
     "name": "ju",
     "title": "joule-atomic mass unit relationship",
     "tex": "$(1 {\\rm \\ J})/c^2$"
   },
-  { "name": "jev", "title": "joule-electron volt relationship", "tex": "1 J" },
-  { "name": "jhr", "title": "joule-hartree relationship", "tex": "1 J" },
+  {
+    "name": "jev",
+    "title": "joule-electron volt relationship",
+    "tex": "1 J"
+  },
+  {
+    "name": "jhr",
+    "title": "joule-hartree relationship",
+    "tex": "1 J"
+  },
   {
     "name": "jhz",
     "title": "joule-hertz relationship",
@@ -676,7 +870,7 @@
     "tex": "$(1 \\ {\\rm K})k/c^2$"
   },
   {
-    "name": "kev",
+    "name": "Rkev",
     "title": "kelvin-electron volt relationship",
     "tex": "$(1 \\ {\\rm K})k$"
   },
@@ -740,7 +934,16 @@
     "title": "kilogram-kelvin relationship",
     "tex": "$(1 \\ {\\rm kg})c^2/k$"
   },
-  { "name": "asil", "title": "lattice parameter of silicon", "tex": "$a$" },
+  {
+    "name": "asil",
+    "title": "lattice parameter of silicon",
+    "tex": "$a$"
+  },
+  {
+    "name": "d220sil",
+    "title": "lattice spacing of ideal Si (220)",
+    "tex": "$d_{220}$"
+  },
   {
     "name": "n0",
     "title": "Loschmidt constant (273.15 K, 100 kPa)",
@@ -751,25 +954,35 @@
     "title": "Loschmidt constant (273.15 K, 101.325 kPa)",
     "tex": "$n_0$"
   },
-  { "name": "mu0", "title": "magnetic constant", "tex": "$\\mu_0$" },
+  {
+    "name": "kcd",
+    "title": "luminous efficacy",
+    "tex": "$K_{\\rm cd}$"
+  },
   {
     "name": "flxquhs2e",
     "title": "magnetic flux quantum",
     "tex": "${\\it \\Phi}_0$"
   },
   {
-    "name": "xumokalph1",
-    "title": "Mo x unit",
-    "tex": "${\\rm xu}({\\rm MoK}\\alpha_{\\rm 1})$"
+    "name": "r",
+    "title": "molar gas constant",
+    "tex": "$R$"
   },
-  { "name": "r", "title": "molar gas constant", "tex": "$R$" },
-  { "name": "mu", "title": "molar mass constant", "tex": "$M_{\\rm u}$" },
-  { "name": "mm12c", "title": "molar mass of carbon-12", "tex": "$M(^{12}$C)" },
-  { "name": "nah", "title": "molar Planck constant", "tex": "$N_{\\rm A}h$" },
   {
-    "name": "nahc",
-    "title": "molar Planck constant times c",
-    "tex": "$N_{\\rm A}hc$"
+    "name": "mu",
+    "title": "molar mass constant",
+    "tex": "$M_{\\rm u}$"
+  },
+  {
+    "name": "mm12c",
+    "title": "molar mass of carbon-12",
+    "tex": "$M(^{12}$C)"
+  },
+  {
+    "name": "nah",
+    "title": "molar Planck constant",
+    "tex": "$N_{\\rm A}h$"
   },
   {
     "name": "mvol",
@@ -787,16 +1000,20 @@
     "tex": "$V_{\\rm m}$(Si)"
   },
   {
-    "name": "mcomwl",
-    "title": "muon Compton wavelength",
-    "tex": "$\\lambda_{\\rm C,\\mu}$"
+    "name": "xumokalph1",
+    "title": "Molybdenum x unit",
+    "tex": "${\\rm xu}({\\rm MoK}\\alpha_{\\rm 1})$"
   },
   {
-    "name": "mcomwlbar",
-    "title": "muon Compton wavelength over 2 pi",
-    "tex": "$\\lbar_{\\rm C,\\mu}$"
+    "name": "mcomwl",
+    "title": "muon Compton wavelength",
+    "tex": "$\\lambda_{\\rm C,\\rmssmu}$"
   },
-  { "name": "gmum", "title": "muon g factor", "tex": "$g_{\\rm \\mu}$" },
+  {
+    "name": "gmum",
+    "title": "muon g factor",
+    "tex": "$g_{\\rmssmu^-}$"
+  },
   {
     "name": "mumum",
     "title": "muon magnetic moment",
@@ -805,7 +1022,7 @@
   {
     "name": "amu",
     "title": "muon magnetic moment anomaly",
-    "tex": "$a_{\\rm \\mu}$"
+    "tex": "$a_{\\rmssmu}$"
   },
   {
     "name": "mumumsmub",
@@ -817,32 +1034,40 @@
     "title": "muon magnetic moment to nuclear magneton ratio",
     "tex": "$\\mu_{\\rm \\mu}/\\mu_{\\rm N}$"
   },
-  { "name": "mmu", "title": "muon mass", "tex": "$m_{\\rm \\mu}$" },
+  {
+    "name": "mmu",
+    "title": "muon mass",
+    "tex": "$m_{\\rmssmu}$"
+  },
   {
     "name": "mmuc2",
     "title": "muon mass energy equivalent",
-    "tex": "$m_{\\rm \\mu}c^2$"
+    "tex": "$m_{\\rmssmu}c^2$"
   },
   {
     "name": "mmuc2mev",
     "title": "muon mass energy equivalent in MeV",
-    "tex": "$m_{\\rm \\mu}c^2$"
+    "tex": "$m_{\\rmssmu}c^2$"
   },
-  { "name": "mmuu", "title": "muon mass in u", "tex": "$m_{\\rm \\mu}$" },
+  {
+    "name": "mmuu",
+    "title": "muon mass in u",
+    "tex": "$m_{\\rmssmu}$"
+  },
   {
     "name": "mmmu",
     "title": "muon molar mass",
-    "tex": "$M{\\rm (\\mu)},M_{\\rm \\mu}$"
+    "tex": "$M{(\\rmmu)},M_{\\rmssmu}$"
   },
   {
     "name": "mmusme",
     "title": "muon-electron mass ratio",
-    "tex": "$m_{\\rm \\mu}/m_{\\rm e}$"
+    "tex": "$m_{\\rmssmu}/m_{\\rm e}$"
   },
   {
     "name": "mmusmn",
     "title": "muon-neutron mass ratio",
-    "tex": "$m_{\\rm \\mu}/m_{\\rm n}$"
+    "tex": "$m_{\\rmssmu}/m_{\\rm n}$"
   },
   {
     "name": "mumumsmup",
@@ -852,35 +1077,43 @@
   {
     "name": "mmusmp",
     "title": "muon-proton mass ratio",
-    "tex": "$m_{\\rm \\mu}/m_{\\rm p}$"
+    "tex": "$m_{\\rmssmu}/m_{\\rm p}$"
   },
   {
     "name": "mmusmtau",
     "title": "muon-tau mass ratio",
-    "tex": "$m_{\\rm \\mu}/m_{\\rm \\tau}$"
+    "tex": "$m_{\\rmssmu}/m_{\\rmsstau}$"
   },
-  { "name": "thbar", "title": "natural unit of action", "tex": "$\\hbar$" },
   {
-    "name": "thbarev",
+    "name": "Nhbar",
+    "title": "natural unit of action",
+    "tex": "$\\hbar$"
+  },
+  {
+    "name": "Nhbarev",
     "title": "natural unit of action in eV s",
     "tex": "$\\hbar$"
   },
   {
-    "name": "tmec2",
+    "name": "Nmec2",
     "title": "natural unit of energy",
     "tex": "$m_{\\rm e}c^2$"
   },
   {
-    "name": "tmec2mev",
+    "name": "Nmec2mev",
     "title": "natural unit of energy in MeV",
     "tex": "$m_{\\rm e}c^2$"
   },
   {
-    "name": "tecomwlbar",
+    "name": "Necomwlbar",
     "title": "natural unit of length",
     "tex": "$\\lambdabar_{\\rm C}$"
   },
-  { "name": "tme", "title": "natural unit of mass", "tex": "$m_{\\rm e}$" },
+  {
+    "name": "Nme",
+    "title": "natural unit of mass",
+    "tex": "$m_{\\rm e}$"
+  },
   {
     "name": "mec",
     "title": "natural unit of momentum",
@@ -896,18 +1129,21 @@
     "title": "natural unit of time",
     "tex": "$\\hbar/m_{\\rm e}c^2$"
   },
-  { "name": "tc", "title": "natural unit of velocity", "tex": "$c,c_0$" },
+  {
+    "name": "Nc",
+    "title": "natural unit of velocity",
+    "tex": "$c$"
+  },
   {
     "name": "ncomwl",
     "title": "neutron Compton wavelength",
     "tex": "$\\lambda_{\\rm C,n}$"
   },
   {
-    "name": "ncomwlbar",
-    "title": "neutron Compton wavelength over 2 pi",
-    "tex": "$\\lbar_{\\rm C,n}$"
+    "name": "gnn",
+    "title": "neutron g factor",
+    "tex": "$g_{\\rm n}$"
   },
-  { "name": "gnn", "title": "neutron g factor", "tex": "$g_{\\rm n}$" },
   {
     "name": "gamman",
     "title": "neutron gyromagnetic ratio",
@@ -915,8 +1151,8 @@
   },
   {
     "name": "gammanbar",
-    "title": "neutron gyromagnetic ratio over 2 pi",
-    "tex": "$\\gamma_{\\rm n}/2\\pi$"
+    "title": "neutron gyromagnetic ratio in MHz/T",
+    "tex": "$\\gamma_{\\rm n}$"
   },
   {
     "name": "munn",
@@ -933,7 +1169,11 @@
     "title": "neutron magnetic moment to nuclear magneton ratio",
     "tex": "$\\mu_{\\rm n}/\\mu_{\\rm N}$"
   },
-  { "name": "mn", "title": "neutron mass", "tex": "$m_{\\rm n}$" },
+  {
+    "name": "mn",
+    "title": "neutron mass",
+    "tex": "$m_{\\rm n}$"
+  },
   {
     "name": "mnc2",
     "title": "neutron mass energy equivalent",
@@ -944,11 +1184,20 @@
     "title": "neutron mass energy equivalent in MeV",
     "tex": "$m_{\\rm n}c^2$"
   },
-  { "name": "mnu", "title": "neutron mass in u", "tex": "$m_{\\rm n}$" },
+  {
+    "name": "mnu",
+    "title": "neutron mass in u",
+    "tex": "$m_{\\rm n}$"
+  },
   {
     "name": "mmn",
     "title": "neutron molar mass",
     "tex": "$M({\\rm n}),M_{\\rm n}$"
+  },
+  {
+    "name": "arn",
+    "title": "neutron relative atomic mass",
+    "tex": "$A_{\\rm r}({\\rm n})$"
   },
   {
     "name": "munsmupp",
@@ -968,7 +1217,7 @@
   {
     "name": "mnsmmu",
     "title": "neutron-muon mass ratio",
-    "tex": "$m_{\\rm n}/m_{\\rm \\mu}$"
+    "tex": "$m_{\\rm n}/m_{\\rmssmu}$"
   },
   {
     "name": "munsmup",
@@ -1003,7 +1252,7 @@
   {
     "name": "mnsmtau",
     "title": "neutron-tau mass ratio",
-    "tex": "$m_{\\rm n}/m_{\\rm \\tau}$"
+    "tex": "$m_{\\rm n}/m_{\\rmsstau}$"
   },
   {
     "name": "bg",
@@ -1015,7 +1264,11 @@
     "title": "Newtonian constant of gravitation over h-bar c",
     "tex": "$ G/\\hbar c $"
   },
-  { "name": "mun", "title": "nuclear magneton", "tex": "$\\mu_{\\rm N}$" },
+  {
+    "name": "mun",
+    "title": "nuclear magneton",
+    "tex": "$\\mu_{\\rm N}$"
+  },
   {
     "name": "munev",
     "title": "nuclear magneton in eV/T",
@@ -1023,7 +1276,7 @@
   },
   {
     "name": "munshcminv",
-    "title": "nuclear magneton in inverse meters per tesla",
+    "title": "nuclear magneton in inverse meter per tesla",
     "tex": "$\\mu_{\\rm N}/hc$"
   },
   {
@@ -1036,28 +1289,41 @@
     "title": "nuclear magneton in MHz/T",
     "tex": "$\\mu_{\\rm N}/h$"
   },
-  { "name": "h", "title": "Planck constant", "tex": "$ h $" },
-  { "name": "hev", "title": "Planck constant in eV s", "tex": "$ h $" },
-  { "name": "hbar", "title": "Planck constant over 2 pi", "tex": "$\\hbar$" },
   {
-    "name": "hbarev",
-    "title": "Planck constant over 2 pi in eV s",
-    "tex": "$\\hbar$"
+    "name": "h",
+    "title": "Planck constant",
+    "tex": "$ h $"
   },
   {
-    "name": "hbcmevf",
-    "title": "Planck constant over 2 pi times c in MeV fm",
-    "tex": "$ \\hbar c $"
+    "name": "hev",
+    "title": "Planck constant in eV/Hz",
+    "tex": "$ h $"
   },
-  { "name": "plkl", "title": "Planck length", "tex": "$l_{\\rm P}$" },
-  { "name": "plkm", "title": "Planck mass", "tex": "$m_{\\rm P}$" },
+  {
+    "name": "plkl",
+    "title": "Planck length",
+    "tex": "$l_{\\rm P}$"
+  },
+  {
+    "name": "plkm",
+    "title": "Planck mass",
+    "tex": "$m_{\\rm P}$"
+  },
   {
     "name": "plkmc2gev",
     "title": "Planck mass energy equivalent in GeV",
     "tex": "$m_{\\rm P}c^2$"
   },
-  { "name": "plktmp", "title": "Planck temperature", "tex": "$T_{\\rm P}$" },
-  { "name": "plkt", "title": "Planck time", "tex": "$t_{\\rm P}$" },
+  {
+    "name": "plktmp",
+    "title": "Planck temperature",
+    "tex": "$T_{\\rm P}$"
+  },
+  {
+    "name": "plkt",
+    "title": "Planck time",
+    "tex": "$t_{\\rm P}$"
+  },
   {
     "name": "esmp",
     "title": "proton charge to mass quotient",
@@ -1069,11 +1335,10 @@
     "tex": "$\\lambda_{\\rm C,p}$"
   },
   {
-    "name": "pcomwlbar",
-    "title": "proton Compton wavelength over 2 pi",
-    "tex": "$\\lbar_{\\rm C,p}$"
+    "name": "gp",
+    "title": "proton g factor",
+    "tex": "$g_{\\rm p}$"
   },
-  { "name": "gp", "title": "proton g factor", "tex": "$g_{\\rm p}$" },
   {
     "name": "gammap",
     "title": "proton gyromagnetic ratio",
@@ -1081,8 +1346,8 @@
   },
   {
     "name": "gammapbar",
-    "title": "proton gyromagnetic ratio over 2 pi",
-    "tex": "$\\gamma_{\\rm p}/2\\pi$"
+    "title": "proton gyromagnetic ratio in MHz/T",
+    "tex": "$\\gamma_{\\rm p}$"
   },
   {
     "name": "mup",
@@ -1104,7 +1369,11 @@
     "title": "proton magnetic shielding correction",
     "tex": "$\\sigma^\\prime_{\\rm p}$"
   },
-  { "name": "mp", "title": "proton mass", "tex": "$m_{\\rm p}$" },
+  {
+    "name": "mp",
+    "title": "proton mass",
+    "tex": "$m_{\\rm p}$"
+  },
   {
     "name": "mpc2",
     "title": "proton mass energy equivalent",
@@ -1115,13 +1384,26 @@
     "title": "proton mass energy equivalent in MeV",
     "tex": "$m_{\\rm p}c^2$"
   },
-  { "name": "mpu", "title": "proton mass in u", "tex": "$m_{\\rm p}$" },
+  {
+    "name": "mpu",
+    "title": "proton mass in u",
+    "tex": "$m_{\\rm p}$"
+  },
   {
     "name": "mmp",
     "title": "proton molar mass",
-    "tex": "$M$(p), $M_{\\rm p}$"
+    "tex": "$M({\\rm p})$, $M_{\\rm p}$"
   },
-  { "name": "rp", "title": "proton rms charge radius", "tex": "$r_{\\rm p}$" },
+  {
+    "name": "arp",
+    "title": "proton relative atomic mass",
+    "tex": "$A_{\\rm r}({\\rm p})$"
+  },
+  {
+    "name": "rp",
+    "title": "proton rms charge radius",
+    "tex": "$r_{\\rm p}$"
+  },
   {
     "name": "mpsme",
     "title": "proton-electron mass ratio",
@@ -1130,7 +1412,7 @@
   {
     "name": "mpsmmu",
     "title": "proton-muon mass ratio",
-    "tex": "$m_{\\rm p}/m_{\\rm \\mu}$"
+    "tex": "$m_{\\rm p}/m_{\\rmssmu}$"
   },
   {
     "name": "mupsmunn",
@@ -1145,19 +1427,63 @@
   {
     "name": "mpsmtau",
     "title": "proton-tau mass ratio",
-    "tex": "$m_{\\rm p}/m_{\\rm \\tau}$"
+    "tex": "$m_{\\rm p}/m_{\\rmsstau}$"
   },
   {
     "name": "qucirchs2me",
     "title": "quantum of circulation",
-    "tex": "$h/2m_{\\rm e}$"
+    "tex": "$\\rmpi \\hbar/m_{\\rm e}$"
   },
   {
     "name": "hsme",
     "title": "quantum of circulation times 2",
-    "tex": "$h/m_{\\rm e}$"
+    "tex": "$2\\rmpi \\hbar /m_{\\rm e}$"
   },
-  { "name": "ryd", "title": "Rydberg constant", "tex": "$R_\\infty$" },
+  {
+    "name": "ecomwlbar",
+    "title": "reduced Compton wavelength",
+    "tex": "$\\lbar_{\\rm C}$"
+  },
+  {
+    "name": "mcomwlbar",
+    "title": "reduced muon Compton wavelength",
+    "tex": "$\\lbar_{\\rm C,\\rmssmu}$"
+  },
+  {
+    "name": "ncomwlbar",
+    "title": "reduced neutron Compton wavelength",
+    "tex": "$\\lbar_{\\rm C,n}$"
+  },
+  {
+    "name": "hbar",
+    "title": "reduced Planck constant",
+    "tex": "$\\hbar$"
+  },
+  {
+    "name": "hbarev",
+    "title": "reduced Planck constant in eV s",
+    "tex": "$\\hbar$"
+  },
+  {
+    "name": "hbcmevf",
+    "title": "reduced Planck constant times c in MeV fm",
+    "tex": "$ \\hbar c $"
+  },
+  {
+    "name": "pcomwlbar",
+    "title": "reduced proton Compton wavelength",
+    "tex": "$\\lbar_{\\rm C,p}$"
+  },
+  {
+    "name": "tcomwlbar",
+    "title": "reduced tau Compton wavelength",
+    "tex": "$\\lbar_{\\rm C,\\rmsstau}$"
+  },
+  {
+    "name": "ryd",
+    "title": "Rydberg constant",
+    "tex": "$R_\\infty$"
+  },
   {
     "name": "rydchz",
     "title": "Rydberg constant times c in Hz",
@@ -1166,12 +1492,12 @@
   {
     "name": "rydhcev",
     "title": "Rydberg constant times hc in eV",
-    "tex": "$R_\\infty hc$"
+    "tex": "$hc\\,R_\\infty$"
   },
   {
     "name": "rydhcj",
     "title": "Rydberg constant times hc in J",
-    "tex": "$R_\\infty hc$"
+    "tex": "$hc\\,R_\\infty$"
   },
   {
     "name": "s0sr",
@@ -1183,7 +1509,11 @@
     "title": "Sackur-Tetrode constant (1 K, 101.325 kPa)",
     "tex": "$S_0/R$"
   },
-  { "name": "c22ndrc", "title": "second radiation constant", "tex": "$c_2$" },
+  {
+    "name": "c22ndrc",
+    "title": "second radiation constant",
+    "tex": "$c_2$"
+  },
   {
     "name": "gammahp",
     "title": "shielded helion gyromagnetic ratio",
@@ -1191,8 +1521,8 @@
   },
   {
     "name": "gammahpbar",
-    "title": "shielded helion gyromagnetic ratio over 2 pi",
-    "tex": "$\\gamma^\\prime_{\\rm h}/2\\pi$"
+    "title": "shielded helion gyromagnetic ratio in MHz/T",
+    "tex": "$\\gamma^\\prime_{\\rm h}$"
   },
   {
     "name": "muhp",
@@ -1226,8 +1556,8 @@
   },
   {
     "name": "gammappbar",
-    "title": "shielded proton gyromagnetic ratio over 2 pi",
-    "tex": "$\\gamma^\\prime_{\\rm p}/2\\pi$"
+    "title": "shielded proton gyromagnetic ratio in MHz/T",
+    "tex": "$\\gamma^\\prime_{\\rm p}$"
   },
   {
     "name": "mupp",
@@ -1244,68 +1574,101 @@
     "title": "shielded proton magnetic moment to nuclear magneton ratio",
     "tex": "$\\mu^\\prime_{\\rm p}/\\mu_{\\rm N}$"
   },
-  { "name": "c", "title": "speed of light in vacuum", "tex": "$ c,c_0 $" },
+  {
+    "name": "sdp",
+    "title": "shielding difference of d and p in HD",
+    "tex": "$\\sigma_{\\rm dp}$"
+  },
+  {
+    "name": "stp",
+    "title": "shielding difference of t and p in HT",
+    "tex": "$\\sigma_{\\rm tp}$"
+  },
+  {
+    "name": "c",
+    "title": "speed of light in vacuum",
+    "tex": "$c$"
+  },
   {
     "name": "gn",
     "title": "standard acceleration of gravity",
     "tex": "$g_{\\rm n}$"
   },
-  { "name": "stdatm", "title": "standard atmosphere", "tex": "atm" },
-  { "name": "stdspr", "title": "standard-state pressure", "tex": "ssp" },
-  { "name": "sigma", "title": "Stefan-Boltzmann constant", "tex": "$\\sigma$" },
+  {
+    "name": "stdatm",
+    "title": "standard atmosphere",
+    "tex": "atm"
+  },
+  {
+    "name": "stdspr",
+    "title": "standard-state pressure",
+    "tex": "ssp"
+  },
+  {
+    "name": "sigma",
+    "title": "Stefan-Boltzmann constant",
+    "tex": "$\\sigma$"
+  },
   {
     "name": "tcomwl",
     "title": "tau Compton wavelength",
-    "tex": "$\\lambda_{\\rm C,\\tau}$"
-  },
-  {
-    "name": "tcomwlbar",
-    "title": "tau Compton wavelength over 2 pi",
-    "tex": "$\\lbar_{\\rm C,\\tau}$"
-  },
-  { "name": "mtau", "title": "tau mass", "tex": "$m_{\\rm \\tau}$" },
-  {
-    "name": "mtauc2",
-    "title": "tau mass energy equivalent",
-    "tex": "$m_{\\rm \\tau}c^2$"
+    "tex": "$\\lambda_{\\rm C,\\rmsstau}$"
   },
   {
     "name": "mtauc2mev",
-    "title": "tau mass energy equivalent in MeV",
-    "tex": "$m_{\\rm \\tau}c^2$"
+    "title": "tau energy equivalent",
+    "tex": "$m_{\\rmsstau}c^2$"
   },
-  { "name": "mtauu", "title": "tau mass in u", "tex": "$m_{\\rm \\tau}$" },
+  {
+    "name": "mtau",
+    "title": "tau mass",
+    "tex": "$m_{\\rmsstau}$"
+  },
+  {
+    "name": "mtauc2",
+    "title": "tau mass energy equivalent",
+    "tex": "$m_{\\rmsstau}c^2$"
+  },
+  {
+    "name": "mtauu",
+    "title": "tau mass in u",
+    "tex": "$m_{\\rmsstau}$"
+  },
   {
     "name": "mmtau",
     "title": "tau molar mass",
-    "tex": "$M{\\rm (\\tau)},M_{\\rm \\tau}$"
+    "tex": "$M{(\\rmtau)},M_{\\rmsstau}$"
   },
   {
     "name": "mtausme",
     "title": "tau-electron mass ratio",
-    "tex": "$m_{\\rm \\tau}/m_{\\rm e}$"
+    "tex": "$m_{\\rmsstau}/m_{\\rm e}$"
   },
   {
     "name": "mtausmmu",
     "title": "tau-muon mass ratio",
-    "tex": "$m_{\\rm \\tau}/m_{\\rm \\mu}$"
+    "tex": "$m_{\\rmsstau}/m_{\\rmssmu}$"
   },
   {
     "name": "mtausmn",
     "title": "tau-neutron mass ratio",
-    "tex": "$m_{\\rm \\tau}/m_{\\rm n}$"
+    "tex": "$m_{\\rmsstau}/m_{\\rm n}$"
   },
   {
     "name": "mtausmp",
     "title": "tau-proton mass ratio",
-    "tex": "$m_{\\rm \\tau}/m_{\\rm p}$"
+    "tex": "$m_{\\rmsstau}/m_{\\rm p}$"
   },
   {
     "name": "sigmae",
     "title": "Thomson cross section",
     "tex": "$\\sigma_{\\rm e}$"
   },
-  { "name": "gtn", "title": "triton g factor", "tex": "$g_{\\rm t}$" },
+  {
+    "name": "gtn",
+    "title": "triton g factor",
+    "tex": "$g_{\\rm t}$"
+  },
   {
     "name": "mut",
     "title": "triton magnetic moment",
@@ -1321,7 +1684,11 @@
     "title": "triton magnetic moment to nuclear magneton ratio",
     "tex": "$\\mu_{\\rm t}/\\mu_{\\rm N}$"
   },
-  { "name": "mt", "title": "triton mass", "tex": "$m_{\\rm t}$" },
+  {
+    "name": "mt",
+    "title": "triton mass",
+    "tex": "$m_{\\rm t}$"
+  },
   {
     "name": "mtc2",
     "title": "triton mass energy equivalent",
@@ -1332,11 +1699,25 @@
     "title": "triton mass energy equivalent in MeV",
     "tex": "$m_{\\rm t}c^2$"
   },
-  { "name": "mtu", "title": "triton mass in u", "tex": "$m_{\\rm t}$" },
+  {
+    "name": "mtu",
+    "title": "triton mass in u",
+    "tex": "$m_{\\rm t}$"
+  },
   {
     "name": "mmt",
     "title": "triton molar mass",
-    "tex": "$M({\\rm t}),M_{\\rm d}$"
+    "tex": "$M({\\rm t}),M_{\\rm t}$"
+  },
+  {
+    "name": "art",
+    "title": "triton relative atomic mass",
+    "tex": "$A_{\\rm r}({\\rm t})$"
+  },
+  {
+    "name": "mutsmup",
+    "title": "triton to proton magnetic moment ratio",
+    "tex": "$\\mu_{\\rm t}/\\mu_{\\rm p}$"
   },
   {
     "name": "mtsme",
@@ -1348,8 +1729,31 @@
     "title": "triton-proton mass ratio",
     "tex": "$m_{\\rm t}/m_{\\rm p}$"
   },
-  { "name": "tukg", "title": "unified atomic mass unit", "tex": "${\\rm u}$" },
-  { "name": "rk", "title": "von Klitzing constant", "tex": "$R_{\\rm K}$" },
+  {
+    "name": "ukg",
+    "title": "unified atomic mass unit",
+    "tex": "${\\rm u}$"
+  },
+  {
+    "name": "ep0",
+    "title": "vacuum electric permittivity",
+    "tex": "$\\varepsilon_0$"
+  },
+  {
+    "name": "mu0",
+    "title": "vacuum magnetic permeability",
+    "tex": "$\\mu_0$"
+  },
+  {
+    "name": "rk",
+    "title": "von Klitzing constant",
+    "tex": "$R_{\\rm K}$"
+  },
+  {
+    "name": "rmwmz",
+    "title": "W to Z mass ratio",
+    "tex": "$m_{\\rm W}/m_{\\rm Z}$"
+  },
   {
     "name": "sin2th",
     "title": "weak mixing angle",
@@ -1364,10 +1768,5 @@
     "name": "bwien",
     "title": "Wien wavelength displacement law constant",
     "tex": "$b$"
-  },
-  {
-    "name": "d220sil",
-    "title": "{220} lattice spacing of silicon",
-    "tex": "$d_{\\rm 220}$"
   }
 ]

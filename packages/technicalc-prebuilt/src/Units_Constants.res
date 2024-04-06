@@ -25,11 +25,13 @@ let unitsReplacements = {
   "T": [{prefix: Unit, name: Tesla, power: 1}],
   "S": [{prefix: Unit, name: Siemens, power: 1}],
   "mol": [{prefix: Unit, name: Mole, power: 1}],
+  "H": [{prefix: Unit, name: Henry, power: 1}],
   // One unit uses this - just ignore it
   "sr": ([]: array<t>),
   // We don't include these units
   "E_h": ([]: array<t>),
   "u": ([]: array<t>),
+  "lm": [{prefix: Unit, name: Henry, power: 1}],
   // Weird artefacts - unit not included anyway
   "C_90": ([]: array<t>),
   "MeV/c": ([]: array<t>),

@@ -447,13 +447,6 @@
     "superscript": "",
     "subscript": ""
   },
-  "Planck constant over 2 pi": {
-    "bold": false,
-    "italic": true,
-    "base": "\u210f",
-    "superscript": "",
-    "subscript": ""
-  },
   "Planck length": {
     "bold": false,
     "italic": true,
@@ -678,11 +671,67 @@
     "superscript": "",
     "subscript": ""
   },
-  "{220} lattice spacing of silicon": {
+  "Conventional value of ampere-90": {
+    "bold": false,
+    "italic": true,
+    "base": "A",
+    "superscript": "",
+    "subscript": "90"
+  },
+  "Conventional value of coulomb-90": {
+    "bold": false,
+    "italic": true,
+    "base": "C",
+    "superscript": "",
+    "subscript": "90"
+  },
+  "Conventional value of farad-90": {
+    "bold": false,
+    "italic": true,
+    "base": "F",
+    "superscript": "",
+    "subscript": "90"
+  },
+  "Conventional value of henry-90": {
+    "bold": false,
+    "italic": true,
+    "base": "H",
+    "superscript": "",
+    "subscript": "90"
+  },
+  "Conventional value of ohm-90": {
+    "bold": false,
+    "italic": true,
+    "base": "\u03a9",
+    "superscript": "",
+    "subscript": "90"
+  },
+  "Conventional value of volt-90": {
+    "bold": false,
+    "italic": true,
+    "base": "V",
+    "superscript": "",
+    "subscript": "90"
+  },
+  "Conventional value of watt-90": {
+    "bold": false,
+    "italic": true,
+    "base": "W",
+    "superscript": "",
+    "subscript": "90"
+  },
+  "Lattice spacing of ideal Si (220)": {
     "bold": false,
     "italic": true,
     "base": "d",
     "superscript": "",
     "subscript": "220"
+  },
+  "Reduced Planck constant": {
+    "bold": false,
+    "italic": true,
+    "base": "\u210f",
+    "superscript": "",
+    "subscript": ""
   }
 }
