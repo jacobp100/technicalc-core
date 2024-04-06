@@ -39,3 +39,16 @@ test("div", () => {
     expect(actual).toMatchJsValue(expected, () => `${a} / ${b}`);
   });
 });
+
+test("pow", () => {
+  values.forEach(([a, b]) => {
+    // MathJS bugs...
+    if (a.jsValue.re === 0 && a.jsValue.im === 0) {
+      return;
+    }
+
+    const actual = TechniCalc.pow(a.techniCalcValue, b.techniCalcValue);
+    const expected = mathjs.pow(a.jsValue, b.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `${a} ** ${b}`);
+  });
+});

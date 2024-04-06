@@ -93,7 +93,8 @@ let pow = (a: t, b: t): t =>
   | (#Real(Rational(1, 1, Exp(1))), _) => exp(b)
   | (_, #Real(Rational(1, 2, Unit))) => sqrt(a)
   | (_, #Real(Rational(2, 1, Unit))) => mul(a, a)
-  | (#Real(a), #Real(b)) => ofReal(Real.pow(a, b))
+  | (#Real(a), #Real(b)) if Real.gte(a, Real.zero) || Real.toInt(b) != None =>
+    ofReal(Real.pow(a, b))
   | (#Imag(im), #Real(Rational(bInt, 1, Unit))) =>
     let aPowB = Real.powInt(im, bInt)
     switch IntUtil.safeMod(bInt, 4) {
@@ -116,7 +117,12 @@ let abs = (x: t): t =>
   | #NaNN => nan
   }
 
-let inv = mapU(_, (. x) => Real.inv(x))
+let inv = (a: t) =>
+  switch a {
+  | #Real(re) => #Real(Real.inv(re))
+  | _ => div(one, a)
+  }
+
 let round = mapU(_, (. x) => Real.round(x))
 let floor = mapU(_, (. x) => Real.floor(x))
 let ceil = mapU(_, (. x) => Real.ceil(x))

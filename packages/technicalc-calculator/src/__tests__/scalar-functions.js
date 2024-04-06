@@ -5,6 +5,54 @@ import * as TechniCalc from "../Value/Value";
 
 expect.extend({ toMatchJsValue });
 
+test("inv", () => {
+  complexValues.forEach((v) => {
+    const actual = TechniCalc.inv(v.techniCalcValue);
+    const expected = mathjs.inv(v.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `inv(${v})`);
+  });
+});
+
+test("abs", () => {
+  complexValues.forEach((v) => {
+    const actual = TechniCalc.abs(v.techniCalcValue);
+    const expected = mathjs.abs(v.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `abs(${v})`);
+  });
+});
+
+test("round", () => {
+  complexValues.forEach((v) => {
+    const actual = TechniCalc.round(v.techniCalcValue);
+    const expected = mathjs.round(v.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `round(${v})`);
+  });
+});
+
+test("floor", () => {
+  complexValues.forEach((v) => {
+    const actual = TechniCalc.floor(v.techniCalcValue);
+    const expected = mathjs.floor(v.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `floor(${v})`);
+  });
+});
+
+test("ceil", () => {
+  complexValues.forEach((v) => {
+    const actual = TechniCalc.ceil(v.techniCalcValue);
+    const expected = mathjs.ceil(v.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `ceil(${v})`);
+  });
+});
+
+test("log", () => {
+  complexValues.forEach((v) => {
+    const actual = TechniCalc.log(v.techniCalcValue);
+    const expected = mathjs.log(v.jsValue);
+    expect(actual).toMatchJsValue(expected, () => `log(${v})`);
+  });
+});
+
 test("sin", () => {
   complexValues.forEach((v) => {
     const actual = TechniCalc.sin(v.techniCalcValue);
