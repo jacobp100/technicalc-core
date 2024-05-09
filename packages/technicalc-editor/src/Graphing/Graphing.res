@@ -106,7 +106,7 @@
     | Floor(x) => fn(~context, x, "floor")
     | Ceil(x) => fn(~context, x, "ceil")
     | Round(x) => fn(~context, x, "round")
-    | Sqrt(x) => fn(~context, x, "floor")
+    | Sqrt(x) => fn(~context, x, "sqrt")
     | Exp(x) => fn(~context, x, "exp")
     | Log(x) => fn(~context, x, "log")
     | Sin(x) => fn(~context, x, "sin")
