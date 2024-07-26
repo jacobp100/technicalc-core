@@ -2,8 +2,10 @@ type node = TechniCalcCalculator.AST_Types.t
 type value = TechniCalcCalculator.Value.t
 type units = array<TechniCalcCalculator.Units_Types.t>
 type unitsResult = array<(value, units)>
+type currency = (float, string)
+type currencyResult = array<(value, string)>
 
-type contextEntry = (string, TechniCalcCalculator.Value.t)
+type contextEntry = (string, value)
 type context = array<contextEntry>
 
 type rec input<'output> =
@@ -17,7 +19,11 @@ type rec input<'output> =
       values: array<(node, TechniCalcCalculator.Units_Types.t)>,
       toUnits: array<TechniCalcCalculator.Units_Types.t>,
     }): input<unitsResult>
-  | ConvertCurrency({body: node, fromCurrency: float, toCurrency: float}): input<value>
+  | ConvertCurrencies({
+      body: node,
+      fromCurrency: currency,
+      toCurrencies: array<currency>,
+    }): input<currencyResult>
   | SolveRoot({body: node, initialGuess: node}): input<value>
   | Quadratic(node, node, node): input<(value, value)>
   | Cubic(node, node, node, node): input<(value, value, value)>
@@ -123,6 +129,32 @@ let decodeInput = (encoded: string): option<t<node>> =>
   let decodeUnitsResult = (encoded: string) => UrlSafeEncoding.read(encoded, readUnitsResult)
 )
 
+%%private(
+  let encodeValueCurrencyTuple = ((value, currency)) =>
+    TechniCalcCalculator.Encoding.encode(value) ++ UrlSafeEncoding.encodeString(currency)
+)
+%%private(
+  let readValueCurrencyTuple = reader =>
+    switch (TechniCalcCalculator.Encoding_Value.read(reader), UrlSafeEncoding.readString(reader)) {
+    | (Some(value), Some(currency)) => Some((value, currency))
+    | _ => None
+    }
+)
+
+%%private(
+  let encodeCurrenciesResult = (currencyResult: currencyResult) =>
+    UrlSafeEncoding.encodeArray(currencyResult, encodeValueCurrencyTuple)
+)
+%%private(
+  let readCurrenciesResult = reader => {
+    UrlSafeEncoding.readArray(reader, readValueCurrencyTuple)
+  }
+)
+%%private(
+  let decodeCurrenciesResult = (encoded: string) =>
+    UrlSafeEncoding.read(encoded, readCurrenciesResult)
+)
+
 %%private(let encodeValue = TechniCalcCalculator.Encoding.encode)
 %%private(let decodeValue = TechniCalcCalculator.Encoding.decode)
 
@@ -168,7 +200,7 @@ let encodeOutput = (type output, work: t<output>, output: output): string => {
   | Calculate(_) => encodeValue(output)
   | ConvertUnits(_) => encodeUnitsResult(output)
   | ConvertUnitsComposite(_) => encodeUnitsResult(output)
-  | ConvertCurrency(_) => encodeValue(output)
+  | ConvertCurrencies(_) => encodeCurrenciesResult(output)
   | SolveRoot(_) => encodeValue(output)
   | Quadratic(_) => encode2Values(output)
   | Cubic(_) => encode3Values(output)
@@ -182,7 +214,7 @@ let decodeOutput = (type output, work: t<output>, encoded: string): option<outpu
   | Calculate(_) => decodeValue(encoded)
   | ConvertUnits(_) => decodeUnitsResult(encoded)
   | ConvertUnitsComposite(_) => decodeUnitsResult(encoded)
-  | ConvertCurrency(_) => decodeValue(encoded)
+  | ConvertCurrencies(_) => decodeCurrenciesResult(encoded)
   | SolveRoot(_) => decodeValue(encoded)
   | Quadratic(_) => decode2Values(encoded)
   | Cubic(_) => decode3Values(encoded)

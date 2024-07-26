@@ -361,10 +361,10 @@ module Work = {
     values,
     toUnits,
   })
-  let convertCurrency = (body, fromCurrency, toCurrency): Work.input<'a> => ConvertCurrency({
+  let convertCurrency = (body, fromCurrency, toCurrencies): Work.input<'a> => ConvertCurrencies({
     body,
     fromCurrency,
-    toCurrency,
+    toCurrencies,
   })
   let solveRoot = (lhs, rhs, initialGuess): Work.input<'a> => {
     let body = TechniCalcCalculator.AST_Types.Sub(lhs, rhs)

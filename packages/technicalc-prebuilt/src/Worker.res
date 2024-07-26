@@ -48,14 +48,17 @@ type self = {
         // let unitsSorted = TechniCalcCalculator.Units.compositeUnitsSorted(toUnits)
         Belt.Array.mapU(toUnits, (. unitPart) => (#NaNN, [unitPart]))
       }
-    | Work.ConvertCurrency({body, fromCurrency, toCurrency}) =>
+    | Work.ConvertCurrencies({body, fromCurrency: (fromCurrencyValue, _), toCurrencies}) =>
       let value = eval(~config, ~context, body)
-      let fromCurrency = TechniCalcCalculator.Value.ofFloat(fromCurrency)
-      let toCurrency = TechniCalcCalculator.Value.ofFloat(toCurrency)
-      TechniCalcCalculator.Value.div(
-        TechniCalcCalculator.Value.mul(value, toCurrency),
-        fromCurrency,
-      )
+      let fromCurrency = TechniCalcCalculator.Value.ofFloat(fromCurrencyValue)
+      Belt.Array.mapU(toCurrencies, (. (toCurrencyValue, toCurrencyName)) => {
+        let toCurrency = TechniCalcCalculator.Value.ofFloat(toCurrencyValue)
+        let value = TechniCalcCalculator.Value.div(
+          TechniCalcCalculator.Value.mul(value, toCurrency),
+          fromCurrency,
+        )
+        (value, toCurrencyName)
+      })
     | Work.SolveRoot({body, initialGuess}) => solveRoot(~config, ~context, body, initialGuess)
     | Work.Quadratic(a, b, c) => solveQuadratic(~config, ~context, a, b, c)
     | Work.Cubic(a, b, c, d) => solveCubic(~config, ~context, a, b, c, d)
