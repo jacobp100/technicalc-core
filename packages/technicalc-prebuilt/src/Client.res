@@ -485,9 +485,17 @@ module Graphing = {
     }
   )
 
-  let parseAsMetalShader = (~context, elements) =>
+  let parseAsMetalShaderComponents = elements =>
+    Graphing.parseAsMetalShaderComponents(elements)->toJsResult
+
+  let parseAsMetalShader = (~context, elements) => {
+    let context = switch context {
+    | Some(context) => jsDictEntries(context)
+    | None => []
+    }
     switch Graphing.parseAsMetalShader(~context, elements) {
     | Ok((eqn, cmp)) => toJsResult(Ok((eqn, cmpToString(cmp))))
     | Error(_) as e => toJsResult(e)
     }
+  }
 }

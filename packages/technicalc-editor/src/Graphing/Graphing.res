@@ -1,4 +1,11 @@
 %%private(
+  let decodeContext = context =>
+    Belt.Array.reduceU(context, TechniCalcCalculator.AST_Context.empty, (. accum, (key, value)) => {
+      TechniCalcCalculator.AST_Context.set(accum, key, value)
+    })
+)
+
+%%private(
   let floatToMetalShader = (f: float) =>
     if TechniCalcCalculator.FloatUtil.isFinite(f) {
       let s = Belt.Float.toString(f)
@@ -194,34 +201,40 @@
   }
 )
 
-let parseAsMetalShader = (~context, v: array<AST.t>) =>
+let parseAsMetalShaderComponents = (v: array<AST.t>) => {
   switch splitIndex(v) {
   | Ok(Some((cmp, splitIndex))) =>
-    let before = Belt.Array.slice(v, ~offset=0, ~len=splitIndex)->Value.parse
-    let after = Belt.Array.sliceToEnd(v, splitIndex + 1)->Value.parse
-    switch (before, after) {
-    | (Ok(before), Ok(after)) =>
-      switch (astToMetalShader(~context, before), astToMetalShader(~context, after)) {
-      | (Some(before), Some(after)) =>
-        let eq = switch cmp {
-        | Cmp_Eq | Cmp_Gt | Cmp_Gte => `(${before}) - (${after})`
-        | Cmp_Lt | Cmp_Lte => `(${after}) - (${before})`
-        }
-        Ok((eq, cmp))
-      | _ => Error(None)
-      }
+    let left = Belt.Array.slice(v, ~offset=0, ~len=splitIndex)->Value.parse
+    let right = Belt.Array.sliceToEnd(v, splitIndex + 1)->Value.parse
+    switch (left, right) {
+    | (Ok(left), Ok(right)) => Ok((cmp, left, right))
     | (Error(i), _)
     | (_, Error(i)) =>
-      Error(Some(i))
+      Error(i)
     }
   | Ok(None) =>
     switch Value.parse(v) {
-    | Ok(v) =>
-      switch astToMetalShader(~context, v) {
-      | Some(v) => Ok((`y - (${v})`, Cmp_Eq))
-      | None => Error(None)
+    | Ok(v) => Ok((Cmp_Eq, Y, v))
+    | Error(i) => Error(i)
+    }
+  | Error(i) => Error(i)
+  }
+}
+
+let parseAsMetalShader = (~context, v: array<AST.t>) => {
+  let context = decodeContext(context)
+
+  switch parseAsMetalShaderComponents(v) {
+  | Ok((cmp, left, right)) =>
+    switch (astToMetalShader(~context, left), astToMetalShader(~context, right)) {
+    | (Some(left), Some(right)) =>
+      let eq = switch cmp {
+      | Cmp_Eq | Cmp_Gt | Cmp_Gte => `(${left}) - (${right})`
+      | Cmp_Lt | Cmp_Lte => `(${right}) - (${left})`
       }
-    | Error(i) => Error(Some(i))
+      Ok((eq, cmp))
+    | _ => Error(None)
     }
   | Error(i) => Error(Some(i))
   }
+}
