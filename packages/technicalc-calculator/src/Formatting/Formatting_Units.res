@@ -52,10 +52,24 @@ let formatName = (~mode, name: name) =>
   }
 )
 
-let toString = (~mode, {prefix, name, power}: t) => {
+let toString = (~mode, ~unitFormat=defaultUnitFormat, {prefix, name, power}: t) => {
   let formattedUnit = formatUnit(~mode, ~prefix, ~name)
 
-  switch power {
+  let (prefix, power) = switch unitFormat {
+  | Exponential => ("", power)
+  | Operator =>
+    let prefix = if power >= 0 {
+      ""
+    } else {
+      switch mode {
+      | MathML => `<mo>/</mo>`
+      | Tex | Ascii | Unicode => `/`
+      }
+    }
+    (prefix, abs(power))
+  }
+
+  let number = switch power {
   | 1 => formattedUnit
   | _ =>
     let power = Belt.Int.toString(power)
@@ -66,4 +80,6 @@ let toString = (~mode, {prefix, name, power}: t) => {
     | Unicode => `${formattedUnit}${Formatting_Unicode.formatSuperscriptNumbers(power)}`
     }
   }
+
+  prefix ++ number
 }

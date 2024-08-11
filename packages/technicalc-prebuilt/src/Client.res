@@ -115,6 +115,14 @@ let emptyFormat = {
     | None => defaultFormat.decimalMaxMagnitude
     }
 )
+%%private(
+  @inline
+  let formatUnitFormat = unitFormat =>
+    switch unitFormat {
+    | Some("operator") => TechniCalcCalculator.Formatting.Operator
+    | _ => TechniCalcCalculator.Formatting.Exponential
+    }
+)
 
 module Elements = {
   open TechniCalcEditor
@@ -438,8 +446,8 @@ module Units = {
     }
   }
 
-  let toMml = v => Formatting_Measure.formatUnits(~mode=MathML, v)
-  let toUnicode = v => Formatting_Measure.formatUnits(~mode=Unicode, v)
+  let toMml = (v, ~unitFormat) =>
+    Formatting_Measure.formatUnits(~mode=MathML, ~unitFormat=formatUnitFormat(unitFormat), v)
   let toString = Units_Util.toString
 
   let prefixes = Units_Util.prefixes

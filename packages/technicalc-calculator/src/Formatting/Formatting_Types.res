@@ -9,6 +9,8 @@ type style =
   | Decimal
   | Engineering
 
+type unitFormat = Exponential | Operator
+
 type format = {
   mode: mode,
   style: style,
@@ -34,3 +36,5 @@ let defaultFormat = {
   decimalMinMagnitude: -3,
   decimalMaxMagnitude: 8,
 }
+
+let defaultUnitFormat = Exponential
