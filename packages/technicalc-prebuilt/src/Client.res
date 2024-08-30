@@ -281,7 +281,11 @@ module Keys = {
     CaptureGroupEndS,
   ])
 
-  let equation = (~elements) => Keys.Many(elements)
+  let equation = (~elements, ~symbol, ~inline) =>
+    switch (symbol, inline ? EquationMetadata.equationMetadata(elements) : None) {
+    | (Some(symbol), Some((body, arguments))) => Keys.One(EquationNS({symbol, body, arguments}))
+    | _ => Keys.Many(elements)
+    }
 
   let elements = key =>
     switch key {

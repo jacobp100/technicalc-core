@@ -156,6 +156,13 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     withSuperscript(placeholder, superscript)->Tex_Accum.append(. accum, _)
   | Fold_Function({fn, resultSuperscript: superscript}) =>
     functionTex(fn)->withSuperscript(superscript)->withSpaces->Tex_Accum.append(. accum, _)
+  | Fold_Equation({symbol, arguments, superscript}) =>
+    let body = StringUtil.joinWith(arguments, ", ")
+    let body = Tex_Symbol.toTex(symbol) ++ "\\left(" ++ body ++ "\\right)"
+    let body = withSuperscript(body, superscript)
+    Tex_Accum.append(. accum, body)
+  | Fold_EquationArgument({superscript}) =>
+    withSuperscript("{}", superscript)->Tex_Accum.append(. accum, _)
   | Fold_Factorial => "!"->Tex_Accum.append(. accum, _)
   | Fold_Add => withSpaces("+")->Tex_Accum.append(. accum, _)
   | Fold_Sub => withSpaces("-")->Tex_Accum.append(. accum, _)

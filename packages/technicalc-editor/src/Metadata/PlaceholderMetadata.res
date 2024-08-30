@@ -55,6 +55,7 @@ type placeholder =
     | Sum2 => false
 
     | CaptureGroupEndS
+    | EquationArgumentS(_)
     | CloseBracketS
     | ConstES
     | ConstPiS
@@ -107,7 +108,8 @@ type placeholder =
     | NRoot2S
     | RandInt2S
     | Integral3
-    | TableNS(_) => true
+    | TableNS(_)
+    | EquationNS(_) => true
     }
 )
 

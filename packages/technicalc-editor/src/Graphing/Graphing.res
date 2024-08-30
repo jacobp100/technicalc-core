@@ -169,6 +169,9 @@
     | YUnit => None
     | Z => None
     | ZUnit => None
+    /* FIXME */
+    | Equation(_) => None
+    | EquationArg(_) => None
     }
   and fn = (~context, v: TechniCalcCalculator.AST_Types.t, name: string) =>
     switch astToMetalShader(~context, v) {

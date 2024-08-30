@@ -46,7 +46,7 @@ open AST_Types
   }
 )
 
-let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
+let rec evalAt = (~config, ~context, ~args, ~x, node: t): Value.t =>
   switch node {
   | NaN => Value.nan
   | Zero => Value.zero
@@ -63,23 +63,24 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
   | OfFloat(a) => Value.ofFloat(a)
   | OfString(a) => Formatting.ofString(a)->Belt.Option.getWithDefault(Value.nan)
   | OfStringBase(base, a) => Formatting.ofStringBase(base, a)->Belt.Option.getWithDefault(Value.nan)
-  | Percent(percent) => evalAt(~config, ~context, ~x, percent)->toScalarOrNan->Value.ofPercent
+  | Percent(percent) =>
+    evalAt(~config, ~context, ~args, ~x, percent)->toScalarOrNan->Value.ofPercent
   | Vector(elements) =>
     let vector = Vector.makeByU(Belt.Array.length(elements), (. i) => {
       let a = Belt.Array.getUnsafe(elements, i)
-      evalAt(~config, ~context, ~x, a)->toScalarOrNan
+      evalAt(~config, ~context, ~args, ~x, a)->toScalarOrNan
     })
     Value.ofVector(vector)
   | Matrix({numRows, numColumns, elements}) =>
     let matrix = Matrix.makeByIndexU(~numRows, ~numColumns, (. i) => {
       let a = Belt.Array.getUnsafe(elements, i)
-      evalAt(~config, ~context, ~x, a)->toScalarOrNan
+      evalAt(~config, ~context, ~args, ~x, a)->toScalarOrNan
     })
     Value.ofMatrix(matrix)
   | Measure(value, units) =>
-    let value = evalAt(~config, ~context, ~x, value)->Value.toReal
+    let value = evalAt(~config, ~context, ~args, ~x, value)->Value.toReal
     let units = mapAllU(units, (. {prefix, name, power}): option<Units.t> => {
-      switch evalAt(~config, ~context, ~x, power)->Value.toInt {
+      switch evalAt(~config, ~context, ~args, ~x, power)->Value.toInt {
       | Some(power) => Some({prefix, name, power})
       | None => None
       }
@@ -90,99 +91,129 @@ let rec evalAt = (~config, ~context, ~x, node: t): Value.t =>
     }
   | OfEncoded(a) => Encoding.decode(a)->Belt.Option.getWithDefault(Value.nan)
   | Variable(ident) => AST_Context.get(context, ident)->Belt.Option.getWithDefault(Value.nan)
-  | Add(a, b) => Value.add(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Sub(a, b) => Value.sub(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Mul(a, b) => Value.mul(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Div(a, b) => Value.div(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Pow(a, b) => Value.pow(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Dot(a, b) => Value.dot(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Neg(a) => Value.neg(evalAt(~config, ~context, ~x, a))
-  | Abs(a) => Value.abs(evalAt(~config, ~context, ~x, a))
-  | Floor(a) => Value.floor(evalAt(~config, ~context, ~x, a))
-  | Ceil(a) => Value.ceil(evalAt(~config, ~context, ~x, a))
-  | Round(a) => Value.round(evalAt(~config, ~context, ~x, a))
-  | Sqrt(a) => Value.sqrt(evalAt(~config, ~context, ~x, a))
-  | Exp(a) => Value.exp(evalAt(~config, ~context, ~x, a))
-  | Log(a) => Value.log(evalAt(~config, ~context, ~x, a))
+  | Add(a, b) =>
+    Value.add(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Sub(a, b) =>
+    Value.sub(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Mul(a, b) =>
+    Value.mul(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Div(a, b) =>
+    Value.div(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Pow(a, b) =>
+    Value.pow(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Dot(a, b) =>
+    Value.dot(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Neg(a) => Value.neg(evalAt(~config, ~context, ~args, ~x, a))
+  | Abs(a) => Value.abs(evalAt(~config, ~context, ~args, ~x, a))
+  | Floor(a) => Value.floor(evalAt(~config, ~context, ~args, ~x, a))
+  | Ceil(a) => Value.ceil(evalAt(~config, ~context, ~args, ~x, a))
+  | Round(a) => Value.round(evalAt(~config, ~context, ~args, ~x, a))
+  | Sqrt(a) => Value.sqrt(evalAt(~config, ~context, ~args, ~x, a))
+  | Exp(a) => Value.exp(evalAt(~config, ~context, ~args, ~x, a))
+  | Log(a) => Value.log(evalAt(~config, ~context, ~args, ~x, a))
   | LogBase({base, body}) =>
-    Value.logBase(~base=evalAt(~config, ~context, ~x, base), evalAt(~config, ~context, ~x, body))
-  | Sin(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.sin
-  | Cosec(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.cosec
-  | Sinh(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.sinh
-  | Cos(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.cos
-  | Sec(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.sec
-  | Cosh(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.cosh
-  | Tan(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.tan
-  | Cot(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.cot
-  | Tanh(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.tanh
-  | Asin(a) => evalAt(~config, ~context, ~x, a)->Value.asin->ofRad(~config, _)
-  | Asinh(a) => evalAt(~config, ~context, ~x, a)->Value.asinh->ofRad(~config, _)
-  | Acos(a) => evalAt(~config, ~context, ~x, a)->Value.acos->ofRad(~config, _)
-  | Acosh(a) => evalAt(~config, ~context, ~x, a)->Value.acosh->ofRad(~config, _)
-  | Atan(a) => evalAt(~config, ~context, ~x, a)->Value.atan->ofRad(~config, _)
-  | Atanh(a) => evalAt(~config, ~context, ~x, a)->Value.atanh->ofRad(~config, _)
-  | ToRad(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)
-  | ToDeg(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.toDeg
-  | ToGrad(a) => evalAt(~config, ~context, ~x, a)->toRad(~config, _)->Value.toGrad
-  | OfRad(a) => evalAt(~config, ~context, ~x, a)->ofRad(~config, _)
-  | OfDeg(a) => evalAt(~config, ~context, ~x, a)->Value.ofDeg->ofRad(~config, _)
-  | OfArcMin(a) => evalAt(~config, ~context, ~x, a)->Value.ofArcMin->ofRad(~config, _)
-  | OfArcSec(a) => evalAt(~config, ~context, ~x, a)->Value.ofArcSec->ofRad(~config, _)
-  | OfGrad(a) => evalAt(~config, ~context, ~x, a)->Value.ofGrad->ofRad(~config, _)
-  | Re(a) => Value.re(evalAt(~config, ~context, ~x, a))
-  | Im(a) => Value.im(evalAt(~config, ~context, ~x, a))
-  | Conj(a) => Value.conj(evalAt(~config, ~context, ~x, a))
-  | Gamma(a) => Value.gamma(evalAt(~config, ~context, ~x, a))
-  | Factorial(a) => Value.factorial(evalAt(~config, ~context, ~x, a))
+    Value.logBase(
+      ~base=evalAt(~config, ~context, ~args, ~x, base),
+      evalAt(~config, ~context, ~args, ~x, body),
+    )
+  | Sin(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.sin
+  | Cosec(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.cosec
+  | Sinh(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.sinh
+  | Cos(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.cos
+  | Sec(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.sec
+  | Cosh(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.cosh
+  | Tan(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.tan
+  | Cot(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.cot
+  | Tanh(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.tanh
+  | Asin(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.asin->ofRad(~config, _)
+  | Asinh(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.asinh->ofRad(~config, _)
+  | Acos(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.acos->ofRad(~config, _)
+  | Acosh(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.acosh->ofRad(~config, _)
+  | Atan(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.atan->ofRad(~config, _)
+  | Atanh(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.atanh->ofRad(~config, _)
+  | ToRad(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)
+  | ToDeg(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.toDeg
+  | ToGrad(a) => evalAt(~config, ~context, ~args, ~x, a)->toRad(~config, _)->Value.toGrad
+  | OfRad(a) => evalAt(~config, ~context, ~args, ~x, a)->ofRad(~config, _)
+  | OfDeg(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.ofDeg->ofRad(~config, _)
+  | OfArcMin(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.ofArcMin->ofRad(~config, _)
+  | OfArcSec(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.ofArcSec->ofRad(~config, _)
+  | OfGrad(a) => evalAt(~config, ~context, ~args, ~x, a)->Value.ofGrad->ofRad(~config, _)
+  | Re(a) => Value.re(evalAt(~config, ~context, ~args, ~x, a))
+  | Im(a) => Value.im(evalAt(~config, ~context, ~args, ~x, a))
+  | Conj(a) => Value.conj(evalAt(~config, ~context, ~args, ~x, a))
+  | Gamma(a) => Value.gamma(evalAt(~config, ~context, ~args, ~x, a))
+  | Factorial(a) => Value.factorial(evalAt(~config, ~context, ~args, ~x, a))
   | Rand => Value.rand()
   | RandInt(a, b) =>
-    Value.randInt(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | NPR(a, b) => Value.nPr(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | NCR(a, b) => Value.nCr(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Rem(a, b) => Value.rem(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Min(a, b) => Value.min(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Max(a, b) => Value.max(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Gcd(a, b) => Value.gcd(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Lcm(a, b) => Value.lcm(evalAt(~config, ~context, ~x, a), evalAt(~config, ~context, ~x, b))
-  | Rref(a) => Value.rref(evalAt(~config, ~context, ~x, a))
-  | Trace(a) => Value.trace(evalAt(~config, ~context, ~x, a))
-  | Transpose(a) => Value.transpose(evalAt(~config, ~context, ~x, a))
+    Value.randInt(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | NPR(a, b) =>
+    Value.nPr(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | NCR(a, b) =>
+    Value.nCr(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Rem(a, b) =>
+    Value.rem(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Min(a, b) =>
+    Value.min(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Max(a, b) =>
+    Value.max(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Gcd(a, b) =>
+    Value.gcd(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Lcm(a, b) =>
+    Value.lcm(evalAt(~config, ~context, ~args, ~x, a), evalAt(~config, ~context, ~args, ~x, b))
+  | Rref(a) => Value.rref(evalAt(~config, ~context, ~args, ~x, a))
+  | Trace(a) => Value.trace(evalAt(~config, ~context, ~args, ~x, a))
+  | Transpose(a) => Value.transpose(evalAt(~config, ~context, ~args, ~x, a))
   | X => x
   | Y => Value.nan
   | Z => Value.nan
   | Differential({at, body}) =>
     Value.differentiateU(
-      createEvalAtFnU(~config, ~context, body),
-      evalAt(~config, ~context, ~x, at),
+      createEvalAtFnU(~config, ~context, ~args, body),
+      evalAt(~config, ~context, ~args, ~x, at),
     )
   | Integral({from, to, body}) =>
     Value.integrateU(
-      createEvalAtFnU(~config, ~context, body),
-      evalAt(~config, ~context, ~x, from),
-      evalAt(~config, ~context, ~x, to),
+      createEvalAtFnU(~config, ~context, ~args, body),
+      evalAt(~config, ~context, ~args, ~x, from),
+      evalAt(~config, ~context, ~args, ~x, to),
     )
   | Sum({from, to, body}) =>
     Value.sumU(
-      createEvalAtFnU(~config, ~context, body),
-      evalAt(~config, ~context, ~x, from),
-      evalAt(~config, ~context, ~x, to),
+      createEvalAtFnU(~config, ~context, ~args, body),
+      evalAt(~config, ~context, ~args, ~x, from),
+      evalAt(~config, ~context, ~args, ~x, to),
     )
   | Product({from, to, body}) =>
     Value.productU(
-      createEvalAtFnU(~config, ~context, body),
-      evalAt(~config, ~context, ~x, from),
-      evalAt(~config, ~context, ~x, to),
+      createEvalAtFnU(~config, ~context, ~args, body),
+      evalAt(~config, ~context, ~args, ~x, from),
+      evalAt(~config, ~context, ~args, ~x, to),
     )
+  | Equation({body, arguments}) =>
+    let args = Belt.Array.mapU(arguments, (. value) => {
+      evalAt(~config, ~context, ~args=None, ~x, value)
+    })->Some
+    evalAt(~config, ~context, ~args, ~x, body)
+  | EquationArg(index) =>
+    let value = switch args {
+    | Some(args) => Belt.Array.get(args, index)
+    | None => None
+    }
+    switch value {
+    | Some(value) => value
+    | None => Value.nan
+    }
   }
-and createEvalAtFnU = (~config, ~context, body) => {
-  let fn = (. x) => evalAt(~config, ~context, ~x, body)
+and createEvalAtFnU = (~config, ~context, ~args, body) => {
+  let fn = (. x) => evalAt(~config, ~context, ~args, ~x, body)
   fn
 }
 
-let eval = (~context, ~config, v) => evalAt(~config, ~context, ~x=Value.nan, v)
+let eval = (~context, ~config, v) => evalAt(~config, ~context, ~args=None, ~x=Value.nan, v)
 
 let solveRoot = (~config, ~context, body, initial) => {
-  let fn = createEvalAtFnU(~config, ~context, body)
+  let fn = createEvalAtFnU(~config, ~context, ~args=None, body)
   let initial = eval(~config, ~context, initial)
   initial != #NaNN ? Solvers.solveRootU(fn, initial) : Value.nan
 }

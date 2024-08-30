@@ -91,6 +91,8 @@ type rec t =
   | Integral({from: t, to: t, body: t})
   | Sum({from: t, to: t, body: t})
   | Product({from: t, to: t, body: t})
+  | Equation({body: t, arguments: array<t>})
+  | EquationArg(int)
 and unitsType = {
   prefix: Units_Types.prefix,
   name: Units_Types.name,

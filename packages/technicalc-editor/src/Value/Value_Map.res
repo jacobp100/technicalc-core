@@ -32,6 +32,9 @@ let parse = {
     | Fold_ConstE(superscript) => Some(withSuperscript(E, superscript))
     | Fold_ConstPi(superscript) => Some(withSuperscript(Pi, superscript))
     | Fold_Differential({at, body}) => Some(Differential({at, body}))
+    | Fold_Equation({body, arguments}) => Some(Equation({body, arguments}))
+    | Fold_EquationArgument({index, superscript}) =>
+      Some(withSuperscript(EquationArg(index), superscript))
     | Fold_Floor({arg, superscript}) => Some(withSuperscript(Floor(arg), superscript))
     | Fold_Gcd({a, b, superscript}) => Some(withSuperscript(Gcd(a, b), superscript))
     | Fold_ImaginaryUnit(superscript) => Some(withSuperscript(I, superscript))

@@ -119,7 +119,9 @@
     | ConstantS(_)
     | UnitS(_)
     | VariableS(_)
-    | TableNS(_) =>
+    | TableNS(_)
+    | EquationNS(_)
+    | EquationArgumentS(_) =>
       assert false
     }
 )

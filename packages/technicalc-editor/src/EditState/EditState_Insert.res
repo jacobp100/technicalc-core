@@ -21,6 +21,7 @@ let defaultConfig = {
     switch element {
     | CaptureGroupStart(_)
     | CaptureGroupEndS
+    | EquationArgumentS(_)
     | Acos
     | Acosh
     | Add
@@ -64,7 +65,8 @@ let defaultConfig = {
     | Sum2
     | Frac2S
     | Integral3
-    | TableNS(_) =>
+    | TableNS(_)
+    | EquationNS(_) =>
       AST.argCountExn(element) !== 0 ? FunctionFixed : TopLevelFixed
     | Arg
     | Bin
@@ -210,6 +212,7 @@ let defaultConfig = {
     | Arg
     | CaptureGroupStart(_)
     | CaptureGroupEndS
+    | EquationArgumentS(_)
     | Add
     | ArcMinuteUnit
     | ArcSecondUnit
@@ -291,7 +294,8 @@ let defaultConfig = {
     | NRoot2S
     | RandInt2S
     | Integral3
-    | TableNS(_) => false
+    | TableNS(_)
+    | EquationNS(_) => false
     }
 )
 

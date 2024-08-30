@@ -68,7 +68,28 @@ open UrlSafeEncoding
 )
 
 %%private(
-  let encodeElement = (element: AST.t) =>
+  let encodeArgument = argument =>
+    switch argument {
+    | Some(symbol) => encodeUint(1) ++ Encoding_Symbol.encode(symbol)
+    | None => encodeUint(0)
+    }
+)
+
+%%private(
+  let readArgument = reader =>
+    switch readUint(reader) {
+    | Some(1) =>
+      switch Encoding_Symbol.read(reader) {
+      | Some(symbol) => Some(Some(symbol))
+      | None => None
+      }
+    | Some(0) => Some(None)
+    | _ => None
+    }
+)
+
+%%private(
+  let rec encodeElement = (element: AST.t) =>
     switch element {
     | CaptureGroupStart({placeholder}) => encodeUint(260) ++ encodeCaptureGroup(~placeholder)
     | TableNS({numRows, numColumns}) =>
@@ -76,12 +97,18 @@ open UrlSafeEncoding
     | ConstantS({symbol, value}) => encodeUint(263) ++ encodeConstant(~symbol, ~value)
     | VariableS({id, symbol}) => encodeUint(264) ++ encodeVariable(~id, ~symbol)
     | UnitS({prefix, name}) => encodeUint(265) ++ encodeUnit(~prefix, ~name)
+    | EquationNS({symbol, body, arguments}) =>
+      encodeUint(266) ++
+      Encoding_Symbol.encode(symbol) ++
+      encodeArray(body, encodeElement) ++
+      encodeArray(arguments, encodeArgument)
+    | EquationArgumentS(index) => encodeUint(267) ++ encodeUint(index)
     | element => elementToUint(element)->encodeUint
     }
 )
 
 %%private(
-  let readElement = reader =>
+  let rec readElement = reader =>
     switch readUint(reader) {
     /* Legacy encodings */
     | Some(256 | 257 | 258 | 259) => None
@@ -94,6 +121,20 @@ open UrlSafeEncoding
     | Some(263) => readConstant(reader)
     | Some(264) => readVariable(reader)
     | Some(265) => readUnit(reader)
+    | Some(266) =>
+      switch (
+        Encoding_Symbol.read(reader),
+        readArray(reader, readElement),
+        readArray(reader, readArgument),
+      ) {
+      | (Some(symbol), Some(body), Some(arguments)) => Some(EquationNS({symbol, body, arguments}))
+      | _ => None
+      }
+    | Some(267) =>
+      switch readUint(reader) {
+      | Some(index) => Some(EquationArgumentS(index))
+      | None => None
+      }
     /* Legacy table encodings */
     | Some(54) => Some(TableNS({numRows: 2, numColumns: 2}))
     | Some(55) => Some(TableNS({numRows: 3, numColumns: 3}))

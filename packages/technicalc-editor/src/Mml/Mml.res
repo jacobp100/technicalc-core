@@ -199,6 +199,19 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
     )
   | Fold_Function({fn, resultSuperscript: superscript}) =>
     appendFunctionMml(accum, ~superscript?, ~range, fn)
+  | Fold_Equation({symbol, arguments, superscript}) =>
+    let body = StringUtil.joinWith(arguments, mml("mo", ","))
+    let body = Mml_Symbol.toMml(symbol) ++ mml("mrow", mml("mo", "(") ++ body ++ mml("mo", ")"))
+    Mml_Accum.append(accum, ~superscript?, ~range, "mrow", body)
+  | Fold_EquationArgument({superscript}) =>
+    Mml_Accum.appendPlaceholder(
+      accum,
+      ~range,
+      ~superscript,
+      ~implicit=false,
+      ~captureGroupIndex=None,
+      None,
+    )
   | Fold_Factorial => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "!")
   | Fold_Add => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "+")
   | Fold_Sub => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "-")

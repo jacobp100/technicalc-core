@@ -5,6 +5,7 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | Arg
   | CaptureGroupStart(_)
   | CaptureGroupEndS
+  | EquationArgumentS(_)
   | Add
   | Bin
   | Conj
@@ -80,7 +81,8 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   | NRoot2S
   | RandInt2S
   | Integral3
-  | TableNS(_) => false
+  | TableNS(_)
+  | EquationNS(_) => false
   | Acos
   | Acosh
   | ArcMinuteUnit

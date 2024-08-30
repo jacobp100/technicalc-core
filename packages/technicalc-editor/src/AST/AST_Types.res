@@ -1,9 +1,11 @@
-type t =
+type rec t =
   /* Arg */
   | Arg
   /* Caputure Group */
   | CaptureGroupStart({placeholder: option<Symbol.t>})
   | CaptureGroupEndS
+  /* Equation */
+  | EquationArgumentS(int)
   /* Atom */
   | Acos
   | Acosh
@@ -107,8 +109,9 @@ type t =
   | RandInt2S
   /* Atom3 */
   | Integral3
-  /* Table */
+  /* Variable */
   | TableNS({numRows: int, numColumns: int})
+  | EquationNS({symbol: Symbol.t, body: array<t>, arguments: array<option<Symbol.t>>})
 
 let eq = (a: t, b: t) =>
   switch (a, b) {
@@ -121,6 +124,10 @@ let eq = (a: t, b: t) =>
     }
   | (ConstantS(a), ConstantS(b)) => Symbol.eq(a.symbol, b.symbol) && a.value == a.value
   | (VariableS(a), VariableS(b)) => a.id == b.id && Symbol.eq(a.symbol, b.symbol)
+  | (UnitS(a), UnitS(b)) => a.prefix == b.prefix && a.name == b.name
+  | (EquationArgumentS(a), EquationArgumentS(b)) => a == b
+  | (TableNS(a), TableNS(b)) => a.numRows == b.numRows && a.numColumns == b.numColumns
+  // | (EquationNS(a), EquationNS(b)) => TODO
   | (a, b) => a === b
   }
 
@@ -128,9 +135,10 @@ let argCountExn = (arg: t) =>
   switch arg {
   /* Arg */
   | Arg => assert false
-  /* Caputure Group Start */
+  /* Atom0 */
   | CaptureGroupStart(_)
   | CaptureGroupEndS
+  | EquationArgumentS(_)
   | Acos
   | Acosh
   | Add
@@ -230,8 +238,9 @@ let argCountExn = (arg: t) =>
   | RandInt2S => 2
   /* Atom3 */
   | Integral3 => 3
-  /* Matrices */
+  /* Variable */
   | TableNS({numRows, numColumns}) => numRows * numColumns
+  | EquationNS({arguments}) => Belt.Array.length(arguments)
   }
 
 type normalizationState =

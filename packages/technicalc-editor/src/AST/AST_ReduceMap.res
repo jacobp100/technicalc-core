@@ -57,6 +57,13 @@ type foldState<'a> =
       numColumns: int,
       superscript: option<superscript<'a>>,
     })
+  | Fold_Equation({
+      symbol: Symbol.t,
+      body: 'a,
+      arguments: array<'a>,
+      superscript: option<superscript<'a>>,
+    })
+  | Fold_EquationArgument({index: int, superscript: option<superscript<'a>>})
   | Fold_Transpose
   | Fold_Unit({
       prefix: TechniCalcCalculator.Units.prefix,
@@ -111,7 +118,7 @@ type readResult<'a> =
   | Node(foldState<'a>, int, int)
   | Empty
 
-let reduceMapU = (
+let rec reduceMapU = (
   input: array<t>,
   ~reduce: (. 'accum, foldState<'a>, range) => 'accum,
   ~map: (. 'accum, bool) => 'value,
@@ -327,6 +334,11 @@ let reduceMapU = (
       let (body, i') = readArg(i')
       Node(Fold_Integral({from, to, body}), i, i')
     | TableNS({numRows, numColumns}) => tableS(i, ~numRows, ~numColumns)
+    | EquationNS({symbol, body, arguments}) => functionS(i, ~symbol, ~body, ~arguments)
+    | EquationArgumentS(index) =>
+      let i' = i + 1
+      let (superscript, i') = readSuperscript(i')
+      Node(Fold_EquationArgument({index, superscript}), i, i')
     | UnitS({prefix, name}) =>
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
@@ -383,9 +395,9 @@ let reduceMapU = (
   and tableS = (i, ~numRows, ~numColumns) => {
     let emptyArg = Fold_Digit({nucleus: "0", superscript: None})
     let i' = i + 1
-    let (i', elements) = ArrayUtil.foldMakeU(numRows * numColumns, i', (. s, _) => {
-      let (element, index) = readArg(~emptyArg, s)
-      (index, element)
+    let (i', elements) = ArrayUtil.foldMakeU(numRows * numColumns, i', (. i', _) => {
+      let (element, i') = readArg(~emptyArg, i')
+      (i', element)
     })
     let (superscript, i') = readSuperscript(i')
     Node(
@@ -399,8 +411,27 @@ let reduceMapU = (
       i',
     )
   }
+  and functionS = (i, ~symbol, ~body, ~arguments) => {
+    let body = reduceMapU(body, ~reduce, ~map, ~initial)
+    let i' = i + 1
+    let (i', arguments) = ArrayUtil.foldMakeU(Belt.Array.length(arguments), i', (.
+      i',
+      argumentIndex,
+    ) => {
+      let emptyArg = Fold_Placeholder({
+        implicit: true,
+        placeholder: Belt.Array.getUnsafe(arguments, argumentIndex),
+        superscript: None,
+        captureGroupIndex: None,
+      })
+      let (element, i') = readArg(~emptyArg, i')
+      (i', element)
+    })
+    let (superscript, i') = readSuperscript(i')
+    Node(Fold_Equation({symbol, body, arguments, superscript}), i, i')
+  }
 
-  let readUntilEnd = () => {
+  let process = input => {
     let rec iter = (~accum, i) =>
       switch Belt.Array.get(input, i) {
       | None => map(. accum, false)
@@ -414,6 +445,5 @@ let reduceMapU = (
 
     iter(~accum=initial, 0)
   }
-
-  readUntilEnd()
+  process(input)
 }
