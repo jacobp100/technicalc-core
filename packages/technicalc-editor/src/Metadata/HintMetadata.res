@@ -8,7 +8,7 @@ type hint =
 %%private(
   let captureGroupHintAtIndex = (elements: array<t>, index: int) => {
     // Can ignore Args and brackets here
-    let rec iter = index =>
+    let rec iter = (~argumentIndex, index) =>
       switch Belt.Array.get(elements, index) {
       | Some(CaptureGroupEndS) => None
       | Some(CaptureGroupStart({placeholder: Some(placeholder)})) =>
@@ -17,11 +17,25 @@ type hint =
         | _ => false
         }
         Some(CaptureGroup({placeholder, isEmpty}))
-      | Some(_) => iter(index - 1)
+      | Some(EquationNS({arguments})) =>
+        switch (
+          Belt.Array.getUnsafe(arguments, argumentIndex),
+          AST_Util.functionArgRangesExn(elements, index)->Belt.Array.get(argumentIndex),
+        ) {
+        | (Some(placeholder), Some((r0, r1))) =>
+          let isEmpty = r0 == r1 - 1
+          Some(CaptureGroup({placeholder, isEmpty}))
+        | _ => None
+        }
+      | Some(Arg) => iter(~argumentIndex=argumentIndex + 1, index - 1)
+      | Some(e) =>
+        let argumentIndex = argumentIndex - argCountExn(e)
+        let argumentIndex = max(argumentIndex, 0)
+        iter(~argumentIndex, index - 1)
       | None => None
       }
 
-    iter(index - 1)
+    iter(~argumentIndex=0, index - 1)
   }
 )
 
