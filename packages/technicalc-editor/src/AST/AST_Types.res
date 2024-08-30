@@ -111,7 +111,11 @@ type rec t =
   | Integral3
   /* Variable */
   | TableNS({numRows: int, numColumns: int})
-  | EquationNS({symbol: Symbol.t, body: array<t>, arguments: array<option<Symbol.t>>})
+  | EquationNS({
+      symbol: Symbol.t,
+      body: TechniCalcCalculator.AST_Types.t,
+      arguments: array<option<Symbol.t>>,
+    })
 
 let eq = (a: t, b: t) =>
   switch (a, b) {

@@ -281,11 +281,20 @@ module Keys = {
     CaptureGroupEndS,
   ])
 
-  let equation = (~elements, ~symbol, ~inline) =>
-    switch (symbol, inline ? EquationMetadata.equationMetadata(elements) : None) {
+  let equation = (~elements, ~symbol, ~inline) => {
+    let bodyArguments = switch inline ? EquationMetadata.equationMetadata(elements) : None {
+    | Some((elements, arguments)) =>
+      switch TechniCalcEditor.Value.parse(elements) {
+      | Ok(body) => Some((body, arguments))
+      | Error(_) => None
+      }
+    | None => None
+    }
+    switch (symbol, bodyArguments) {
     | (Some(symbol), Some((body, arguments))) => Keys.One(EquationNS({symbol, body, arguments}))
     | _ => Keys.Many(elements)
     }
+  }
 
   let elements = key =>
     switch key {

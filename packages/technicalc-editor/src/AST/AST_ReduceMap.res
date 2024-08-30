@@ -59,7 +59,7 @@ type foldState<'a> =
     })
   | Fold_Equation({
       symbol: Symbol.t,
-      body: 'a,
+      body: TechniCalcCalculator.AST_Types.t,
       arguments: array<'a>,
       superscript: option<superscript<'a>>,
     })
@@ -118,7 +118,7 @@ type readResult<'a> =
   | Node(foldState<'a>, int, int)
   | Empty
 
-let rec reduceMapU = (
+let reduceMapU = (
   input: array<t>,
   ~reduce: (. 'accum, foldState<'a>, range) => 'accum,
   ~map: (. 'accum, bool) => 'value,
@@ -412,7 +412,6 @@ let rec reduceMapU = (
     )
   }
   and functionS = (i, ~symbol, ~body, ~arguments) => {
-    let body = reduceMapU(body, ~reduce, ~map, ~initial)
     let i' = i + 1
     let (i', arguments) = ArrayUtil.foldMakeU(Belt.Array.length(arguments), i', (.
       i',

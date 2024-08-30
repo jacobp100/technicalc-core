@@ -29,7 +29,7 @@ test("inline equations with placeholders", () => {
     superscript: "",
     subscript: "",
   })
-  let (body, arguments) =
+  let (elements, arguments) =
     EquationMetadata.equationMetadata([
       Frac2S,
       CaptureGroupStart({placeholder: x}),
@@ -46,7 +46,7 @@ test("inline equations with placeholders", () => {
       Arg,
     ])->Belt.Option.getExn
 
-  expect(body)->toEqual([
+  expect(elements)->toEqual([
     Frac2S,
     EquationArgumentS(0),
     Add,
@@ -75,7 +75,7 @@ test("parse equation", () => {
     superscript: "",
     subscript: "",
   })
-  let (body, arguments) =
+  let (elements, arguments) =
     EquationMetadata.equationMetadata([
       Frac2S,
       CaptureGroupStart({placeholder: x}),
@@ -91,6 +91,8 @@ test("parse equation", () => {
       CaptureGroupEndS,
       Arg,
     ])->Belt.Option.getExn
+
+  let body = Value.parse(elements)->Belt.Result.getExn
 
   let res = Value.parse([
     EquationNS({

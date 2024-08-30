@@ -19,7 +19,11 @@ let y: Symbol.t = {
 test("hint in function (continued)", () => {
   let elements: array<AST.t> = [
     /* 1 */ N1_S,
-    /* 2 */ EquationNS({symbol: x, body: [], arguments: [Some(x), Some(y)]}),
+    /* 2 */ EquationNS({
+      symbol: x,
+      body: TechniCalcCalculator.AST.One,
+      arguments: [Some(x), Some(y)],
+    }),
     /* 3 */ Frac2S,
     /* 4 */ N1_S,
     /* 5 */ Arg,

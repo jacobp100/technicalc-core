@@ -89,7 +89,7 @@ open UrlSafeEncoding
 )
 
 %%private(
-  let rec encodeElement = (element: AST.t) =>
+  let encodeElement = (element: AST.t) =>
     switch element {
     | CaptureGroupStart({placeholder}) => encodeUint(260) ++ encodeCaptureGroup(~placeholder)
     | TableNS({numRows, numColumns}) =>
@@ -100,7 +100,7 @@ open UrlSafeEncoding
     | EquationNS({symbol, body, arguments}) =>
       encodeUint(266) ++
       Encoding_Symbol.encode(symbol) ++
-      encodeArray(body, encodeElement) ++
+      TechniCalcCalculator.AST_Encoding.encode(body) ++
       encodeArray(arguments, encodeArgument)
     | EquationArgumentS(index) => encodeUint(267) ++ encodeUint(index)
     | element => elementToUint(element)->encodeUint
@@ -108,7 +108,7 @@ open UrlSafeEncoding
 )
 
 %%private(
-  let rec readElement = reader =>
+  let readElement = reader =>
     switch readUint(reader) {
     /* Legacy encodings */
     | Some(256 | 257 | 258 | 259) => None
@@ -124,7 +124,7 @@ open UrlSafeEncoding
     | Some(266) =>
       switch (
         Encoding_Symbol.read(reader),
-        readArray(reader, readElement),
+        TechniCalcCalculator.AST_Encoding.read(reader),
         readArray(reader, readArgument),
       ) {
       | (Some(symbol), Some(body), Some(arguments)) => Some(EquationNS({symbol, body, arguments}))
