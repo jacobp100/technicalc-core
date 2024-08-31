@@ -136,6 +136,29 @@ let placeholders = (elements: array<AST.t>): array<placeholder> => {
         iter(~functionStack, ~captureGroupStartStack, ~placeholdersRev, index + 1)
       | list{} => iter(~functionStack, ~captureGroupStartStack, ~placeholdersRev, index + 1)
       }
+    | Some(EquationNS({arguments})) =>
+      let functionArgRanges = functionArgRangesExn(elements, index)
+      let placeholdersRev = Belt.Array.reduceWithIndexU(arguments, placeholdersRev, (.
+        placeholdersRev,
+        symbol,
+        index,
+      ) => {
+        switch Belt.Array.get(functionArgRanges, index) {
+        | Some((r, r')) =>
+          let elements = Belt.Array.slice(elements, ~offset=r, ~len=r' - r)->AST_Types.normalize
+          let placeholder = Explicit({index: r, symbol, elements})
+          list{placeholder, ...placeholdersRev}
+        | _ => placeholdersRev
+        }
+      })
+      let index = switch Belt.Array.get(
+        functionArgRanges,
+        Belt.Array.length(functionArgRanges) - 1,
+      ) {
+      | Some((_, r')) => r'
+      | None => index
+      }
+      iter(~functionStack, ~captureGroupStartStack, ~placeholdersRev, index + 1)
     | Some(Arg) =>
       let (placeholdersRev, functionStack) = switch functionStack {
       | list{(lastFunctionIndex, needsPopulating, argCount), ...functionStack} =>

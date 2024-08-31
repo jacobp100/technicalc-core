@@ -18,3 +18,37 @@ test("placeholder metadata", () => {
     ]),
   )->toEqual([])
 })
+
+test("function metadata", () => {
+  let x: Symbol.t = {
+    bold: false,
+    italic: false,
+    base: "x",
+    superscript: "",
+    subscript: "",
+  }
+  let y: Symbol.t = {
+    bold: false,
+    italic: false,
+    base: "x",
+    superscript: "",
+    subscript: "",
+  }
+
+  expect(
+    placeholders([
+      /* 0 */ EquationNS({
+        symbol: x,
+        elements: [],
+        body: Obj.magic(None),
+        arguments: [Some(x), Some(y)],
+      }),
+      /* 1 */ N1_S,
+      /* 2 */ Arg,
+      /* 3 */ Arg,
+    ]),
+  )->toEqual([
+    Explicit({index: 1, symbol: Some(x), elements: [N1_S]}),
+    Explicit({index: 3, symbol: Some(y), elements: []}),
+  ])
+})
