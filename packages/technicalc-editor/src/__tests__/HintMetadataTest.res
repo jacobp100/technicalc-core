@@ -21,6 +21,7 @@ test("hint in function (continued)", () => {
     /* 1 */ N1_S,
     /* 2 */ EquationNS({
       symbol: x,
+      elements: [N1_S],
       body: TechniCalcCalculator.AST.One,
       arguments: [Some(x), Some(y)],
     }),

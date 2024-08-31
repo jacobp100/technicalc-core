@@ -113,6 +113,7 @@ type rec t =
   | TableNS({numRows: int, numColumns: int})
   | EquationNS({
       symbol: Symbol.t,
+      elements: array<t>, // For encoding purposes
       body: TechniCalcCalculator.AST_Types.t,
       arguments: array<option<Symbol.t>>,
     })

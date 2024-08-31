@@ -282,16 +282,19 @@ module Keys = {
   ])
 
   let equation = (~elements, ~symbol, ~inline) => {
-    let bodyArguments = switch inline ? EquationMetadata.equationMetadata(elements) : None {
-    | Some((elements, arguments)) =>
+    let inlineEquation = switch (
+      symbol,
+      inline ? EquationMetadata.equationMetadata(elements) : None,
+    ) {
+    | (Some(symbol), Some((elements, arguments))) =>
       switch TechniCalcEditor.Value.parse(elements) {
-      | Ok(body) => Some((body, arguments))
+      | Ok(body) => Some(Keys.One(EquationNS({symbol, elements, body, arguments})))
       | Error(_) => None
       }
-    | None => None
+    | _ => None
     }
-    switch (symbol, bodyArguments) {
-    | (Some(symbol), Some((body, arguments))) => Keys.One(EquationNS({symbol, body, arguments}))
+    switch inlineEquation {
+    | Some(inlineEquation) => inlineEquation
     | _ => Keys.Many(elements)
     }
   }

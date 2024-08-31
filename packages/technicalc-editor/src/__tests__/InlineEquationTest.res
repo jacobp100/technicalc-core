@@ -103,6 +103,7 @@ test("parse equation", () => {
         superscript: "",
         subscript: "",
       },
+      elements,
       body,
       arguments,
     }),
