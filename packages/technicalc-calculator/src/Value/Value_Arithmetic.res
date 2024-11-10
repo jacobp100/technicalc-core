@@ -52,6 +52,7 @@ let mul = (a: t, b: t) =>
   | (#...Scalar.t as s, #Matx(m)) =>
     Matrix.mulScalar(m, s)->ofMatrix
   | (#Matx(m), #Vect(v)) => Matrix.mulVector(m, v)->ofVector
+  | (#Vect(v), #Matx(m)) => Matrix.preMulVector(v, m)->ofMatrix
   | (#Mesr(aM), #Mesr(bM)) => Measure.mul(aM, bM)->ofMeasure
   | (#Mesr(aM), #Real(bR)) | (#Real(bR), #Mesr(aM)) => Measure.mulReal(aM, bR)->ofMeasure
   | _ => nan

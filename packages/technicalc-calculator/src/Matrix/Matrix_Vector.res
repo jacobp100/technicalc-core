@@ -17,3 +17,15 @@ let mulVector = (m: t, v: Vector.t): Vector.t => {
     Vector.empty
   }
 }
+
+let preMulVector = (v: Vector.t, m: t): t => {
+  let size = Vector.size(v)
+
+  if m.numRows == 1 && m.numColumns == size {
+    makeByU(~numRows=size, ~numColumns=size, (. row, column) => {
+      Scalar.mul(Vector.getExn(v, row), getExn(m, ~row=0, ~column))
+    })
+  } else {
+    empty
+  }
+}
