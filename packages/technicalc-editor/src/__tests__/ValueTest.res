@@ -55,7 +55,7 @@ test("magnitudes", () => {
 test("imaginary units", () => {
   let mulI = {
     open TechniCalcCalculator.Value
-    mul(i)
+    mul(i, _)
   }
 
   parse([N2_S, ImaginaryUnitS])->expect->toEqual(Ok(ofInt(2)->mulI))

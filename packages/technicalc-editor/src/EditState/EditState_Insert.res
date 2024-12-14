@@ -6,9 +6,9 @@ open EditState_Base
  but it'll make the typechecker ensure correctness after adding new elemnets
  */
 type skipMode =
-  | Movable
-  | TopLevelFixed
-  | FunctionFixed
+  | @as(0) Movable
+  | @as(1) TopLevelFixed
+  | @as(2) FunctionFixed
 
 type insertConfig = {forceCollectFraction: bool}
 
@@ -399,7 +399,7 @@ type parentTable = {
     let cellRanges = AST.functionArgRangesExn(elements, tableStartIndex)
     let (_, tableEndIndex) = ArrayUtil.lastExn(cellRanges)
 
-    let toCells = Belt.Array.makeByU(toRows * toColumns, (. i) => {
+    let toCells = Belt.Array.makeByU(toRows * toColumns, i => {
       let column = mod(i, toColumns)
       let row = i / toColumns
 
@@ -419,7 +419,7 @@ type parentTable = {
       Belt.Array.sliceToEnd(elements, tableEndIndex),
     ])
 
-    let selectionIndex = Belt.Array.getIndexByU(cellRanges, (. (start, end)) => {
+    let selectionIndex = Belt.Array.getIndexByU(cellRanges, ((start, end)) => {
       index >= start && index < end
     })
     let index = switch selectionIndex {
@@ -445,7 +445,7 @@ type parentTable = {
         Belt.Array.getExn(toCells, cellIndex)->Belt.Array.length - 1
       }
 
-      let previousCellElements = Belt.Array.reduceWithIndexU(toCells, 0, (. accum, cells, i) => {
+      let previousCellElements = Belt.Array.reduceWithIndexU(toCells, 0, (accum, cells, i) => {
         accum + (i < cellIndex ? Belt.Array.length(cells) : 0)
       })
 
@@ -515,7 +515,7 @@ let insertArray = (
 ) => {
   let elements = AST.normalize(elements)
 
-  let valid = Belt.Array.everyU(insertedElements, (. element) => {
+  let valid = Belt.Array.everyU(insertedElements, element => {
     AST_NormalizationContext.elementIsValid(elements, element, index)
   })
   if valid {

@@ -35,7 +35,7 @@ let read = (string, decoder) => {
     | '0' .. '9' => Char.code(character) - Char.code('0') + 52
     | '-' => 62
     | '_' => 63
-    | _ => assert false
+    | _ => assert(false)
     }
   }
 )
@@ -119,8 +119,8 @@ let readArray = (reader, decoder) =>
   }
 
 type stringOptimisation =
-  | Text
-  | Numbers
+  | @as(0) Text
+  | @as(1) Numbers
 
 %%private(
   let charXor = x =>
@@ -132,7 +132,7 @@ type stringOptimisation =
 
 let encodeString = (~optimizeFor=Text, string) => {
   let charXor = charXor(optimizeFor)
-  Belt.Array.makeByU(String.length(string), (. i) => {
+  Belt.Array.makeByU(String.length(string), i => {
     lxor(StringUtil.charAtUnsafe(string, i), charXor)
   })->encodeArray(encodeUint)
 }

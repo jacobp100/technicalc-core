@@ -1,26 +1,26 @@
 type prefix =
-  | Unit
-  | Femto
-  | Pico
-  | Nano
-  | Micro
-  | Milli
-  | Centi
-  | Deci
-  | Deca
-  | Hecto
-  | Kilo
-  | Mega
-  | Giga
-  | Tera
-  | Peta
-  | Exa
-  | Kibi
-  | Mebi
-  | Gibi
-  | Tebi
-  | Pebi
-  | Exbi
+  | @as(0) Unit
+  | @as(1) Femto
+  | @as(2) Pico
+  | @as(3) Nano
+  | @as(4) Micro
+  | @as(5) Milli
+  | @as(6) Centi
+  | @as(7) Deci
+  | @as(8) Deca
+  | @as(9) Hecto
+  | @as(10) Kilo
+  | @as(11) Mega
+  | @as(12) Giga
+  | @as(13) Tera
+  | @as(14) Peta
+  | @as(15) Exa
+  | @as(16) Kibi
+  | @as(17) Mebi
+  | @as(18) Gibi
+  | @as(19) Tebi
+  | @as(20) Pebi
+  | @as(21) Exbi
 
 /*
  This would be much better as a polymorphic variant, but it meant any switch
@@ -28,102 +28,102 @@ type prefix =
  */
 type name =
   /* Time */
-  | Second
-  | Minute
-  | Hour
-  | Day
-  | Week
-  | Month
-  | Year
-  | Decade
-  | Century
+  | @as(0) Second
+  | @as(1) Minute
+  | @as(2) Hour
+  | @as(3) Day
+  | @as(4) Week
+  | @as(5) Month
+  | @as(6) Year
+  | @as(7) Decade
+  | @as(8) Century
   /* Length */
-  | Meter
-  | Inch
-  | Foot
-  | Yard
-  | Mile
-  | NauticalMile
-  | ScandinavianMile
-  | LightYear
-  | Parsec
-  | Angstrom
-  | Furlong
-  | Chain
-  | Link
-  | Rod
+  | @as(9) Meter
+  | @as(10) Inch
+  | @as(11) Foot
+  | @as(12) Yard
+  | @as(13) Mile
+  | @as(14) NauticalMile
+  | @as(15) ScandinavianMile
+  | @as(16) LightYear
+  | @as(17) Parsec
+  | @as(18) Angstrom
+  | @as(19) Furlong
+  | @as(20) Chain
+  | @as(21) Link
+  | @as(22) Rod
   /* Mass */
-  | Gram
-  | Tonne
-  | Ounce
-  | Pound
-  | Stone
+  | @as(23) Gram
+  | @as(24) Tonne
+  | @as(25) Ounce
+  | @as(26) Pound
+  | @as(27) Stone
   /* Area */
-  | Acre
-  | Hectare
+  | @as(28) Acre
+  | @as(29) Hectare
   /* Volume */
-  | Liter
-  | Gallon
-  | USGallon
-  | Quart
-  | USQuart
-  | Cup
-  | USCup
-  | Pint
-  | USPint
-  | Teaspoon
-  | USTeaspoon
-  | Tablespoon
-  | USTablespoon
-  | FluidOunce
+  | @as(30) Liter
+  | @as(31) Gallon
+  | @as(32) USGallon
+  | @as(33) Quart
+  | @as(34) USQuart
+  | @as(35) Cup
+  | @as(36) USCup
+  | @as(37) Pint
+  | @as(38) USPint
+  | @as(39) Teaspoon
+  | @as(40) USTeaspoon
+  | @as(41) Tablespoon
+  | @as(42) USTablespoon
+  | @as(43) FluidOunce
   /* Speed */
-  | Knot
+  | @as(44) Knot
   /* Force */
-  | Newton
-  | PoundForce
+  | @as(45) Newton
+  | @as(46) PoundForce
   /* Pressure */
-  | Pascal
-  | Atmosphere
-  | Bar
+  | @as(47) Pascal
+  | @as(48) Atmosphere
+  | @as(49) Bar
   /* Energy */
-  | Joule
-  | Calorie
-  | ElectronVolt
-  | BTU
-  | Therm
+  | @as(50) Joule
+  | @as(51) Calorie
+  | @as(52) ElectronVolt
+  | @as(53) BTU
+  | @as(54) Therm
   /* Power */
-  | Watt
-  | Horsepower
-  | MetricHorsepower
+  | @as(55) Watt
+  | @as(56) Horsepower
+  | @as(57) MetricHorsepower
   /* Voltage */
-  | Volt
+  | @as(58) Volt
   /* Amps */
-  | Ampere
+  | @as(59) Ampere
   /* Resistance */
-  | Ohm
+  | @as(60) Ohm
   /* Capacitance */
-  | Farad
+  | @as(61) Farad
   /* Flux */
-  | Weber
+  | @as(62) Weber
   /* Flux density */
-  | Tesla
+  | @as(63) Tesla
   /* Inductance */
-  | Henry
+  | @as(64) Henry
   /* Conductance */
-  | Siemens
+  | @as(65) Siemens
   /* Charge */
-  | Coulomb
+  | @as(66) Coulomb
   /* Substance */
-  | Mole
+  | @as(67) Mole
   /* Frequency */
-  | Hertz
+  | @as(68) Hertz
   /* Memory */
-  | Bit
-  | Byte
+  | @as(69) Bit
+  | @as(70) Byte
   /* Temperature */
-  | Kelvin
-  | Celsius
-  | Fahrenheit
+  | @as(71) Kelvin
+  | @as(72) Celsius
+  | @as(73) Fahrenheit
 
 type t = {
   prefix: prefix,

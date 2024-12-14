@@ -4,17 +4,17 @@ open Value_Functions
 open Value_Operators
 
 %%private(
-  let mapReal = (x: t, f: (. Real.t) => Real.t) =>
+  let mapReal = (x: t, f: Real.t => Real.t) =>
     switch x {
-    | #Real(re) => ofReal(f(. re))
+    | #Real(re) => ofReal(f(re))
     | _ => x
     }
 )
 
 type realBounds =
-  | Real(Decimal.t, DecimalUtil.bounds)
-  | Complex
-  | NaN
+  | @as(0) Real(Decimal.t, DecimalUtil.bounds)
+  | @as(1) Complex
+  | @as(2) NaN
 
 %%private(
   let realBounds = (~lower=?, ~upper=?, x: t) =>
@@ -31,10 +31,10 @@ type realBounds =
 )
 
 %%private(
-  let mapRealDecimal = (x: t, f: (. Decimal.t) => Decimal.t): t =>
+  let mapRealDecimal = (x: t, f: Decimal.t => Decimal.t): t =>
     switch x {
-    | #Zero => ofDecimal(f(. Decimal.zero))
-    | #Real(re) => Real.toDecimal(re)->f(. _)->ofDecimal
+    | #Zero => ofDecimal(f(Decimal.zero))
+    | #Real(re) => Real.toDecimal(re)->(f(_))->ofDecimal
     | _ => nan
     }
 )
@@ -57,7 +57,7 @@ let sin = (x: t): t =>
 let cosec = a => sin(a)->inv
 
 let asin = (x: t): t =>
-  switch mapReal(x, (. a) => Real.mod2Pi(a)) {
+  switch mapReal(x, a => Real.mod2Pi(a)) {
   | #Real(Rational(-1, 1, Unit)) => ofReal(Real.ofRational(-1, 2, Pi(1)))
   | #Real(Rational(-1, 2, Sqrt(3))) => ofReal(Real.ofRational(-1, 3, Pi(1)))
   | #Real(Rational(-1, 2, Sqrt(2))) => ofReal(Real.ofRational(-1, 4, Pi(1)))
@@ -72,7 +72,7 @@ let asin = (x: t): t =>
   | #Cmpx(_) =>
     switch realBounds(~lower=Decimal.minusOne, ~upper=Decimal.one, x) {
     | Real(_, BothBound | LowerBound | UpperBound | Inside) =>
-      mapRealDecimal(x, (. a) => Decimal.asin(a))
+      mapRealDecimal(x, a => Decimal.asin(a))
     | Real(_, Outside)
     | Complex =>
       -i * log(i * x + sqrt(one - x * x))
@@ -121,7 +121,7 @@ let cos = (x: t): t =>
 let sec = a => cos(a)->inv
 
 let acos = (x: t): t =>
-  switch mapReal(x, (. a) => Real.mod2Pi(a)) {
+  switch mapReal(x, a => Real.mod2Pi(a)) {
   | #Real(Rational(-1, 1, Unit)) => ofReal(Real.ofRational(1, 1, Pi(1)))
   | #Real(Rational(-1, 2, Sqrt(3))) => ofReal(Real.ofRational(5, 6, Pi(1)))
   | #Real(Rational(-1, 2, Sqrt(2))) => ofReal(Real.ofRational(3, 4, Pi(1)))
@@ -136,7 +136,7 @@ let acos = (x: t): t =>
   | #Cmpx(_) =>
     switch realBounds(~lower=Decimal.minusOne, ~upper=Decimal.one, x) {
     | Real(_, BothBound | LowerBound | UpperBound | Inside) =>
-      mapRealDecimal(x, (. a) => Decimal.acos(a))
+      mapRealDecimal(x, a => Decimal.acos(a))
     | Real(_, Outside)
     | Complex =>
       ofReal(Real.ofRational(1, 2, Pi(1))) - asin(x)
@@ -184,7 +184,7 @@ let acosh = (x: t): t =>
   }
 
 let tan = (x: t): t =>
-  switch mapReal(x, (. a) => Real.mod2Pi(a)) {
+  switch mapReal(x, a => Real.mod2Pi(a)) {
   | #Zero
   | #Real(Rational(1 | 2, 1, Pi(1))) => zero
   | #Real(Rational(1 | 5, 4, Pi(1))) => one
@@ -194,7 +194,7 @@ let tan = (x: t): t =>
   | #Real(Rational(1 | 7, 6, Pi(1))) => ofReal(Real.ofRational(1, 3, Sqrt(3)))
   | #Real(Rational(5 | 11, 6, Pi(1))) => ofReal(Real.ofRational(-1, 3, Sqrt(3)))
   | #Real(Rational(1 | 3, 2, Pi(1))) => nan
-  | #Real(_) => mapRealDecimal(x, (. a) => Decimal.tan(a))
+  | #Real(_) => mapRealDecimal(x, a => Decimal.tan(a))
   | #Imag(_)
   | #Cmpx(_) =>
     let iX = x * i
@@ -211,7 +211,7 @@ let tan = (x: t): t =>
 let cot = a => tan(a)->inv
 
 let atan = (a: t): t =>
-  switch mapReal(a, (. a) => Real.mod2Pi(a)) {
+  switch mapReal(a, a => Real.mod2Pi(a)) {
   | #Real(Rational(-1, 1, Sqrt(3))) => ofReal(Real.ofRational(-1, 3, Pi(1)))
   | #Real(Rational(-1, 1, Unit)) => ofReal(Real.ofRational(-1, 4, Pi(1)))
   | #Real(Rational(-1, 3, Sqrt(3))) => ofReal(Real.ofRational(-1, 6, Pi(1)))
@@ -219,7 +219,7 @@ let atan = (a: t): t =>
   | #Real(Rational(1, 3, Sqrt(3))) => ofReal(Real.ofRational(1, 6, Pi(1)))
   | #Real(Rational(1, 1, Unit)) => ofReal(Real.ofRational(1, 4, Pi(1)))
   | #Real(Rational(1, 1, Sqrt(3))) => ofReal(Real.ofRational(1, 3, Pi(1)))
-  | #Real(_) => mapRealDecimal(a, (. a) => Decimal.atan(a))
+  | #Real(_) => mapRealDecimal(a, a => Decimal.atan(a))
   | #Imag(Rational(1 | -1, 1, Unit)) => nan
   | (#Imag(_) | #Cmpx(_)) as vV =>
     open Real

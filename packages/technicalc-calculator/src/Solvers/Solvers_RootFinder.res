@@ -32,8 +32,8 @@ type previous = {
 }
 
 type iterationMode =
-  | Bisect(Decimal.t, Decimal.t)
-  | Gradient(Decimal.t)
+  | @as(0) Bisect(Decimal.t, Decimal.t)
+  | @as(1) Gradient(Decimal.t)
 
 %%private(let precision = Decimal.ofFloat(1e-8))
 %%private(let optimiseGradientLimit = Decimal.ofInt(2))
@@ -69,7 +69,7 @@ type iterationMode =
       (positiveX + negativeX) / ofInt(2)
     }
     let mReal = ofDecimal(m)
-    let fm = f(. mReal)->toDecimal
+    let fm = f(mReal)->toDecimal
 
     if withinPrecision(fm) {
       mReal
@@ -90,7 +90,7 @@ type iterationMode =
 %%private(
   let rec newtonDecimalU = (~canBisect=true, ~iterations=100, ~previous, f, x) => {
     let xReal = ofDecimal(x)
-    let fxReal = f(. xReal)
+    let fxReal = f(xReal)
     let fx = toDecimal(fxReal)
 
     if withinPrecision(fx) {
@@ -137,7 +137,7 @@ type iterationMode =
           }
           newtonDecimalU(~iterations, ~previous, f, xNext)
         } else {
-          let gx = f(. Value.add(xReal, fxReal))->toDecimal
+          let gx = f(Value.add(xReal, fxReal))->toDecimal
           if !eqZero(gx) {
             let xNext = {
               open Decimal
@@ -157,7 +157,7 @@ type iterationMode =
 
 %%private(
   let newtonPreciseU = (f, x) => {
-    let fx = f(. x)
+    let fx = f(x)
     let f'x = Value_Calculus.differentiateU(f, x)
     let (xPrev, fxPrev) = (x, fx)
     let x = {

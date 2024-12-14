@@ -80,7 +80,7 @@ type foldState<'a> =
 
 type range = (int, int)
 
-let superscriptBodyU = (. superscript) => superscript.superscriptBody
+let superscriptBodyU = superscript => superscript.superscriptBody
 
 %%private(
   let digitNucleusExn = digit =>
@@ -101,7 +101,7 @@ let superscriptBodyU = (. superscript) => superscript.superscriptBody
     | ND_S => "D"
     | NE_S => "E"
     | NF_S => "F"
-    | _ => assert false
+    | _ => assert(false)
     }
 )
 
@@ -120,8 +120,8 @@ type readResult<'a> =
 
 let reduceMapU = (
   input: array<t>,
-  ~reduce: (. 'accum, foldState<'a>, range) => 'accum,
-  ~map: (. 'accum, bool) => 'value,
+  ~reduce: ('accum, foldState<'a>, range) => 'accum,
+  ~map: ('accum, bool) => 'value,
   ~initial: 'accum,
 ): 'value => {
   let rec readNodeExn = (i): readResult<'a> =>
@@ -178,15 +178,15 @@ let reduceMapU = (
     | SecS => fnS(i, Fn_Sec)
     | CotS => fnS(i, Fn_Cot)
     | NLog1 =>
-      let (base, i') = readArg(i + 1)
+      let (base, i') = readArgDefault(i + 1)
       Node(Fold_Function({fn: Fn_NLog({base: base}), resultSuperscript: None}), i, i')
     | Product2 =>
-      let (from, i') = readArg(i + 1)
-      let (to, i') = readArg(i')
+      let (from, i') = readArgDefault(i + 1)
+      let (to, i') = readArgDefault(i')
       Node(Fold_Function({fn: Fn_Product({from, to}), resultSuperscript: None}), i, i')
     | Sum2 =>
-      let (from, i') = readArg(i + 1)
-      let (to, i') = readArg(i')
+      let (from, i') = readArgDefault(i + 1)
+      let (to, i') = readArgDefault(i')
       Node(Fold_Function({fn: Fn_Sum({from, to}), resultSuperscript: None}), i, i')
     | RadianUnit => Node(Fold_Angle(Angle_Radian), i, i + 1)
     | DegreeUnit => Node(Fold_Angle(Angle_Degree), i, i + 1)
@@ -252,86 +252,86 @@ let reduceMapU = (
       let (superscript, i') = readSuperscript(i')
       Node(Fold_ZUnit(superscript), i, i')
     | Magnitude1 =>
-      let (value, i') = readArg(i + 1)
+      let (value, i') = readArgDefault(i + 1)
       Node(Fold_Magnitude({value: value}), i, i')
     | Superscript1 =>
       let implicit = false
       let placeholder = None
       let captureGroupIndex = None
-      let (superscriptBody, i') = readArg(i + 1)
+      let (superscriptBody, i') = readArgDefault(i + 1)
       let superscript = Some({superscriptBody, index: i + 1})
       Node(Fold_Placeholder({implicit, placeholder, superscript, captureGroupIndex}), i, i')
     | Abs1S =>
-      let (arg, i') = readArg(i + 1)
+      let (arg, i') = readArgDefault(i + 1)
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Abs({arg, superscript}), i, i')
     | Ceil1S =>
-      let (arg, i') = readArg(i + 1)
+      let (arg, i') = readArgDefault(i + 1)
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Ceil({arg, superscript}), i, i')
     | Floor1S =>
-      let (arg, i') = readArg(i + 1)
+      let (arg, i') = readArgDefault(i + 1)
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Floor({arg, superscript}), i, i')
     | Round1S =>
-      let (arg, i') = readArg(i + 1)
+      let (arg, i') = readArgDefault(i + 1)
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Round({arg, superscript}), i, i')
     | Sqrt1S =>
-      let (radicand, i') = readArg(i + 1)
+      let (radicand, i') = readArgDefault(i + 1)
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Sqrt({radicand, superscript}), i, i')
     | Differential2 =>
-      let (body, i') = readArg(i + 1)
-      let (at, i') = readArg(i')
+      let (body, i') = readArgDefault(i + 1)
+      let (at, i') = readArgDefault(i')
       Node(Fold_Differential({at, body}), i, i')
     | NCR2 =>
-      let (n, i') = readArg(i + 1)
-      let (r, i') = readArg(i')
+      let (n, i') = readArgDefault(i + 1)
+      let (r, i') = readArgDefault(i')
       Node(Fold_NCR({n, r}), i, i')
     | NPR2 =>
-      let (n, i') = readArg(i + 1)
-      let (r, i') = readArg(i')
+      let (n, i') = readArgDefault(i + 1)
+      let (r, i') = readArgDefault(i')
       Node(Fold_NPR({n, r}), i, i')
     | Frac2S =>
-      let (num, i') = readArg(i + 1)
-      let (den, i') = readArg(i')
+      let (num, i') = readArgDefault(i + 1)
+      let (den, i') = readArgDefault(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Frac({num, den, superscript}), i, i')
     | Min2S =>
-      let (a, i') = readArg(i + 1)
-      let (b, i') = readArg(i')
+      let (a, i') = readArgDefault(i + 1)
+      let (b, i') = readArgDefault(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Min({a, b, superscript}), i, i')
     | Max2S =>
-      let (a, i') = readArg(i + 1)
-      let (b, i') = readArg(i')
+      let (a, i') = readArgDefault(i + 1)
+      let (b, i') = readArgDefault(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Max({a, b, superscript}), i, i')
     | GCD2S =>
-      let (a, i') = readArg(i + 1)
-      let (b, i') = readArg(i')
+      let (a, i') = readArgDefault(i + 1)
+      let (b, i') = readArgDefault(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Gcd({a, b, superscript}), i, i')
     | LCM2S =>
-      let (a, i') = readArg(i + 1)
-      let (b, i') = readArg(i')
+      let (a, i') = readArgDefault(i + 1)
+      let (b, i') = readArgDefault(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Lcm({a, b, superscript}), i, i')
     | NRoot2S =>
-      let (degree, i') = readArg(i + 1)
-      let (radicand, i') = readArg(i')
+      let (degree, i') = readArgDefault(i + 1)
+      let (radicand, i') = readArgDefault(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_NRoot({degree, radicand, superscript}), i, i')
     | RandInt2S =>
-      let (a, i') = readArg(i + 1)
-      let (b, i') = readArg(i')
+      let (a, i') = readArgDefault(i + 1)
+      let (b, i') = readArgDefault(i')
       let (superscript, i') = readSuperscript(i')
       Node(Fold_RandInt({a, b, superscript}), i, i')
     | Integral3 =>
-      let (from, i') = readArg(i + 1)
-      let (to, i') = readArg(i')
-      let (body, i') = readArg(i')
+      let (from, i') = readArgDefault(i + 1)
+      let (to, i') = readArgDefault(i')
+      let (body, i') = readArgDefault(i')
       Node(Fold_Integral({from, to, body}), i, i')
     | TableNS({numRows, numColumns}) => tableS(i, ~numRows, ~numColumns)
     | EquationNS({symbol, body, arguments}) => functionS(i, ~symbol, ~body, ~arguments)
@@ -343,25 +343,27 @@ let reduceMapU = (
       let i' = i + 1
       let (superscript, i') = readSuperscript(i')
       Node(Fold_Unit({prefix, name, superscript}), i, i')
-    | Arg => assert false
+    | Arg => assert(false)
     }
-  and readArg = (~emptyArg=defaultEmptyArg, i) => {
+  // FIXME - there's a bug in ReScript stopping you calling readArg(i)
+  and readArgDefault = i => readArg(~emptyArg=defaultEmptyArg, i)
+  and readArg = (~emptyArg, i) => {
     let rec iter = (~accum: option<'accum>, i) => {
       switch Belt.Array.get(input, i) {
-      | None => assert false
+      | None => assert(false)
       | Some(Arg) =>
         let i' = i
         let isPlaceholder = accum == None
         let accum = switch accum {
         | Some(accum) => accum
-        | None => reduce(. initial, emptyArg, (i, i'))
+        | None => reduce(initial, emptyArg, (i, i'))
         }
-        (map(. accum, isPlaceholder), i' + 1)
+        (map(accum, isPlaceholder), i' + 1)
       | Some(_) =>
         switch readNodeExn(i) {
         | Node(node, i, i') =>
           let accum = Belt.Option.getWithDefault(accum, initial)
-          iter(~accum=reduce(. accum, node, (i, i'))->Some, i')
+          iter(~accum=reduce(accum, node, (i, i'))->Some, i')
         | Empty => iter(~accum, i + 1)
         }
       }
@@ -372,7 +374,7 @@ let reduceMapU = (
     let rec iter = i =>
       switch Belt.Array.get(input, i) {
       | Some(Superscript1) =>
-        let (superscriptBody, i') = readArg(i + 1)
+        let (superscriptBody, i') = readArgDefault(i + 1)
         (Some({superscriptBody, index: superscriptIndex}), i')
       | Some(CaptureGroupEndS) =>
         // If a superscript occurs immediately after a capture group, apply the
@@ -395,7 +397,7 @@ let reduceMapU = (
   and tableS = (i, ~numRows, ~numColumns) => {
     let emptyArg = Fold_Digit({nucleus: "0", superscript: None})
     let i' = i + 1
-    let (i', elements) = ArrayUtil.foldMakeU(numRows * numColumns, i', (. i', _) => {
+    let (i', elements) = ArrayUtil.foldMakeU(numRows * numColumns, i', (i', _) => {
       let (element, i') = readArg(~emptyArg, i')
       (i', element)
     })
@@ -413,7 +415,7 @@ let reduceMapU = (
   }
   and functionS = (i, ~symbol, ~body, ~arguments) => {
     let i' = i + 1
-    let (i', arguments) = ArrayUtil.foldMakeU(Belt.Array.length(arguments), i', (.
+    let (i', arguments) = ArrayUtil.foldMakeU(Belt.Array.length(arguments), i', (
       i',
       argumentIndex,
     ) => {
@@ -433,11 +435,11 @@ let reduceMapU = (
   let process = input => {
     let rec iter = (~accum, i) =>
       switch Belt.Array.get(input, i) {
-      | None => map(. accum, false)
-      | Some(Arg) => assert false
+      | None => map(accum, false)
+      | Some(Arg) => assert(false)
       | Some(_) =>
         switch readNodeExn(i) {
-        | Node(node, i, i') => iter(~accum=reduce(. accum, node, (i, i')), i')
+        | Node(node, i, i') => iter(~accum=reduce(accum, node, (i, i')), i')
         | Empty => iter(~accum, i + 1)
         }
       }

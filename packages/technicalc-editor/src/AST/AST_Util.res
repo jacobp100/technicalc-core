@@ -1,6 +1,6 @@
 open AST_Types
 
-type direction = Forwards | Backwards
+type direction = | @as(0) Forwards | @as(1) Backwards
 
 /*
 The next index within the same scope level - i.e. keeping the parent function

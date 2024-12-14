@@ -15,7 +15,7 @@ let isNaN = (a: t) =>
   | _ => false
   }
 
-type realClassification = Zero | NaN | Real
+type realClassification = | @as(0) Zero | @as(1) NaN | @as(2) Real
 
 %%private(
   let classifyReal = (re: Real.t) =>
@@ -108,11 +108,11 @@ let eq = (a: t, b: t): bool =>
   | _ => false
   }
 
-let mapU = (a: t, f: (. Real.t) => Real.t): t =>
+let mapU = (a: t, f: Real.t => Real.t): t =>
   switch a {
   | #Zero => a
-  | #Real(re) => ofReal(f(. re))
-  | #Imag(im) => ofImag(f(. im))
-  | #Cmpx(re, im) => ofComplex(f(. re), f(. im))
+  | #Real(re) => ofReal(f(re))
+  | #Imag(im) => ofImag(f(im))
+  | #Cmpx(re, im) => ofComplex(f(re), f(im))
   | #NaNN => a
   }

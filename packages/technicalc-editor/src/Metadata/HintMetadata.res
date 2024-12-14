@@ -1,9 +1,9 @@
 open AST_Types
 
 type hint =
-  | Value({symbol: Symbol.t, value: string})
-  | Variable({id: string})
-  | CaptureGroup({placeholder: Symbol.t, isEmpty: bool})
+  | @as(0) Value({symbol: Symbol.t, value: string})
+  | @as(1) Variable({id: string})
+  | @as(2) CaptureGroup({placeholder: Symbol.t, isEmpty: bool})
 
 %%private(
   let captureGroupHintAtIndex = (elements: array<t>, index: int) => {

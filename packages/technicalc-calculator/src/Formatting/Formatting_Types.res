@@ -1,15 +1,15 @@
 type mode =
-  | Ascii
-  | Unicode
-  | Tex
-  | MathML
+  | @as(0) Ascii
+  | @as(1) Unicode
+  | @as(2) Tex
+  | @as(3) MathML
 
 type style =
-  | Natural({mixedFractions: bool})
-  | Decimal
-  | Engineering
+  | @as(0) Natural({mixedFractions: bool})
+  | @as(1) Decimal
+  | @as(2) Engineering
 
-type unitFormat = Exponential | Operator
+type unitFormat = | @as(0) Exponential | @as(1) Operator
 
 type format = {
   mode: mode,

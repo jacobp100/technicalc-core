@@ -1,8 +1,8 @@
 open AST
 
 type placeholder =
-  | Implicit({index: int})
-  | Explicit({index: int, symbol: option<Symbol.t>, elements: array<AST.t>})
+  | @as(0) Implicit({index: int})
+  | @as(1) Explicit({index: int, symbol: option<Symbol.t>, elements: array<AST.t>})
 
 %%private(
   let acceptsSuperscript = (element: t) =>
@@ -138,7 +138,7 @@ let placeholders = (elements: array<AST.t>): array<placeholder> => {
       }
     | Some(EquationNS({arguments})) =>
       let functionArgRanges = functionArgRangesExn(elements, index)
-      let placeholdersRev = Belt.Array.reduceWithIndexU(arguments, placeholdersRev, (.
+      let placeholdersRev = Belt.Array.reduceWithIndexU(arguments, placeholdersRev, (
         placeholdersRev,
         symbol,
         index,

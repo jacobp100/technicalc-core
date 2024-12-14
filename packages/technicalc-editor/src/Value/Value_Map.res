@@ -137,10 +137,7 @@ let parse = {
   ) => {
     let before = ArraySlice.slice(elements, ~offset=0, ~len=i)
     let after = ArraySlice.sliceToEnd(elements, i + 1)
-    switch (
-      iterU(. angleRequirement, rangeEnd, before),
-      nextU(. angleRequirement, rangeEnd, after),
-    ) {
+    switch (iterU(angleRequirement, rangeEnd, before), nextU(angleRequirement, rangeEnd, after)) {
     | (Ok(before), Ok(after)) =>
       switch op {
       | AST.Fold_Add => Node.Add(before, after)->Ok
@@ -388,9 +385,9 @@ let parse = {
   and parseMulDiv = (~angleRequirement, ~rangeEnd, elements: elements) => {
     noinline(parseMulDiv)
 
-    let iterU = (. angleRequirement, rangeEnd, elements) =>
+    let iterU = (angleRequirement, rangeEnd, elements) =>
       parseMulDiv(~angleRequirement, ~rangeEnd, elements)
-    let nextU = (. angleRequirement, rangeEnd, elements) =>
+    let nextU = (angleRequirement, rangeEnd, elements) =>
       parseUnary(~angleRequirement, ~rangeEnd, elements)
 
     @inline
@@ -411,7 +408,7 @@ let parse = {
         // Mod operator
         applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
       | Some(_) => iter(~bracketLevel, i - 1)
-      | None => nextU(. angleRequirement, rangeEnd, elements)
+      | None => nextU(angleRequirement, rangeEnd, elements)
       }
 
     iter(~bracketLevel=0, ArraySlice.length(elements) - 1)
@@ -419,9 +416,9 @@ let parse = {
   and parseAddSub = (~angleRequirement, ~rangeEnd, elements: elements) => {
     noinline(parseAddSub)
 
-    let iterU = (. angleRequirement, rangeEnd, elements) =>
+    let iterU = (angleRequirement, rangeEnd, elements) =>
       parseAddSub(~angleRequirement, ~rangeEnd, elements)
-    let nextU = (. angleRequirement, rangeEnd, elements) =>
+    let nextU = (angleRequirement, rangeEnd, elements) =>
       parseMulDiv(~angleRequirement, ~rangeEnd, elements)
 
     @inline
@@ -440,21 +437,21 @@ let parse = {
       | Some(((Fold_Add | Fold_Sub) as op, range)) if bracketLevel == 0 && !inPrefixPosition(i) =>
         applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
       | Some(_) => iter(~bracketLevel, i - 1)
-      | None => nextU(. angleRequirement, rangeEnd, elements)
+      | None => nextU(angleRequirement, rangeEnd, elements)
       }
 
     iter(~bracketLevel=0, ArraySlice.length(elements) - 1)
   }
   and parseComparisons = (~angleRequirement, ~rangeEnd, elements: elements) => {
     noinline(parseComparisons)
-    let nextU = (. angleRequirement, rangeEnd, elements) =>
+    let nextU = (angleRequirement, rangeEnd, elements) =>
       parseAddSub(~angleRequirement, ~rangeEnd, elements)
 
     let rec iter = i =>
       switch ArraySlice.get(elements, i) {
       | Some((Fold_Comparison(_), (r, _))) => Error(r)
       | Some(_) => iter(i + 1)
-      | None => nextU(. angleRequirement, rangeEnd, elements)
+      | None => nextU(angleRequirement, rangeEnd, elements)
       }
 
     iter(0)
@@ -467,7 +464,8 @@ let parse = {
     | Some((_, (_, r'))) => r'
     | None => 0
     }
-    ArraySlice.ofArray(elements)->parse(~angleRequirement=None, ~rangeEnd)
+    // FIXME - Rescript compiler bug requiring underscore (lambda function, although it is optimised away)
+    ArraySlice.ofArray(elements)->(parse(~angleRequirement=None, ~rangeEnd, _))
   }
   parse
 }

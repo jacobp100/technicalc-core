@@ -17,8 +17,6 @@ let zero = ofInt(0)
 let one = ofInt(1)
 let minusOne = ofInt(-1)
 let nan = ofFloat(nan)
-@module("decimal.js") @scope("default")
-external pi: @as(-1) _ => t = "acos"
 @send external isFinite: t => bool = "isFinite"
 @send external cmp: (t, t) => int = "cmp"
 @send external eq: (t, t) => bool = "eq"
@@ -83,6 +81,8 @@ external log10: t => t = "log10"
 // zero overhead.
 @module("decimal.js") @scope("default")
 external resetInternalState: unit => unit = "hypot"
+
+let pi = acos(minusOne)
 
 @send external \"=": (t, t) => bool = "eq"
 let \"<>" = (a, b) => !(a == b)

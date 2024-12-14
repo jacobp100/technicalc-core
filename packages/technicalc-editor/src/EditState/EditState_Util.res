@@ -9,8 +9,8 @@ let isEmptyCaptureGroup = (elements, index) =>
   }
 
 type direction =
-  | Forwards
-  | Backwards
+  | @as(0) Forwards
+  | @as(1) Backwards
 
 let preferredShiftDirection = (~index, ~elements, ~formatCaptureGroups) =>
   if !formatCaptureGroups {

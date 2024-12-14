@@ -1,24 +1,24 @@
 type token =
-  | Integer(string)
-  | NaN
-  | Base2
-  | Base8
-  | Base16
-  | Sqrt
-  | Exp
-  | Pi
-  | E
-  | I
-  | Dot
-  | Plus
-  | Minus
-  | Slash
-  | Percent
-  | OpenBracket
-  | CloseBracket
-  | OpenBrace
-  | CloseBrace
-  | Comma
+  | @as(0) Integer(string)
+  | @as(1) NaN
+  | @as(2) Base2
+  | @as(3) Base8
+  | @as(4) Base16
+  | @as(5) Sqrt
+  | @as(6) Exp
+  | @as(7) Pi
+  | @as(8) E
+  | @as(9) I
+  | @as(10) Dot
+  | @as(11) Plus
+  | @as(12) Minus
+  | @as(13) Slash
+  | @as(14) Percent
+  | @as(15) OpenBracket
+  | @as(16) CloseBracket
+  | @as(17) OpenBrace
+  | @as(18) CloseBrace
+  | @as(19) Comma
 
 %%private(
   let rec iter = (~tokensRev, ~parseExponent, charList) =>
@@ -68,9 +68,7 @@ type token =
     iter(
       ~tokensRev=list{},
       ~parseExponent,
-      Belt.List.makeByU(String.length(string), (. i) =>
-        Obj.magic(StringUtil.charAtUnsafe(string, i))
-      ),
+      Belt.List.makeByU(String.length(string), i => Obj.magic(StringUtil.charAtUnsafe(string, i))),
     )
   }
 )
@@ -160,7 +158,7 @@ type token =
       | 2 => ("0b", 2)
       | 8 => ("0o", 8)
       | 16 => ("0x", 16)
-      | _ => assert false
+      | _ => assert(false)
       }
       let (num, den) = switch decimalAscii {
       | Some(decimalAscii) => (
@@ -243,15 +241,15 @@ type token =
 )
 
 type rec astConstructor =
-  | Scalar(Scalar.t)
-  | Percent(Scalar.t)
-  | Row(array<astConstructor>)
+  | @as(0) Scalar(Scalar.t)
+  | @as(1) Percent(Scalar.t)
+  | @as(2) Row(array<astConstructor>)
 
 %%private(
   let parseValue = (~base, tokens) => {
     let rec iter = tokens =>
       switch tokens {
-      | list{OpenBrace, ...rest} => parseUntilCloseBrace(rest)
+      | list{OpenBrace, ...rest} => parseUntilCloseBraceDefault(rest)
       | rest =>
         switch partialParseScalar(~base, rest) {
         | Some((scalar, list{})) => Some((Scalar(scalar), list{}))
@@ -259,7 +257,10 @@ type rec astConstructor =
         | _ => None
         }
       }
-    and parseUntilCloseBrace = (~tokensAccumRev=list{}, ~elementsRev=list{}, ~level=0, tokens) =>
+    // FIXME - there's a bug in ReScript stopping you calling parseUntilCloseBrace(tokens)
+    and parseUntilCloseBraceDefault = tokens =>
+      parseUntilCloseBrace(~tokensAccumRev=list{}, ~elementsRev=list{}, ~level=0, tokens)
+    and parseUntilCloseBrace = (~tokensAccumRev, ~elementsRev, ~level, tokens) =>
       switch tokens {
       | list{CloseBrace, ...rest} if level == 0 =>
         let elementsRev = switch iter(Belt.List.reverse(tokensAccumRev)) {

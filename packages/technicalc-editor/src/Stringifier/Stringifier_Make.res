@@ -1,45 +1,45 @@
 open Stringifier_Types
 
 type lastElementFlag =
-  | NoElement
-  | Other
+  | @as(0) NoElement
+  | @as(1) Other
 
 module type Config = {
   type elementFlag
-  let groupingSeparatorU: (. string) => string
-  let decimalSeparatorU: (. string, (int, int), bool) => string
+  let groupingSeparatorU: string => string
+  let decimalSeparatorU: (string, (int, int), bool) => string
   let bracketRangeU: (
-    . option<AST.superscript<string>>,
+    option<AST.superscript<string>>,
     string,
     (int, int),
     (int, int),
     bool,
   ) => string
-  let unpairedOpenBracketU: (. (int, int), bool) => string
-  let unpairedCloseBracketU: (. option<AST.superscript<string>>, (int, int), bool) => string
+  let unpairedOpenBracketU: ((int, int), bool) => string
+  let unpairedCloseBracketU: (option<AST.superscript<string>>, (int, int), bool) => string
 }
 
 module Make = (M: Config): {
   type t
-  let make: (. format) => t
-  let lastElementFlag: (. t) => option<M.elementFlag>
-  let isEmpty: (. t) => bool
-  let format: (. t) => format
-  let append: (. t, string) => t
-  let appendWithFlag: (. t, M.elementFlag, string) => t
-  let appendDigit: (. t, string) => t
-  let appendDecimalSeparator: (. t, (int, int)) => t
-  let appendBasePrefix: (. t, string) => t
-  let appendOpenBracket: (. t, (int, int)) => t
-  let appendCloseBracket: (. t, (int, int), option<AST.superscript<string>>) => t
-  let modifyLastU: (. t, (. option<string>) => string) => t
-  let toString: (. t) => string
+  let make: format => t
+  let lastElementFlag: t => option<M.elementFlag>
+  let isEmpty: t => bool
+  let format: t => format
+  let append: (t, string) => t
+  let appendWithFlag: (t, M.elementFlag, string) => t
+  let appendDigit: (t, string) => t
+  let appendDecimalSeparator: (t, (int, int)) => t
+  let appendBasePrefix: (t, string) => t
+  let appendOpenBracket: (t, (int, int)) => t
+  let appendCloseBracket: (t, (int, int), option<AST.superscript<string>>) => t
+  let modifyLastU: (t, option<string> => string) => t
+  let toString: t => string
 } => {
   module DigitSeparators = {
     type digitGroupingState =
-      | Normal
-      | SkipGrouping // After decimal points etc.
-      | GroupingDigits({groupingSize: int, numbersRev: list<string>})
+      | @as(0) Normal
+      | @as(1) SkipGrouping // After decimal points etc.
+      | @as(2) GroupingDigits({groupingSize: int, numbersRev: list<string>})
 
     type t = {
       bodyRev: list<string>,
@@ -59,7 +59,7 @@ module Make = (M: Config): {
 
     %%private(
       let flattenDigits = (~format, x, ~groupingSize, ~numbersRev) => {
-        let groupingSeparator = M.groupingSeparatorU(. format.groupingSeparator)
+        let groupingSeparator = M.groupingSeparatorU(format.groupingSeparator)
         let rec iter = (~formattedNumbersFwd, ~numbersRev) =>
           switch Belt.List.splitAt(numbersRev, groupingSize) {
           | Some((groupRev, numbersRev)) if numbersRev != list{} =>
@@ -118,7 +118,7 @@ module Make = (M: Config): {
 
     let appendDecimalSeparator = (~format, x, range) => {
       let digitGroupingState = SkipGrouping
-      let decimalSeparator = M.decimalSeparatorU(. format.decimalSeparator, range, format.metadata)
+      let decimalSeparator = M.decimalSeparatorU(format.decimalSeparator, range, format.metadata)
       appendWith(~digitGroupingState, ~format, x, decimalSeparator)
     }
 
@@ -131,8 +131,8 @@ module Make = (M: Config): {
 
     let modifyLastU = (~format, x, fn) => {
       let bodyRev = switch bodyRev(~format, x) {
-      | list{last, ...rest} => list{fn(. Some(last)), ...rest}
-      | list{} => list{fn(. None)}
+      | list{last, ...rest} => list{fn(Some(last)), ...rest}
+      | list{} => list{fn(None)}
       }
       {bodyRev, digitGroupingState: Normal, lastElementFlag: None}
     }
@@ -172,9 +172,9 @@ module Make = (M: Config): {
       | list{{body} as bracketGroup, ...rest} => {
           format,
           level0Body,
-          bracketGroups: list{{...bracketGroup, body: fn(. format, body, arg)}, ...rest},
+          bracketGroups: list{{...bracketGroup, body: fn(format, body, arg)}, ...rest},
         }
-      | list{} => {format, level0Body: fn(. format, level0Body, arg), bracketGroups: list{}}
+      | list{} => {format, level0Body: fn(format, level0Body, arg), bracketGroups: list{}}
       }
 
     let appendOpenBracket = (x, openBracketRange) => {
@@ -187,23 +187,23 @@ module Make = (M: Config): {
       | list{{openBracketRange, body}, ...nextBracketGroups} =>
         let format = x.format
         let x = {...x, bracketGroups: nextBracketGroups}
-        let bracketRange = M.bracketRangeU(.
+        let bracketRange = M.bracketRangeU(
           superscript,
           DigitSeparators.toString(~format, body),
           openBracketRange,
           closeBracketRange,
           format.metadata,
         )
-        transformCurrentGroupWithArgU(x, bracketRange, (. format, a, b) => {
+        transformCurrentGroupWithArgU(x, bracketRange, (format, a, b) => {
           DigitSeparators.append(~format, a, b)
         })
       | list{} =>
-        let unpariedCloseBracket = M.unpairedCloseBracketU(.
+        let unpariedCloseBracket = M.unpairedCloseBracketU(
           superscript,
           closeBracketRange,
           x.format.metadata,
         )
-        transformCurrentGroupWithArgU(x, unpariedCloseBracket, (. format, a, b) => {
+        transformCurrentGroupWithArgU(x, unpariedCloseBracket, (format, a, b) => {
           DigitSeparators.append(~format, a, b)
         })
       }
@@ -215,7 +215,7 @@ module Make = (M: Config): {
           let format = x.format
           let body = DigitSeparators.toString(~format, body)
           iter(
-            ~accum=M.unpairedOpenBracketU(. openBracketRange, format.metadata) ++ body ++ accum,
+            ~accum=M.unpairedOpenBracketU(openBracketRange, format.metadata) ++ body ++ accum,
             ~bracketGroups=tail,
           )
         | list{} =>
@@ -227,36 +227,36 @@ module Make = (M: Config): {
   }
 
   type t = BracketGroups.t
-  let make = (. format) => BracketGroups.make(~format)
-  let lastElementFlag = (. body) => DigitSeparators.lastElementFlag(BracketGroups.body(body))
-  let isEmpty = (. body) => BracketGroups.isEmpty(body)
-  let format = (. body) => BracketGroups.format(body)
-  let append = (. body, element) =>
-    BracketGroups.transformCurrentGroupWithArgU(body, element, (. format, a, b) => {
+  let make = format => BracketGroups.make(~format)
+  let lastElementFlag = body => DigitSeparators.lastElementFlag(BracketGroups.body(body))
+  let isEmpty = body => BracketGroups.isEmpty(body)
+  let format = body => BracketGroups.format(body)
+  let append = (body, element) =>
+    BracketGroups.transformCurrentGroupWithArgU(body, element, (format, a, b) => {
       DigitSeparators.append(~format, a, b)
     })
-  let appendWithFlag = (. body, flag, element) =>
-    BracketGroups.transformCurrentGroupWithArgU(body, element, (. format, a, b) => {
+  let appendWithFlag = (body, flag, element) =>
+    BracketGroups.transformCurrentGroupWithArgU(body, element, (format, a, b) => {
       DigitSeparators.append(~flag, ~format, a, b)
     })
-  let appendDigit = (. body, element) =>
-    BracketGroups.transformCurrentGroupWithArgU(body, element, (. format, a, b) => {
+  let appendDigit = (body, element) =>
+    BracketGroups.transformCurrentGroupWithArgU(body, element, (format, a, b) => {
       DigitSeparators.appendDigit(~format, a, b)
     })
-  let appendDecimalSeparator = (. body, element) =>
-    BracketGroups.transformCurrentGroupWithArgU(body, element, (. format, a, b) => {
+  let appendDecimalSeparator = (body, element) =>
+    BracketGroups.transformCurrentGroupWithArgU(body, element, (format, a, b) => {
       DigitSeparators.appendDecimalSeparator(~format, a, b)
     })
-  let appendBasePrefix = (. body, element) =>
-    BracketGroups.transformCurrentGroupWithArgU(body, element, (. format, a, b) => {
+  let appendBasePrefix = (body, element) =>
+    BracketGroups.transformCurrentGroupWithArgU(body, element, (format, a, b) => {
       DigitSeparators.appendBasePrefix(~format, a, b)
     })
-  let appendOpenBracket = (. body, range) => BracketGroups.appendOpenBracket(body, range)
-  let appendCloseBracket = (. body, range, superscript) =>
+  let appendOpenBracket = (body, range) => BracketGroups.appendOpenBracket(body, range)
+  let appendCloseBracket = (body, range, superscript) =>
     BracketGroups.appendCloseBracket(body, range, superscript)
-  let modifyLastU = (. body, element) =>
-    BracketGroups.transformCurrentGroupWithArgU(body, element, (. format, a, b) => {
+  let modifyLastU = (body, element) =>
+    BracketGroups.transformCurrentGroupWithArgU(body, element, (format, a, b) => {
       DigitSeparators.modifyLastU(~format, a, b)
     })
-  let toString = (. body) => BracketGroups.toString(body)
+  let toString = body => BracketGroups.toString(body)
 }

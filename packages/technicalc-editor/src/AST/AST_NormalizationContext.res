@@ -1,7 +1,7 @@
 type elementClass =
-  | Table
-  | Iterator
-  | Other
+  | @as(0) Table
+  | @as(1) Iterator
+  | @as(2) Other
 
 let classify = element =>
   switch element {
@@ -34,7 +34,7 @@ let classify = element =>
 
 %%private(
   let validityStackReducer = prependValidityStack => {
-    let reducerFn = (. (range, validityStack), element, i) => {
+    let reducerFn = ((range, validityStack), element, i) => {
       let isValid = switch validityStack {
       | list{false, ..._} => false
       | _ => true
@@ -42,7 +42,7 @@ let classify = element =>
       let range = !isValid ? addSequentialIndex(range, i) : range
       let validityStack = switch element {
       | AST_Types.Arg => tailOrEmpty(validityStack)
-      | e => prependValidityStack(. validityStack, e, isValid)
+      | e => prependValidityStack(validityStack, e, isValid)
       }
       (range, validityStack)
     }
@@ -50,7 +50,7 @@ let classify = element =>
   }
 )
 
-let noTablePermittedRanges = validityStackReducer((. validityStack, element, isValid) =>
+let noTablePermittedRanges = validityStackReducer((validityStack, element, isValid) =>
   switch element {
   | AST_Types.Frac2S => list{/* num */ isValid, /* den */ false, ...validityStack}
   | Abs1S
@@ -66,7 +66,7 @@ let noTablePermittedRanges = validityStackReducer((. validityStack, element, isV
   }
 )
 
-let noIterationPermittedRanges = validityStackReducer((. validityStack, element, isValid) => {
+let noIterationPermittedRanges = validityStackReducer((validityStack, element, isValid) => {
   let argCount = AST_Types.argCountExn(element)
   validityStack->ListUtil.prependMany(argCount, isValid && classify(element) != Iterator)
 })

@@ -1,8 +1,8 @@
 type t =
-  | Unit
-  | Pi(int)
-  | Exp(int)
-  | Sqrt(int)
+  | @as(0) Unit
+  | @as(1) Pi(int)
+  | @as(2) Exp(int)
+  | @as(3) Sqrt(int)
 
 let toDecimal = a =>
   switch a {
@@ -19,9 +19,9 @@ let toDecimal = a =>
   }
 
 type simplificationState =
-  | None
-  | Zero
-  | Factor(int, t)
+  | @as(0) None
+  | @as(1) Zero
+  | @as(2) Factor(int, t)
 
 %%private(
   let simplifySqrt = ac =>

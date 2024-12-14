@@ -2,17 +2,17 @@ open Decimal
 
 let magnitude = (~base, f) =>
   if f != zero {
-    abs(f)->logBase(_, ofInt(base))->floor
+    abs(f)->(logBase(_, ofInt(base)))->floor
   } else {
     zero
   }
 
 type bounds =
-  | BothBound
-  | LowerBound
-  | UpperBound
-  | Inside
-  | Outside
+  | @as(0) BothBound
+  | @as(1) LowerBound
+  | @as(2) UpperBound
+  | @as(3) Inside
+  | @as(4) Outside
 
 let bounds = (~lower=?, ~upper=?, f) => {
   let lowerCompare = switch lower {
