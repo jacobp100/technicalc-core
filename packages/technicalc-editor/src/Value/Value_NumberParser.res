@@ -41,7 +41,7 @@ let reduce = (state, element, (i, i') as range) => {
     switch state {
     | {numSup: None, magSup: None} if numberIsValidForBase(state.numBase, nucleus) =>
       let numString = state.numString ++ nucleus
-      let numSup = Belt.Option.mapU(superscript, superscriptBodyU)
+      let numSup = Belt.Option.map(superscript, superscriptBody)
       Some(Ok({...state, range, numString, numSup}))
     | _ => Some(Error(i'))
     }
@@ -71,11 +71,11 @@ let toNode = state =>
     | None => 10
     }
     let out = Node.OfStringBase(base, numString)
-    let out = numSup->Belt.Option.mapWithDefaultU(out, (. x) => Pow(out, x))
+    let out = numSup->Belt.Option.mapWithDefault(out, x => Pow(out, x))
     let out =
       magSup
-      ->Belt.Option.mapU((. x) => Node.Pow(OfInt(10), x))
-      ->Belt.Option.mapWithDefaultU(out, (. x) => Mul(out, x))
+      ->Belt.Option.map(x => Node.Pow(OfInt(10), x))
+      ->Belt.Option.mapWithDefault(out, x => Mul(out, x))
     Some(out)
   }
 

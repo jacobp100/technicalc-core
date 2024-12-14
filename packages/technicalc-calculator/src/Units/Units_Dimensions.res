@@ -163,7 +163,7 @@ let ofUnit = ({name, power}: t) => {
 }
 
 let ofUnits = (units: array<t>) =>
-  Belt.Array.reduceU(units, empty, (. combinedDimensions, t) => {
+  Belt.Array.reduce(units, empty, (combinedDimensions, t) => {
     combine(combinedDimensions, ofUnit(t))
   })
 

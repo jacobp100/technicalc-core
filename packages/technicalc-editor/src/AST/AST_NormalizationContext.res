@@ -46,7 +46,7 @@ let classify = element =>
       }
       (range, validityStack)
     }
-    ast => Belt.Array.reduceWithIndexU(ast, (Ranges.empty, list{}), reducerFn)->fst
+    ast => Belt.Array.reduceWithIndex(ast, (Ranges.empty, list{}), reducerFn)->fst
   }
 )
 

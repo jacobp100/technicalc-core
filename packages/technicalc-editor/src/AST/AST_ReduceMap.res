@@ -6,81 +6,86 @@ type superscript<'a> = {
   index: int,
 }
 
+// Objects and non-objects seem to alias with the same tags - just give each variant a unique tag to fix
 type foldState<'a> =
-  | Fold_Abs({arg: 'a, superscript: option<superscript<'a>>})
-  | Fold_Add
-  | Fold_Angle(angle)
-  | Fold_Base(base)
-  | Fold_Ceil({arg: 'a, superscript: option<superscript<'a>>})
-  | Fold_CloseBracket(option<superscript<'a>>)
-  | Fold_Comparison(cmp)
-  | Fold_Conj
-  | Fold_Constant({symbol: Symbol.t, value: string, superscript: option<superscript<'a>>})
-  | Fold_ConstE(option<superscript<'a>>)
-  | Fold_ConstPi(option<superscript<'a>>)
-  | Fold_DecimalSeparator
-  | Fold_Differential({at: 'a, body: 'a})
-  | Fold_Digit({nucleus: string, superscript: option<superscript<'a>>})
-  | Fold_Div
-  | Fold_Dot
-  | Fold_Factorial
-  | Fold_Floor({arg: 'a, superscript: option<superscript<'a>>})
-  | Fold_Frac({num: 'a, den: 'a, superscript: option<superscript<'a>>})
-  | Fold_Function({fn: fn<'a>, resultSuperscript: option<superscript<'a>>})
-  | Fold_Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Fold_ImaginaryUnit(option<superscript<'a>>)
-  | Fold_Integral({from: 'a, to: 'a, body: 'a})
-  | Fold_Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Fold_Magnitude({value: 'a})
-  | Fold_Max({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Fold_Min({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Fold_Mul
-  | Fold_NCR({n: 'a, r: 'a})
-  | Fold_NPR({n: 'a, r: 'a})
-  | Fold_NRoot({degree: 'a, radicand: 'a, superscript: option<superscript<'a>>})
-  | Fold_OpenBracket
-  | Fold_Percent
-  | Fold_Placeholder({
+  | @as(0) Fold_Abs({arg: 'a, superscript: option<superscript<'a>>})
+  | @as(1) Fold_Add
+  | @as(2) Fold_Angle(angle)
+  | @as(3) Fold_Base(base)
+  | @as(4) Fold_Ceil({arg: 'a, superscript: option<superscript<'a>>})
+  | @as(5) Fold_CloseBracket(option<superscript<'a>>)
+  | @as(6) Fold_Comparison(cmp)
+  | @as(7) Fold_Conj
+  | @as(8) Fold_Constant({symbol: Symbol.t, value: string, superscript: option<superscript<'a>>})
+  | @as(9) Fold_ConstE(option<superscript<'a>>)
+  | @as(10) Fold_ConstPi(option<superscript<'a>>)
+  | @as(11) Fold_DecimalSeparator
+  | @as(12) Fold_Differential({at: 'a, body: 'a})
+  | @as(13) Fold_Digit({nucleus: string, superscript: option<superscript<'a>>})
+  | @as(14) Fold_Div
+  | @as(15) Fold_Dot
+  | @as(16) Fold_Factorial
+  | @as(17) Fold_Floor({arg: 'a, superscript: option<superscript<'a>>})
+  | @as(18) Fold_Frac({num: 'a, den: 'a, superscript: option<superscript<'a>>})
+  | @as(19) Fold_Function({fn: fn<'a>, resultSuperscript: option<superscript<'a>>})
+  | @as(20) Fold_Gcd({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | @as(21) Fold_ImaginaryUnit(option<superscript<'a>>)
+  | @as(22) Fold_Integral({from: 'a, to: 'a, body: 'a})
+  | @as(23) Fold_Lcm({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | @as(24) Fold_Magnitude({value: 'a})
+  | @as(25) Fold_Max({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | @as(26) Fold_Min({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | @as(27) Fold_Mul
+  | @as(28) Fold_NCR({n: 'a, r: 'a})
+  | @as(29) Fold_NPR({n: 'a, r: 'a})
+  | @as(30) Fold_NRoot({degree: 'a, radicand: 'a, superscript: option<superscript<'a>>})
+  | @as(31) Fold_OpenBracket
+  | @as(32) Fold_Percent
+  | @as(33)
+  Fold_Placeholder({
       implicit: bool,
       placeholder: option<Symbol.t>,
       superscript: option<superscript<'a>>,
       captureGroupIndex: option<int>,
     })
-  | Fold_Rand(option<superscript<'a>>)
-  | Fold_RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
-  | Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
-  | Fold_Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
-  | Fold_Sub
-  | Fold_Table({
+  | @as(34) Fold_Rand(option<superscript<'a>>)
+  | @as(35) Fold_RandInt({a: 'a, b: 'a, superscript: option<superscript<'a>>})
+  | @as(36) Fold_Round({arg: 'a, superscript: option<superscript<'a>>})
+  | @as(37) Fold_Sqrt({radicand: 'a, superscript: option<superscript<'a>>})
+  | @as(38) Fold_Sub
+  | @as(39)
+  Fold_Table({
       elements: array<'a>,
       numRows: int,
       numColumns: int,
       superscript: option<superscript<'a>>,
     })
-  | Fold_Equation({
+  | @as(40)
+  Fold_Equation({
       symbol: Symbol.t,
       body: TechniCalcCalculator.AST_Types.t,
       arguments: array<'a>,
       superscript: option<superscript<'a>>,
     })
-  | Fold_EquationArgument({index: int, superscript: option<superscript<'a>>})
-  | Fold_Transpose
-  | Fold_Unit({
+  | @as(41) Fold_EquationArgument({index: int, superscript: option<superscript<'a>>})
+  | @as(42) Fold_Transpose
+  | @as(43)
+  Fold_Unit({
       prefix: TechniCalcCalculator.Units.prefix,
       name: TechniCalcCalculator.Units.name,
       superscript: option<superscript<'a>>,
     })
-  | Fold_Variable({id: string, symbol: Symbol.t, superscript: option<superscript<'a>>})
-  | Fold_X(option<superscript<'a>>)
-  | Fold_XUnit(option<superscript<'a>>)
-  | Fold_Y(option<superscript<'a>>)
-  | Fold_YUnit(option<superscript<'a>>)
-  | Fold_Z(option<superscript<'a>>)
-  | Fold_ZUnit(option<superscript<'a>>)
+  | @as(44) Fold_Variable({id: string, symbol: Symbol.t, superscript: option<superscript<'a>>})
+  | @as(45) Fold_X(option<superscript<'a>>)
+  | @as(46) Fold_XUnit(option<superscript<'a>>)
+  | @as(47) Fold_Y(option<superscript<'a>>)
+  | @as(48) Fold_YUnit(option<superscript<'a>>)
+  | @as(49) Fold_Z(option<superscript<'a>>)
+  | @as(50) Fold_ZUnit(option<superscript<'a>>)
 
 type range = (int, int)
 
-let superscriptBodyU = superscript => superscript.superscriptBody
+let superscriptBody = superscript => superscript.superscriptBody
 
 %%private(
   let digitNucleusExn = digit =>
@@ -118,7 +123,7 @@ type readResult<'a> =
   | Node(foldState<'a>, int, int)
   | Empty
 
-let reduceMapU = (
+let reduceMap = (
   input: array<t>,
   ~reduce: ('accum, foldState<'a>, range) => 'accum,
   ~map: ('accum, bool) => 'value,
@@ -397,7 +402,7 @@ let reduceMapU = (
   and tableS = (i, ~numRows, ~numColumns) => {
     let emptyArg = Fold_Digit({nucleus: "0", superscript: None})
     let i' = i + 1
-    let (i', elements) = ArrayUtil.foldMakeU(numRows * numColumns, i', (i', _) => {
+    let (i', elements) = ArrayUtil.foldMake(numRows * numColumns, i', (i', _) => {
       let (element, i') = readArg(~emptyArg, i')
       (i', element)
     })
@@ -415,7 +420,7 @@ let reduceMapU = (
   }
   and functionS = (i, ~symbol, ~body, ~arguments) => {
     let i' = i + 1
-    let (i', arguments) = ArrayUtil.foldMakeU(Belt.Array.length(arguments), i', (
+    let (i', arguments) = ArrayUtil.foldMake(Belt.Array.length(arguments), i', (
       i',
       argumentIndex,
     ) => {

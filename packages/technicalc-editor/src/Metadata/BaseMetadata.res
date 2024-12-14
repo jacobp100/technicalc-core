@@ -62,6 +62,6 @@ let baseRanges = (ast: array<t>) =>
 
 let baseRange = (ranges, index) =>
   switch ranges {
-  | Some(ranges) => Belt.Array.getByU(ranges, (. {start, end}) => start <= index && end >= index)
+  | Some(ranges) => Belt.Array.getBy(ranges, ({start, end}) => start <= index && end >= index)
   | None => None
   }

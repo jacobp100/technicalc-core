@@ -41,13 +41,13 @@ type t<'output> = {
 }
 
 %%private(
-  let encodeContextElementU = (. (key, value): contextEntry) => (
+  let encodeContextElement = ((key, value): contextEntry) => (
     key,
     TechniCalcCalculator.Encoding.encode(value),
   )
 )
 %%private(
-  let decodeContextElementU = (. (key, value)) => (
+  let decodeContextElement = ((key, value)) => (
     key,
     TechniCalcCalculator.Encoding.decode(value)->Belt.Option.getWithDefault(
       TechniCalcCalculator.Value_Base.nan,
@@ -55,9 +55,9 @@ type t<'output> = {
   )
 )
 
-%%private(let encodeContext = context => Belt.Array.mapU(context, encodeContextElementU))
+%%private(let encodeContext = context => Belt.Array.map(context, encodeContextElement))
 
-%%private(let decodeContext = encoding => Belt.Array.mapU(encoding, decodeContextElementU))
+%%private(let decodeContext = encoding => Belt.Array.map(encoding, decodeContextElement))
 
 let encodeInput = (work: t<node>) =>
   Obj.magic({

@@ -1,6 +1,6 @@
 %%private(
   let decodeContext = context =>
-    Belt.Array.reduceU(context, TechniCalcCalculator.AST_Context.empty, (. accum, (key, value)) => {
+    Belt.Array.reduce(context, TechniCalcCalculator.AST_Context.empty, (accum, (key, value)) => {
       TechniCalcCalculator.AST_Context.set(accum, key, value)
     })
 )

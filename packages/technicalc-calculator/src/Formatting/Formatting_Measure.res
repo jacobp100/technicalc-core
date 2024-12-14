@@ -11,7 +11,7 @@ let formatUnits = (~mode, ~unitFormat=defaultUnitFormat, units) => {
   | Operator => ""
   }
 
-  Belt.Array.mapU(units, (. unit) => {
+  Belt.Array.map(units, unit => {
     Formatting_Units.toString(~mode, ~unitFormat, unit)
   })->StringUtil.joinWith(unitsSeparator)
 }

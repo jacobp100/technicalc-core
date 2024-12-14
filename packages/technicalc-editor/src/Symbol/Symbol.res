@@ -37,7 +37,7 @@ let isEmpty = value =>
 let isValid = value => String.length(value.base) !== 0
 
 %%private(
-  let aliasCharacterU = (. value) =>
+  let aliasCharacter = value =>
     switch Obj.magic(StringUtil.charAtUnsafe(value, 0)) {
     | '0' => "0"
     | '1' => "1"
@@ -112,7 +112,7 @@ let isValid = value => String.length(value.base) !== 0
 
 %%private(
   let aliasPart = value =>
-    StringUtil.split(value, ~separator="")->Belt.Array.mapU(aliasCharacterU)->StringUtil.join
+    StringUtil.split(value, ~separator="")->Belt.Array.map(aliasCharacter)->StringUtil.join
 )
 
 let alias = value =>

@@ -70,19 +70,19 @@ type elementFlag = Unit
 
 include Stringifier.Make({
   type elementFlag = elementFlag
-  let groupingSeparatorU = (. groupingSeparator) =>
+  let groupingSeparator = groupingSeparator =>
     groupingSeparator == " "
       ? mml(~attributes=list{(#width, "4px")}, "mspace", "")
       : mml("mn", groupingSeparator)
-  let decimalSeparatorU = (. decimalSeparator, range, metadata) =>
+  let decimalSeparator = (decimalSeparator, range, metadata) =>
     element(~metadata, ~range, "mn", decimalSeparator)
 
-  let unpairedOpenBracketU = (. range, metadata) =>
+  let unpairedOpenBracket = (range, metadata) =>
     element(~metadata, ~attributes=invalidAttributes, ~range, "mo", "(")
-  let unpairedCloseBracketU = (. superscript, range, metadata) =>
+  let unpairedCloseBracket = (superscript, range, metadata) =>
     element(~metadata, ~attributes=invalidAttributes, ~superscript?, ~range, "mo", ")")
 
-  let bracketRangeU = (. superscript, body, openBracketRange, closeBracketRange, metadata) =>
+  let bracketRange = (superscript, body, openBracketRange, closeBracketRange, metadata) =>
     switch superscript {
     | Some({AST.superscriptBody: superscriptBody, index: superscriptIndex}) =>
       // We want the superscript to be over the whole bracket group,
@@ -111,10 +111,10 @@ include Stringifier.Make({
 })
 
 let toString = (~attributes, x) =>
-  element(~metadata=format(. x).metadata, ~attributes, "mrow", toString(. x))
+  element(~metadata=format(x).metadata, ~attributes, "mrow", toString(x))
 
 let appendSpace = (x, ~width) =>
-  isEmpty(. x) ? x : append(. x, mml(~attributes=list{(#width, width)}, "mspace", ""))
+  isEmpty(x) ? x : append(x, mml(~attributes=list{(#width, width)}, "mspace", ""))
 
 let append = (
   x,
@@ -128,7 +128,7 @@ let append = (
   body,
 ) => {
   let element = element(
-    ~metadata=format(. x).metadata,
+    ~metadata=format(x).metadata,
     ~avoidsStartSelection?,
     ~prefersEndSelection?,
     ~attributes?,
@@ -138,8 +138,8 @@ let append = (
     body,
   )
   switch flag {
-  | Some(flag) => appendWithFlag(. x, flag, element)
-  | None => append(. x, element)
+  | Some(flag) => appendWithFlag(x, flag, element)
+  | None => append(x, element)
   }
 }
 
@@ -154,7 +154,7 @@ let appendDigit = (
   body,
 ) =>
   element(
-    ~metadata=format(. x).metadata,
+    ~metadata=format(x).metadata,
     ~avoidsStartSelection?,
     ~prefersEndSelection?,
     ~attributes?,
@@ -162,7 +162,7 @@ let appendDigit = (
     ~range,
     tag,
     body,
-  )->appendDigit(. x, _)
+  )->(appendDigit(x, _))
 
 let appendBasePrefix = (
   x,
@@ -175,7 +175,7 @@ let appendBasePrefix = (
   body,
 ) =>
   element(
-    ~metadata=format(. x).metadata,
+    ~metadata=format(x).metadata,
     ~avoidsStartSelection?,
     ~prefersEndSelection?,
     ~attributes?,
@@ -183,10 +183,10 @@ let appendBasePrefix = (
     ~range,
     tag,
     body,
-  )->appendBasePrefix(. x, _)
+  )->(appendBasePrefix(x, _))
 
 let appendPlaceholder = (x, ~range, ~superscript, ~implicit, ~captureGroupIndex, placeholder) => {
-  let {metadata} = format(. x)
+  let {metadata} = format(x)
   let phantom = switch captureGroupIndex {
   | Some(start) =>
     element(~metadata, ~attributes=list{selection(~avoidsStart=true, ~start, ())}, "mphantom", "")
@@ -207,8 +207,8 @@ let appendPlaceholder = (x, ~range, ~superscript, ~implicit, ~captureGroupIndex,
 }
 
 let superscriptSuffix = (x, ~attributes=list{}, ~range, tag, body) =>
-  modifyLastU(.x, (. last) => {
-    let {metadata} = format(. x)
+  modifyLast(x, last => {
+    let {metadata} = format(x)
     switch last {
     | Some(last) =>
       let (start, end) = range

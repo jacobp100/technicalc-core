@@ -1,7 +1,7 @@
 open AST
 open Mml_Builders
 
-let map = (. accum, isPlaceholder) => {
+let map = (accum, isPlaceholder) => {
   let attributes = isPlaceholder ? list{(#class, "placeholder")} : list{}
   Mml_Accum.toString(~attributes, accum)
 }
@@ -127,15 +127,15 @@ let map = (. accum, isPlaceholder) => {
 %%private(
   let appendTable = (accum, ~numRows, ~numColumns, elements, superscript, range) => {
     let inner =
-      Belt.Array.makeByU(numRows, (. row) => {
-        Belt.Array.makeByU(numColumns, (. column) => {
+      Belt.Array.makeBy(numRows, row => {
+        Belt.Array.makeBy(numColumns, column => {
           mml("mtd", elements->Belt.Array.getUnsafe(row * numColumns + column))
         })
         ->StringUtil.join
-        ->mml("mtr", _)
+        ->(mml("mtr", _))
       })
       ->StringUtil.join
-      ->mml("mtable", _)
+      ->(mml("mtable", _))
     let body = mml("mo", "[") ++ inner ++ mml("mo", "]")
     Mml_Accum.append(accum, ~superscript?, ~range, "mrow", body)
   }
@@ -144,21 +144,21 @@ let map = (. accum, isPlaceholder) => {
 %%private(
   @inline
   let lastWasUnit = accum =>
-    switch Mml_Accum.lastElementFlag(. accum) {
+    switch Mml_Accum.lastElementFlag(accum) {
     | Some(Unit) => true
     | None => false
     }
 )
 
-let reduce = (. accum, stateElement: foldState<string>, range) =>
+let reduce = (accum, stateElement: foldState<string>, range) =>
   switch stateElement {
-  | Fold_OpenBracket => Mml_Accum.appendOpenBracket(. accum, range)
-  | Fold_CloseBracket(superscript) => Mml_Accum.appendCloseBracket(. accum, range, superscript)
+  | Fold_OpenBracket => Mml_Accum.appendOpenBracket(accum, range)
+  | Fold_CloseBracket(superscript) => Mml_Accum.appendCloseBracket(accum, range, superscript)
   | Fold_Digit({nucleus, superscript}) =>
     let accum = lastWasUnit(accum) ? Mml_Accum.appendSpace(~width="0.333em", accum) : accum
     // Prefer end selection for digit grouping
     Mml_Accum.appendDigit(accum, ~prefersEndSelection=true, ~superscript?, ~range, "mn", nucleus)
-  | Fold_DecimalSeparator => Mml_Accum.appendDecimalSeparator(. accum, range)
+  | Fold_DecimalSeparator => Mml_Accum.appendDecimalSeparator(accum, range)
   | Fold_Base(base) => Mml_Accum.appendBasePrefix(accum, ~range, "mn", stringOfBase(base))
   | Fold_Percent => Mml_Accum.append(accum, ~avoidsStartSelection=true, ~range, "mo", "%")
   | Fold_Angle(Angle_Degree) => Mml_Accum.append(accum, ~range, "mo", "&#x00B0;")
@@ -265,7 +265,7 @@ let reduce = (. accum, stateElement: foldState<string>, range) =>
 
 let create = (~format, ~inline=false, elements) => {
   let body = if Belt.Array.length(elements) != 0 {
-    AST.reduceMapU(elements, ~reduce, ~map, ~initial=Mml_Accum.make(. format))
+    AST.reduceMap(elements, ~reduce, ~map, ~initial=Mml_Accum.make(format))
   } else {
     ""
   }

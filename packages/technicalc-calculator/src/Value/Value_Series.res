@@ -44,8 +44,7 @@ let gamma = (x: t): t =>
     open Decimal
     /* See https://github.com/josdejong/mathjs/blob/c5971b371a5610caf37de0d6507a1c7150280f09/src/function/probability/gamma.js */
     let n = Real.toDecimal(re) - half
-    let x =
-      p->Belt.Array.reduceWithIndexU(p0, (. accum, pi, i) => accum + pi / (n + ofInt(i) + half))
+    let x = p->Belt.Array.reduceWithIndex(p0, (accum, pi, i) => accum + pi / (n + ofInt(i) + half))
     let t = n + g
     ofDecimal(sqrt2Pi * t ** n * exp(-t) * x)
   | (#Real(_) | #Imag(_) | #Cmpx(_)) as xV =>
@@ -58,7 +57,7 @@ let gamma = (x: t): t =>
       }
       let nRe = nRe - half
       let n = ofComplex(Real.ofDecimal(nRe), Real.ofDecimal(nIm))
-      let (xRe, xIm) = p->Belt.Array.reduceWithIndexU((p0, zero), (. (re, im), p, i) => {
+      let (xRe, xIm) = p->Belt.Array.reduceWithIndex((p0, zero), ((re, im), p, i) => {
         let real = nRe + ofInt(i) + half
         let den = real * real + nIm * nIm
         if den != zero {
@@ -80,20 +79,20 @@ let gamma = (x: t): t =>
 let factorial = x => (x + one)->gamma
 
 %%private(
-  let reduceRangeU = (a, b, initialValue, f, iteratee) =>
+  let reduceRange = (a, b, initialValue, f, iteratee) =>
     switch (toInt(a), toInt(b)) {
     | (Some(a), Some(b)) if b >= a =>
       let current = ref(initialValue)
       for i in a to b {
-        current := iteratee(. current.contents, f(. ofInt(i)))
+        current := iteratee(current.contents, f(ofInt(i)))
       }
       current.contents
     | _ => nan
     }
 )
 
-let sumU = (f, a, b) => reduceRangeU(a, b, zero, f, (. a, b) => add(a, b))
-let productU = (f, a, b) => reduceRangeU(a, b, one, f, (. a, b) => mul(a, b))
+let sum = (f, a, b) => reduceRange(a, b, zero, f, (a, b) => add(a, b))
+let product = (f, a, b) => reduceRange(a, b, one, f, (a, b) => mul(a, b))
 
 %%private(
   let factorialIsFinite = x =>

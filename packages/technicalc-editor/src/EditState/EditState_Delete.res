@@ -18,7 +18,7 @@ open EditState_Util
   let nArgsSlice = (~skipInitial=0, elements, index) =>
     AST.functionArgRangesExn(elements, index)
     ->Belt.Array.sliceToEnd(skipInitial)
-    ->Belt.Array.flatMapU(((start, end)) => {
+    ->Belt.Array.flatMap(((start, end)) => {
       // Remove final Arg
       // AST has already been normalized, so end - start >= 1
       Belt.Array.slice(elements, ~offset=start, ~len=end - start - 1)

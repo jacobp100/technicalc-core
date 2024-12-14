@@ -68,7 +68,7 @@ type token =
     iter(
       ~tokensRev=list{},
       ~parseExponent,
-      Belt.List.makeByU(String.length(string), i => Obj.magic(StringUtil.charAtUnsafe(string, i))),
+      Belt.List.makeBy(String.length(string), i => Obj.magic(StringUtil.charAtUnsafe(string, i))),
     )
   }
 )

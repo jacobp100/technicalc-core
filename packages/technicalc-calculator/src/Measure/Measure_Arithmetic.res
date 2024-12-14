@@ -3,10 +3,10 @@ open Measure_Base
 
 %%private(
   let toCompatibleUnits2 = (a, b) => {
-    if Belt.Array.eqU(a.units, b.units, (. a, b) => Units.eq(a, b)) {
+    if Belt.Array.eq(a.units, b.units, (a, b) => Units.eq(a, b)) {
       Some((a.value, b.value, a.units))
     } else if Units.compatible(~fromUnits=a.units, ~toUnits=b.units) {
-      let siUnits = Belt.Array.flatMapU(a.units, (. u) => Units.toSi(u))
+      let siUnits = Belt.Array.flatMap(a.units, u => Units.toSi(u))
       let aValue = Units.convert(~fromUnits=a.units, ~toUnits=siUnits, a.value)
       let bValue = Units.convert(~fromUnits=b.units, ~toUnits=siUnits, b.value)
       Some((aValue, bValue, siUnits))
@@ -32,7 +32,7 @@ let sub = (a: t, b: t): t =>
 
 %%private(
   let mulUnitPowers = (units: array<Units.t>, power: int) =>
-    Belt.Array.mapU(units, (. u: Units.t) => {...u, power: u.power * power})
+    Belt.Array.map(units, (u: Units.t) => {...u, power: u.power * power})
 )
 
 %%private(
@@ -40,7 +40,7 @@ let sub = (a: t, b: t): t =>
     if Belt.Array.length(units) < 2 {
       false
     } else {
-      let dimensionSizes = Belt.Array.mapU(units, (. unit) => {
+      let dimensionSizes = Belt.Array.map(units, unit => {
         let dimensions = Units_Dimensions.ofUnit(unit)
         let size = Units_Dimensions.size(dimensions)
         (dimensions, size)
@@ -70,7 +70,7 @@ let sub = (a: t, b: t): t =>
 
   let normalized = (value, ~units) =>
     if hasOverlappingUnits(units) {
-      let siUnits = Belt.Array.flatMapU(units, (. unit) => Units.toSi(unit))->Units.flatten
+      let siUnits = Belt.Array.flatMap(units, unit => Units.toSi(unit))->Units.flatten
       let siValue = Units.convert(value, ~fromUnits=units, ~toUnits=siUnits)
       ofReal(siValue, ~units=siUnits)
     } else {

@@ -2,14 +2,14 @@ type onMessageEvent = {data: string}
 
 type self = {
   mutable onmessage: onMessageEvent => unit,
-  postMessage: (. string) => unit,
+  postMessage: string => unit,
 }
 
 @val external self: self = "self"
 
 %%private(
   let decodeContext = context =>
-    Belt.Array.reduceU(context, TechniCalcCalculator.AST_Context.empty, (. accum, (key, value)) => {
+    Belt.Array.reduce(context, TechniCalcCalculator.AST_Context.empty, (accum, (key, value)) => {
       TechniCalcCalculator.AST_Context.set(accum, key, value)
     })
 )
@@ -33,25 +33,25 @@ type self = {
       [(value, toUnits)]
     | Work.ConvertUnitsComposite({values, toUnits}) =>
       let res =
-        Belt.Array.mapU(values, (. (body, unitPart)) => (
+        Belt.Array.map(values, ((body, unitPart)) => (
           eval(~config, ~context, body)->TechniCalcCalculator.Value.toReal,
           unitPart,
-        ))->TechniCalcCalculator.Units.convertComposite(_, ~toUnits)
+        ))->(TechniCalcCalculator.Units.convertComposite(_, ~toUnits))
       switch res {
       | Some(res) =>
-        Belt.Array.mapU(res, (. (value, unitPart)) => (
+        Belt.Array.map(res, ((value, unitPart)) => (
           TechniCalcCalculator.Value.ofReal(value),
           [unitPart],
         ))
       | None =>
         // TODO - sort units (NB - this would have crashed on stuff like Celsius)
         // let unitsSorted = TechniCalcCalculator.Units.compositeUnitsSorted(toUnits)
-        Belt.Array.mapU(toUnits, (. unitPart) => (#NaNN, [unitPart]))
+        Belt.Array.map(toUnits, unitPart => (#NaNN, [unitPart]))
       }
     | Work.ConvertCurrencies({body, fromCurrency: (fromCurrencyValue, _), toCurrencies}) =>
       let value = eval(~config, ~context, body)
       let fromCurrency = TechniCalcCalculator.Value.ofFloat(fromCurrencyValue)
-      Belt.Array.mapU(toCurrencies, (. (toCurrencyValue, toCurrencyName)) => {
+      Belt.Array.map(toCurrencies, ((toCurrencyValue, toCurrencyName)) => {
         let toCurrency = TechniCalcCalculator.Value.ofFloat(toCurrencyValue)
         let value = TechniCalcCalculator.Value.div(
           TechniCalcCalculator.Value.mul(value, toCurrency),
@@ -74,7 +74,7 @@ self.onmessage = e => {
   | Some(work) =>
     let res = compute(work)
     let encoded = Work.encodeOutput(work, res)
-    self.postMessage(. encoded)
+    self.postMessage(encoded)
   | None => ()
   }
 }

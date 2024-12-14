@@ -52,7 +52,7 @@ let next = ({elements, index, formatCaptureGroups}) => {
       switch deltaFactor(~fn) {
       | Some(deltaFactor) =>
         let ranges = AST.functionArgRangesExn(elements, startIndex)
-        switch Belt.Array.getIndexByU(ranges, (. (start, end)) => index >= start && index < end) {
+        switch Belt.Array.getIndexBy(ranges, ((start, end)) => index >= start && index < end) {
         | Some(rangeIndex) => Belt.Array.get(ranges, rangeIndex + delta * deltaFactor)
         | None => None
         }

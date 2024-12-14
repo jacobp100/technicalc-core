@@ -1,7 +1,7 @@
 open Scalar_Types
 open Scalar_Base
 
-let neg = mapU(_, (. x) => Real.neg(x))
+let neg = map(_, x => Real.neg(x))
 
 let add = (a: t, b: t): t =>
   switch (a, b) {

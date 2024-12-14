@@ -1,6 +1,6 @@
 open Units_Types
 
-let prefixes = Belt.Array.makeByU(21 + 1, (. i) => {
+let prefixes = Belt.Array.makeBy(21 + 1, i => {
   let prefix = Obj.magic(i)
 
   switch prefix {
@@ -29,7 +29,7 @@ let prefixes = Belt.Array.makeByU(21 + 1, (. i) => {
   }
 })
 
-let names = Belt.Array.makeByU(73 + 1, (. i) => {
+let names = Belt.Array.makeBy(73 + 1, i => {
   let unit = Obj.magic(i)
 
   switch unit {

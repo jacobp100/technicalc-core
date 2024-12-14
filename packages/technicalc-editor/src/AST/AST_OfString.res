@@ -28,7 +28,7 @@ open AST_Types
     | 'D' | 'd' => ND_S
     | 'E' | 'e' => NE_S
     | 'F' | 'f' => NF_S
-    | _ => assert false
+    | _ => assert(false)
     }
 )
 
@@ -112,7 +112,7 @@ open AST_Types
 )
 
 let ofString = (input: string) => {
-  let input = Belt.List.makeByU(String.length(input), (. i): char => {
+  let input = Belt.List.makeBy(String.length(input), (i): char => {
     Obj.magic(StringUtil.charAtUnsafe(input, i))
   })
 

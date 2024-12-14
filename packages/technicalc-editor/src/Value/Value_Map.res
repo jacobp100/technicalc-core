@@ -128,8 +128,8 @@ let parse = {
   let applyBinaryOperator = (
     ~angleRequirement,
     ~rangeEnd,
-    ~iterU,
-    ~nextU,
+    ~iter,
+    ~next,
     elements,
     i,
     op,
@@ -137,7 +137,7 @@ let parse = {
   ) => {
     let before = ArraySlice.slice(elements, ~offset=0, ~len=i)
     let after = ArraySlice.sliceToEnd(elements, i + 1)
-    switch (iterU(angleRequirement, rangeEnd, before), nextU(angleRequirement, rangeEnd, after)) {
+    switch (iter(angleRequirement, rangeEnd, before), next(angleRequirement, rangeEnd, after)) {
     | (Ok(before), Ok(after)) =>
       switch op {
       | AST.Fold_Add => Node.Add(before, after)->Ok
@@ -385,9 +385,9 @@ let parse = {
   and parseMulDiv = (~angleRequirement, ~rangeEnd, elements: elements) => {
     noinline(parseMulDiv)
 
-    let iterU = (angleRequirement, rangeEnd, elements) =>
+    let iter = (angleRequirement, rangeEnd, elements) =>
       parseMulDiv(~angleRequirement, ~rangeEnd, elements)
-    let nextU = (angleRequirement, rangeEnd, elements) =>
+    let next = (angleRequirement, rangeEnd, elements) =>
       parseUnary(~angleRequirement, ~rangeEnd, elements)
 
     @inline
@@ -397,28 +397,28 @@ let parse = {
       | _ => false
       }
 
-    let rec iter = (~bracketLevel, i) =>
+    let rec iterSelf = (~bracketLevel, i) =>
       switch ArraySlice.get(elements, i) {
-      | Some((Fold_OpenBracket, _)) => iter(~bracketLevel=bracketLevel + 1, i - 1)
-      | Some((Fold_CloseBracket(_), _)) => iter(~bracketLevel=bracketLevel - 1, i - 1)
+      | Some((Fold_OpenBracket, _)) => iterSelf(~bracketLevel=bracketLevel + 1, i - 1)
+      | Some((Fold_CloseBracket(_), _)) => iterSelf(~bracketLevel=bracketLevel - 1, i - 1)
       | Some(((Fold_Mul | Fold_Div | Fold_Dot) as op, range)) if bracketLevel == 0 =>
         // These operators are never post fixes
-        applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
+        applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iter, ~next, elements, i, op, range)
       | Some((Fold_Percent as op, range)) if bracketLevel == 0 && !inPostfixPosition(i) =>
         // Mod operator
-        applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
-      | Some(_) => iter(~bracketLevel, i - 1)
-      | None => nextU(angleRequirement, rangeEnd, elements)
+        applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iter, ~next, elements, i, op, range)
+      | Some(_) => iterSelf(~bracketLevel, i - 1)
+      | None => next(angleRequirement, rangeEnd, elements)
       }
 
-    iter(~bracketLevel=0, ArraySlice.length(elements) - 1)
+    iterSelf(~bracketLevel=0, ArraySlice.length(elements) - 1)
   }
   and parseAddSub = (~angleRequirement, ~rangeEnd, elements: elements) => {
     noinline(parseAddSub)
 
-    let iterU = (angleRequirement, rangeEnd, elements) =>
+    let iter = (angleRequirement, rangeEnd, elements) =>
       parseAddSub(~angleRequirement, ~rangeEnd, elements)
-    let nextU = (angleRequirement, rangeEnd, elements) =>
+    let next = (angleRequirement, rangeEnd, elements) =>
       parseMulDiv(~angleRequirement, ~rangeEnd, elements)
 
     @inline
@@ -430,28 +430,28 @@ let parse = {
       | _ => false
       }
 
-    let rec iter = (~bracketLevel, i) =>
+    let rec iterSelf = (~bracketLevel, i) =>
       switch ArraySlice.get(elements, i) {
-      | Some((Fold_OpenBracket, _)) => iter(~bracketLevel=bracketLevel + 1, i - 1)
-      | Some((Fold_CloseBracket(_), _)) => iter(~bracketLevel=bracketLevel - 1, i - 1)
+      | Some((Fold_OpenBracket, _)) => iterSelf(~bracketLevel=bracketLevel + 1, i - 1)
+      | Some((Fold_CloseBracket(_), _)) => iterSelf(~bracketLevel=bracketLevel - 1, i - 1)
       | Some(((Fold_Add | Fold_Sub) as op, range)) if bracketLevel == 0 && !inPrefixPosition(i) =>
-        applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iterU, ~nextU, elements, i, op, range)
-      | Some(_) => iter(~bracketLevel, i - 1)
-      | None => nextU(angleRequirement, rangeEnd, elements)
+        applyBinaryOperator(~angleRequirement, ~rangeEnd, ~iter, ~next, elements, i, op, range)
+      | Some(_) => iterSelf(~bracketLevel, i - 1)
+      | None => next(angleRequirement, rangeEnd, elements)
       }
 
-    iter(~bracketLevel=0, ArraySlice.length(elements) - 1)
+    iterSelf(~bracketLevel=0, ArraySlice.length(elements) - 1)
   }
   and parseComparisons = (~angleRequirement, ~rangeEnd, elements: elements) => {
     noinline(parseComparisons)
-    let nextU = (angleRequirement, rangeEnd, elements) =>
+    let next = (angleRequirement, rangeEnd, elements) =>
       parseAddSub(~angleRequirement, ~rangeEnd, elements)
 
     let rec iter = i =>
       switch ArraySlice.get(elements, i) {
       | Some((Fold_Comparison(_), (r, _))) => Error(r)
       | Some(_) => iter(i + 1)
-      | None => nextU(angleRequirement, rangeEnd, elements)
+      | None => next(angleRequirement, rangeEnd, elements)
       }
 
     iter(0)

@@ -1,6 +1,6 @@
 type inputSettingsMode = {hasAngleDependentFunction: bool}
 
-let hasAngleDependentFunction = (. element: AST.t) =>
+let hasAngleDependentFunction = (element: AST.t) =>
   switch element {
   | Arg
   | CaptureGroupStart(_)
@@ -107,5 +107,5 @@ let hasAngleDependentFunction = (. element: AST.t) =>
   }
 
 let inputSettingsMode = (elements: array<AST.t>) => {
-  hasAngleDependentFunction: Belt.Array.someU(elements, hasAngleDependentFunction),
+  hasAngleDependentFunction: Belt.Array.some(elements, hasAngleDependentFunction),
 }

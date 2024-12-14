@@ -1,7 +1,7 @@
 open AST
 
 let reifyPlaceholders = (elements: array<t>) => {
-  PlaceholderMetadata.placeholders(elements)->Belt.Array.reduceReverseU(elements, (.
+  PlaceholderMetadata.placeholders(elements)->Belt.Array.reduceReverse(elements, (
     elements,
     placeholder,
   ) => {

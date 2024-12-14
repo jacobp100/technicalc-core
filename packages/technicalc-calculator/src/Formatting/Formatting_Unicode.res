@@ -7,7 +7,7 @@ let omegaUpper = `Ω`
 let degree = `°`
 
 let formatSuperscriptNumbers = str =>
-  Belt.Array.makeByU(String.length(str), (. i) =>
+  Belt.Array.makeBy(String.length(str), i =>
     switch StringUtil.stringCharAtUnsafe(str, i) {
     | "-" => `⁻`
     | "0" => `⁰`

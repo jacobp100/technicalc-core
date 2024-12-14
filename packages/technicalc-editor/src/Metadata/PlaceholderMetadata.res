@@ -138,7 +138,7 @@ let placeholders = (elements: array<AST.t>): array<placeholder> => {
       }
     | Some(EquationNS({arguments})) =>
       let functionArgRanges = functionArgRangesExn(elements, index)
-      let placeholdersRev = Belt.Array.reduceWithIndexU(arguments, placeholdersRev, (
+      let placeholdersRev = Belt.Array.reduceWithIndex(arguments, placeholdersRev, (
         placeholdersRev,
         symbol,
         index,

@@ -2,25 +2,25 @@ open Units_Types
 open Units_Value
 
 %%private(
-  let celsiusToKelvin = (. value) => {
+  let celsiusToKelvin = value => {
     open Real
     value + ofFloat(273.15)
   }
 )
 %%private(
-  let fahrenheitToKelvin = (. value) => {
+  let fahrenheitToKelvin = value => {
     open Real
     (value - ofFloat(32.)) / ofFloat(1.8) + ofFloat(273.15)
   }
 )
 %%private(
-  let celsiusFromKelvin = (. value) => {
+  let celsiusFromKelvin = value => {
     open Real
     value - ofFloat(273.15)
   }
 )
 %%private(
-  let fahrenheitFromKelvin = (. value) => {
+  let fahrenheitFromKelvin = value => {
     open Real
     (value - ofFloat(273.15)) * ofFloat(1.8) + ofFloat(32.)
   }
@@ -35,7 +35,7 @@ open Units_Value
     units: array<t>,
   ) => {
     open Real
-    let handleLinearUnit = (. value, unitPart) =>
+    let handleLinearUnit = (value, unitPart) =>
       switch unitPart.name {
       | Celsius
       | Fahrenheit => nan
@@ -44,10 +44,10 @@ open Units_Value
 
     switch units {
     | [{prefix, name: Celsius, power: 1}] =>
-      transformCelsius(. prefixValue(prefix)->Real.ofDecimal * value)
+      transformCelsius(prefixValue(prefix)->Real.ofDecimal * value)
     | [{prefix, name: Fahrenheit, power: 1}] =>
-      transformFahrenheit(. prefixValue(prefix)->Real.ofDecimal * value)
-    | _ => Belt.Array.reduceU(units, value, handleLinearUnit)
+      transformFahrenheit(prefixValue(prefix)->Real.ofDecimal * value)
+    | _ => Belt.Array.reduce(units, value, handleLinearUnit)
     }
   }
 )
@@ -87,8 +87,8 @@ let convert = (value: Real.t, ~fromUnits, ~toUnits) =>
 )
 
 let convertComposite = (values: array<(Real.t, t)>, ~toUnits: array<t>) => {
-  let fromUnits = Belt.Array.mapU(values, (. (_, unitPart)) => unitPart)
-  let valueSi = Belt.Array.reduceU(values, Real.zero, (. accum, (value, unitPart)) => {
+  let fromUnits = Belt.Array.map(values, ((_, unitPart)) => unitPart)
+  let valueSi = Belt.Array.reduce(values, Real.zero, (accum, (value, unitPart)) => {
     open Real
     accum + value * conversionFactorExn(~powerMultiplier=1, unitPart)->Real.ofDecimal
   })
@@ -106,7 +106,7 @@ let convertComposite = (values: array<(Real.t, t)>, ~toUnits: array<t>) => {
   } else {
     let toUnits = compositeSorted(toUnits)
     let remainderSi = ref(valueSi)
-    let output = Belt.Array.mapU(toUnits, (. unitPart) => {
+    let output = Belt.Array.map(toUnits, unitPart => {
       let value = Real.mul(
         remainderSi.contents,
         conversionFactorExn(~powerMultiplier=-1, unitPart)->Real.ofDecimal,

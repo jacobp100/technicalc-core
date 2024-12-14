@@ -26,7 +26,7 @@ let trace = ({numRows, numColumns} as m) =>
   }
 
 let transpose = (m: t) =>
-  makeByU(~numRows=m.numColumns, ~numColumns=m.numRows, (. row, column) => {
+  makeBy(~numRows=m.numColumns, ~numColumns=m.numRows, (row, column) => {
     getExn(m, ~row=column, ~column=row)
   })
 
@@ -58,7 +58,7 @@ let inv = ({numRows, numColumns} as m: t): t =>
 
 %%private(
   let swapRows = ({numRows, numColumns} as m: t, i: int, j: int) =>
-    makeByU(~numRows, ~numColumns, (. row, column) => {
+    makeBy(~numRows, ~numColumns, (row, column) => {
       let row = if row == i {
         j
       } else if row == j {
@@ -72,7 +72,7 @@ let inv = ({numRows, numColumns} as m: t): t =>
 
 %%private(
   let divideRow = ({numRows, numColumns} as m: t, i: int, by: Scalar.t) =>
-    makeByU(~numRows, ~numColumns, (. row, column) => {
+    makeBy(~numRows, ~numColumns, (row, column) => {
       let current = getExn(m, ~row, ~column)
       row == i ? Scalar.div(current, by) : current
     })
@@ -80,7 +80,7 @@ let inv = ({numRows, numColumns} as m: t): t =>
 
 %%private(
   let subtractRow = ({numRows, numColumns} as m: t, ~from, ~to, ~factor) =>
-    makeByU(~numRows, ~numColumns, (. row, column) => {
+    makeBy(~numRows, ~numColumns, (row, column) => {
       let current = getExn(m, ~row, ~column)
       if row == to {
         Scalar.sub(current, Scalar.mul(getExn(m, ~row=from, ~column), factor))

@@ -132,7 +132,7 @@ type stringOptimisation =
 
 let encodeString = (~optimizeFor=Text, string) => {
   let charXor = charXor(optimizeFor)
-  Belt.Array.makeByU(String.length(string), i => {
+  Belt.Array.makeBy(String.length(string), i => {
     lxor(StringUtil.charAtUnsafe(string, i), charXor)
   })->encodeArray(encodeUint)
 }

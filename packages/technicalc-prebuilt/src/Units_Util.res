@@ -79,7 +79,7 @@ let nameToStringPlural = (name: name) =>
 )
 
 let toString = (units: array<t>) =>
-  Belt.Array.mapWithIndexU(units, (. index, unit) => {
+  Belt.Array.mapWithIndex(units, (index, unit) => {
     if unit.power < 0 {
       "per " ++ unitToString(~plural=false, unit)
     } else {
@@ -94,7 +94,7 @@ let toString = (units: array<t>) =>
 
       unitToString(~plural, unit)
     }
-  })->Js.Array.joinWith(" ", _)
+  })->(Js.Array.joinWith(" ", _))
 
 let prefixToMml = (prefix: prefix) => {
   let maybeBase = switch prefix {

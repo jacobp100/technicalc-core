@@ -170,7 +170,7 @@ module Elements = {
 
   let parse = elements => Value.parse(elements)->toJsResult
 
-  let eq = (a, b) => Belt.Array.eqU(a, b, (. a, b) => AST.eq(a, b))
+  let eq = (a, b) => Belt.Array.eq(a, b, (a, b) => AST.eq(a, b))
 
   let baseRanges = BaseMetadata.baseRanges
   let baseRange = BaseMetadata.baseRange
@@ -262,7 +262,7 @@ module Keys = {
     })->Keys.One
 
   %%private(
-    let unitU = (. {prefix, name, power}): array<Keys.key> => {
+    let unit = ({prefix, name, power}): array<Keys.key> => {
       let unit: Keys.key = UnitS({prefix, name})
       if power != 1 {
         let power = Belt.Int.toString(power)->AST.ofString
@@ -272,7 +272,7 @@ module Keys = {
       }
     }
   )
-  let units = (units: array<unitType>) => Keys.Many(Belt.Array.flatMapU(units, unitU))
+  let units = (units: array<unitType>) => Keys.Many(Belt.Array.flatMap(units, unit))
 
   let table = (~numRows, ~numColumns) => Keys.One(TableNS({numRows, numColumns}))
 
@@ -448,13 +448,13 @@ module Units = {
   let convert = (value, ~fromUnits, ~toUnits) =>
     Value_Base.toReal(value)->Units_Convert.convert(~fromUnits, ~toUnits)->Value_Base.ofReal
   let convertComposite = (measures, ~toUnits) => {
-    let composite = Belt.Array.mapU(measures, (. (value, fromUnits)) => {
+    let composite = Belt.Array.map(measures, ((value, fromUnits)) => {
       let real = Value_Base.toReal(value)
       (real, fromUnits)
     })->Units_Convert.convertComposite(~toUnits)
     switch composite {
     | Some(composite) =>
-      Belt.Array.mapU(composite, (. (real, unitPart)) => {
+      Belt.Array.map(composite, ((real, unitPart)) => {
         let value = Value_Base.ofReal(real)
         (value, unitPart)
       })->Some

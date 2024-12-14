@@ -2,13 +2,13 @@ open Units_Types
 
 let eq = (a, b) => a.prefix == b.prefix && a.name == b.name && a.power == b.power
 
-%%private(let hasNonZeroPower = (. x: t) => x.power != 0)
+%%private(let hasNonZeroPower = (x: t) => x.power != 0)
 
 let flatten = (x: array<t>) => {
   let zeroUnits = ref(0)
 
-  let units = Belt.Array.reduceU(x, [], (. accum, current) => {
-    let existingIndex = Belt.Array.getIndexByU(accum, (. other) => {
+  let units = Belt.Array.reduce(x, [], (accum, current) => {
+    let existingIndex = Belt.Array.getIndexBy(accum, other => {
       other.prefix == current.prefix && other.name == current.name
     })
 
@@ -27,7 +27,7 @@ let flatten = (x: array<t>) => {
     }
   })
 
-  let units = zeroUnits.contents == 0 ? units : Belt.Array.keepU(units, hasNonZeroPower)
+  let units = zeroUnits.contents == 0 ? units : Belt.Array.keep(units, hasNonZeroPower)
 
   units
 }

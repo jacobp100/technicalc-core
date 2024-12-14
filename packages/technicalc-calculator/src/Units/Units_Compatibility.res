@@ -31,13 +31,13 @@ let compositeCompatible = (~fromUnits, ~toUnits) =>
   switch Belt.Array.get(fromUnits, 0) {
   | Some(unit) if Belt.Array.length(toUnits) != 0 =>
     let baseDimensions = Units_Dimensions.ofUnit(unit)
-    let unitValid = (. unit) =>
+    let unitValid = unit =>
       unit.power == 1 && Units_Dimensions.eq(Units_Dimensions.ofUnit(unit), baseDimensions)
 
     baseDimensions.temperature == 0 &&
     Units_Dimensions.size(baseDimensions) == 1 &&
-    Belt.Array.everyU(fromUnits, unitValid) &&
-    Belt.Array.everyU(toUnits, unitValid) &&
+    Belt.Array.every(fromUnits, unitValid) &&
+    Belt.Array.every(toUnits, unitValid) &&
     unitsUnique(toUnits)
   | _ => false
   }

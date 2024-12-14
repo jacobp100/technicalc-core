@@ -5,7 +5,7 @@ let mulVector = (m: t, v: Vector.t): Vector.t => {
   let size = Vector.size(v)
 
   if m.numColumns == size {
-    Vector.makeByU(m.numRows, (. row) => {
+    Vector.makeBy(m.numRows, row => {
       let element = ref(Scalar.zero)
       for i in 0 to m.numColumns - 1 {
         let elementProduct = Scalar.mul(getExn(m, ~row, ~column=i), Vector.getExn(v, i))
@@ -22,7 +22,7 @@ let preMulVector = (v: Vector.t, m: t): t => {
   let size = Vector.size(v)
 
   if m.numRows == 1 && m.numColumns == size {
-    makeByU(~numRows=size, ~numColumns=size, (. row, column) => {
+    makeBy(~numRows=size, ~numColumns=size, (row, column) => {
       Scalar.mul(Vector.getExn(v, row), getExn(m, ~row=0, ~column))
     })
   } else {

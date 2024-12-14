@@ -1,6 +1,6 @@
 let matrixOfFloats = (numRows, numColumns, elements) =>
-  Belt.Array.mapU(elements, (. element) => Scalar.ofFloat(element))
-  ->Matrix.make(~numRows, ~numColumns, _)
+  Belt.Array.map(elements, element => Scalar.ofFloat(element))
+  ->(Matrix.make(~numRows, ~numColumns, _))
   ->Value.ofMatrix
 let percentOfFloat = float => Scalar.ofFloat(float)->Value.ofPercent
 
@@ -90,8 +90,8 @@ let toComplexFloats = (a): (float, float) =>
   }
 
 %%private(
-  let mapMatrixU = (a: Value.t, fn: (. Scalar.t) => 'a): array<array<'a>> => {
-    let fn = x => Scalar.Finite.toScalar(x)->fn(. _)
+  let mapMatrix = (a: Value.t, fn: Scalar.t => 'a): array<array<'a>> => {
+    let fn = x => Scalar.Finite.toScalar(x)->(fn(_))
 
     switch a {
     | #Vect([a, b]) => [[fn(a)], [fn(b)]]
@@ -102,10 +102,10 @@ let toComplexFloats = (a): (float, float) =>
         [fn(d), fn(e), fn(f)],
         [fn(g), fn(h), fn(i)],
       ]
-    | _ => assert false
+    | _ => assert(false)
     }
   }
 )
 
-let toFloatsMatrix = mapMatrixU(_, (. x) => Scalar.toFloat(x))
-let toComplexFloatsMatrix = mapMatrixU(_, (. x) => toComplexFloats(x))
+let toFloatsMatrix = mapMatrix(_, x => Scalar.toFloat(x))
+let toComplexFloatsMatrix = mapMatrix(_, x => toComplexFloats(x))

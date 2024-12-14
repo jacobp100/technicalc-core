@@ -63,7 +63,7 @@ type iterationMode =
 )
 
 %%private(
-  let rec bisectDecimalU = (~iterations=100, ~negativeX, ~positiveX, f) => {
+  let rec bisectDecimal = (~iterations=100, ~negativeX, ~positiveX, f) => {
     let m = {
       open Decimal
       (positiveX + negativeX) / ofInt(2)
@@ -77,9 +77,9 @@ type iterationMode =
       let iterations = iterations - 1
 
       if gtZero(fm) {
-        bisectDecimalU(~iterations, ~negativeX, ~positiveX=m, f)
+        bisectDecimal(~iterations, ~negativeX, ~positiveX=m, f)
       } else {
-        bisectDecimalU(~iterations, ~negativeX=m, ~positiveX, f)
+        bisectDecimal(~iterations, ~negativeX=m, ~positiveX, f)
       }
     } else {
       nan
@@ -88,7 +88,7 @@ type iterationMode =
 )
 
 %%private(
-  let rec newtonDecimalU = (~canBisect=true, ~iterations=100, ~previous, f, x) => {
+  let rec newtonDecimal = (~canBisect=true, ~iterations=100, ~previous, f, x) => {
     let xReal = ofDecimal(x)
     let fxReal = f(xReal)
     let fx = toDecimal(fxReal)
@@ -114,17 +114,17 @@ type iterationMode =
           let gradient = Decimal.div(fxDelta, xDelta)
           Gradient(gradient)
         } else {
-          Gradient(Value_Calculus.differentiateU(f, xReal)->toDecimal)
+          Gradient(Value_Calculus.differentiate(f, xReal)->toDecimal)
         }
       }
 
       switch op {
       | Bisect(negativeX, positiveX) =>
-        let out = bisectDecimalU(~negativeX, ~positiveX, f)
+        let out = bisectDecimal(~negativeX, ~positiveX, f)
         if !isNaN(out) {
           out
         } else {
-          newtonDecimalU(~canBisect=false, ~iterations, ~previous, f, x)
+          newtonDecimal(~canBisect=false, ~iterations, ~previous, f, x)
         }
       | Gradient(f'x) =>
         let iterations = iterations - 1
@@ -135,7 +135,7 @@ type iterationMode =
             open Decimal
             x - fx / f'x
           }
-          newtonDecimalU(~iterations, ~previous, f, xNext)
+          newtonDecimal(~iterations, ~previous, f, xNext)
         } else {
           let gx = f(Value.add(xReal, fxReal))->toDecimal
           if !eqZero(gx) {
@@ -143,7 +143,7 @@ type iterationMode =
               open Decimal
               x - fx / gx
             }
-            newtonDecimalU(~iterations, ~previous, f, xNext)
+            newtonDecimal(~iterations, ~previous, f, xNext)
           } else {
             nan
           }
@@ -156,9 +156,9 @@ type iterationMode =
 )
 
 %%private(
-  let newtonPreciseU = (f, x) => {
+  let newtonPrecise = (f, x) => {
     let fx = f(x)
-    let f'x = Value_Calculus.differentiateU(f, x)
+    let f'x = Value_Calculus.differentiate(f, x)
     let (xPrev, fxPrev) = (x, fx)
     let x = {
       open Value
@@ -173,9 +173,9 @@ type iterationMode =
         fxPrev: toDecimal(fxPrev),
       }
       let x = toDecimal(x)
-      newtonDecimalU(~previous, f, x)
+      newtonDecimal(~previous, f, x)
     }
   }
 )
 
-let solveRootU = (f, initial) => newtonPreciseU(f, initial)
+let solveRoot = (f, initial) => newtonPrecise(f, initial)
