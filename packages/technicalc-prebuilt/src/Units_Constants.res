@@ -5,7 +5,7 @@ let unitsReplacements = {
   "s": [{prefix: Unit, name: Second, power: 1}],
   "Hz": [{prefix: Unit, name: Hertz, power: 1}],
   "MHz": [{prefix: Mega, name: Hertz, power: 1}],
-  "kg": [{prefix: Kilo, name: Meter, power: 1}],
+  "kg": [{prefix: Kilo, name: Gram, power: 1}],
   "m": [{prefix: Unit, name: Meter, power: 1}],
   "fm": [{prefix: Femto, name: Meter, power: 1}],
   "c": [{prefix: Unit, name: Coulomb, power: 1}],
