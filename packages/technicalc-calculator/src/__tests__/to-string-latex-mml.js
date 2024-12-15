@@ -34,7 +34,11 @@ test("parses decimal strings", () => {
 
 test("formats large decimals", () => {
   expect(
-    toStringBase({ ...defaultFormat, precision: 99 }, false, div(one, pi))
+    toStringBase(
+      { ...defaultFormat, constants: false, precision: 99 },
+      false,
+      div(one, pi)
+    )
   ).toEqual("0.318309886184");
 });
 
@@ -64,7 +68,12 @@ it.each([
   [matrixOfFloats(2, 2, [1, 0.5, -0.5, -1]), "{{1,1/2},{-1/2,-1}}"],
   [nan, "NaN"],
 ])("Formats %s to %s", (technicalcValue, formatted) => {
-  expect(toString(technicalcValue)).toBe(formatted);
+  expect(
+    toString(technicalcValue, {
+      ...defaultFormat,
+      fractions: "improper",
+    })
+  ).toBe(formatted);
   expect(ofString(formatted)).toEqual(technicalcValue);
 });
 
@@ -81,7 +90,7 @@ const format = (value, mode) =>
 test("formats Tex", () => {
   expect(format(one, "tex")).toBe("1");
   expect(format(minusOne, "tex")).toBe("-1");
-  expect(format(half, "tex")).toBe("\\frac{1}{2}");
+  expect(format(half, "tex", { fractions: "improper" })).toBe("\\frac{1}{2}");
   expect(format(minusHalf, "tex")).toBe("-\\frac{1}{2}");
   expect(format(add(one, i), "tex")).toBe("1+i");
   expect(format(add(minusOne, i), "tex")).toBe("-1+i");

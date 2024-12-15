@@ -3,12 +3,10 @@ open Formatting_Util
 
 %%private(
   let formatImag = (~format, re: Real.t): string => {
+    let {base} = format
     let i = formatVariable(~format, "i")
-    let compact = switch format.style {
-    | Natural(_) | Decimal => true
-    | _ => false
-    }
-    switch (compact, re) {
+    let magnitude = Real.toDecimal(re)->DecimalUtil.magnitude(~base)
+    switch (Formatting_Real.insideMagnitudeThreshold(~format, ~magnitude), re) {
     | (true, Rational(1, 1, Unit)) => i
     | (true, Rational(-1, 1, Unit)) => formatOperator(~format, "-") ++ i
     | _ => Formatting_Real.toString(~format, re) ++ i

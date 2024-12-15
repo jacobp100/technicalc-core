@@ -4,16 +4,22 @@ type mode =
   | @as(2) Tex
   | @as(3) MathML
 
-type style =
-  | @as(0) Natural({mixedFractions: bool})
-  | @as(1) Decimal
-  | @as(2) Engineering
+type fractionMode =
+  | @as(0) Never
+  | @as(1) Improper
+  | @as(2) Mixed
+
+type exponentMode =
+  | @as(0) Scientific
+  | @as(1) Engineering
 
 type unitFormat = | @as(0) Exponential | @as(1) Operator
 
 type format = {
   mode: mode,
-  style: style,
+  constants: bool,
+  fractions: fractionMode,
+  exponents: exponentMode,
   decimalSeparator: string,
   groupingSeparator: string,
   digitGrouping: bool,
@@ -26,7 +32,9 @@ type format = {
 
 let defaultFormat = {
   mode: Ascii,
-  style: Decimal,
+  constants: true,
+  fractions: Improper,
+  exponents: Scientific,
   decimalSeparator: ".",
   groupingSeparator: ",",
   digitGrouping: true,

@@ -5,7 +5,7 @@ open Formatting
 let stringOfFloat = (x, format) => toString(~format, ofFloat(x))
 
 test("formats fractions", () => {
-  let format = {...defaultFormat, style: Natural({mixedFractions: false})}
+  let format = {...defaultFormat, fractions: Improper}
 
   expect(stringOfFloat(1.5, format))->toBe("3/2")
   expect(stringOfFloat(-1.5, format))->toBe("-3/2")
@@ -18,7 +18,7 @@ test("formats fractions", () => {
 })
 
 test("formats mixed fractions", () => {
-  let format = {...defaultFormat, style: Natural({mixedFractions: true})}
+  let format = {...defaultFormat, fractions: Mixed}
 
   expect(stringOfFloat(1.5, format))->toBe("1+1/2")
   expect(stringOfFloat(-1.5, format))->toBe("-(1+1/2)")
@@ -31,19 +31,15 @@ test("formats mixed fractions", () => {
 })
 
 test("formats fractions in other bases", () => {
-  expect(
-    stringOfFloat(1.5, {...defaultFormat, style: Natural({mixedFractions: false}), base: 2}),
-  )->toBe("0b11/0b10")
+  expect(stringOfFloat(1.5, {...defaultFormat, fractions: Improper, base: 2}))->toBe("0b11/0b10")
 })
 
 test("formats mixed fractions in other bases", () => {
-  expect(
-    stringOfFloat(1.5, {...defaultFormat, style: Natural({mixedFractions: true}), base: 2}),
-  )->toBe("0b1+0b1/0b10")
+  expect(stringOfFloat(1.5, {...defaultFormat, fractions: Mixed, base: 2}))->toBe("0b1+0b1/0b10")
 })
 
 test("only adds commas for values greater than 999", () => {
-  let format = {...defaultFormat, style: Decimal}
+  let format = {...defaultFormat, fractions: Never}
 
   expect(stringOfFloat(100000000., format))->toBe("100,000,000")
   expect(stringOfFloat(10000000., format))->toBe("10,000,000")
@@ -54,7 +50,7 @@ test("only adds commas for values greater than 999", () => {
 })
 
 test("formats magnitude of reals", () => {
-  let format = {...defaultFormat, style: Decimal}
+  let format = {...defaultFormat, fractions: Never}
 
   expect(stringOfFloat(1000000000., format))->toBe("1e9")
   expect(stringOfFloat(100., format))->toBe("100")
@@ -67,7 +63,7 @@ test("formats magnitude of reals", () => {
 })
 
 test("trims trailling zeros", () => {
-  let format = {...defaultFormat, style: Decimal}
+  let format = {...defaultFormat, fractions: Never}
 
   expect(stringOfFloat(1.23e9, format))->toBe("1.23e9")
   expect(stringOfFloat(1.23, format))->toBe("1.23")
@@ -79,7 +75,14 @@ test("trims trailling zeros", () => {
 })
 
 test("formats engineering notation", () => {
-  let format = {...defaultFormat, style: Engineering}
+  let format = {
+    ...defaultFormat,
+    decimalMinMagnitude: 0,
+    decimalMaxMagnitude: 0,
+    minDecimalPlaces: 12,
+    maxDecimalPlaces: 12,
+    exponents: Engineering,
+  }
 
   expect(stringOfFloat(1., format))->toBe("1.000000000000e0")
   expect(stringOfFloat(10., format))->toBe("10.000000000000e0")
@@ -119,7 +122,7 @@ test("formats other bases", () => {
 })
 
 test("formats various numbers correctly", () => {
-  let convert = x => ofString(x)->Belt.Option.getExn->toString(~format=defaultFormat, _)
+  let convert = x => ofString(x)->Belt.Option.getExn->(toString(~format=defaultFormat, _))
 
   expect(convert("46.47897327055571"))->toBe("46.478973270556")
   expect(convert("-47.86759243619015"))->toBe("-47.86759243619")

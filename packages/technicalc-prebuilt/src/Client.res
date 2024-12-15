@@ -12,7 +12,8 @@ type config = {angleMode: option<string>}
 
 type format = {
   mode: option<string>,
-  style: option<string>,
+  fractions: option<string>,
+  exponents: option<string>,
   decimalSeparator: option<string>,
   groupingSeparator: option<string>,
   digitGrouping: option<bool>,
@@ -27,7 +28,8 @@ type format = {
 // https://github.com/rescript-lang/rescript-compiler/issues/4958
 let emptyFormat = {
   mode: None,
-  style: None,
+  fractions: None,
+  exponents: None,
   decimalSeparator: None,
   groupingSeparator: None,
   base: None,
@@ -42,13 +44,29 @@ let emptyFormat = {
 
 %%private(
   @inline
-  let formatStyle = f =>
-    switch f.style {
-    | Some("decimal") => TechniCalcCalculator.Formatting.Decimal
-    | Some("engineering") => Engineering
-    | Some("natural") => Natural({mixedFractions: false})
-    | Some("natural-mixed") => Natural({mixedFractions: true})
-    | _ => defaultFormat.style
+  let formatConstants = f =>
+    switch f.constants {
+    | Some(constants) => constants
+    | _ => defaultFormat.constants
+    }
+)
+%%private(
+  @inline
+  let formatFractions = f =>
+    switch f.fractions {
+    | Some("never") => TechniCalcCalculator.Formatting.Never
+    | Some("improper") => TechniCalcCalculator.Formatting.Improper
+    | Some("mixed") => TechniCalcCalculator.Formatting.Mixed
+    | _ => defaultFormat.fractions
+    }
+)
+%%private(
+  @inline
+  let formatExponents = f =>
+    switch f.exponents {
+    | Some("scientific") => TechniCalcCalculator.Formatting.Scientific
+    | Some("engineering") => TechniCalcCalculator.Formatting.Engineering
+    | _ => defaultFormat.exponents
     }
 )
 %%private(
@@ -315,7 +333,9 @@ module Value = {
       | None => {...Formatting.defaultFormat, mode}
       | Some(format) => {
           mode,
-          style: formatStyle(format),
+          constants: formatConstants(format),
+          fractions: formatFractions(format),
+          exponents: formatExponents(format),
           decimalSeparator: formatDecimalSeparator(format),
           groupingSeparator: formatGroupingSeparator(format),
           digitGrouping: formatDigitGrouping(format),

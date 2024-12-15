@@ -39,12 +39,14 @@ open Formatting_Util
     let {decimalSeparator, groupingSeparator, base, digitGrouping} = format
 
     switch (
-      Decimal.ofInt(n)->Formatting_Number.formatInteger(
-        ~decimalSeparator,
-        ~groupingSeparator,
-        ~base,
-        ~digitGrouping,
-        _,
+      Decimal.ofInt(n)->(
+        Formatting_Number.formatInteger(
+          ~decimalSeparator,
+          ~groupingSeparator,
+          ~base,
+          ~digitGrouping,
+          _,
+        )
       ),
       Formatting_Constant.toString(~format, c),
     ) {
@@ -57,44 +59,36 @@ open Formatting_Util
   }
 )
 
-let toString = (~format, re): string => {
-  let {
-    mode,
-    decimalSeparator,
-    groupingSeparator,
-    base,
-    digitGrouping,
-    decimalMinMagnitude,
-    decimalMaxMagnitude,
-    minDecimalPlaces,
-    maxDecimalPlaces,
-  } = format
-
-  switch (re, format.style) {
-  | (Real.Rational(n, 1, c), Natural(_)) =>
-    let minus = n < 0 ? formatOperator(~format, "-") : ""
-
-    let n = IntUtil.abs(n)
-    let constantMultiple = formatConstantMultiple(~format, ~formatAsRow=false, n, c)
+%%private(
+  let formatInteger = (~format, i, c): string => {
+    let minus = i < 0 ? formatOperator(~format, "-") : ""
+    let i = IntUtil.abs(i)
+    let constantMultiple = formatConstantMultiple(~format, ~formatAsRow=false, i, c)
     minus ++ constantMultiple
-  | (Rational(n, d, c), Natural({mixedFractions})) =>
+  }
+)
+
+%%private(
+  let formatFraction = (~format, n: int, d: int, c: Real_Constant.t): string => {
+    let {mode, fractions, decimalSeparator, groupingSeparator, base, digitGrouping} = format
+
     let minus = n < 0 ? formatOperator(~format, "-") : ""
     let n = IntUtil.abs(n)
 
-    let (before, n) = if mixedFractions && c == Unit {
+    let (before, n) = if fractions == Mixed && c == Unit {
       let integer = n / d
       let remainder = IntUtil.safeMod(n, d)->Belt.Option.getWithDefault(0)
       let before =
         integer == 0
           ? ""
           : Decimal.ofInt(integer)
-            ->Formatting_Number.formatInteger(
+            ->(Formatting_Number.formatInteger(
               ~decimalSeparator,
               ~groupingSeparator,
               ~base,
               ~digitGrouping,
               _,
-            )
+            ))
             ->formatNumber(~format)
       (before, remainder)
     } else {
@@ -110,7 +104,6 @@ let toString = (~format, re): string => {
         ~groupingSeparator,
         ~base,
         ~digitGrouping,
-        _,
       )
       ->formatNumber(~format)
 
@@ -125,15 +118,53 @@ let toString = (~format, re): string => {
     | Tex => `${minus}${before}\\frac{${top}}{${bottom}}`
     | MathML => `${minus}${before}<mfrac>${top}${bottom}</mfrac>`
     }
-  | (_, Natural(_) | Decimal) =>
-    let f = Real.toDecimal(re)
-    let magnitude = DecimalUtil.magnitude(~base, f)
-    let insideMagnitudeThreshold = {
+  }
+)
+
+%%private(
+  let formatRational = (~format, n: int, d: int, c: Real_Constant.t) => {
+    if c != Unit && !format.constants {
+      None
+    } else if d == 1 {
+      formatInteger(~format, n, c)->Some
+    } else if format.fractions != Never {
+      formatFraction(~format, n, d, c)->Some
+    } else {
+      None
+    }
+  }
+)
+
+let insideMagnitudeThreshold = (~format, ~magnitude) => {
+  let {decimalMinMagnitude, decimalMaxMagnitude} = format
+  decimalMinMagnitude != decimalMaxMagnitude && {
       open Decimal
       magnitude >= ofInt(decimalMinMagnitude) && magnitude <= ofInt(decimalMaxMagnitude)
     }
+}
 
-    if insideMagnitudeThreshold {
+let toString = (~format, re): string => {
+  let {
+    exponents,
+    decimalSeparator,
+    groupingSeparator,
+    base,
+    digitGrouping,
+    minDecimalPlaces,
+    maxDecimalPlaces,
+  } = format
+
+  let f = Real.toDecimal(re)
+  let magnitude = DecimalUtil.magnitude(~base, f)
+
+  if insideMagnitudeThreshold(~format, ~magnitude) {
+    let rational = switch re {
+    | Real.Rational(n, d, c) => formatRational(~format, n, d, c)
+    | _ => None
+    }
+    switch rational {
+    | Some(rational) => rational
+    | _ =>
       Formatting_Number.formatDecimal(
         ~decimalSeparator,
         ~groupingSeparator,
@@ -143,33 +174,21 @@ let toString = (~format, re): string => {
         ~maxDecimalPlaces,
         f,
       )->formatNumber(~format)
-    } else {
-      Formatting_Number.formatExponential(
-        ~decimalSeparator,
-        ~groupingSeparator,
-        ~base,
-        ~exponent=magnitude,
-        ~minDecimalPlaces,
-        ~maxDecimalPlaces,
-        f,
-      )->formatExponential(~format)
     }
-  | (_, Engineering) =>
-    let f = Real.toDecimal(re)
-    let magnitude = DecimalUtil.magnitude(~base, f)
-
+  } else {
     let rounding = base == 10 ? 3 : 4
-    let exponent = {
+    let exponent = switch exponents {
+    | Engineering =>
       open Decimal
       floor(magnitude / ofInt(rounding)) * ofInt(rounding)
+    | Scientific => magnitude
     }
-
     Formatting_Number.formatExponential(
       ~decimalSeparator,
       ~groupingSeparator,
       ~base,
       ~exponent,
-      ~minDecimalPlaces=maxDecimalPlaces,
+      ~minDecimalPlaces,
       ~maxDecimalPlaces,
       f,
     )->formatExponential(~format)

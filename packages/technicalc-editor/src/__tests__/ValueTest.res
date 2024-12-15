@@ -13,7 +13,13 @@ let parse = v =>
 
 let asString = x =>
   switch x {
-  | Ok(v) => Ok(TechniCalcCalculator.Formatting.toString(v))
+  | Ok(v) =>
+    Ok(
+      TechniCalcCalculator.Formatting.toString(
+        ~format={...TechniCalcCalculator.Formatting.defaultFormat, fractions: Never},
+        v,
+      ),
+    )
   | Error(i) => Error(i)
   }
 

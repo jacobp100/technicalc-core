@@ -9,7 +9,11 @@ type format = {
   @optional
   mode: string,
   @optional
-  style: string,
+  constants: bool,
+  @optional
+  fractions: string,
+  @optional
+  exponents: string,
   @optional
   decimalSeparator: string,
   @optional
@@ -41,12 +45,17 @@ let toString = (x, maybeFormat) => {
 
   let format = {
     mode,
-    style: switch styleGet(f) {
-    | Some("decimal") => Decimal
+    constants: constantsGet(f)->Belt.Option.getWithDefault(defaultFormat.constants),
+    fractions: switch fractionsGet(f) {
+    | Some("never") => Never
+    | Some("improper") => Improper
+    | Some("mixed") => Mixed
+    | _ => Formatting_Types.defaultFormat.fractions
+    },
+    exponents: switch exponentsGet(f) {
+    | Some("scientific") => Scientific
     | Some("engineering") => Engineering
-    | Some("natural") => Natural({mixedFractions: false})
-    | Some("natural-mixed") => Natural({mixedFractions: true})
-    | _ => Natural({mixedFractions: false})
+    | _ => Formatting_Types.defaultFormat.exponents
     },
     decimalSeparator: decimalSeparatorGet(f)->Belt.Option.getWithDefault(
       Formatting_Types.defaultFormat.decimalSeparator,
