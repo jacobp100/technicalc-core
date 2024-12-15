@@ -12,6 +12,7 @@ type config = {angleMode: option<string>}
 
 type format = {
   mode: option<string>,
+  constants: option<bool>,
   fractions: option<string>,
   exponents: option<string>,
   decimalSeparator: option<string>,
@@ -28,6 +29,7 @@ type format = {
 // https://github.com/rescript-lang/rescript-compiler/issues/4958
 let emptyFormat = {
   mode: None,
+  constants: None,
   fractions: None,
   exponents: None,
   decimalSeparator: None,
