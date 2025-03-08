@@ -37,8 +37,8 @@
     | Zero => Some("0.0f")
     | One => Some("1.0f")
     | MinusOne => Some("(-1.0f)")
-    | Pi => Some("pi")
-    | E => Some("e")
+    | Pi => Some("M_PI_F")
+    | E => Some("M_E_F")
     | X => Some("x")
     | Y => Some("y")
     | OfInt(x) => Belt.Int.toFloat(x)->floatToMetalShader
