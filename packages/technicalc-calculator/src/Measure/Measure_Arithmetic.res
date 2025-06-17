@@ -1,12 +1,54 @@
 open Measure_Types
 open Measure_Base
 
+type imperialUnit = | @as(2) Inch | @as(1) Foot | @as(0) Yard
+
+external imperialUnitPrecision: imperialUnit => int = "%identity"
+
+%%private(
+  let mostPreciseImperialUnit = (a, b) =>
+    imperialUnitPrecision(a) > imperialUnitPrecision(b) ? a : b
+)
+
+%%private(
+  let imperialUnit = (units: array<Units.t>) => {
+    let rec iter = (~imperialUnit, i) =>
+      switch Belt.Array.get(units, i) {
+      | Some({name: (Inch | Foot | Yard) as name}) =>
+        let nextImperialUnit = switch name {
+        | Foot => Foot
+        | Yard => Yard
+        | _ => Inch
+        }
+        switch imperialUnit {
+        | Some(imperialUnit) =>
+          let imperialUnit = mostPreciseImperialUnit(imperialUnit, nextImperialUnit)->Some
+          iter(~imperialUnit, i + 1)
+        | None => iter(~imperialUnit=Some(nextImperialUnit), i + 1)
+        }
+      | Some(_) => None
+      | None => imperialUnit
+      }
+    iter(~imperialUnit=None, 0)
+  }
+)
+
 %%private(
   let toCompatibleUnits2 = (a, b) => {
     if Belt.Array.eq(a.units, b.units, (a, b) => Units.eq(a, b)) {
       Some((a.value, b.value, a.units))
     } else if Units.compatible(~fromUnits=a.units, ~toUnits=b.units) {
-      let siUnits = Belt.Array.flatMap(a.units, u => Units.toSi(u))
+      let imperialUnit = switch (imperialUnit(a.units), imperialUnit(b.units)) {
+      | (Some(a), Some(b)) => mostPreciseImperialUnit(a, b)->Some
+      | (_, _) => None
+      }
+      let lengthUnit: option<Units.name> = switch imperialUnit {
+      | Some(Inch) => Some(Inch)
+      | Some(Foot) => Some(Foot)
+      | Some(Yard) => Some(Yard)
+      | None => None
+      }
+      let siUnits = Belt.Array.flatMap(a.units, u => Units.toSi(~lengthUnit?, u))
       let aValue = Units.convert(~fromUnits=a.units, ~toUnits=siUnits, a.value)
       let bValue = Units.convert(~fromUnits=b.units, ~toUnits=siUnits, b.value)
       Some((aValue, bValue, siUnits))

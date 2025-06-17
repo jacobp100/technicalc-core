@@ -1,6 +1,6 @@
 open Units_Types
 
-let toSi = (a: t) =>
+let toSi = (~lengthUnit=Meter, a: t) =>
   switch a.name {
   /* Time */
   | Second
@@ -26,7 +26,7 @@ let toSi = (a: t) =>
   | Furlong
   | Chain
   | Link
-  | Rod => [{prefix: Unit, name: Meter, power: a.power}]
+  | Rod => [{prefix: Unit, name: lengthUnit, power: a.power}]
   /* Mass */
   | Gram
   | Tonne
