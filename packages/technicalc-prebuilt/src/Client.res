@@ -394,6 +394,14 @@ module Value = {
     | #Mesr({value, units}) => Some({"value": Scalar_Base.ofReal(value), "units": units})
     | _ => None
     }
+
+  let preferredConversionUnits = (x: Value.t): option<array<Units.t>> =>
+    switch x {
+    | #Mesr({value, units: [{prefix: Unit, name: Inch, power: 1}]})
+      if Real.cmp(Real.abs(value), Real.ofInt(12)) > 0 =>
+      Some([{prefix: Unit, name: Foot, power: 1}, {prefix: Unit, name: Inch, power: 1}])
+    | _ => None
+    }
 }
 
 module Work = {
