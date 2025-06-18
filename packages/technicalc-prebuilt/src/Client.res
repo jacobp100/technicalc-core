@@ -474,6 +474,7 @@ module Units = {
   let compositeCompatible = Units_Compatibility.compositeCompatible
 
   let dimensions = Units_Dimensions.ofUnits
+  let dimensionsEq = Units_Dimensions.eq
 
   let convert = (value, ~fromUnits, ~toUnits) =>
     Value_Base.toReal(value)->Units_Convert.convert(~fromUnits, ~toUnits)->Value_Base.ofReal

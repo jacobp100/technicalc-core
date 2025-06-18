@@ -152,6 +152,7 @@ const runNodeScript = async (filename, args) => {
 
 runNodeScript("scripts/constants", [new URL("constants.json", dist)]);
 runNodeScript("scripts/units", [new URL("units.json", dist)]);
+runNodeScript("scripts/conversions", [new URL("conversions.json", dist)]);
 
 build({
   entryPoints: [new URL("src/Client.mjs", import.meta.url).pathname],
