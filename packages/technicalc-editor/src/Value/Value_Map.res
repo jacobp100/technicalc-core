@@ -348,8 +348,11 @@ let parse = {
         continue ? readFraction(elements) : None,
       ) {
       | (Some(value), Some((elements, fraction, superscript))) =>
-        // Mixed fraction - don't continue
+        // Mixed fraction - don't continue...
         let value: node = Add(value, fraction)->withSuperscript(superscript)
+        // ...but do allow units (e.g. 2 3/4 in)
+        let (i, value) = applyUnits(elements, 0, value)
+        let elements = elements->ArraySlice.sliceToEnd(i)
         (elements, Some(value), false)
       | (None, Some((elements, fraction, superscript))) =>
         // Lone fraction - continue
